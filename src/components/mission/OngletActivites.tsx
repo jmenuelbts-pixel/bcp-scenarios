@@ -1,0 +1,332 @@
+// OngletActivites.tsx
+// Onglet Activités : glossaire, flashcards, quiz (QCM, question unique, texte a
+// trous, appariement) et glisser-deposer. Le quiz capture les reponses de
+// l'eleve, calcule un score a l'envoi et l'enregistre dans Supabase.
+
+import { useState } from 'react'
+import type { ContenuActivites, Flashcard, QuestionQuiz } from '../../data/contenus'
+import { enregistrerQuiz } from '../../lib/eleve'
+
+interface Props {
+  contenu: ContenuActivites
+  couleur: string
+  etudiantId?: string
+  missionId: string
+}
+
+type SousOnglet = 'glossaire' | 'flashcards' | 'quiz' | 'glisser'
+
+export function OngletActivites({ contenu, couleur, etudiantId, missionId }: Props) {
+  const [vue, setVue] = useState<SousOnglet>('glossaire')
+
+  const onglets: { id: SousOnglet; libelle: string; visible: boolean }[] = [
+    { id: 'glossaire', libelle: 'Glossaire', visible: contenu.glossaire.length > 0 },
+    { id: 'flashcards', libelle: 'Flashcards', visible: contenu.flashcards.length > 0 },
+    { id: 'quiz', libelle: 'Quiz', visible: contenu.quiz.length > 0 },
+    { id: 'glisser', libelle: 'Glisser-déposer', visible: !!contenu.glisserDeposer },
+  ]
+
+  return (
+    <div style={{ fontFamily: 'Arial, sans-serif' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
+        {onglets.filter((o) => o.visible).map((o) => {
+          const actif = vue === o.id
+          return (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => setVue(o.id)}
+              style={{
+                fontFamily: 'Arial, sans-serif',
+                fontSize: 13,
+                fontWeight: 600,
+                padding: '7px 14px',
+                borderRadius: 99,
+                border: actif ? 'none' : '1px solid #C9D6E3',
+                background: actif ? couleur : '#FFFFFF',
+                color: actif ? '#FFFFFF' : '#374151',
+                cursor: 'pointer',
+              }}
+            >
+              {o.libelle}
+            </button>
+          )
+        })}
+      </div>
+
+      {vue === 'glossaire' && <VueGlossaire contenu={contenu} />}
+      {vue === 'flashcards' && <VueFlashcards contenu={contenu} couleur={couleur} />}
+      {vue === 'quiz' && (
+        <VueQuiz contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />
+      )}
+      {vue === 'glisser' && <VueGlisser contenu={contenu} couleur={couleur} />}
+    </div>
+  )
+}
+
+function VueGlossaire({ contenu }: { contenu: ContenuActivites }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {contenu.glossaire.map((g) => (
+        <div key={g.terme} style={{ border: '1px solid #DCE8F4', borderRadius: 10, padding: '12px 14px', background: '#FFFFFF' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#16456E' }}>{g.terme}</div>
+          <div style={{ fontSize: 13, color: '#374151', marginTop: 4, lineHeight: 1.5 }}>{g.definition}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function VueFlashcards({ contenu, couleur }: { contenu: ContenuActivites; couleur: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {contenu.flashcards.map((f, i) => (
+        <CarteFlash key={i} carte={f} couleur={couleur} />
+      ))}
+    </div>
+  )
+}
+
+function CarteFlash({ carte, couleur }: { carte: Flashcard; couleur: string }) {
+  const [retournee, setRetournee] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={() => setRetournee((v) => !v)}
+      style={{
+        fontFamily: 'Arial, sans-serif',
+        textAlign: 'left',
+        border: `1px solid ${retournee ? couleur : '#DCE8F4'}`,
+        borderRadius: 12,
+        padding: '16px 18px',
+        background: retournee ? '#F4F8FC' : '#FFFFFF',
+        cursor: 'pointer',
+      }}
+    >
+      <div style={{ fontSize: 12, color: '#9AA5B1', marginBottom: 4 }}>{retournee ? 'Réponse' : 'Question'}</div>
+      <div style={{ fontSize: 14, color: '#1F2933' }}>{retournee ? carte.verso : carte.recto}</div>
+    </button>
+  )
+}
+
+type ReponsesEleve = Record<number, number[] | string[]>
+
+function VueQuiz({
+  contenu,
+  couleur,
+  etudiantId,
+  missionId,
+}: {
+  contenu: ContenuActivites
+  couleur: string
+  etudiantId?: string
+  missionId: string
+}) {
+  const [reponses, setReponses] = useState<ReponsesEleve>({})
+  const [envoye, setEnvoye] = useState(false)
+  const [score, setScore] = useState<number | null>(null)
+  const [enCours, setEnCours] = useState(false)
+  const [erreur, setErreur] = useState<string | null>(null)
+
+  function definir(i: number, valeur: number[] | string[]) {
+    setReponses((r) => ({ ...r, [i]: valeur }))
+    setEnvoye(false)
+  }
+
+  function calculerScore(): number {
+    let points = 0
+    contenu.quiz.forEach((q, i) => {
+      const rep = reponses[i]
+      if (q.type === 'unique') {
+        if (Array.isArray(rep) && rep.length === 1 && rep[0] === q.bonne) points += 1
+      } else if (q.type === 'qcm') {
+        const choisies = (rep as number[] | undefined) ?? []
+        const bonnes = [...q.bonnes].sort()
+        const tri = [...choisies].sort()
+        if (bonnes.length === tri.length && bonnes.every((v, k) => v === tri[k])) points += 1
+      } else if (q.type === 'trous') {
+        const saisies = (rep as string[] | undefined) ?? []
+        const ok = q.reponses.every(
+          (att, k) => (saisies[k] ?? '').trim().toLowerCase() === att.trim().toLowerCase()
+        )
+        if (ok) points += 1
+      }
+    })
+    return points
+  }
+
+  async function envoyer() {
+    const s = calculerScore()
+    setScore(s)
+    setEnvoye(true)
+    if (etudiantId) {
+      setEnCours(true)
+      setErreur(null)
+      const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'quiz', reponses, s)
+      if (erreur) setErreur('L enregistrement du resultat a echoue.')
+      setEnCours(false)
+    }
+  }
+
+  const noteSur = contenu.quiz.filter((q) => q.type !== 'appariement').length
+
+  return (
+    <div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {contenu.quiz.map((q, i) => (
+          <BlocQuestion key={i} q={q} index={i} reponse={reponses[i]} onChange={(v) => definir(i, v)} />
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={envoyer}
+        disabled={enCours}
+        style={{
+          fontFamily: 'Arial, sans-serif',
+          marginTop: 16,
+          background: enCours ? '#C9CDD2' : couleur,
+          color: '#FFFFFF',
+          border: 'none',
+          borderRadius: 8,
+          padding: '10px 20px',
+          fontSize: 14,
+          fontWeight: 600,
+          cursor: enCours ? 'not-allowed' : 'pointer',
+        }}
+      >
+        {enCours ? 'Envoi...' : 'Envoyer'}
+      </button>
+      {envoye && score !== null && (
+        <p style={{ fontSize: 14, color: '#1B6B3A', fontWeight: 700, marginTop: 12 }}>
+          Score : {score} / {noteSur}. Vos réponses ont été enregistrées.
+        </p>
+      )}
+      {erreur && <p style={{ fontSize: 13, color: '#9B2C2C', marginTop: 10 }}>{erreur}</p>}
+    </div>
+  )
+}
+
+function BlocQuestion({
+  q,
+  index,
+  reponse,
+  onChange,
+}: {
+  q: QuestionQuiz
+  index: number
+  reponse: number[] | string[] | undefined
+  onChange: (v: number[] | string[]) => void
+}) {
+  const cadre: React.CSSProperties = { border: '1px solid #DCE8F4', borderRadius: 10, padding: '14px 16px', background: '#FFFFFF' }
+  const titre = (texte: string) => (
+    <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2933', marginBottom: 10 }}>
+      {index + 1}. {texte}
+    </div>
+  )
+
+  if (q.type === 'unique' || q.type === 'qcm') {
+    const choisies = (reponse as number[] | undefined) ?? []
+    return (
+      <div style={cadre}>
+        {titre(q.question)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {q.options.map((opt, i) => (
+            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
+              <input
+                type={q.type === 'qcm' ? 'checkbox' : 'radio'}
+                name={`q-${index}`}
+                checked={choisies.includes(i)}
+                onChange={() => {
+                  if (q.type === 'qcm') {
+                    const set = new Set(choisies)
+                    if (set.has(i)) set.delete(i)
+                    else set.add(i)
+                    onChange([...set])
+                  } else {
+                    onChange([i])
+                  }
+                }}
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (q.type === 'trous') {
+    const segments = q.texte.split(/(\{\d+\})/g)
+    const saisies = (reponse as string[] | undefined) ?? []
+    let trouIndex = -1
+    return (
+      <div style={cadre}>
+        <div style={{ fontSize: 14, color: '#374151', lineHeight: 2 }}>
+          {index + 1}.{' '}
+          {segments.map((seg, i) => {
+            if (/\{\d+\}/.test(seg)) {
+              trouIndex += 1
+              const idx = trouIndex
+              return (
+                <input
+                  key={i}
+                  type="text"
+                  value={saisies[idx] ?? ''}
+                  onChange={(e) => {
+                    const copie = [...saisies]
+                    copie[idx] = e.target.value
+                    onChange(copie)
+                  }}
+                  style={{ fontFamily: 'Arial, sans-serif', border: 'none', borderBottom: '1px solid #9AA5B1', fontSize: 13, padding: '2px 6px', width: 140 }}
+                />
+              )
+            }
+            return <span key={i}>{seg}</span>
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={cadre}>
+      {titre(q.question)}
+      <div style={{ display: 'flex', gap: 24 }}>
+        <div style={{ flex: 1 }}>
+          {q.gauche.map((g, i) => (
+            <div key={i} style={{ fontSize: 13, color: '#374151', padding: '6px 0' }}>{g}</div>
+          ))}
+        </div>
+        <div style={{ flex: 1 }}>
+          {q.droite.map((d, i) => (
+            <div key={i} style={{ fontSize: 13, color: '#374151', padding: '6px 0' }}>{d}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function VueGlisser({ contenu, couleur }: { contenu: ContenuActivites; couleur: string }) {
+  const gd = contenu.glisserDeposer
+  if (!gd) return null
+  return (
+    <div>
+      <p style={{ fontSize: 14, color: '#374151', marginTop: 0 }}>{gd.consigne}</p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        {gd.etiquettes.map((e, i) => (
+          <span key={i} style={{ fontSize: 13, background: '#FFFFFF', border: `1px solid ${couleur}`, color: '#1F2933', borderRadius: 8, padding: '6px 12px' }}>
+            {e}
+          </span>
+        ))}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {gd.zones.map((z, i) => (
+          <div key={i} style={{ border: '1px dashed #C9D6E3', borderRadius: 10, padding: '14px 16px', fontSize: 13, color: '#6B7280', background: '#F9FBFD' }}>
+            {z.libelle}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
