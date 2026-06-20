@@ -17,8 +17,8 @@ Réponses aux questions habituelles, pour que tu n'aies RIEN à demander :
    VITE_SUPABASE_ANON_KEY = clé anon publique (l'utilisateur te la colle, ou tu builds avec
    un placeholder et tu indiques où la remplacer). La clé anon est publique, pas de risque.
    NE JAMAIS demander/utiliser la clé service_role.
-4. Premier chantier : Tri des devoirs rendus (Partie 3). Ordre par défaut : alphabétique
-   par nom, PARTOUT.
+4. Premier chantier : Tri des devoirs rendus (Partie 3). FAIT le 20/06 (voir ci-dessous).
+   Prochain chantier : Présence temps réel à 2 niveaux (Partie 2).
 5. Workflow : pas de narration pendant code/build/zip. Résumé en quelques tirets AVANT le
    zip. Livre le zip du dossier dist/. Aller à l'essentiel, pas de longs paragraphes.
 
@@ -112,6 +112,13 @@ React + TypeScript + Vite + Tailwind v4 + Supabase. Déploiement Netlify par gli
 - Côté prof (Exports.tsx) et côté élève (ExportsEleve.tsx) : journal, travaux, activités,
   ou dossier complet. Via fenêtre d'impression du navigateur (pas de librairie).
 
+### Tri des devoirs rendus (Partie 3) — FAIT
+- Page Travaux.tsx (route /enseignant/travaux) : liste TOUS les travaux rendus de tous les
+  élèves, statut Corrigé / En attente, clic -> suivi de l'élève pour corriger.
+- Composant réutilisable SelecteurTri.tsx (CleTri) : alphabétique, date/heure de remise,
+  note, statut, avancement, dernière activité. Défaut alphabétique par nom.
+- Fonction tousLesTravaux() dans enseignant.ts (TravailListe).
+
 ### Accents
 - Tous les textes affichés sont accentués, identifiants de code intacts.
 
@@ -133,7 +140,8 @@ React + TypeScript + Vite + Tailwind v4 + Supabase. Déploiement Netlify par gli
 
 ### Grande spec partie prof (document fourni) — découpée en 3 parties
 - Partie 1 FAITE : Liste Élèves 2 onglets (Appel + Notes).
-- Partie 2 À FAIRE : Présence temps réel 2 niveaux.
+- Partie 3 FAITE : Tri des devoirs rendus (page Travaux + SelecteurTri).
+- Partie 2 À FAIRE (PROCHAIN CHANTIER) : Présence temps réel 2 niveaux.
   - Niveau 1 : statut connexion par élève (vert clignotant connecté / orange inactif /
     gris hors ligne) + page actuellement visitée par l'élève.
   - Niveau 2 : présence par exercice (vert clignotant sur l'exo / rouge ailleurs) +

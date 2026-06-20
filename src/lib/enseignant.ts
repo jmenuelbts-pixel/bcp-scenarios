@@ -184,6 +184,59 @@ export async function enregistrerBareme(
   return { erreur: error?.message ?? null }
 }
 
+// Tous les travaux rendus de tous les eleves acceptes, avec nom et statut de
+// correction. Sert a la page Travaux a rendre et au tri transversal.
+export interface TravailListe {
+  id: string
+  eleveId: string
+  eleveNom: string
+  elevePrenom: string
+  missionId: string
+  contenu: string | null
+  corrige: boolean
+  created_at: string
+}
+
+export async function tousLesTravaux(): Promise<TravailListe[]> {
+  const eleves = await listerElevesAcceptes()
+  const parId: Record<string, Profil> = {}
+  for (const e of eleves) parId[e.id] = e
+
+  const { data } = await supabase
+    .from('travaux')
+    .select('id, etudiant_id, mission_id, contenu, commentaire, competences, created_at')
+    .order('created_at', { ascending: false })
+
+  const lignes = (data as {
+    id: string
+    etudiant_id: string
+    mission_id: string
+    contenu: string | null
+    commentaire: string | null
+    competences: unknown[] | null
+    created_at: string
+  }[]) ?? []
+
+  return lignes
+    .filter((t) => parId[t.etudiant_id])
+    .map((t) => {
+      const e = parId[t.etudiant_id]
+      const corrige =
+        (t.commentaire?.trim().length ?? 0) > 0 ||
+        (Array.isArray(t.competences) && t.competences.length > 0)
+      return {
+        id: t.id,
+        eleveId: t.etudiant_id,
+        eleveNom: e.nom ?? '',
+        elevePrenom: e.prenom ?? '',
+        missionId: t.mission_id,
+        contenu: t.contenu,
+        corrige,
+        created_at: t.created_at,
+      }
+    })
+}
+
 // --- Suppression d'eleve ---------------------------------------------------
 
 // Retrait simple : l'eleve passe en statut refuse, ses donnees restent.

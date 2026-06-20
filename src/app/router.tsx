@@ -19,6 +19,7 @@ import { Corriges } from '../pages/enseignant/Corriges'
 import { Deroulement } from '../pages/enseignant/Deroulement'
 import { Progression } from '../pages/enseignant/Progression'
 import { ListeEleves } from '../pages/enseignant/ListeEleves'
+import { Travaux } from '../pages/enseignant/Travaux'
 import { MessagerieEleve } from '../pages/etudiant/MessagerieEleve'
 import { ExportsEleve } from '../pages/etudiant/ExportsEleve'
 import { useAuth } from '../lib/auth'
@@ -75,6 +76,7 @@ export const router = createBrowserRouter([
       { path: '/enseignant/deroulement', element: <Deroulement /> },
       { path: '/enseignant/progression', element: <Progression /> },
       { path: '/enseignant/liste', element: <ListeEleves /> },
+      { path: '/enseignant/travaux', element: <Travaux /> },
     ],
   },
 ])
