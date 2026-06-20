@@ -14,7 +14,13 @@ import { Deverrouillage } from '../pages/enseignant/Deverrouillage'
 import { Etudiants } from '../pages/enseignant/Etudiants'
 import { SuiviEleve } from '../pages/enseignant/SuiviEleve'
 import { Messagerie } from '../pages/enseignant/Messagerie'
+import { Exports } from '../pages/enseignant/Exports'
+import { Corriges } from '../pages/enseignant/Corriges'
+import { Deroulement } from '../pages/enseignant/Deroulement'
+import { Progression } from '../pages/enseignant/Progression'
+import { ListeEleves } from '../pages/enseignant/ListeEleves'
 import { MessagerieEleve } from '../pages/etudiant/MessagerieEleve'
+import { ExportsEleve } from '../pages/etudiant/ExportsEleve'
 import { useAuth } from '../lib/auth'
 import { useEffect, useState } from 'react'
 import { nombreNonLus } from '../lib/messagerie'
@@ -39,6 +45,7 @@ function AccueilAvecNavigation() {
       onDeconnexion={deconnecter}
       nonLus={nonLus}
       onOuvrirMessagerie={() => navigate('/messagerie')}
+      onOuvrirExports={() => navigate('/exports')}
     />
   )
 }
@@ -51,6 +58,7 @@ export const router = createBrowserRouter([
       { path: '/scenario/:scenarioId', element: <ScenarioMissions /> },
       { path: '/scenario/:scenarioId/mission/:missionId', element: <Mission /> },
       { path: '/messagerie', element: <MessagerieEleve /> },
+      { path: '/exports', element: <ExportsEleve /> },
     ],
   },
   {
@@ -62,6 +70,11 @@ export const router = createBrowserRouter([
       { path: '/enseignant/eleves', element: <Etudiants /> },
       { path: '/enseignant/eleves/:eleveId', element: <SuiviEleve /> },
       { path: '/enseignant/messagerie', element: <Messagerie /> },
+      { path: '/enseignant/exports', element: <Exports /> },
+      { path: '/enseignant/corriges', element: <Corriges /> },
+      { path: '/enseignant/deroulement', element: <Deroulement /> },
+      { path: '/enseignant/progression', element: <Progression /> },
+      { path: '/enseignant/liste', element: <ListeEleves /> },
     ],
   },
 ])

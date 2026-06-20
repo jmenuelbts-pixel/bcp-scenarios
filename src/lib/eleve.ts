@@ -49,6 +49,25 @@ export async function chargerTravail(
   return (data as { contenu: string | null } | null)?.contenu ?? null
 }
 
+// Retour du professeur sur le travail rendu : commentaire et competences.
+export interface RetourTravail {
+  commentaire: string | null
+  competences: { intitule: string; niveau: string | null }[] | null
+}
+
+export async function chargerRetourTravail(
+  etudiantId: string,
+  missionId: string
+): Promise<RetourTravail | null> {
+  const { data } = await supabase
+    .from('travaux')
+    .select('commentaire, competences')
+    .eq('etudiant_id', etudiantId)
+    .eq('mission_id', missionId)
+    .maybeSingle()
+  return (data as RetourTravail | null) ?? null
+}
+
 // Enregistre (ou remplace) le journal de bord d'une mission.
 export async function enregistrerJournal(
   etudiantId: string,

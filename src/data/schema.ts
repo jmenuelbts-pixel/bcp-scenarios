@@ -61,10 +61,10 @@ export interface Scenario {
 // Les evaluations ne sont pas un onglet de mission ; elles sont gerees
 // globalement par le professeur (ouverture/fermeture cote Deverrouillage).
 export const ONGLETS: Onglet[] = [
-  { id: 'travaux', libelle: 'Travaux a rendre', verrouillable: true, ordre: 1 },
-  { id: 'synthese', libelle: 'Synthese', verrouillable: true, ordre: 2 },
-  { id: 'autoeval', libelle: 'Auto-evaluation', verrouillable: true, ordre: 3 },
-  { id: 'activites', libelle: 'Activites', verrouillable: true, ordre: 4 },
+  { id: 'travaux', libelle: 'Travaux à rendre', verrouillable: true, ordre: 1 },
+  { id: 'synthese', libelle: 'Synthèse', verrouillable: true, ordre: 2 },
+  { id: 'autoeval', libelle: 'Auto-évaluation', verrouillable: true, ordre: 3 },
+  { id: 'activites', libelle: 'Activités', verrouillable: true, ordre: 4 },
   { id: 'journal', libelle: 'Journal de bord', verrouillable: false, ordre: 5 },
 ]
 
@@ -302,4 +302,16 @@ export function couleurEntete(couleur: string): string {
 // Couleur de texte lisible (fonce ou blanc) a poser sur un fond donne.
 export function couleurTexteSur(couleur: string): string {
   return luminance(couleur) > 0.6 ? '#1F2933' : '#FFFFFF'
+}
+
+// Eclaircit une couleur en la melangeant avec du blanc. facteur entre 0 et 1
+// (0 = couleur d'origine, 1 = blanc). Utile pour les teintes derivees douces.
+export function eclaircir(hex: string, facteur: number): string {
+  const v = hex.replace('#', '')
+  const r = parseInt(v.substring(0, 2), 16)
+  const g = parseInt(v.substring(2, 4), 16)
+  const b = parseInt(v.substring(4, 6), 16)
+  const m = (c: number) => Math.round(c + (255 - c) * facteur)
+  const hx = (c: number) => m(c).toString(16).padStart(2, '0')
+  return `#${hx(r)}${hx(g)}${hx(b)}`
 }

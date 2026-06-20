@@ -14,6 +14,8 @@ import {
   messagesRecus,
   marquerLus,
   supprimerConversation,
+  sonderMessages,
+  sonderConversation,
   type Message,
 } from '../../lib/messagerie'
 import type { Profil } from '../../lib/auth'
@@ -31,6 +33,12 @@ export function Messagerie() {
   const [texte, setTexte] = useState('')
   const [chargement, setChargement] = useState(true)
   const finRef = useRef<HTMLDivElement>(null)
+  // Reflete la selection courante pour le rappel temps reel sans recreer
+  // l'abonnement a chaque changement de selection.
+  const selectionRef = useRef<string | null>(null)
+  useEffect(() => {
+    selectionRef.current = selection
+  }, [selection])
 
   // Charge les eleves et le compte de messages non lus par eleve (messages
   // que l'eleve a envoyes au professeur et que le professeur n'a pas lus).
@@ -52,6 +60,40 @@ export function Messagerie() {
   useEffect(() => {
     chargerListe()
   }, [profId])
+
+  // Sondage periodique des messages recus : les badges de non-lus se mettent
+  // a jour seuls, sans actualiser la page. Si une conversation est ouverte,
+  // les messages de cet eleve sont comptes comme lus.
+  useEffect(() => {
+    if (!profId) return
+    const arret = sonderMessages(profId, (recus) => {
+      const compte: Record<string, number> = {}
+      for (const m of recus) {
+        if (!m.lu && m.expediteur_id && m.expediteur_id !== selectionRef.current) {
+          compte[m.expediteur_id] = (compte[m.expediteur_id] ?? 0) + 1
+        }
+      }
+      setNonLus(compte)
+    })
+    return arret
+  }, [profId])
+
+  // Sondage de la conversation ouverte : les messages de l'eleve selectionne
+  // s'affichent sans actualiser, et sont marques lus.
+  useEffect(() => {
+    if (!profId || !selection) return
+    const arret = sonderConversation(profId, selection, (conv) => {
+      setMessages((prec) => {
+        if (prec.length !== conv.length) {
+          marquerLus(profId, selection)
+          setNonLus((n) => ({ ...n, [selection]: 0 }))
+          setTimeout(() => finRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+        }
+        return conv
+      })
+    })
+    return arret
+  }, [profId, selection])
 
   // Charge la conversation avec l'eleve selectionne et marque ses messages lus.
   async function ouvrirConversation(eleveId: string) {

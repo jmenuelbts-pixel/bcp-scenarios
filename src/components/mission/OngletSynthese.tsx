@@ -33,7 +33,7 @@ export function OngletSynthese({ contenu, couleur }: Props) {
               color: '#1F2933',
             }}
           >
-            <option value="">A completer</option>
+            <option value="">À compléter</option>
             {contenu.proposition.map((mot) => (
               <option key={mot} value={mot}>
                 {mot}

@@ -1,3 +1,31 @@
+# DÉMARRAGE IMMÉDIAT — LIRE EN PREMIER, NE POSE AUCUNE QUESTION
+
+Ce dépôt est À JOUR. Le code présent ici est la version la plus récente (il contient
+ListeEleves, Corriges, Deroulement, Progression, Exports, la correction par compétences,
+la messagerie par sondage 3s). Si tu hésitais : OUI, code sur cet état, c'est le bon.
+
+Réponses aux questions habituelles, pour que tu n'aies RIEN à demander :
+
+1. Point de départ : ce dépôt est à jour, travaille dessus directement.
+2. État Supabase : TOUTES les tables existent déjà (profiles, onglets_visites, travaux
+   avec commentaire+competences, journal_bord, reponses_quiz avec bareme, messages, appels,
+   colonnes_notes, notes_eleves). Voir SCHEMA_COMPLET.sql. Ne recrée RIEN. Pour du nouveau,
+   uniquement `create table if not exists` / `alter table add column if not exists`.
+3. Build : un fichier .env est nécessaire (supabase.ts lève une erreur sinon). Crée-le à
+   partir de .env.example. Valeurs :
+   VITE_SUPABASE_URL=https://njkslucischlvjlflzrr.supabase.co
+   VITE_SUPABASE_ANON_KEY = clé anon publique (l'utilisateur te la colle, ou tu builds avec
+   un placeholder et tu indiques où la remplacer). La clé anon est publique, pas de risque.
+   NE JAMAIS demander/utiliser la clé service_role.
+4. Premier chantier : Tri des devoirs rendus (Partie 3). Ordre par défaut : alphabétique
+   par nom, PARTOUT.
+5. Workflow : pas de narration pendant code/build/zip. Résumé en quelques tirets AVANT le
+   zip. Livre le zip du dossier dist/. Aller à l'essentiel, pas de longs paragraphes.
+
+Confirme en une phrase que tu as lu ce bloc, puis CODE directement le tri des devoirs.
+
+---
+
 # ETAT DU PROJET — Scénarios MCV B
 
 Application PWA pour le Bac Professionnel Métiers du Commerce et de la Vente, option B.

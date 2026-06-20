@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react'
 import type { ContenuTravaux } from '../../data/contenus'
-import { enregistrerTravail, chargerTravail } from '../../lib/eleve'
+import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 
 interface Props {
   contenu: ContenuTravaux
@@ -19,6 +19,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [envoye, setEnvoye] = useState(false)
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
+  const [retour, setRetour] = useState<RetourTravail | null>(null)
 
   // Charge le travail deja rendu a l'ouverture.
   useEffect(() => {
@@ -26,6 +27,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     chargerTravail(etudiantId, missionId).then((c) => {
       if (c) setTexte(c)
     })
+    chargerRetourTravail(etudiantId, missionId).then(setRetour)
   }, [etudiantId, missionId])
 
   async function envoyer() {
@@ -113,6 +115,64 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
           <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>
         )}
       </div>
+
+      {retour && (retour.commentaire || (retour.competences && retour.competences.length > 0)) && (
+        <div
+          style={{
+            marginTop: 20,
+            background: '#EEF6F0',
+            border: '1px solid #BFE0CB',
+            borderRadius: 10,
+            padding: '16px 18px',
+          }}
+        >
+          <h3 style={{ margin: '0 0 8px 0', fontSize: 15, color: '#1B6B3A' }}>
+            Retour du professeur
+          </h3>
+          {retour.commentaire && (
+            <p style={{ margin: '0 0 10px 0', fontSize: 14, color: '#374151', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+              {retour.commentaire}
+            </p>
+          )}
+          {retour.competences && retour.competences.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {retour.competences.map((c, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 10,
+                    background: '#FFFFFF',
+                    borderRadius: 8,
+                    padding: '8px 12px',
+                    fontSize: 13,
+                  }}
+                >
+                  <span style={{ color: '#1F2933' }}>{c.intitule}</span>
+                  <span style={{ fontWeight: 700, color: '#1B6B3A' }}>{libelleNiveau(c.niveau)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
+}
+
+function libelleNiveau(niveau: string | null): string {
+  switch (niveau) {
+    case 'novice':
+      return 'Novice'
+    case 'debrouille':
+      return 'Débrouillé'
+    case 'averti':
+      return 'Averti'
+    case 'expert':
+      return 'Expert'
+    default:
+      return 'Non évalué'
+  }
 }

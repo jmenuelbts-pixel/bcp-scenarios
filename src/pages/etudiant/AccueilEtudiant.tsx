@@ -26,6 +26,8 @@ interface AccueilEtudiantProps {
   nonLus?: number
   // Appele au clic sur l'icone messagerie.
   onOuvrirMessagerie?: () => void
+  // Appele au clic sur le bouton d'export PDF.
+  onOuvrirExports?: () => void
 }
 
 export function AccueilEtudiant({
@@ -35,6 +37,7 @@ export function AccueilEtudiant({
   onDeconnexion,
   nonLus = 0,
   onOuvrirMessagerie,
+  onOuvrirExports,
 }: AccueilEtudiantProps) {
   const [aproposOuvert, setAproposOuvert] = useState(false)
   const pctGlobal = pourcentageGlobal(progression)
@@ -130,6 +133,31 @@ export function AccueilEtudiant({
                 )}
               </button>
             )}
+            {onOuvrirExports && (
+              <button
+                type="button"
+                onClick={onOuvrirExports}
+                aria-label="Exporter mes données"
+                style={{
+                  fontFamily: 'Arial, sans-serif',
+                  background: '#FFFFFF',
+                  border: '1px solid #BFD6EC',
+                  borderRadius: 99,
+                  width: 40,
+                  height: 40,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 1px 4px rgba(0, 0, 0, 0.08)',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 3 h7 l4 4 v14 a1 1 0 0 1 -1 1 H7 a1 1 0 0 1 -1 -1 V4 a1 1 0 0 1 1 -1 z" fill="none" stroke="#16456E" strokeWidth="2" strokeLinejoin="round" />
+                  <polyline points="9,14 12,17 15,14" fill="none" stroke="#16456E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setAproposOuvert(true)}
@@ -155,7 +183,7 @@ export function AccueilEtudiant({
                 <line x1="12" y1="11" x2="12" y2="16" stroke="#16456E" strokeWidth="2" strokeLinecap="round" />
                 <circle cx="12" cy="7.5" r="1.2" fill="#16456E" />
               </svg>
-              A propos
+              À propos
             </button>
 
             {onDeconnexion && (

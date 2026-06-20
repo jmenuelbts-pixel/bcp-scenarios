@@ -6,18 +6,21 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { COULEUR_PROF, getMission } from '../../data/schema'
+import { getContenuMission } from '../../data/contenus'
 import { supabase } from '../../lib/supabase'
 import {
   visitesEleve,
   quizEleve,
   travauxEleve,
   journalEleve,
+  enregistrerBareme,
   type VisiteOnglet,
   type ReponseQuiz,
   type TravailRendu,
   type EntreeJournal,
 } from '../../lib/enseignant'
 import type { Profil } from '../../lib/auth'
+import { CorrectionTravail } from '../../components/enseignant/CorrectionTravail'
 
 // Retrouve le libelle d'une mission a partir de son identifiant (scenario-mN).
 function titreMission(missionId: string): string {
@@ -32,6 +35,13 @@ function formatDate(iso: string): string {
   } catch {
     return iso
   }
+}
+
+// Nombre de questions notees d'une mission (hors appariement).
+function totalQuestions(missionId: string): number {
+  const c = getContenuMission(missionId)
+  if (!c) return 0
+  return c.activites.quiz.filter((q) => q.type !== 'appariement').length
 }
 
 export function SuiviEleve() {
@@ -113,16 +123,11 @@ export function SuiviEleve() {
               {quiz.length === 0 ? (
                 <Vide texte="Aucun résultat enregistré." />
               ) : (
-                <ul style={liste}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {quiz.map((q, i) => (
-                    <li key={i} style={ligne}>
-                      <span>{titreMission(q.mission_id)}</span>
-                      <span style={{ color: COULEUR_PROF, fontWeight: 700 }}>
-                        {q.score !== null ? `${q.score} pts` : 'Non noté'}
-                      </span>
-                    </li>
+                    <LigneActivite key={i} quiz={q} eleveId={eleveId ?? ''} />
                   ))}
-                </ul>
+                </div>
               )}
             </Section>
 
@@ -143,6 +148,11 @@ export function SuiviEleve() {
                       <div style={{ fontSize: 13, color: '#374151', whiteSpace: 'pre-wrap' }}>
                         {t.contenu || 'Sans contenu.'}
                       </div>
+                      <CorrectionTravail
+                        travailId={t.id}
+                        commentaireInitial={t.commentaire}
+                        competencesInitiales={t.competences}
+                      />
                     </div>
                   ))}
                 </div>
@@ -178,6 +188,70 @@ export function SuiviEleve() {
           </div>
         )}
       </main>
+    </div>
+  )
+}
+
+function LigneActivite({ quiz, eleveId }: { quiz: ReponseQuiz; eleveId: string }) {
+  const total = totalQuestions(quiz.mission_id)
+  const [bareme, setBareme] = useState<number | null>(quiz.bareme)
+  const [enregistre, setEnregistre] = useState(false)
+
+  // Note convertie sur le bareme choisi.
+  const noteConvertie =
+    quiz.score !== null && total > 0 && bareme
+      ? Math.round((quiz.score / total) * bareme * 10) / 10
+      : null
+
+  async function choisir(valeur: number) {
+    const nouveau = bareme === valeur ? null : valeur
+    setBareme(nouveau)
+    setEnregistre(false)
+    if (nouveau !== null && eleveId) {
+      await enregistrerBareme(eleveId, quiz.mission_id, quiz.activite_id, nouveau)
+      setEnregistre(true)
+    }
+  }
+
+  return (
+    <div style={{ ...ligne, flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+        <span>{titreMission(quiz.mission_id)}</span>
+        <span style={{ color: COULEUR_PROF, fontWeight: 700 }}>
+          {quiz.score !== null ? (
+            noteConvertie !== null ? `${noteConvertie} / ${bareme}` : `${quiz.score} / ${total || '?'}`
+          ) : (
+            'Non noté'
+          )}
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontSize: 11, color: '#6B7280' }}>Barème :</span>
+        {[10, 20].map((v) => {
+          const actif = bareme === v
+          return (
+            <button
+              key={v}
+              type="button"
+              onClick={() => choisir(v)}
+              style={{
+                fontFamily: 'Arial, sans-serif',
+                background: actif ? COULEUR_PROF : '#FFFFFF',
+                color: actif ? '#FFFFFF' : COULEUR_PROF,
+                border: `1px solid ${COULEUR_PROF}`,
+                borderRadius: 99,
+                padding: '3px 12px',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              sur {v}
+            </button>
+          )
+        })}
+        {enregistre && <span style={{ fontSize: 11, color: '#2E8B57', fontWeight: 700 }}>Enregistré</span>}
+      </div>
     </div>
   )
 }

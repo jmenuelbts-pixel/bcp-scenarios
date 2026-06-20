@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth, ID_ENSEIGNANT } from '../../lib/auth'
-import { conversation, envoyerMessage, marquerLus, type Message } from '../../lib/messagerie'
+import { conversation, envoyerMessage, marquerLus, sonderConversation, type Message } from '../../lib/messagerie'
 
 export function MessagerieEleve() {
   const navigate = useNavigate()
@@ -22,14 +22,19 @@ export function MessagerieEleve() {
   useEffect(() => {
     if (!eleveId) return
     const id = eleveId
-    async function charger() {
-      const conv = await conversation(id, profId)
-      setMessages(conv)
-      await marquerLus(id, profId)
-      setTimeout(() => finRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+    // Sondage periodique : la conversation se met a jour seule, sans
+    // actualiser la page et sans dependre de Realtime.
+    const arret = sonderConversation(id, profId, (conv) => {
+      setMessages((prec) => {
+        if (prec.length !== conv.length) {
+          marquerLus(id, profId)
+          setTimeout(() => finRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+        }
+        return conv
+      })
       setChargement(false)
-    }
-    charger()
+    })
+    return arret
   }, [eleveId])
 
   async function envoyer() {

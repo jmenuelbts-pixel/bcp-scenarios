@@ -25,6 +25,7 @@ export interface Profil {
   role: 'etudiant' | 'enseignant' | null
   entreprise: string | null
   statut: Statut | null
+  created_at?: string | null
 }
 
 interface ResultatAuth {

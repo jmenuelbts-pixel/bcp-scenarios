@@ -4,6 +4,7 @@
 // comptage des messages non lus.
 
 import { supabase } from './supabase'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { listerElevesAcceptes } from './enseignant'
 
 export interface Message {
@@ -119,4 +120,78 @@ export async function supprimerConversation(
     .eq('destinataire_id', personneA)
   const erreur = e1?.message ?? e2?.message ?? null
   return { erreur }
+}
+
+// --- Temps reel ------------------------------------------------------------
+// Ecoute les nouveaux messages destines a une personne et appelle le rappel
+// a chaque insertion. Retourne le canal pour pouvoir se desabonner.
+// Necessite que la table messages soit activee dans Supabase Realtime.
+export function ecouterMessages(
+  destinataireId: string,
+  surNouveauMessage: (message: Message) => void
+): RealtimeChannel {
+  const canal = supabase
+    .channel(`messages-${destinataireId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `destinataire_id=eq.${destinataireId}`,
+      },
+      (payload) => {
+        surNouveauMessage(payload.new as Message)
+      }
+    )
+    .subscribe()
+  return canal
+}
+
+// Se desabonne d'un canal temps reel.
+export function arreterEcoute(canal: RealtimeChannel): void {
+  supabase.removeChannel(canal)
+}
+
+// --- Sondage periodique (fallback fiable sans Realtime) --------------------
+// Recharge regulierement les messages recus par une personne. Fonctionne sans
+// activer Realtime dans Supabase. Retourne une fonction d'arret.
+export function sonderMessages(
+  destinataireId: string,
+  surMessages: (messages: Message[]) => void,
+  intervalleMs = 3000
+): () => void {
+  let actif = true
+  async function tic() {
+    if (!actif) return
+    const recus = await messagesRecus(destinataireId)
+    if (actif) surMessages(recus)
+  }
+  const timer = setInterval(tic, intervalleMs)
+  tic()
+  return () => {
+    actif = false
+    clearInterval(timer)
+  }
+}
+
+// Recharge regulierement la conversation entre deux personnes.
+export function sonderConversation(
+  personneA: string,
+  personneB: string,
+  surConversation: (messages: Message[]) => void,
+  intervalleMs = 3000
+): () => void {
+  let actif = true
+  async function tic() {
+    if (!actif) return
+    const conv = await conversation(personneA, personneB)
+    if (actif) surConversation(conv)
+  }
+  const timer = setInterval(tic, intervalleMs)
+  tic()
+  return () => {
+    actif = false
+    clearInterval(timer)
+  }
 }

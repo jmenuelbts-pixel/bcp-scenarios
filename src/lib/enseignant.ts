@@ -6,7 +6,7 @@
 import { supabase } from './supabase'
 import type { Profil } from './auth'
 
-const CHAMPS = 'id, email, prenom, nom, date_naissance, role, entreprise, statut'
+const CHAMPS = 'id, email, prenom, nom, date_naissance, role, entreprise, statut, created_at'
 
 // Liste tous les profils eleves (tous statuts).
 export async function listerEleves(): Promise<Profil[]> {
@@ -62,7 +62,13 @@ export interface ReponseQuiz {
   activite_id: string | null
   reponses: unknown
   score: number | null
+  bareme: number | null
   submitted_at: string
+}
+
+export interface EvaluationCompetence {
+  intitule: string
+  niveau: 'novice' | 'debrouille' | 'averti' | 'expert' | null
 }
 
 export interface TravailRendu {
@@ -70,6 +76,8 @@ export interface TravailRendu {
   mission_id: string
   contenu: string | null
   correction: string | null
+  commentaire: string | null
+  competences: EvaluationCompetence[] | null
   created_at: string
 }
 
@@ -93,7 +101,7 @@ export async function visitesEleve(eleveId: string): Promise<VisiteOnglet[]> {
 export async function quizEleve(eleveId: string): Promise<ReponseQuiz[]> {
   const { data } = await supabase
     .from('reponses_quiz')
-    .select('mission_id, activite_id, reponses, score, submitted_at')
+    .select('mission_id, activite_id, reponses, score, bareme, submitted_at')
     .eq('etudiant_id', eleveId)
     .order('submitted_at', { ascending: false })
   return (data as ReponseQuiz[]) ?? []
@@ -103,10 +111,23 @@ export async function quizEleve(eleveId: string): Promise<ReponseQuiz[]> {
 export async function travauxEleve(eleveId: string): Promise<TravailRendu[]> {
   const { data } = await supabase
     .from('travaux')
-    .select('id, mission_id, contenu, correction, created_at')
+    .select('id, mission_id, contenu, correction, commentaire, competences, created_at')
     .eq('etudiant_id', eleveId)
     .order('created_at', { ascending: false })
   return (data as TravailRendu[]) ?? []
+}
+
+// Enregistre la correction d'un travail : commentaire et niveaux de competences.
+export async function enregistrerCorrection(
+  travailId: string,
+  commentaire: string,
+  competences: EvaluationCompetence[]
+): Promise<{ erreur: string | null }> {
+  const { error } = await supabase
+    .from('travaux')
+    .update({ commentaire, competences })
+    .eq('id', travailId)
+  return { erreur: error?.message ?? null }
 }
 
 // Entrees de journal de bord d'un eleve.
@@ -117,6 +138,50 @@ export async function journalEleve(eleveId: string): Promise<EntreeJournal[]> {
     .eq('etudiant_id', eleveId)
     .order('updated_at', { ascending: false })
   return (data as EntreeJournal[]) ?? []
+}
+
+// Avancement agrege par mission pour un eleve : indique si un travail a ete
+// rendu, si une activite a ete faite (quiz avec score), et si le journal est
+// rempli. Sert au tableau de progression.
+export interface AvancementMission {
+  missionId: string
+  travailRendu: boolean
+  activiteFaite: boolean
+  journalRempli: boolean
+}
+
+export async function avancementEleve(eleveId: string): Promise<Record<string, AvancementMission>> {
+  const [travaux, quiz, journal] = await Promise.all([
+    travauxEleve(eleveId),
+    quizEleve(eleveId),
+    journalEleve(eleveId),
+  ])
+  const acc: Record<string, AvancementMission> = {}
+  const init = (mid: string) => {
+    if (!acc[mid]) acc[mid] = { missionId: mid, travailRendu: false, activiteFaite: false, journalRempli: false }
+    return acc[mid]
+  }
+  for (const t of travaux) init(t.mission_id).travailRendu = true
+  for (const q of quiz) if (q.score !== null) init(q.mission_id).activiteFaite = true
+  for (const j of journal) {
+    const rempli = (j.non_reussi?.trim().length ?? 0) > 0 || (j.moins_bien_reussi?.trim().length ?? 0) > 0
+    if (rempli) init(j.mission_id).journalRempli = true
+  }
+  return acc
+}
+
+// Enregistre le bareme d'affichage (10 ou 20) choisi par le professeur pour
+// une activite donnee.
+export async function enregistrerBareme(
+  eleveId: string,
+  missionId: string,
+  activiteId: string | null,
+  bareme: number
+): Promise<{ erreur: string | null }> {
+  let req = supabase.from('reponses_quiz').update({ bareme }).eq('etudiant_id', eleveId).eq('mission_id', missionId)
+  req = activiteId === null ? req.is('activite_id', null) : req.eq('activite_id', activiteId)
+  const { error } = await req
+  return { erreur: error?.message ?? null }
 }
 
 // --- Suppression d'eleve ---------------------------------------------------

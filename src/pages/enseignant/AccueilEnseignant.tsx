@@ -36,11 +36,27 @@ const ITEMS: ItemTableau[] = [
     ),
   },
   {
+    id: 'liste',
+    titre: 'Liste des élèves',
+    fond: '#EAF2EC',
+    bord: '#A8CBB4',
+    description: 'Appel par séance et notes des élèves.',
+    route: '/enseignant/liste',
+    icone: (
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+        <line x1="8" y1="8" x2="16" y2="8" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
+        <line x1="8" y1="12" x2="16" y2="12" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
+        <line x1="8" y1="16" x2="13" y2="16" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
     id: 'eleves',
-    titre: 'Suivi des eleves',
+    titre: 'Suivi des élèves',
     fond: '#E8F1FB',
     bord: '#9CC4EC',
-    description: 'Progression, connexions et resultats de chaque eleve.',
+    description: 'Progression, connexions et resultats de chaque élève.',
     route: '/enseignant/eleves',
     icone: (
       <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
@@ -67,7 +83,7 @@ const ITEMS: ItemTableau[] = [
   },
   {
     id: 'deverrouillage',
-    titre: 'Deverrouillage',
+    titre: 'Déverrouillage',
     fond: '#FBEEE0',
     bord: '#EEC59B',
     description: 'Ouvrir et fermer les onglets des missions et les evaluations.',
@@ -112,8 +128,8 @@ const ITEMS: ItemTableau[] = [
 
 const ONGLETS_PROF = [
   { libelle: 'Tableau de bord', route: '/enseignant' },
-  { libelle: 'Corriges', route: '/enseignant/corriges' },
-  { libelle: 'Deroulement', route: '/enseignant/deroulement' },
+  { libelle: 'Corrigés', route: '/enseignant/corriges' },
+  { libelle: 'Déroulement', route: '/enseignant/deroulement' },
   { libelle: 'Progression', route: '/enseignant/progression' },
 ]
 

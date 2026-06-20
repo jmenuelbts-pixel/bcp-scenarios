@@ -21,13 +21,18 @@ export function ConnexionEtudiant({ onRetour }: Props) {
   const [email, setEmail] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
-  const [prenom, setPrénom] = useState('')
+  const [prenom, setPrenom] = useState('')
   const [nom, setNom] = useState('')
   const [dateNaissance, setDateNaissance] = useState('')
 
   const [erreur, setErreur] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [enCours, setEnCours] = useState(false)
+
+  // Charte RGPD : modale, scroll jusqu'en bas, acceptation obligatoire.
+  const [charteOuverte, setCharteOuverte] = useState(false)
+  const [charteAcceptee, setCharteAcceptee] = useState(false)
+  const [basAtteint, setBasAtteint] = useState(false)
 
   function reset() {
     setErreur(null)
@@ -158,7 +163,7 @@ export function ConnexionEtudiant({ onRetour }: Props) {
               </div>
               <div style={{ flex: 1 }}>
                 <label style={etiquette}>Prénom</label>
-                <input style={champ} value={prenom} onChange={(e) => setPrénom(e.target.value)} placeholder="Marie" />
+                <input style={champ} value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Marie" />
               </div>
             </div>
 
@@ -212,21 +217,70 @@ export function ConnexionEtudiant({ onRetour }: Props) {
           </p>
         )}
 
+        {vue === 'inscription' && (
+          <button
+            type="button"
+            onClick={() => {
+              setCharteOuverte(true)
+              setBasAtteint(false)
+            }}
+            style={{
+              fontFamily: 'Arial, sans-serif',
+              width: '100%',
+              marginTop: 22,
+              padding: '12px 0',
+              fontSize: 14,
+              fontWeight: 700,
+              border: 'none',
+              borderRadius: 10,
+              cursor: 'pointer',
+              background: charteAcceptee ? '#EAF7EF' : '#FFCC00',
+              color: charteAcceptee ? '#1B6B3A' : '#5A4500',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            {charteAcceptee ? (
+              <>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                  <polyline points="5,12 10,17 19,7" fill="none" stroke="#1B6B3A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Charte de confidentialité acceptée
+              </>
+            ) : (
+              'Lire la charte de confidentialité (obligatoire)'
+            )}
+          </button>
+        )}
+
         <button
           type="button"
-          disabled={enCours || !email.trim() || !motDePasse}
+          disabled={
+            enCours ||
+            !email.trim() ||
+            !motDePasse ||
+            (vue === 'inscription' && !charteAcceptee)
+          }
           onClick={soumettre}
           style={{
             fontFamily: 'Arial, sans-serif',
             width: '100%',
-            marginTop: 22,
+            marginTop: vue === 'inscription' ? 12 : 22,
             padding: '13px 0',
             fontSize: 15,
             fontWeight: 700,
             border: 'none',
             borderRadius: 10,
-            cursor: enCours || !email.trim() || !motDePasse ? 'not-allowed' : 'pointer',
-            background: enCours || !email.trim() || !motDePasse ? '#D6BBA0' : ACCENT,
+            cursor:
+              enCours || !email.trim() || !motDePasse || (vue === 'inscription' && !charteAcceptee)
+                ? 'not-allowed'
+                : 'pointer',
+            background:
+              enCours || !email.trim() || !motDePasse || (vue === 'inscription' && !charteAcceptee)
+                ? '#C9CDD2'
+                : ACCENT,
             color: '#FFFFFF',
           }}
         >
@@ -271,6 +325,120 @@ export function ConnexionEtudiant({ onRetour }: Props) {
           </>
         )}
       </div>
+
+      {charteOuverte && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            zIndex: 1000,
+          }}
+          onClick={() => setCharteOuverte(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              width: '100%',
+              maxWidth: 560,
+              maxHeight: '85vh',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ padding: '18px 22px', borderBottom: '1px solid #E8EDF2' }}>
+              <h2 style={{ margin: 0, fontSize: 18, color: '#1F2933' }}>Charte de confidentialité</h2>
+              <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6B7280' }}>
+                Faites défiler jusqu'en bas pour pouvoir accepter.
+              </p>
+            </div>
+
+            <div
+              onScroll={(e) => {
+                const el = e.currentTarget
+                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 24) setBasAtteint(true)
+              }}
+              style={{ padding: '18px 22px', overflowY: 'auto', fontSize: 13, color: '#374151', lineHeight: 1.65 }}
+            >
+              {CHARTE.map((section) => (
+                <div key={section.titre} style={{ marginBottom: 16 }}>
+                  <div style={{ fontWeight: 700, color: '#1F2933', marginBottom: 4 }}>{section.titre}</div>
+                  <div>{section.texte}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ padding: '14px 22px', borderTop: '1px solid #E8EDF2', minHeight: 30 }}>
+              {basAtteint ? (
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 13, color: '#1F2933' }}>
+                  <input
+                    type="checkbox"
+                    checked={charteAcceptee}
+                    onChange={(e) => {
+                      setCharteAcceptee(e.target.checked)
+                      if (e.target.checked) setTimeout(() => setCharteOuverte(false), 400)
+                    }}
+                    style={{ marginTop: 2, width: 18, height: 18, cursor: 'pointer' }}
+                  />
+                  <span>
+                    J'ai lu et j'accepte la charte de confidentialité et le traitement de mes données dans le cadre
+                    décrit ci-dessus.
+                  </span>
+                </label>
+              ) : (
+                <p style={{ margin: 0, fontSize: 12, color: '#9AA5B1', textAlign: 'center' }}>
+                  Continuez à faire défiler pour accepter la charte.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
+const CHARTE: { titre: string; texte: string }[] = [
+  {
+    titre: 'Responsable du traitement',
+    texte:
+      "Le traitement des données personnelles est mis en oeuvre par J.M., professeur d'Économie-Gestion, Lycée Maria Deraismes, Paris 17e, dans le cadre de l'enseignement du Bac Professionnel Métiers du Commerce et de la Vente, option B.",
+  },
+  {
+    titre: 'Données collectées',
+    texte:
+      'Les données suivantes sont collectées : nom, prénom, adresse email, travaux rendus, progression pédagogique séance par séance, scores aux évaluations, niveau de maîtrise des compétences.',
+  },
+  {
+    titre: 'Finalité du traitement',
+    texte:
+      "Ces données sont utilisées exclusivement dans le cadre du suivi pédagogique de la formation Bac Professionnel Métiers du Commerce et de la Vente, option B. Elles permettent à l'enseignant de suivre votre progression, corriger vos travaux et vous accompagner tout au long de la formation.",
+  },
+  {
+    titre: 'Accès aux données',
+    texte:
+      "Seul l'enseignant responsable a accès à vos données. Elles ne sont pas transmises à des tiers, ne sont pas utilisées à des fins commerciales et ne font l'objet d'aucune cession.",
+  },
+  {
+    titre: 'Durée de conservation',
+    texte:
+      "Vos données sont conservées pendant la durée de votre formation. Elles sont supprimées à l'issue de l'année scolaire ou sur demande de votre part.",
+  },
+  {
+    titre: 'Vos droits',
+    texte:
+      "Conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679), vous disposez d'un droit d'accès, de rectification et d'effacement de vos données. Pour exercer ces droits, contactez votre enseignant directement via la messagerie de l'application.",
+  },
+  {
+    titre: 'Sécurité',
+    texte:
+      "Les données sont hébergées sur des serveurs sécurisés situés en Europe (Supabase, région eu-west-1). L'accès est protégé par authentification. Aucune donnée n'est stockée localement sur votre appareil.",
+  },
+]
