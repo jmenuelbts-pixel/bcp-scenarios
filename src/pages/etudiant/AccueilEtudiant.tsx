@@ -7,7 +7,6 @@ import { useState } from 'react'
 import { SCENARIOS } from '../../data/schema'
 import {
   PROGRESSION_VIDE,
-  pourcentageGlobal,
   type ProgressionEleve,
 } from '../../lib/progression'
 import { ScenarioCard } from '../../components/ui/ScenarioCard'
@@ -40,7 +39,6 @@ export function AccueilEtudiant({
   onOuvrirExports,
 }: AccueilEtudiantProps) {
   const [aproposOuvert, setAproposOuvert] = useState(false)
-  const pctGlobal = pourcentageGlobal(progression)
 
   return (
     <div
@@ -214,54 +212,6 @@ export function AccueilEtudiant({
                 Se déconnecter
               </button>
             )}
-          </div>
-        </div>
-
-        {/* Progression globale */}
-        <div
-          style={{
-            marginTop: 20,
-            background: 'rgba(255, 255, 255, 0.7)',
-            borderRadius: 12,
-            padding: '14px 18px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: 6,
-              }}
-            >
-              <span style={{ fontSize: 13, color: '#33648C', fontWeight: 600 }}>
-                Progression globale
-              </span>
-              <span style={{ fontSize: 13, color: '#16456E', fontWeight: 700 }}>
-                {pctGlobal} %
-              </span>
-            </div>
-            <div
-              style={{
-                height: 8,
-                background: '#DCE8F4',
-                borderRadius: 99,
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  height: '100%',
-                  width: `${pctGlobal}%`,
-                  background: '#2E7DB8',
-                  borderRadius: 99,
-                  transition: 'width 0.3s ease',
-                }}
-              />
-            </div>
           </div>
         </div>
       </header>

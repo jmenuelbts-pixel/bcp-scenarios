@@ -5,11 +5,7 @@
 import { useState } from 'react'
 import type { Scenario } from '../../data/schema'
 import { couleurEntete, couleurTexteSur } from '../../data/schema'
-import {
-  missionsAbordees,
-  pourcentageScenario,
-  type ProgressionEleve,
-} from '../../lib/progression'
+import { type ProgressionEleve } from '../../lib/progression'
 
 interface ScenarioCardProps {
   scenario: Scenario
@@ -31,8 +27,6 @@ export function ScenarioCard({ scenario, progression, onClick }: ScenarioCardPro
   const [survol, setSurvol] = useState(false)
 
   const total = scenario.missions.length
-  const abordees = missionsAbordees(scenario, progression)
-  const pct = pourcentageScenario(scenario, progression)
 
   return (
     <button
@@ -76,49 +70,13 @@ export function ScenarioCard({ scenario, progression, onClick }: ScenarioCardPro
         </div>
       </div>
 
-      {/* Corps : progression + pastilles */}
+      {/* Corps : pastilles de missions */}
       <div style={{ padding: '16px 18px 18px 18px' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginBottom: 6,
-          }}
-        >
-          <span style={{ fontSize: 12, color: '#555' }}>Progression</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: couleurEntete(scenario.couleur) }}>
-            {pct} %
-          </span>
-        </div>
-
-        {/* Barre de progression */}
-        <div
-          style={{
-            height: 8,
-            background: '#EDF1F5',
-            borderRadius: 99,
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              height: '100%',
-              width: `${pct}%`,
-              background: scenario.couleur,
-              borderRadius: 99,
-              transition: 'width 0.3s ease',
-            }}
-          />
-        </div>
-
-        {/* Pastilles de missions */}
         <div
           style={{
             display: 'flex',
             flexWrap: 'wrap',
             gap: 6,
-            marginTop: 14,
           }}
         >
           {scenario.missions.map((m) => {
@@ -145,10 +103,6 @@ export function ScenarioCard({ scenario, progression, onClick }: ScenarioCardPro
               </span>
             )
           })}
-        </div>
-
-        <div style={{ fontSize: 11, color: '#888', marginTop: 12 }}>
-          {abordees} sur {total} missions abordees
         </div>
       </div>
     </button>
