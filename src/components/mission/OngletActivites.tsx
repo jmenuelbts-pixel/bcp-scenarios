@@ -3,9 +3,9 @@
 // trous, appariement) et glisser-deposer. Le quiz capture les reponses de
 // l'eleve, calcule un score a l'envoi et l'enregistre dans Supabase.
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ContenuActivites, Flashcard, QuestionQuiz } from '../../data/contenus'
-import { enregistrerQuiz } from '../../lib/eleve'
+import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
 
 interface Props {
   contenu: ContenuActivites
@@ -124,11 +124,32 @@ function VueQuiz({
 }) {
   const [reponses, setReponses] = useState<ReponsesEleve>({})
   const [envoye, setEnvoye] = useState(false)
+  const [verrouille, setVerrouille] = useState(false)
   const [score, setScore] = useState<number | null>(null)
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
 
+  // Au montage : si l'eleve a deja envoye ce quiz, restaurer ses reponses et
+  // son score, et verrouiller toute modification.
+  useEffect(() => {
+    let actif = true
+    if (!etudiantId) return
+    chargerQuiz(etudiantId, missionId, 'quiz').then((soumission) => {
+      if (!actif || !soumission) return
+      if (soumission.reponses && typeof soumission.reponses === 'object') {
+        setReponses(soumission.reponses as ReponsesEleve)
+      }
+      setScore(soumission.score)
+      setEnvoye(true)
+      setVerrouille(true)
+    })
+    return () => {
+      actif = false
+    }
+  }, [etudiantId, missionId])
+
   function definir(i: number, valeur: number[] | string[]) {
+    if (verrouille) return
     setReponses((r) => ({ ...r, [i]: valeur }))
     setEnvoye(false)
   }
@@ -156,6 +177,7 @@ function VueQuiz({
   }
 
   async function envoyer() {
+    if (verrouille) return
     const s = calculerScore()
     setScore(s)
     setEnvoye(true)
@@ -164,6 +186,7 @@ function VueQuiz({
       setErreur(null)
       const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'quiz', reponses, s)
       if (erreur) setErreur('L enregistrement du resultat a echoue.')
+      else setVerrouille(true)
       setEnCours(false)
     }
   }
@@ -172,30 +195,43 @@ function VueQuiz({
 
   return (
     <div>
+      {verrouille && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px', marginBottom: 16 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+            <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+          </svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>
+            Travail envoyé. Vos réponses ne sont plus modifiables.
+          </span>
+        </div>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {contenu.quiz.map((q, i) => (
-          <BlocQuestion key={i} q={q} index={i} reponse={reponses[i]} onChange={(v) => definir(i, v)} />
+          <BlocQuestion key={i} q={q} index={i} reponse={reponses[i]} onChange={(v) => definir(i, v)} verrouille={verrouille} />
         ))}
       </div>
-      <button
-        type="button"
-        onClick={envoyer}
-        disabled={enCours}
-        style={{
-          fontFamily: 'Arial, sans-serif',
-          marginTop: 16,
-          background: enCours ? '#C9CDD2' : couleur,
-          color: '#FFFFFF',
-          border: 'none',
-          borderRadius: 8,
-          padding: '10px 20px',
-          fontSize: 14,
-          fontWeight: 600,
-          cursor: enCours ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {enCours ? 'Envoi...' : 'Envoyer'}
-      </button>
+      {!verrouille && (
+        <button
+          type="button"
+          onClick={envoyer}
+          disabled={enCours}
+          style={{
+            fontFamily: 'Arial, sans-serif',
+            marginTop: 16,
+            background: enCours ? '#C9CDD2' : couleur,
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: 8,
+            padding: '10px 20px',
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: enCours ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {enCours ? 'Envoi...' : 'Envoyer'}
+        </button>
+      )}
       {envoye && score !== null && (
         <p style={{ fontSize: 14, color: '#1B6B3A', fontWeight: 700, marginTop: 12 }}>
           Score : {score} / {noteSur}. Vos réponses ont été enregistrées.
@@ -211,11 +247,13 @@ function BlocQuestion({
   index,
   reponse,
   onChange,
+  verrouille,
 }: {
   q: QuestionQuiz
   index: number
   reponse: number[] | string[] | undefined
   onChange: (v: number[] | string[]) => void
+  verrouille: boolean
 }) {
   const cadre: React.CSSProperties = { border: '1px solid #DCE8F4', borderRadius: 10, padding: '14px 16px', background: '#FFFFFF' }
   const titre = (texte: string) => (
@@ -236,7 +274,9 @@ function BlocQuestion({
                 type={q.type === 'qcm' ? 'checkbox' : 'radio'}
                 name={`q-${index}`}
                 checked={choisies.includes(i)}
+                disabled={verrouille}
                 onChange={() => {
+                  if (verrouille) return
                   if (q.type === 'qcm') {
                     const set = new Set(choisies)
                     if (set.has(i)) set.delete(i)
@@ -272,12 +312,14 @@ function BlocQuestion({
                   key={i}
                   type="text"
                   value={saisies[idx] ?? ''}
+                  disabled={verrouille}
                   onChange={(e) => {
+                    if (verrouille) return
                     const copie = [...saisies]
                     copie[idx] = e.target.value
                     onChange(copie)
                   }}
-                  style={{ fontFamily: 'Arial, sans-serif', border: 'none', borderBottom: '1px solid #9AA5B1', fontSize: 13, padding: '2px 6px', width: 140 }}
+                  style={{ fontFamily: 'Arial, sans-serif', border: 'none', borderBottom: '1px solid #9AA5B1', fontSize: 13, padding: '2px 6px', width: 140, background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933' }}
                 />
               )
             }

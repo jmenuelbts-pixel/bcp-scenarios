@@ -20,6 +20,7 @@ import { Deroulement } from '../pages/enseignant/Deroulement'
 import { Progression } from '../pages/enseignant/Progression'
 import { ListeEleves } from '../pages/enseignant/ListeEleves'
 import { Travaux } from '../pages/enseignant/Travaux'
+import { PresenceTempsReel } from '../pages/enseignant/PresenceTempsReel'
 import { MessagerieEleve } from '../pages/etudiant/MessagerieEleve'
 import { ExportsEleve } from '../pages/etudiant/ExportsEleve'
 import { useAuth } from '../lib/auth'
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
       { path: '/enseignant/progression', element: <Progression /> },
       { path: '/enseignant/liste', element: <ListeEleves /> },
       { path: '/enseignant/travaux', element: <Travaux /> },
+      { path: '/enseignant/presence', element: <PresenceTempsReel /> },
     ],
   },
 ])

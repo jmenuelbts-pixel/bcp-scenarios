@@ -9,6 +9,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useInactivite } from '../lib/session'
+import { useBattementPresence } from '../lib/useBattementPresence'
 import { Authentification } from '../pages/Authentification'
 import { EnAttente } from '../pages/EnAttente'
 
@@ -97,6 +98,9 @@ export function GardeEtudiant() {
   useInactivite(() => {
     void deconnecter()
   }, !!session)
+
+  // Heartbeat de presence : actif sur toutes les pages eleve.
+  useBattementPresence()
 
   if (chargement) return <Chargement />
   if (!session) return <Authentification />

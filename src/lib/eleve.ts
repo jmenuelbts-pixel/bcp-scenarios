@@ -127,3 +127,24 @@ export async function enregistrerQuiz(
   )
   return { erreur: error ? error.message : null }
 }
+
+export interface SoumissionQuiz {
+  reponses: unknown
+  score: number | null
+  submitted_at: string
+}
+
+export async function chargerQuiz(
+  etudiantId: string,
+  missionId: string,
+  activiteId: string
+): Promise<SoumissionQuiz | null> {
+  const { data } = await supabase
+    .from('reponses_quiz')
+    .select('reponses, score, submitted_at')
+    .eq('etudiant_id', etudiantId)
+    .eq('mission_id', missionId)
+    .eq('activite_id', activiteId)
+    .maybeSingle()
+  return (data as SoumissionQuiz | null) ?? null
+}

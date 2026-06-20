@@ -15,6 +15,7 @@ import { OngletActivites } from '../../components/mission/OngletActivites'
 import { OngletJournal } from '../../components/mission/OngletJournal'
 import { useAuth } from '../../lib/auth'
 import { marquerVisite } from '../../lib/eleve'
+import { definirOngletCourant } from '../../lib/useBattementPresence'
 
 export function Mission() {
   const { scenarioId, missionId } = useParams<{ scenarioId: string; missionId: string }>()
@@ -41,6 +42,12 @@ export function Mission() {
       void marquerVisite(userId, missionId, actif)
     }
   }, [userId, missionId, actif])
+
+  // Informe le heartbeat de presence de l'onglet reellement ouvert.
+  useEffect(() => {
+    definirOngletCourant(actif)
+    return () => definirOngletCourant(null)
+  }, [actif])
 
   if (!scenario || !mission) {
     return (

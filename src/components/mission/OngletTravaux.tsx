@@ -16,21 +16,26 @@ interface Props {
 
 export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props) {
   const [texte, setTexte] = useState('')
-  const [envoye, setEnvoye] = useState(false)
+  const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
   const [retour, setRetour] = useState<RetourTravail | null>(null)
 
-  // Charge le travail deja rendu a l'ouverture.
+  // Charge le travail deja rendu a l'ouverture. Un travail present en base a
+  // deja ete envoye : on le verrouille (plus aucune modification).
   useEffect(() => {
     if (!etudiantId) return
     chargerTravail(etudiantId, missionId).then((c) => {
-      if (c) setTexte(c)
+      if (c && c.trim().length > 0) {
+        setTexte(c)
+        setVerrouille(true)
+      }
     })
     chargerRetourTravail(etudiantId, missionId).then(setRetour)
   }, [etudiantId, missionId])
 
   async function envoyer() {
+    if (verrouille) return
     if (!etudiantId) {
       setErreur('Vous devez etre connecte pour envoyer votre travail.')
       return
@@ -41,7 +46,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     if (erreur) {
       setErreur('L envoi a echoue. Veuillez reessayer.')
     } else {
-      setEnvoye(true)
+      setVerrouille(true)
     }
     setEnCours(false)
   }
@@ -68,9 +73,10 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       </label>
       <textarea
         value={texte}
+        disabled={verrouille}
         onChange={(e) => {
+          if (verrouille) return
           setTexte(e.target.value)
-          setEnvoye(false)
         }}
         rows={10}
         placeholder="Rédigez votre réponse ici."
@@ -83,38 +89,46 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
           padding: 12,
           fontSize: 14,
           resize: 'vertical',
-          color: '#1F2933',
+          color: verrouille ? '#6B7280' : '#1F2933',
+          background: verrouille ? '#F1F3F5' : '#FFFFFF',
         }}
       />
 
-      <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 14 }}>
-        <button
-          type="button"
-          disabled={texte.trim().length === 0 || enCours}
-          onClick={envoyer}
-          style={{
-            fontFamily: 'Arial, sans-serif',
-            background: texte.trim().length === 0 || enCours ? '#C9CDD2' : couleur,
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: 8,
-            padding: '10px 20px',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: texte.trim().length === 0 || enCours ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {enCours ? 'Envoi...' : 'Envoyer au professeur'}
-        </button>
-        {envoye && (
-          <span style={{ fontSize: 13, color: '#1B6B3A', fontWeight: 600 }}>
-            Travail enregistré.
+      {verrouille ? (
+        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+            <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+          </svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>
+            Travail envoyé au professeur. Il n'est plus modifiable.
           </span>
-        )}
-        {erreur && (
-          <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button
+            type="button"
+            disabled={texte.trim().length === 0 || enCours}
+            onClick={envoyer}
+            style={{
+              fontFamily: 'Arial, sans-serif',
+              background: texte.trim().length === 0 || enCours ? '#C9CDD2' : couleur,
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: texte.trim().length === 0 || enCours ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {enCours ? 'Envoi...' : 'Envoyer au professeur'}
+          </button>
+          {erreur && (
+            <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>
+          )}
+        </div>
+      )}
 
       {retour && (retour.commentaire || (retour.competences && retour.competences.length > 0)) && (
         <div

@@ -66,6 +66,21 @@ const ITEMS: ItemTableau[] = [
     ),
   },
   {
+    id: 'presence',
+    titre: 'Présence en temps réel',
+    fond: '#E6F4EA',
+    bord: '#9AD0AC',
+    description: 'Qui est en ligne, sur quelle page, et avancement en direct.',
+    route: '/enseignant/presence',
+    icone: (
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="3" fill="#2E8B57" />
+        <path d="M5.5 12 a6.5 6.5 0 0 1 13 0" fill="none" stroke="#2E8B57" strokeWidth="2" strokeLinecap="round" />
+        <path d="M2.5 12 a9.5 9.5 0 0 1 19 0" fill="none" stroke="#9AD0AC" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
     id: 'travaux',
     titre: 'Travaux à rendre',
     fond: '#E6F4EA',
@@ -127,10 +142,10 @@ const ITEMS: ItemTableau[] = [
 ]
 
 const ONGLETS_PROF = [
-  { libelle: 'Tableau de bord', route: '/enseignant' },
-  { libelle: 'Corrigés', route: '/enseignant/corriges' },
-  { libelle: 'Déroulement', route: '/enseignant/deroulement' },
-  { libelle: 'Progression', route: '/enseignant/progression' },
+  { libelle: 'Tableau de bord', route: '/enseignant', aide: "Vue d'ensemble : accès à tous les outils du professeur." },
+  { libelle: 'Corrigés', route: '/enseignant/corriges', aide: 'Consulter et saisir les corrigés de chaque mission.' },
+  { libelle: 'Déroulement', route: '/enseignant/deroulement', aide: 'Préparer le déroulé pédagogique de chaque séance.' },
+  { libelle: 'Progression', route: '/enseignant/progression', aide: 'Suivre la progression et les résultats des élèves.' },
 ]
 
 export function AccueilEnseignant() {
@@ -185,24 +200,25 @@ export function AccueilEnseignant() {
           {ONGLETS_PROF.map((o, i) => {
             const actif = i === 0
             return (
-              <button
-                key={o.route}
-                type="button"
-                onClick={() => navigate(o.route)}
-                style={{
-                  fontFamily: 'Arial, sans-serif',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: actif ? `3px solid ${COULEUR_PROF}` : '3px solid transparent',
-                  padding: '14px 16px',
-                  fontSize: 13,
-                  fontWeight: actif ? 700 : 500,
-                  color: actif ? COULEUR_PROF : '#4A5568',
-                  cursor: 'pointer',
-                }}
-              >
-                {o.libelle}
-              </button>
+              <Infobulle key={o.route} texte={o.aide}>
+                <button
+                  type="button"
+                  onClick={() => navigate(o.route)}
+                  style={{
+                    fontFamily: 'Arial, sans-serif',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: actif ? `3px solid ${COULEUR_PROF}` : '3px solid transparent',
+                    padding: '14px 16px',
+                    fontSize: 13,
+                    fontWeight: actif ? 700 : 500,
+                    color: actif ? COULEUR_PROF : '#4A5568',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {o.libelle}
+                </button>
+              </Infobulle>
             )
           })}
         </div>
