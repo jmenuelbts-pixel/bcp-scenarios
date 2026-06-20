@@ -177,6 +177,25 @@ export async function activitesEnvoyees(
   return fait
 }
 
+// Charge toutes les soumissions d'activites d'un eleve pour une mission, en une
+// requete, indexees par activite_id (synthese, autoeval, flashcards, quiz,
+// glisser). Sert a l'affichage des reponses cote professeur.
+export async function chargerReponsesActivites(
+  etudiantId: string,
+  missionId: string
+): Promise<Record<string, SoumissionQuiz>> {
+  const { data } = await supabase
+    .from('reponses_quiz')
+    .select('activite_id, reponses, score, submitted_at')
+    .eq('etudiant_id', etudiantId)
+    .eq('mission_id', missionId)
+  const map: Record<string, SoumissionQuiz> = {}
+  for (const r of (data as ({ activite_id: string } & SoumissionQuiz)[]) ?? []) {
+    map[r.activite_id] = { reponses: r.reponses, score: r.score, submitted_at: r.submitted_at }
+  }
+  return map
+}
+
 // Les 6 composants obligatoires d'une mission (le glossaire et le journal ne
 // comptent pas). Ordre sans importance pour le calcul.
 export const COMPOSANTS_MISSION = ['travaux', 'synthese', 'autoeval', 'flashcards', 'quiz', 'glisser'] as const
