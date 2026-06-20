@@ -137,6 +137,9 @@ export function PresenceTempsReel() {
               const ongletId = p?.onglet_id as OngletId | null | undefined
               const libelleOnglet = ongletId ? ONGLETS_PAR_ID[ongletId]?.libelle ?? null : null
               const surActivites = ongletId === 'activites'
+              // Detail entre parentheses dans page (ex : "Activités - Quiz").
+              const detailPage = p?.page?.match(/\(([^)]+)\)\s*$/)?.[1] ?? null
+              const libelleNiveau2 = detailPage ?? libelleOnglet
               const progression = enMission ? Math.max(0, Math.min(100, p?.progression ?? 0)) : 0
 
               return (
@@ -164,7 +167,7 @@ export function PresenceTempsReel() {
                           style={{ width: 10, height: 10, borderRadius: 99, background: surActivites ? '#2E8B57' : '#C2792E', animation: surActivites ? 'pulsePresence 1.2s ease-in-out infinite' : 'none' }}
                         />
                         <span style={{ fontSize: 12, fontWeight: 700, color: surActivites ? '#2E8B57' : '#4B5563' }}>
-                          {libelleOnglet ? `Onglet : ${libelleOnglet}` : 'Dans la mission'}
+                          {libelleNiveau2 ? `Onglet : ${libelleNiveau2}` : 'Dans la mission'}
                         </span>
                       </span>
                       <span style={{ flex: 1, minWidth: 160, display: 'flex', alignItems: 'center', gap: 10 }}>

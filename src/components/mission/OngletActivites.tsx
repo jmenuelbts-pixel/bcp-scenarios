@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react'
 import type { ContenuActivites, Flashcard, QuestionQuiz } from '../../data/contenus'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
+import { definirSousOngletCourant } from '../../lib/useBattementPresence'
 
 interface Props {
   contenu: ContenuActivites
@@ -25,6 +26,13 @@ export function OngletActivites({ contenu, couleur, etudiantId, missionId }: Pro
     { id: 'quiz', libelle: 'Quiz', visible: contenu.quiz.length > 0 },
     { id: 'glisser', libelle: 'Glisser-déposer', visible: !!contenu.glisserDeposer },
   ]
+
+  // Remonte le sous-onglet courant pour l'affichage de presence cote prof.
+  useEffect(() => {
+    const libelle = onglets.find((o) => o.id === vue)?.libelle ?? null
+    definirSousOngletCourant(libelle)
+    return () => definirSousOngletCourant(null)
+  }, [vue])
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif' }}>

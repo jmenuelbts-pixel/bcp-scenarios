@@ -100,7 +100,7 @@ export function GardeEtudiant() {
   }, !!session)
 
   // Heartbeat de presence : actif sur toutes les pages eleve.
-  useBattementPresence()
+  const erreurPresence = useBattementPresence()
 
   if (chargement) return <Chargement />
   if (!session) return <Authentification />
@@ -113,10 +113,31 @@ export function GardeEtudiant() {
   }
   if (profil.statut !== 'accepte') return <EnAttente />
 
-  return <Outlet />
+  return (
+    <>
+      {erreurPresence && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: erreurPresence.startsWith('OK') ? '#1B6B3A' : '#9B2C2C',
+            color: '#FFFFFF',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 12,
+            padding: '6px 12px',
+            zIndex: 9999,
+            textAlign: 'center',
+          }}
+        >
+          Présence : {erreurPresence}
+        </div>
+      )}
+      <Outlet />
+    </>
+  )
 }
-
-// Garde de l'espace professeur : reserve aux enseignants.
 export function GardeEnseignant() {
   const { session, profil, chargement, erreurProfil, deconnecter } = useAuth()
 

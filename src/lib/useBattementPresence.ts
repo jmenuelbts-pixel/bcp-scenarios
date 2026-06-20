@@ -4,15 +4,19 @@
 // moindre changement d'onglet) : l'eleve passe gris tout seul a l'arret des
 // battements.
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useAuth } from './auth'
 import { demarrerBattement, type Position } from './presence'
 import { getScenario, getMission, ONGLETS_PAR_ID, ONGLETS, type OngletId } from '../data/schema'
 
 let ongletMissionCourant: OngletId | null = null
+let sousOngletCourant: string | null = null
 export function definirOngletCourant(onglet: OngletId | null): void {
   ongletMissionCourant = onglet
+}
+export function definirSousOngletCourant(sousOnglet: string | null): void {
+  sousOngletCourant = sousOnglet
 }
 
 function positionDepuisChemin(pathname: string): Position {
@@ -30,8 +34,13 @@ function positionDepuisChemin(pathname: string): Position {
       const rang = ONGLETS.findIndex((o) => o.id === onglet)
       const progression = rang >= 0 ? Math.round(((rang + 1) / ONGLETS.length) * 100) : null
       const base = `${scenario?.nom ?? 'Scénario'} - Mission ${mission?.numero ?? ''} ${mission?.titre ?? ''}`.trim()
+      // Sur l'onglet Activites, on precise le sous-onglet (Glossaire, Quiz...).
+      const detailOnglet =
+        onglet === 'activites' && sousOngletCourant
+          ? `${libelleOnglet} - ${sousOngletCourant}`
+          : libelleOnglet
       return {
-        page: libelleOnglet ? `${base} (${libelleOnglet})` : base,
+        page: detailOnglet ? `${base} (${detailOnglet})` : base,
         scenarioId,
         missionId,
         ongletId: onglet,
@@ -58,17 +67,35 @@ function positionDepuisChemin(pathname: string): Position {
   return { page: "Page d'accueil", scenarioId: null, missionId: null, ongletId: null, progression: null }
 }
 
-export function useBattementPresence(): void {
+export function useBattementPresence(): string | null {
   const { session } = useAuth()
   const userId = session?.user?.id
   const location = useLocation()
+  const [etat, setEtat] = useState<string | null>(null)
 
-  const positionRef = useRef<Position>(positionDepuisChemin(location.pathname))
-  positionRef.current = positionDepuisChemin(location.pathname)
+  // Le pathname est garde dans une ref, mise a jour a chaque render.
+  const pathnameRef = useRef(location.pathname)
+  pathnameRef.current = location.pathname
 
   useEffect(() => {
-    if (!userId) return
-    const arreter = demarrerBattement(userId, () => positionRef.current)
+    if (!userId) {
+      setEtat('AUCUN userId (session vide cote eleve)')
+      return
+    }
+    // La position est RECALCULEE a chaque battement (lit pathname + onglet +
+    // sous-onglet courants), pour refleter le changement d'onglet meme sans
+    // changement d'URL.
+    const arreter = demarrerBattement(
+      userId,
+      () => positionDepuisChemin(pathnameRef.current),
+      10000,
+      (erreur) => {
+        if (erreur) setEtat('ERREUR ecriture : ' + erreur)
+        else setEtat('OK battement id=' + userId.slice(0, 8))
+      }
+    )
     return arreter
   }, [userId])
+
+  return etat
 }

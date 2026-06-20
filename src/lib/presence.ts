@@ -86,15 +86,17 @@ export async function lirePresences(): Promise<PresenceEleve[]> {
 export function demarrerBattement(
   etudiantId: string,
   obtenirPosition: () => Position,
-  intervalleMs = 10000
+  intervalleMs = 10000,
+  surErreur?: (message: string | null) => void
 ): () => void {
   let actif = true
   const tic = async () => {
     if (!actif) return
     try {
-      await battre(etudiantId, obtenirPosition())
-    } catch {
-      // prochain battement reessaiera
+      const { erreur } = await battre(etudiantId, obtenirPosition())
+      if (surErreur) surErreur(erreur)
+    } catch (e) {
+      if (surErreur) surErreur(e instanceof Error ? e.message : 'Erreur reseau presence')
     }
   }
   void tic()
