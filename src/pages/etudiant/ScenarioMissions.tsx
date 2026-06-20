@@ -1,16 +1,102 @@
 // ScenarioMissions.tsx
-// Page d'un scenario : liste des missions, cliquables si abordables,
-// avec cadenas noir sur les missions verrouillees.
-// Style inline, Arial, aucune classe Tailwind dans le JSX, aucun emoji.
+// Page d'un scenario : liste des missions. Chaque mission porte une pastille
+// numerotee qui se remplit en camembert selon l'avancement de l'eleve (6
+// composants : travaux, synthese, autoeval, flashcards, quiz, glisser). Quand
+// les 6 sont envoyes, la pastille est pleine et passe au vert (mission finie).
 
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getScenario, couleurEntete, couleurTexteSur } from '../../data/schema'
 import { aContenu } from '../../data/contenus'
+import { useAuth } from '../../lib/auth'
+import { activitesEnvoyees, progressionMission } from '../../lib/eleve'
+
+const VERT_FINI = '#1B6B3A'
+
+// Pastille circulaire : anneau de fond + secteur rempli facon camembert.
+function PastilleCamembert({
+  numero,
+  pourcentage,
+  couleur,
+  disponible,
+}: {
+  numero: number
+  pourcentage: number
+  couleur: string
+  disponible: boolean
+}) {
+  const taille = 44
+  const r = 20
+  const c = taille / 2
+  const fini = pourcentage >= 100
+  const remplissage = disponible ? (fini ? VERT_FINI : couleur) : '#C9CDD2'
+
+  // Secteur camembert : on trace un arc du haut (12h) dans le sens horaire.
+  const angle = (Math.min(100, Math.max(0, pourcentage)) / 100) * 360
+  const rad = (deg: number) => ((deg - 90) * Math.PI) / 180
+  const x = c + r * Math.cos(rad(angle))
+  const y = c + r * Math.sin(rad(angle))
+  const grandArc = angle > 180 ? 1 : 0
+  const cheminSecteur =
+    pourcentage <= 0
+      ? ''
+      : pourcentage >= 100
+        ? `M ${c} ${c} m 0 ${-r} a ${r} ${r} 0 1 1 -0.01 0 Z`
+        : `M ${c} ${c} L ${c} ${c - r} A ${r} ${r} 0 ${grandArc} 1 ${x} ${y} Z`
+
+  return (
+    <span style={{ flexShrink: 0, position: 'relative', width: taille, height: taille }}>
+      <svg width={taille} height={taille} viewBox={`0 0 ${taille} ${taille}`}>
+        <circle cx={c} cy={c} r={r} fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" />
+        {cheminSecteur && <path d={cheminSecteur} fill={remplissage} opacity={fini ? 1 : 0.85} />}
+        <circle cx={c} cy={c} r={r} fill="none" stroke={remplissage} strokeWidth="2" />
+      </svg>
+      <span
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 15,
+          fontWeight: 700,
+          color: pourcentage >= 50 ? '#FFFFFF' : '#1F2933',
+        }}
+      >
+        {numero}
+      </span>
+    </span>
+  )
+}
 
 export function ScenarioMissions() {
   const { scenarioId } = useParams<{ scenarioId: string }>()
   const navigate = useNavigate()
   const scenario = scenarioId ? getScenario(scenarioId) : undefined
+  const { session } = useAuth()
+  const userId = session?.user?.id
+
+  // Progression par mission (id -> pourcentage), chargee pour l'eleve courant.
+  const [progression, setProgression] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    let actif = true
+    if (!userId || !scenario) return
+    Promise.all(
+      scenario.missions.map(async (m) => {
+        const faits = await activitesEnvoyees(userId, m.id)
+        return [m.id, progressionMission(faits)] as const
+      })
+    ).then((paires) => {
+      if (!actif) return
+      const map: Record<string, number> = {}
+      for (const [id, pct] of paires) map[id] = pct
+      setProgression(map)
+    })
+    return () => {
+      actif = false
+    }
+  }, [userId, scenarioId])
 
   if (!scenario) {
     return (
@@ -32,7 +118,6 @@ export function ScenarioMissions() {
         padding: '0 0 48px 0',
       }}
     >
-      {/* En-tete colore du scenario */}
       <header
         style={{
           background: couleurEntete(scenario.couleur),
@@ -72,13 +157,12 @@ export function ScenarioMissions() {
         </div>
       </header>
 
-      {/* Liste des missions */}
       <main style={{ maxWidth: 880, margin: '0 auto', padding: '24px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {scenario.missions.map((mission) => {
-            // Une mission est abordable si elle dispose de contenu redige.
-            // Le verrouillage par le professeur s'ajoutera via Supabase.
             const disponible = aContenu(mission.id)
+            const pct = progression[mission.id] ?? 0
+            const fini = pct >= 100
             return (
               <button
                 key={mission.id}
@@ -102,37 +186,31 @@ export function ScenarioMissions() {
                   boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06)',
                 }}
               >
-                {/* Numero de mission dans une pastille coloree */}
-                <span
-                  style={{
-                    flexShrink: 0,
-                    width: 34,
-                    height: 34,
-                    borderRadius: 99,
-                    background: disponible ? couleurEntete(scenario.couleur) : '#C9CDD2',
-                    color: '#FFFFFF',
-                    fontSize: 15,
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {mission.numero}
+                <PastilleCamembert
+                  numero={mission.numero}
+                  pourcentage={pct}
+                  couleur={couleurEntete(scenario.couleur)}
+                  disponible={disponible}
+                />
+
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span
+                    style={{
+                      display: 'block',
+                      fontSize: 15,
+                      color: disponible ? '#1F2933' : '#8A9099',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {mission.titre}
+                  </span>
+                  {disponible && (
+                    <span style={{ display: 'block', fontSize: 12, color: fini ? VERT_FINI : '#6B7280', marginTop: 2, fontWeight: fini ? 700 : 400 }}>
+                      {fini ? 'Mission terminée' : `${pct} % réalisé`}
+                    </span>
+                  )}
                 </span>
 
-                <span
-                  style={{
-                    flex: 1,
-                    fontSize: 15,
-                    color: disponible ? '#1F2933' : '#8A9099',
-                    fontWeight: 500,
-                  }}
-                >
-                  {mission.titre}
-                </span>
-
-                {/* Cadenas noir si verrouillee */}
                 {!disponible && (
                   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>
                     <rect x="5" y="11" width="14" height="9" rx="2" fill="#1F2933" />

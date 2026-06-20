@@ -148,3 +148,41 @@ export async function chargerQuiz(
     .maybeSingle()
   return (data as SoumissionQuiz | null) ?? null
 }
+
+// Liste les activites deja envoyees par un eleve pour une mission, sous forme
+// d'ensemble d'activite_id (ex : { 'travaux', 'quiz' }). Sert au calcul de la
+// progression en camembert (6 composants obligatoires).
+export async function activitesEnvoyees(
+  etudiantId: string,
+  missionId: string
+): Promise<Set<string>> {
+  const fait = new Set<string>()
+  // Le travail redige est dans la table travaux, les autres dans reponses_quiz.
+  const [resTravaux, resQuiz] = await Promise.all([
+    supabase
+      .from('travaux')
+      .select('contenu')
+      .eq('etudiant_id', etudiantId)
+      .eq('mission_id', missionId)
+      .maybeSingle(),
+    supabase
+      .from('reponses_quiz')
+      .select('activite_id')
+      .eq('etudiant_id', etudiantId)
+      .eq('mission_id', missionId),
+  ])
+  const travail = resTravaux.data as { contenu: string | null } | null
+  if (travail && (travail.contenu?.trim().length ?? 0) > 0) fait.add('travaux')
+  for (const r of (resQuiz.data as { activite_id: string }[]) ?? []) fait.add(r.activite_id)
+  return fait
+}
+
+// Les 6 composants obligatoires d'une mission (le glossaire et le journal ne
+// comptent pas). Ordre sans importance pour le calcul.
+export const COMPOSANTS_MISSION = ['travaux', 'synthese', 'autoeval', 'flashcards', 'quiz', 'glisser'] as const
+
+// Progression d'une mission en pourcentage (0 a 100), sur 6 composants.
+export function progressionMission(faits: Set<string>): number {
+  const n = COMPOSANTS_MISSION.filter((c) => faits.has(c)).length
+  return Math.round((n / COMPOSANTS_MISSION.length) * 100)
+}

@@ -63,11 +63,11 @@ export function OngletActivites({ contenu, couleur, etudiantId, missionId }: Pro
       </div>
 
       {vue === 'glossaire' && <VueGlossaire contenu={contenu} />}
-      {vue === 'flashcards' && <VueFlashcards contenu={contenu} couleur={couleur} />}
+      {vue === 'flashcards' && <VueFlashcards contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />}
       {vue === 'quiz' && (
         <VueQuiz contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />
       )}
-      {vue === 'glisser' && <VueGlisser contenu={contenu} couleur={couleur} />}
+      {vue === 'glisser' && <VueGlisser contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />}
     </div>
   )
 }
@@ -85,22 +85,105 @@ function VueGlossaire({ contenu }: { contenu: ContenuActivites }) {
   )
 }
 
-function VueFlashcards({ contenu, couleur }: { contenu: ContenuActivites; couleur: string }) {
+function VueFlashcards({
+  contenu,
+  couleur,
+  etudiantId,
+  missionId,
+}: {
+  contenu: ContenuActivites
+  couleur: string
+  etudiantId?: string
+  missionId: string
+}) {
+  const [vues, setVues] = useState<Set<number>>(new Set())
+  const [verrouille, setVerrouille] = useState(false)
+  const [enCours, setEnCours] = useState(false)
+  const [erreur, setErreur] = useState<string | null>(null)
+
+  useEffect(() => {
+    let actif = true
+    if (!etudiantId) return
+    chargerQuiz(etudiantId, missionId, 'flashcards').then((s) => {
+      if (actif && s) setVerrouille(true)
+    })
+    return () => {
+      actif = false
+    }
+  }, [etudiantId, missionId])
+
+  const total = contenu.flashcards.length
+  const toutesVues = total > 0 && vues.size >= total
+
+  async function envoyer() {
+    if (verrouille || !toutesVues) return
+    if (!etudiantId) {
+      setErreur('Vous devez etre connecte pour envoyer.')
+      return
+    }
+    setEnCours(true)
+    setErreur(null)
+    const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'flashcards', { vues: [...vues] }, 0)
+    if (erreur) setErreur('L envoi a echoue. Veuillez reessayer.')
+    else setVerrouille(true)
+    setEnCours(false)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {!verrouille && (
+        <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>
+          Retournez chaque carte pour la consulter ({vues.size} / {total}), puis validez.
+        </p>
+      )}
       {contenu.flashcards.map((f, i) => (
-        <CarteFlash key={i} carte={f} couleur={couleur} />
+        <CarteFlash key={i} carte={f} couleur={couleur} onVue={() => setVues((s) => new Set(s).add(i))} />
       ))}
+
+      {verrouille ? (
+        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+            <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+          </svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>Flashcards validées.</span>
+        </div>
+      ) : (
+        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button
+            type="button"
+            disabled={!toutesVues || enCours}
+            onClick={envoyer}
+            style={{
+              fontFamily: 'Arial, sans-serif',
+              background: !toutesVues || enCours ? '#C9CDD2' : couleur,
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: !toutesVues || enCours ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {enCours ? 'Envoi...' : 'Valider les flashcards'}
+          </button>
+          {erreur && <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>}
+        </div>
+      )}
     </div>
   )
 }
 
-function CarteFlash({ carte, couleur }: { carte: Flashcard; couleur: string }) {
+function CarteFlash({ carte, couleur, onVue }: { carte: Flashcard; couleur: string; onVue: () => void }) {
   const [retournee, setRetournee] = useState(false)
   return (
     <button
       type="button"
-      onClick={() => setRetournee((v) => !v)}
+      onClick={() => {
+        setRetournee((v) => !v)
+        onVue()
+      }}
       style={{
         fontFamily: 'Arial, sans-serif',
         textAlign: 'left',
@@ -357,26 +440,123 @@ function BlocQuestion({
   )
 }
 
-function VueGlisser({ contenu, couleur }: { contenu: ContenuActivites; couleur: string }) {
+function VueGlisser({
+  contenu,
+  couleur,
+  etudiantId,
+  missionId,
+}: {
+  contenu: ContenuActivites
+  couleur: string
+  etudiantId?: string
+  missionId: string
+}) {
   const gd = contenu.glisserDeposer
+  const [choix, setChoix] = useState<Record<number, number>>({})
+  const [verrouille, setVerrouille] = useState(false)
+  const [enCours, setEnCours] = useState(false)
+  const [erreur, setErreur] = useState<string | null>(null)
+
+  useEffect(() => {
+    let actif = true
+    if (!etudiantId) return
+    chargerQuiz(etudiantId, missionId, 'glisser').then((s) => {
+      if (!actif || !s) return
+      if (s.reponses && typeof s.reponses === 'object') {
+        setChoix(s.reponses as Record<number, number>)
+      }
+      setVerrouille(true)
+    })
+    return () => {
+      actif = false
+    }
+  }, [etudiantId, missionId])
+
   if (!gd) return null
+  const toutRempli = gd.zones.every((_, i) => choix[i] !== undefined)
+
+  async function envoyer() {
+    if (verrouille || !toutRempli) return
+    if (!etudiantId) {
+      setErreur('Vous devez etre connecte pour envoyer.')
+      return
+    }
+    setEnCours(true)
+    setErreur(null)
+    const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'glisser', choix, 0)
+    if (erreur) setErreur('L envoi a echoue. Veuillez reessayer.')
+    else setVerrouille(true)
+    setEnCours(false)
+  }
+
   return (
     <div>
       <p style={{ fontSize: 14, color: '#374151', marginTop: 0 }}>{gd.consigne}</p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-        {gd.etiquettes.map((e, i) => (
-          <span key={i} style={{ fontSize: 13, background: '#FFFFFF', border: `1px solid ${couleur}`, color: '#1F2933', borderRadius: 8, padding: '6px 12px' }}>
-            {e}
-          </span>
-        ))}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {gd.zones.map((z, i) => (
-          <div key={i} style={{ border: '1px dashed #C9D6E3', borderRadius: 10, padding: '14px 16px', fontSize: 13, color: '#6B7280', background: '#F9FBFD' }}>
-            {z.libelle}
+          <div key={i} style={{ border: '1px solid #DCE8F4', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', background: '#FFFFFF' }}>
+            <span style={{ fontSize: 13, color: '#1F2933', fontWeight: 600, flex: 1, minWidth: 140 }}>{z.libelle}</span>
+            <select
+              value={choix[i] ?? ''}
+              disabled={verrouille}
+              onChange={(e) => {
+                if (verrouille) return
+                const v = e.target.value
+                setChoix((c) => ({ ...c, [i]: Number(v) }))
+              }}
+              style={{
+                fontFamily: 'Arial, sans-serif',
+                fontSize: 13,
+                padding: '6px 10px',
+                borderRadius: 8,
+                border: `1px solid ${couleur}`,
+                background: verrouille ? '#F1F3F5' : '#FFFFFF',
+                color: verrouille ? '#6B7280' : '#1F2933',
+              }}
+            >
+              <option value="">Choisir</option>
+              {gd.etiquettes.map((e, j) => (
+                <option key={j} value={j}>
+                  {e}
+                </option>
+              ))}
+            </select>
           </div>
         ))}
       </div>
+
+      {verrouille ? (
+        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+            <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+          </svg>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>Association envoyée. Elle n'est plus modifiable.</span>
+        </div>
+      ) : (
+        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button
+            type="button"
+            disabled={!toutRempli || enCours}
+            onClick={envoyer}
+            style={{
+              fontFamily: 'Arial, sans-serif',
+              background: !toutRempli || enCours ? '#C9CDD2' : couleur,
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: !toutRempli || enCours ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {enCours ? 'Envoi...' : 'Envoyer au professeur'}
+          </button>
+          {!toutRempli && <span style={{ fontSize: 12, color: '#6B7280' }}>Associez toutes les lignes avant d'envoyer.</span>}
+          {erreur && <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>}
+        </div>
+      )}
     </div>
   )
 }
