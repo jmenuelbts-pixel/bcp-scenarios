@@ -3,7 +3,7 @@
 // case A propos, grille des 9 scenarios sous forme de paves colores.
 // Style entierement inline, police Arial, aucune classe Tailwind dans le JSX.
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { SCENARIOS } from '../../data/schema'
 import {
   PROGRESSION_VIDE,
@@ -39,6 +39,24 @@ export function AccueilEtudiant({
   onOuvrirExports,
 }: AccueilEtudiantProps) {
   const [aproposOuvert, setAproposOuvert] = useState(false)
+
+  // Message d'accueil tire au hasard a chaque connexion, toujours avec le prenom.
+  const salutation = useMemo(() => {
+    if (!prenom) return ''
+    const messages = [
+      `Bonjour ${prenom}`,
+      `Salut ${prenom}`,
+      `Content de te revoir, ${prenom}`,
+      `Re-bonjour ${prenom}`,
+      `Bienvenue ${prenom}`,
+      `On s'y remet, ${prenom} ?`,
+      `Bonne séance, ${prenom}`,
+      `À toi de jouer, ${prenom}`,
+      `Heureux de te retrouver, ${prenom}`,
+      `C'est reparti, ${prenom}`,
+    ]
+    return messages[Math.floor(Math.random() * messages.length)]
+  }, [prenom])
 
   return (
     <div
@@ -79,7 +97,7 @@ export function AccueilEtudiant({
               Scénarios MCV B
             </h1>
             <p style={{ margin: '6px 0 0 0', fontSize: 14, color: '#33648C' }}>
-              {prenom ? `Bonjour ${prenom}. ` : ''}
+              {salutation ? `${salutation}. ` : ''}
               Choisis une entreprise pour commencer une mission.
             </p>
           </div>
