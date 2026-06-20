@@ -96,9 +96,8 @@ export function AccueilEtudiant({
             >
               Scénarios MCV B
             </h1>
-            <p style={{ margin: '6px 0 0 0', fontSize: 14, color: '#33648C' }}>
-              {salutation ? `${salutation}. ` : ''}
-              Choisis une entreprise pour commencer une mission.
+            <p style={{ margin: '16px 0 0 0', fontSize: 19, color: '#33648C', fontWeight: 500 }}>
+              {salutation}
             </p>
           </div>
 
@@ -239,7 +238,7 @@ export function AccueilEtudiant({
         style={{
           maxWidth: 1080,
           margin: '0 auto',
-          padding: '8px 24px 0 24px',
+          padding: '28px 24px 0 24px',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: 20,
