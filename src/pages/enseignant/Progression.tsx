@@ -1,47 +1,70 @@
 // Progression.tsx
-// Suivi visuel par eleve. Choix d'un scenario par pastilles, puis tableau
-// eleves (lignes) x missions (colonnes). Chaque case montre trois pastilles :
-// travail rendu, activite faite, journal rempli.
+// Suivi par mission : choix d'un scenario, puis d'une mission. Le tableau liste
+// les eleves en lignes et les 6 composants obligatoires en colonnes (travaux,
+// synthese, auto-eval, flashcards, quiz, glisser). Vert = envoye, gris = a faire.
+// Le glossaire et le journal de bord ne comptent pas.
 
 import { useEffect, useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
-import {
-  SCENARIOS,
-  couleurEntete,
-  couleurTexteSur,
-  eclaircir,
-} from '../../data/schema'
-import {
-  listerElevesAcceptes,
-  avancementEleve,
-  type AvancementMission,
-} from '../../lib/enseignant'
+import { SCENARIOS, couleurEntete, couleurTexteSur, eclaircir } from '../../data/schema'
+import { listerElevesAcceptes } from '../../lib/enseignant'
+import { activitesEnvoyees, COMPOSANTS_MISSION } from '../../lib/eleve'
 import type { Profil } from '../../lib/auth'
 
-type AvancementParEleve = Record<string, Record<string, AvancementMission>>
+const VERT = '#1B6B3A'
+
+const LIBELLES: Record<string, string> = {
+  travaux: 'Travaux',
+  synthese: 'Synthèse',
+  autoeval: 'Auto-éval',
+  flashcards: 'Flashcards',
+  quiz: 'Quiz',
+  glisser: 'Glisser',
+}
+
+// faitsParEleve[eleveId] = Set des composants envoyes pour la mission choisie.
+type FaitsParEleve = Record<string, Set<string>>
 
 export function Progression() {
   const [scenarioId, setScenarioId] = useState<string>(SCENARIOS[0].id)
+  const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0]
+  const [missionId, setMissionId] = useState<string>(scenario.missions[0]?.id ?? '')
   const [eleves, setEleves] = useState<Profil[]>([])
-  const [avancement, setAvancement] = useState<AvancementParEleve>({})
+  const [faits, setFaits] = useState<FaitsParEleve>({})
   const [chargement, setChargement] = useState(true)
 
-  const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0]
-
+  // Charge la liste des eleves une fois.
   useEffect(() => {
-    async function charger() {
-      setChargement(true)
-      const liste = await listerElevesAcceptes()
-      setEleves(liste)
-      const map: AvancementParEleve = {}
-      for (const e of liste) {
-        map[e.id] = await avancementEleve(e.id)
-      }
-      setAvancement(map)
-      setChargement(false)
-    }
-    charger()
+    listerElevesAcceptes().then(setEleves)
   }, [])
+
+  // Quand on change de scenario, repositionne la mission sur la premiere.
+  useEffect(() => {
+    setMissionId(scenario.missions[0]?.id ?? '')
+  }, [scenarioId])
+
+  // Charge les activites envoyees de chaque eleve pour la mission choisie.
+  useEffect(() => {
+    let actif = true
+    if (!missionId || eleves.length === 0) {
+      setFaits({})
+      setChargement(false)
+      return
+    }
+    setChargement(true)
+    Promise.all(
+      eleves.map(async (e) => [e.id, await activitesEnvoyees(e.id, missionId)] as const)
+    ).then((paires) => {
+      if (!actif) return
+      const map: FaitsParEleve = {}
+      for (const [id, set] of paires) map[id] = set
+      setFaits(map)
+      setChargement(false)
+    })
+    return () => {
+      actif = false
+    }
+  }, [missionId, eleves])
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
@@ -51,7 +74,7 @@ export function Progression() {
         <h1 style={{ fontSize: 20, color: '#1F2933', margin: '0 0 18px' }}>Progression pédagogique</h1>
 
         {/* Pastilles scenario */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
           {SCENARIOS.map((s) => {
             const actif = s.id === scenarioId
             const fond = couleurEntete(s.couleur)
@@ -78,12 +101,42 @@ export function Progression() {
           })}
         </div>
 
-        {/* Legende */}
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 14, fontSize: 12, color: '#4B5563' }}>
-          <Legende couleur="#2E8B57" texte="Travail rendu" />
-          <Legende couleur="#2E6CB0" texte="Activité faite" />
-          <Legende couleur="#C2792E" texte="Journal rempli" />
+        {/* Choix de la mission */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' }}>
+          <span style={{ fontSize: 13, color: '#4B5563', marginRight: 4 }}>Mission :</span>
+          {scenario.missions.map((m) => {
+            const actif = m.id === missionId
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setMissionId(m.id)}
+                title={m.titre}
+                style={{
+                  fontFamily: 'Arial, sans-serif',
+                  width: 34,
+                  height: 34,
+                  borderRadius: 8,
+                  background: actif ? couleurEntete(scenario.couleur) : '#FFFFFF',
+                  color: actif ? couleurTexteSur(scenario.couleur) : '#374151',
+                  border: actif ? 'none' : '1px solid #D1D9E0',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                {m.numero}
+              </button>
+            )
+          })}
         </div>
+
+        {/* Titre de la mission selectionnee */}
+        {scenario.missions.find((m) => m.id === missionId) && (
+          <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 12px' }}>
+            Mission {scenario.missions.find((m) => m.id === missionId)?.numero} : {scenario.missions.find((m) => m.id === missionId)?.titre}
+          </p>
+        )}
 
         {chargement ? (
           <p style={{ fontSize: 13, color: '#6B7280' }}>Chargement...</p>
@@ -93,82 +146,55 @@ export function Progression() {
           <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12 }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
               <thead>
-                <tr>
-                  <th style={{ ...thStyle, position: 'sticky', left: 0, background: '#F4F7FA', textAlign: 'left', minWidth: 160 }}>
-                    Élève
-                  </th>
-                  {scenario.missions.map((m) => (
-                    <th key={m.id} style={{ ...thStyle, textAlign: 'center', minWidth: 54 }}>
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          width: 26,
-                          height: 26,
-                          borderRadius: 7,
-                          background: scenario.couleur,
-                          color: couleurTexteSur(scenario.couleur),
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                        }}
-                        title={m.titre}
-                      >
-                        {m.numero}
-                      </span>
+                <tr style={{ background: '#F4F7FA' }}>
+                  <th style={{ ...thStyle, textAlign: 'left', minWidth: 150 }}>Élève</th>
+                  {COMPOSANTS_MISSION.map((c) => (
+                    <th key={c} style={{ ...thStyle, textAlign: 'center', minWidth: 72 }}>
+                      {LIBELLES[c]}
                     </th>
                   ))}
+                  <th style={{ ...thStyle, textAlign: 'center', minWidth: 56 }}>Total</th>
                 </tr>
               </thead>
               <tbody>
-                {eleves.map((e) => (
-                  <tr key={e.id}>
-                    <td style={{ ...tdStyle, position: 'sticky', left: 0, background: '#FFFFFF', fontWeight: 600 }}>
-                      {e.nom} {e.prenom}
-                    </td>
-                    {scenario.missions.map((m) => {
-                      const a = avancement[e.id]?.[m.id]
-                      return (
-                        <td key={m.id} style={{ ...tdStyle, textAlign: 'center' }}>
-                          <div style={{ display: 'inline-flex', gap: 3 }}>
-                            <Point actif={!!a?.travailRendu} couleur="#2E8B57" />
-                            <Point actif={!!a?.activiteFaite} couleur="#2E6CB0" />
-                            <Point actif={!!a?.journalRempli} couleur="#C2792E" />
-                          </div>
+                {eleves.map((e) => {
+                  const set = faits[e.id] ?? new Set<string>()
+                  const total = COMPOSANTS_MISSION.filter((c) => set.has(c)).length
+                  return (
+                    <tr key={e.id}>
+                      <td style={{ ...tdStyle, fontWeight: 600 }}>
+                        {e.nom} {e.prenom}
+                      </td>
+                      {COMPOSANTS_MISSION.map((c) => (
+                        <td key={c} style={{ ...tdStyle, textAlign: 'center' }}>
+                          {set.has(c) ? (
+                            <span style={{ color: VERT, fontWeight: 700, fontSize: 16 }} title="Envoyé">✓</span>
+                          ) : (
+                            <span style={{ color: '#C9CDD2', fontSize: 16 }} title="À faire">○</span>
+                          )}
                         </td>
-                      )
-                    })}
-                  </tr>
-                ))}
+                      ))}
+                      <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, color: total === 6 ? VERT : '#4B5563' }}>
+                        {total}/6
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         )}
+
+        <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 12, color: '#4B5563' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ color: VERT, fontWeight: 700 }}>✓</span> envoyé
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ color: '#C9CDD2' }}>○</span> à faire
+          </span>
+        </div>
       </main>
     </div>
-  )
-}
-
-function Point({ actif, couleur }: { actif: boolean; couleur: string }) {
-  return (
-    <span
-      style={{
-        width: 9,
-        height: 9,
-        borderRadius: '50%',
-        background: actif ? couleur : 'transparent',
-        border: actif ? 'none' : '1px solid #D1D9E0',
-        display: 'inline-block',
-      }}
-    />
-  )
-}
-
-function Legende({ couleur, texte }: { couleur: string; texte: string }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ width: 9, height: 9, borderRadius: '50%', background: couleur, display: 'inline-block' }} />
-      {texte}
-    </span>
   )
 }
 
