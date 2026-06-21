@@ -74,12 +74,28 @@ export interface ContenuActivites {
   glisserDeposer?: GlisserDeposer
 }
 
+// --- Onglet Corrige (espace enseignant) ------------------------------------
+// Corrige structure d'une mission : pour chaque travail demande a l'eleve,
+// l'intitule tel qu'il le lit, les documents a mobiliser, la reponse attendue
+// et le bareme en points.
+export interface QuestionCorrige {
+  intitule: string // la question/le travail tel que pose a l'eleve
+  documents: string[] // documents a mobiliser pour repondre
+  reponse: string // reponse precise attendue
+  bareme: number // points attribues a cette question
+}
+
+export interface ContenuCorrige {
+  questions: QuestionCorrige[]
+}
+
 // --- Contenu complet d'une mission -----------------------------------------
 export interface ContenuMission {
   travaux: ContenuTravaux
   synthese: ContenuSynthese
   autoEval: ContenuAutoEval
   activites: ContenuActivites
+  corrige?: ContenuCorrige // corrige structure, affiche dans l'espace enseignant
 }
 
 // ---------------------------------------------------------------------------

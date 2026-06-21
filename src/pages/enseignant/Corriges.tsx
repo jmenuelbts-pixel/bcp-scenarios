@@ -13,6 +13,7 @@ import {
   eclaircir,
   type Mission,
 } from '../../data/schema'
+import { getContenuMission } from '../../data/contenus'
 
 export function Corriges() {
   // Scenario actuellement deplie (un seul a la fois).
@@ -135,24 +136,113 @@ export function Corriges() {
                             <span style={{ fontWeight: 600 }}>{mission.titre}</span>
                           </button>
 
-                          {/* Zone corrige (en attente de contenu) */}
-                          {selectionnee && (
-                            <div
-                              style={{
-                                margin: '8px 0 4px',
-                                padding: '16px 16px',
-                                background: '#FFFFFF',
-                                border: '1px dashed #C9D6E3',
-                                borderRadius: 8,
-                                fontSize: 13,
-                                color: '#6B7280',
-                                lineHeight: 1.6,
-                              }}
-                            >
-                              Corrigé de la mission {mission.numero} ({scenario.nom}) à venir.
-                              Cette zone accueillera le corrigé détaillé une fois le contenu ajouté.
-                            </div>
-                          )}
+                          {/* Zone corrige : structure si redige, sinon attente */}
+                          {selectionnee && (() => {
+                            const corrige = getContenuMission(mission.id)?.corrige
+                            if (!corrige || corrige.questions.length === 0) {
+                              return (
+                                <div
+                                  style={{
+                                    margin: '8px 0 4px',
+                                    padding: '16px 16px',
+                                    background: '#FFFFFF',
+                                    border: '1px dashed #C9D6E3',
+                                    borderRadius: 8,
+                                    fontSize: 13,
+                                    color: '#6B7280',
+                                    lineHeight: 1.6,
+                                  }}
+                                >
+                                  Corrigé de la mission {mission.numero} ({scenario.nom}) à venir.
+                                  Cette zone accueillera le corrigé détaillé une fois le contenu ajouté.
+                                </div>
+                              )
+                            }
+                            const total = corrige.questions.reduce((s, q) => s + q.bareme, 0)
+                            return (
+                              <div
+                                style={{
+                                  margin: '8px 0 4px',
+                                  padding: '16px 18px',
+                                  background: '#FFFFFF',
+                                  border: `1px solid ${eclaircir(scenario.couleur, 0.45)}`,
+                                  borderRadius: 8,
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'baseline',
+                                    marginBottom: 14,
+                                    paddingBottom: 10,
+                                    borderBottom: '1px solid #ECEFF2',
+                                  }}
+                                >
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>
+                                    Corrigé structuré
+                                  </span>
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: scenario.couleur }}>
+                                    Total : {total} points
+                                  </span>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                  {corrige.questions.map((q, i) => (
+                                    <div key={i}>
+                                      <div
+                                        style={{
+                                          display: 'flex',
+                                          justifyContent: 'space-between',
+                                          alignItems: 'baseline',
+                                          gap: 12,
+                                          marginBottom: 6,
+                                        }}
+                                      >
+                                        <span style={{ fontSize: 14, fontWeight: 700, color: '#1F2933' }}>
+                                          {i + 1}. {q.intitule}
+                                        </span>
+                                        <span
+                                          style={{
+                                            flexShrink: 0,
+                                            fontSize: 12,
+                                            fontWeight: 700,
+                                            color: couleurTexteSur(scenario.couleur),
+                                            background: scenario.couleur,
+                                            borderRadius: 6,
+                                            padding: '2px 8px',
+                                          }}
+                                        >
+                                          {q.bareme} pts
+                                        </span>
+                                      </div>
+
+                                      {q.documents.length > 0 && (
+                                        <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 6 }}>
+                                          Documents : {q.documents.join(', ')}
+                                        </div>
+                                      )}
+
+                                      <div
+                                        style={{
+                                          fontSize: 14,
+                                          color: '#1F2933',
+                                          lineHeight: 1.6,
+                                          background: eclaircir(scenario.couleur, 0.85),
+                                          border: `1px solid ${eclaircir(scenario.couleur, 0.6)}`,
+                                          borderRadius: 8,
+                                          padding: '10px 12px',
+                                          whiteSpace: 'pre-wrap',
+                                        }}
+                                      >
+                                        {q.reponse}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )
+                          })()}
                         </div>
                       )
                     })}
