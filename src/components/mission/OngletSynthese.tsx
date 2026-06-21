@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react'
 import type { ContenuSynthese, NoeudSynthese } from '../../data/contenus'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
+import { eclaircir } from '../../data/schema'
 
 interface Props {
   contenu: ContenuSynthese
@@ -57,51 +58,89 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
     setEnCours(false)
   }
 
-  function rendreNoeud(noeud: NoeudSynthese, niveau: number): React.ReactNode {
-    const estCase = noeud.texte === null
+  // Case a completer (feuille) : menu deroulant.
+  function rendreCase(noeud: NoeudSynthese): React.ReactNode {
     return (
-      <div key={noeud.id} style={{ marginLeft: niveau === 0 ? 0 : 18, marginTop: 8 }}>
-        {estCase ? (
-          <select
-            value={reponses[noeud.id] ?? ''}
-            disabled={verrouille}
-            onChange={(e) => {
-              if (verrouille) return
-              setReponses((r) => ({ ...r, [noeud.id]: e.target.value }))
-            }}
-            style={{
-              fontFamily: 'Arial, sans-serif',
-              fontSize: 13,
-              padding: '6px 10px',
-              borderRadius: 8,
-              border: `1px dashed ${couleur}`,
-              background: verrouille ? '#F1F3F5' : '#FFFFFF',
-              color: verrouille ? '#6B7280' : '#1F2933',
-            }}
-          >
-            <option value="">À compléter</option>
-            {contenu.proposition.map((mot) => (
-              <option key={mot} value={mot}>
-                {mot}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <span
-            style={{
-              display: 'inline-block',
-              background: niveau === 0 ? couleur : '#EEF3F8',
-              color: niveau === 0 ? '#FFFFFF' : '#1F2933',
-              fontWeight: niveau === 0 ? 700 : 500,
-              fontSize: niveau === 0 ? 15 : 14,
-              borderRadius: 8,
-              padding: '6px 12px',
-            }}
-          >
-            {noeud.texte}
-          </span>
+      <select
+        value={reponses[noeud.id] ?? ''}
+        disabled={verrouille}
+        onChange={(e) => {
+          if (verrouille) return
+          setReponses((r) => ({ ...r, [noeud.id]: e.target.value }))
+        }}
+        style={{
+          fontFamily: 'Arial, sans-serif',
+          fontSize: 13,
+          padding: '6px 10px',
+          borderRadius: 8,
+          border: `1px dashed ${couleur}`,
+          background: verrouille ? '#F1F3F5' : '#FFFFFF',
+          color: verrouille ? '#6B7280' : '#1F2933',
+          minWidth: 150,
+        }}
+      >
+        <option value="">À compléter</option>
+        {contenu.proposition.map((mot) => (
+          <option key={mot} value={mot}>
+            {mot}
+          </option>
+        ))}
+      </select>
+    )
+  }
+
+  // Etiquette d'un noeud de branche (intitule fixe, ex : Identite).
+  function rendreEtiquette(noeud: NoeudSynthese): React.ReactNode {
+    return (
+      <span
+        style={{
+          display: 'inline-block',
+          background: '#EEF3F8',
+          color: '#1F2933',
+          fontWeight: 600,
+          fontSize: 14,
+          borderRadius: 8,
+          padding: '6px 14px',
+          border: '1px solid #DCE8F4',
+        }}
+      >
+        {noeud.texte}
+      </span>
+    )
+  }
+
+  // Une branche : etiquette en haut, trait vertical, feuilles dessous reliees.
+  function rendreBranche(noeud: NoeudSynthese): React.ReactNode {
+    const enfants = noeud.enfants ?? []
+    return (
+      <div
+        key={noeud.id}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      >
+        {rendreEtiquette(noeud)}
+        {enfants.length > 0 && (
+          <>
+            {/* trait vertical sous l'etiquette */}
+            <div style={{ width: 2, height: 14, background: '#C9D6E3' }} />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                paddingLeft: 16,
+                borderLeft: `2px solid ${eclaircir(couleur, 0.5)}`,
+              }}
+            >
+              {enfants.map((enf) => (
+                <div key={enf.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {/* petit trait horizontal vers la feuille */}
+                  <div style={{ width: 14, height: 2, background: eclaircir(couleur, 0.5) }} />
+                  {enf.texte === null ? rendreCase(enf) : rendreEtiquette(enf)}
+                </div>
+              ))}
+            </div>
+          </>
         )}
-        {noeud.enfants?.map((enf) => rendreNoeud(enf, niveau + 1))}
       </div>
     )
   }
@@ -142,7 +181,37 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
         ))}
       </div>
 
-      <div>{rendreNoeud(contenu.racine, 0)}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* racine */}
+        <span
+          style={{
+            display: 'inline-block',
+            background: couleur,
+            color: '#FFFFFF',
+            fontWeight: 700,
+            fontSize: 15,
+            borderRadius: 8,
+            padding: '8px 16px',
+            textAlign: 'center',
+          }}
+        >
+          {contenu.racine.texte}
+        </span>
+        {/* trait vertical sous la racine */}
+        <div style={{ width: 2, height: 18, background: '#C9D6E3' }} />
+        {/* branches alignees horizontalement, repli vertical si etroit */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            gap: 28,
+          }}
+        >
+          {(contenu.racine.enfants ?? []).map((branche) => rendreBranche(branche))}
+        </div>
+      </div>
 
       {verrouille ? (
         <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px' }}>

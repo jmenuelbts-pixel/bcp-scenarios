@@ -78,11 +78,18 @@ export interface ContenuActivites {
 // Corrige structure d'une mission : pour chaque travail demande a l'eleve,
 // l'intitule tel qu'il le lit, les documents a mobiliser, la reponse attendue
 // et le bareme en points.
+export interface PosteOrganigramme {
+  fonction: string // ex : Directeur, Chef des ventes VN
+  personnes: string[] // noms rattaches a ce poste
+  sousPostes?: PosteOrganigramme[] // niveaux rattaches en dessous
+}
+
 export interface QuestionCorrige {
   intitule: string // la question/le travail tel que pose a l'eleve
   documents: string[] // documents a mobiliser pour repondre
   reponse: string // reponse precise attendue
   bareme: number // points attribues a cette question
+  organigramme?: PosteOrganigramme // organigramme corrige (optionnel)
 }
 
 export interface ContenuCorrige {
@@ -141,7 +148,39 @@ const RENAULT_M1: ContenuMission = {
         documents: ['Ressource 5', 'Annexe 5'],
         bareme: 7,
         reponse:
-          "Organigramme à compléter à partir du trombinoscope (nom et fonction de chaque personne).\nPoints de vigilance du corrigé : les commerciaux véhicules d'occasion sont rattachés au pôle ventes, et non aux services techniques. Céline Etchecopar (assistante de livraison) est rattachée au pôle ventes véhicules neufs. La concession est dirigée par le directeur (Sergio Polatian).",
+          "Points de vigilance : les conseillers véhicules d'occasion sont rattachés au pôle ventes, et non aux services techniques. Céline Etchecopar (assistante de livraison) est rattachée au pôle ventes véhicules neufs.",
+        organigramme: {
+          fonction: 'Directeur',
+          personnes: ['Sergio Polatian'],
+          sousPostes: [
+            {
+              fonction: 'Chef des ventes véhicules neufs',
+              personnes: ['Guillaume Ramus'],
+              sousPostes: [
+                { fonction: 'Conseiller commercial VN', personnes: ['Pascal Jean', 'José Bénitez'] },
+                { fonction: 'Assistante de livraison', personnes: ['Céline Etchecopar'] },
+              ],
+            },
+            {
+              fonction: 'Ventes véhicules d\'occasion',
+              personnes: [],
+              sousPostes: [
+                { fonction: 'Conseiller commercial VO', personnes: ['Yayha Allaoui', 'Cyril Cottard'] },
+              ],
+            },
+            {
+              fonction: 'Chef des ventes pièces de rechange',
+              personnes: ['Matthieu Mulliez'],
+              sousPostes: [
+                { fonction: 'Conseiller pièces de rechange', personnes: ['Bernard Mercier'] },
+              ],
+            },
+            {
+              fonction: 'Chef des services techniques',
+              personnes: ['Badr Chatraoui'],
+            },
+          ],
+        },
       },
     ],
   },

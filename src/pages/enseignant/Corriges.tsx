@@ -13,7 +13,7 @@ import {
   eclaircir,
   type Mission,
 } from '../../data/schema'
-import { getContenuMission } from '../../data/contenus'
+import { getContenuMission, type PosteOrganigramme } from '../../data/contenus'
 
 export function Corriges() {
   // Scenario actuellement deplie (un seul a la fois).
@@ -237,6 +237,14 @@ export function Corriges() {
                                       >
                                         {q.reponse}
                                       </div>
+                                      {q.organigramme && (
+                                        <div style={{ marginTop: 10 }}>
+                                          <OrganigrammeCorrige
+                                            poste={q.organigramme}
+                                            couleur={scenario.couleur}
+                                          />
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -253,6 +261,62 @@ export function Corriges() {
           })}
         </div>
       </main>
+    </div>
+  )
+}
+
+// Organigramme corrige : arbre vertical (poste -> personnes, sous-postes relies).
+function OrganigrammeCorrige({ poste, couleur }: { poste: PosteOrganigramme; couleur: string }) {
+  return (
+    <div
+      style={{
+        border: `1px solid ${eclaircir(couleur, 0.55)}`,
+        borderRadius: 8,
+        padding: '14px 12px',
+        background: '#FFFFFF',
+        overflowX: 'auto',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'fit-content' }}>
+        <NoeudOrganigramme poste={poste} couleur={couleur} />
+      </div>
+    </div>
+  )
+}
+
+function NoeudOrganigramme({ poste, couleur }: { poste: PosteOrganigramme; couleur: string }) {
+  const sous = poste.sousPostes ?? []
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div
+        style={{
+          background: eclaircir(couleur, 0.85),
+          border: `1px solid ${eclaircir(couleur, 0.5)}`,
+          borderRadius: 8,
+          padding: '8px 12px',
+          textAlign: 'center',
+          minWidth: 140,
+        }}
+      >
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>{poste.fonction}</div>
+        {poste.personnes.length > 0 && (
+          <div style={{ fontSize: 13, color: '#374151', marginTop: 2 }}>
+            {poste.personnes.join(', ')}
+          </div>
+        )}
+      </div>
+      {sous.length > 0 && (
+        <>
+          <div style={{ width: 2, height: 16, background: eclaircir(couleur, 0.4) }} />
+          <div style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+            {sous.map((sp, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <NoeudOrganigramme poste={sp} couleur={couleur} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
