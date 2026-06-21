@@ -30,6 +30,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [erreur, setErreur] = useState<string | null>(null)
   const [retour, setRetour] = useState<RetourTravail | null>(null)
   const [docsOuverts, setDocsOuverts] = useState<Record<number, boolean>>({})
+  const [imageZoom, setImageZoom] = useState<string | null>(null)
 
   useEffect(() => {
     if (!etudiantId) return
@@ -124,7 +125,14 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                   {ouvert && (
                     <div style={{ padding: '10px 12px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 10 }}>
                       {d.images.map((src, i) => (
-                        <img key={i} src={src} alt={`Document ${d.numero}`} style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6 }} />
+                        <img
+                          key={i}
+                          src={src}
+                          alt={`Document ${d.numero}`}
+                          onClick={() => setImageZoom(src)}
+                          title="Cliquer pour agrandir"
+                          style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6, cursor: 'zoom-in' }}
+                        />
                       ))}
                     </div>
                   )}
@@ -269,6 +277,36 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Vue agrandie d'un document */}
+      {imageZoom && (
+        <div
+          onClick={() => setImageZoom(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15, 23, 42, 0.85)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, cursor: 'zoom-out',
+          }}
+        >
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setImageZoom(null) }}
+            aria-label="Fermer"
+            style={{
+              position: 'absolute', top: 16, right: 16, width: 40, height: 40, borderRadius: 20,
+              border: 'none', background: '#FFFFFF', color: '#1F2933', fontSize: 22, fontWeight: 700,
+              cursor: 'pointer', lineHeight: 1,
+            }}
+          >
+            ×
+          </button>
+          <img
+            src={imageZoom}
+            alt="Document agrandi"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '95%', maxHeight: '95%', objectFit: 'contain', borderRadius: 6, background: '#FFFFFF', cursor: 'default' }}
+          />
         </div>
       )}
     </div>
