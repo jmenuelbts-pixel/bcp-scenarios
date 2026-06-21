@@ -32,7 +32,8 @@ export interface AnnexeHoraires {
 
 export interface CaseOrganigramme {
   id: string
-  fonction: string // fonction fixe affichee, l'eleve place le nom
+  niveau: number // 1 = direction, 2 = chefs, 3 = rattaches
+  colonne: number // position horizontale dans la trame (0-based)
 }
 
 export interface AnnexeOrganigramme {
@@ -40,8 +41,9 @@ export interface AnnexeOrganigramme {
   id: string
   titre: string
   consigne: string
-  noms: string[] // liste des noms a replacer
-  cases: CaseOrganigramme[] // une case par personne a placer
+  noms: string[] // liste complete des noms a choisir (menu deroulant)
+  fonctions: string[] // liste complete des fonctions a choisir (menu deroulant)
+  cases: CaseOrganigramme[] // emplacements de la trame, chacun = 2 menus (nom + fonction)
 }
 
 export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme
@@ -251,22 +253,25 @@ const RENAULT_M1: ContenuMission = {
         id: 'annexe5',
         titre: 'Annexe 5 — Organigramme de la concession Renault',
         consigne:
-          'Reportez dans chaque case le nom choisi dans la liste ci-dessous, puis indiquez la fonction de la personne.',
+          "Pour chaque emplacement, choisissez le bon nom et la bonne fonction à l'aide des deux menus déroulants, en vous appuyant sur le document 5 (les personnes y sont présentées dans le désordre). La trame fixe les liens hiérarchiques ; à vous de placer chaque personne au bon endroit.",
         noms: [
-          'Yayha Allaoui', 'José Bénitez', 'Badr Chatraoui', 'Cyril Cottard', 'Céline Etchecopar',
-          'Pascal Jean', 'Bernard Mercier', 'Matthieu Mulliez', 'Sergio Polatian', 'Guillaume Ramus',
+          'Sergio Polatian', 'Guillaume Ramus', 'Pascal Jean', 'José Bénitez', 'Céline Etchecopar',
+          'Yayha Allaoui', 'Cyril Cottard', 'Matthieu Mulliez', 'Bernard Mercier', 'Badr Chatraoui',
+        ],
+        fonctions: [
+          'Directeur', 'Chef des ventes véhicules neufs', 'Conseiller commercial VN',
+          'Assistante de livraison', "Ventes véhicules d'occasion", 'Conseiller commercial VO',
+          'Chef des ventes pièces de rechange', 'Conseiller pièces de rechange', 'Chef des services techniques',
         ],
         cases: [
-          { id: 'org1', fonction: 'Directeur' },
-          { id: 'org2', fonction: 'Chef des ventes véhicules neufs' },
-          { id: 'org3', fonction: 'Conseiller commercial VN' },
-          { id: 'org4', fonction: 'Conseiller commercial VN' },
-          { id: 'org5', fonction: 'Assistante de livraison' },
-          { id: 'org6', fonction: 'Conseiller commercial VO' },
-          { id: 'org7', fonction: 'Conseiller commercial VO' },
-          { id: 'org8', fonction: 'Chef des ventes pièces de rechange' },
-          { id: 'org9', fonction: 'Conseiller pièces de rechange' },
-          { id: 'org10', fonction: 'Chef des services techniques' },
+          { id: 'org1', niveau: 1, colonne: 1 },
+          { id: 'org2', niveau: 2, colonne: 0 },
+          { id: 'org3', niveau: 2, colonne: 1 },
+          { id: 'org4', niveau: 2, colonne: 2 },
+          { id: 'org5', niveau: 2, colonne: 3 },
+          { id: 'org6', niveau: 3, colonne: 0 },
+          { id: 'org7', niveau: 3, colonne: 1 },
+          { id: 'org8', niveau: 3, colonne: 2 },
         ],
       },
     ],
@@ -517,8 +522,9 @@ export function formaterTravail(missionId: string, contenu: string): string {
       }
     } else if (a.type === 'organigramme') {
       for (const c of a.cases) {
-        const v = obj[`${a.id}.${c.id}`] ?? ''
-        lignes.push(`  ${c.fonction} : ${v}`)
+        const fonction = obj[`${a.id}.${c.id}.fonction`] ?? ''
+        const nom = obj[`${a.id}.${c.id}.nom`] ?? ''
+        lignes.push(`  ${fonction} : ${nom}`)
       }
     }
     lignes.push('')

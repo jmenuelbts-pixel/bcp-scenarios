@@ -57,7 +57,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   contenu.annexes?.forEach((a) => {
     if (a.type === 'tableau') a.lignes.forEach((l) => champs.push(`${a.id}.${l.id}`))
     if (a.type === 'horaires') a.jours.forEach((j) => champs.push(`${a.id}.${j}`))
-    if (a.type === 'organigramme') a.cases.forEach((c) => champs.push(`${a.id}.${c.id}`))
+    if (a.type === 'organigramme') a.cases.forEach((c) => { champs.push(`${a.id}.${c.id}.nom`); champs.push(`${a.id}.${c.id}.fonction`) })
   })
   const toutRempli =
     champs.length === 0
@@ -317,28 +317,37 @@ function rendreHoraires(a: AnnexeHoraires, saisies: Saisies, set: (id: string, v
 }
 
 function rendreOrganigramme(a: AnnexeOrganigramme, saisies: Saisies, set: (id: string, v: string) => void, champStyle: React.CSSProperties, verrouille: boolean, couleur: string) {
+  // Regroupe les cases par niveau hierarchique, triees par colonne
+  const niveaux: Record<number, typeof a.cases> = {}
+  a.cases.forEach((c) => { (niveaux[c.niveau] = niveaux[c.niveau] ?? []).push(c) })
+  Object.values(niveaux).forEach((arr) => arr.sort((x, y) => x.colonne - y.colonne))
+  const ordre = Object.keys(niveaux).map(Number).sort((x, y) => x - y)
+
+  const menu = (champId: string, options: string[], label: string) => (
+    <select value={saisies[champId] ?? ''} disabled={verrouille} onChange={(e) => set(champId, e.target.value)} style={{ ...champStyle, marginBottom: 4 }}>
+      <option value="">{label}</option>
+      {options.map((o) => (<option key={o} value={o}>{o}</option>))}
+    </select>
+  )
+
   return (
     <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
-      <div style={{ padding: '10px 12px' }}>
-        <p style={{ margin: '0 0 8px 0', fontSize: 13, color: '#374151' }}>{a.consigne}</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
-          {a.noms.map((n) => (
-            <span key={n} style={{ fontSize: 12, background: '#FFFFFF', border: '1px solid #C9D6E3', borderRadius: 99, padding: '3px 10px', color: '#374151' }}>{n}</span>
-          ))}
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
-          {a.cases.map((c) => (
-            <div key={c.id} style={{ border: `1px solid ${couleur}`, borderRadius: 8, padding: 8 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: couleur, marginBottom: 6 }}>{c.fonction}</div>
-              <select value={saisies[`${a.id}.${c.id}`] ?? ''} disabled={verrouille} onChange={(e) => set(`${a.id}.${c.id}`, e.target.value)} style={champStyle}>
-                <option value="">Choisir un nom</option>
-                {a.noms.map((n) => (
-                  <option key={n} value={n}>{n}</option>
+      <div style={{ padding: '12px' }}>
+        <p style={{ margin: '0 0 12px 0', fontSize: 13, color: '#374151' }}>{a.consigne}</p>
+        <div style={{ overflowX: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 'fit-content' }}>
+            {ordre.map((niv) => (
+              <div key={niv} style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+                {niveaux[niv].map((c) => (
+                  <div key={c.id} style={{ border: `1px solid ${couleur}`, borderRadius: 8, padding: 8, width: 190, flexShrink: 0, background: '#FFFFFF' }}>
+                    {menu(`${a.id}.${c.id}.fonction`, a.fonctions, 'Choisir une fonction')}
+                    {menu(`${a.id}.${c.id}.nom`, a.noms, 'Choisir un nom')}
+                  </div>
                 ))}
-              </select>
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
