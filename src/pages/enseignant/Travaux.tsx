@@ -9,6 +9,7 @@ import { SelecteurTri, type CleTri } from '../../components/ui/SelecteurTri'
 import { COULEUR_PROF, getMission } from '../../data/schema'
 import { tousLesTravaux, type TravailListe } from '../../lib/enseignant'
 import { DetailActivitesEleve } from '../../components/enseignant/DetailActivitesEleve'
+import { formaterTravail } from '../../data/contenus'
 
 function titreMission(missionId: string): string {
   const scenarioId = missionId.split('-m')[0]
@@ -121,7 +122,7 @@ export function Travaux() {
                     <div style={{ padding: '0 16px 16px 16px' }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: '#16456E', margin: '4px 0 4px' }}>Travail rédigé</div>
                       <div style={{ background: '#F8FAFC', border: '1px solid #E6ECF2', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#1F2933', whiteSpace: 'pre-wrap', lineHeight: 1.55 }}>
-                        {(t.contenu ?? '').trim().length > 0 ? t.contenu : 'Aucun texte rédigé.'}
+                        {(t.contenu ?? '').trim().length > 0 ? formaterTravail(t.missionId, t.contenu ?? '') : 'Aucun texte rédigé.'}
                       </div>
                       <DetailActivitesEleve eleveId={t.eleveId} missionId={t.missionId} />
                     </div>

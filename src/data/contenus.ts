@@ -7,8 +7,68 @@
 import type { NiveauCompetence } from './schema'
 
 // --- Onglet Travaux a rendre -----------------------------------------------
+// --- Onglet Travaux a rendre (fiche eleve complete) ------------------------
+// Une annexe a completer : tableau de lignes (libelle fixe + saisie eleve),
+// ou organigramme a reconstituer en placant des noms.
+export interface LigneAnnexe {
+  id: string
+  libelle: string // intitule fixe de la ligne (ex : Denomination)
+  prefixe?: string // categorie fixe affichee a gauche (ex : Services disponibles)
+}
+
+export interface AnnexeTableau {
+  type: 'tableau'
+  id: string
+  titre: string
+  lignes: LigneAnnexe[]
+}
+
+export interface AnnexeHoraires {
+  type: 'horaires'
+  id: string
+  titre: string
+  jours: string[] // ex : Lundi..Dimanche
+}
+
+export interface CaseOrganigramme {
+  id: string
+  fonction: string // fonction fixe affichee, l'eleve place le nom
+}
+
+export interface AnnexeOrganigramme {
+  type: 'organigramme'
+  id: string
+  titre: string
+  consigne: string
+  noms: string[] // liste des noms a replacer
+  cases: CaseOrganigramme[] // une case par personne a placer
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme
+
+export interface QuestionTravaux {
+  numero: number
+  consigne: string // ex : Completez l'identite de l'entreprise.
+  ressources?: string // ex : Ressource 1, completez l'annexe 1.
+  annexeId?: string // annexe rattachee a remplir
+}
+
+export interface ActiviteTravaux {
+  titre: string // ex : Activite 1 - L'entreprise et ses produits
+  questions: QuestionTravaux[]
+}
+
 export interface ContenuTravaux {
-  consigne: string // enonce de la mission a realiser
+  consigne: string // resume court de la mission a realiser
+  contexte?: string // contexte professionnel
+  objectifs?: string[] // objectifs de la mission
+  competence?: {
+    groupe: string // ex : Groupe de competences 1
+    intitule: string // ex : Conseiller et vendre / Assurer la veille commerciale
+    detail: string // descriptif de la competence
+  }
+  activites?: ActiviteTravaux[] // activites avec questions
+  annexes?: Annexe[] // annexes a completer par l'eleve
 }
 
 // --- Onglet Synthese (carte arborescente a completer) ----------------------
@@ -111,7 +171,105 @@ export interface ContenuMission {
 const RENAULT_M1: ContenuMission = {
   travaux: {
     consigne:
-      "Vous êtes en PFMP à la concession Renault Paris Championnet (203-215 rue Championnet, 75018 Paris), spécialisée dans la vente de véhicules neufs, de véhicules d'occasion et d'accessoires. À partir des ressources fournies, rédiger une présentation structurée de l'unité commerciale. Présenter son identité (dénomination, secteur d'activité, forme juridique, année de création, coordonnées), distinguer les biens et les services proposés, puis situer les acteurs dans l'organisation. La présentation doit tenir sur une page et adopter un ton professionnel.",
+      "À partir des ressources fournies, complétez l'identité de l'unité commerciale, ses horaires, ses biens et services, puis réalisez son organigramme.",
+    contexte:
+      "Vous êtes en PFMP dans la concession Renault Paris Championnet, située 203-215 rue Championnet, 75018 Paris (18e arrondissement). L'entreprise est spécialisée dans la vente de véhicules neufs, de véhicules d'occasion et d'accessoires. C'est votre premier stage dans l'enseigne. Le responsable de l'agence souhaite que vous vous informiez sur l'entreprise afin de prendre en main les clients et les réclamations, sous la responsabilité de votre tuteur.",
+    objectifs: [
+      "Identifier et présenter l'identité d'une unité commerciale (dénomination, statut, activité, coordonnées).",
+      "Distinguer les biens et les services proposés et situer les acteurs dans l'organisation de l'entreprise.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "Rechercher, hiérarchiser, exploiter et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: "Activité 1 — L'entreprise et ses produits",
+        questions: [
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Ressource 1, complétez l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez les horaires d\'ouverture de la partie showroom de la concession.', ressources: 'Ressource 2, complétez l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Indiquez les deux grands types de biens proposés par la concession Renault.', ressources: 'Ressource 3, complétez l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Indiquez les services proposés par la concession Renault.', ressources: 'Ressource 4, complétez l\'annexe 4.', annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Le personnel de l\'entreprise',
+        questions: [
+          { numero: 5, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction de chaque personne.", ressources: 'Ressource 5, complétez l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'tableau',
+        id: 'annexe1',
+        titre: "Annexe 1 — Identité de l'entreprise",
+        lignes: [
+          { id: 'denom', libelle: 'Dénomination' },
+          { id: 'secteur', libelle: "Secteur d'activité" },
+          { id: 'forme', libelle: 'Forme juridique' },
+          { id: 'annee', libelle: 'Année de création' },
+          { id: 'adresse', libelle: 'Adresse' },
+          { id: 'tel', libelle: 'Numéro de téléphone' },
+          { id: 'site', libelle: 'Site internet' },
+        ],
+      },
+      {
+        type: 'horaires',
+        id: 'annexe2',
+        titre: "Annexe 2 — Horaires d'ouverture du showroom",
+        jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+      },
+      {
+        type: 'tableau',
+        id: 'annexe3',
+        titre: 'Annexe 3 — Les biens',
+        lignes: [
+          { id: 'bien1', libelle: 'Les biens', prefixe: 'Les biens' },
+          { id: 'bien2', libelle: 'Les biens', prefixe: 'Les biens' },
+        ],
+      },
+      {
+        type: 'tableau',
+        id: 'annexe4',
+        titre: 'Annexe 4 — Les services',
+        lignes: [
+          { id: 'sd1', libelle: '', prefixe: 'Services disponibles' },
+          { id: 'sd2', libelle: '', prefixe: 'Services disponibles' },
+          { id: 'sd3', libelle: '', prefixe: 'Services disponibles' },
+          { id: 'sd4', libelle: '', prefixe: 'Services disponibles' },
+          { id: 'er1', libelle: '', prefixe: 'Entretien et réparation' },
+          { id: 'er2', libelle: '', prefixe: 'Entretien et réparation' },
+          { id: 'er3', libelle: '', prefixe: 'Entretien et réparation' },
+          { id: 'er4', libelle: '', prefixe: 'Entretien et réparation' },
+        ],
+      },
+      {
+        type: 'organigramme',
+        id: 'annexe5',
+        titre: 'Annexe 5 — Organigramme de la concession Renault',
+        consigne:
+          'Reportez dans chaque case le nom choisi dans la liste ci-dessous, puis indiquez la fonction de la personne.',
+        noms: [
+          'Yayha Allaoui', 'José Bénitez', 'Badr Chatraoui', 'Cyril Cottard', 'Céline Etchecopar',
+          'Pascal Jean', 'Bernard Mercier', 'Matthieu Mulliez', 'Sergio Polatian', 'Guillaume Ramus',
+        ],
+        cases: [
+          { id: 'org1', fonction: 'Directeur' },
+          { id: 'org2', fonction: 'Chef des ventes véhicules neufs' },
+          { id: 'org3', fonction: 'Conseiller commercial VN' },
+          { id: 'org4', fonction: 'Conseiller commercial VN' },
+          { id: 'org5', fonction: 'Assistante de livraison' },
+          { id: 'org6', fonction: 'Conseiller commercial VO' },
+          { id: 'org7', fonction: 'Conseiller commercial VO' },
+          { id: 'org8', fonction: 'Chef des ventes pièces de rechange' },
+          { id: 'org9', fonction: 'Conseiller pièces de rechange' },
+          { id: 'org10', fonction: 'Chef des services techniques' },
+        ],
+      },
+    ],
   },
   corrige: {
     questions: [
@@ -325,4 +483,46 @@ export function getContenuMission(missionId: string): ContenuMission | undefined
 // Indique si une mission dispose d'un contenu redige.
 export function aContenu(missionId: string): boolean {
   return missionId in CONTENUS
+}
+
+// Formate les saisies d'annexes (JSON) d'un travail eleve en texte lisible
+// pour l'affichage cote enseignant. Si le contenu n'est pas du JSON d'annexes
+// (ancien format texte libre), il est renvoye tel quel.
+export function formaterTravail(missionId: string, contenu: string): string {
+  if (!contenu || contenu.trim().length === 0) return ''
+  let obj: Record<string, string>
+  try {
+    obj = JSON.parse(contenu)
+  } catch {
+    return contenu
+  }
+  if (!obj || typeof obj !== 'object') return contenu
+  if (typeof obj._texte === 'string' && Object.keys(obj).length === 1) return obj._texte
+
+  const mission = getContenuMission(missionId)
+  const annexes = mission?.travaux.annexes ?? []
+  const lignes: string[] = []
+
+  for (const a of annexes) {
+    lignes.push(a.titre)
+    if (a.type === 'tableau') {
+      for (const l of a.lignes) {
+        const v = obj[`${a.id}.${l.id}`] ?? ''
+        lignes.push(`  ${l.prefixe ?? l.libelle} : ${v}`)
+      }
+    } else if (a.type === 'horaires') {
+      for (const j of a.jours) {
+        const v = obj[`${a.id}.${j}`] ?? ''
+        lignes.push(`  ${j} : ${v}`)
+      }
+    } else if (a.type === 'organigramme') {
+      for (const c of a.cases) {
+        const v = obj[`${a.id}.${c.id}`] ?? ''
+        lignes.push(`  ${c.fonction} : ${v}`)
+      }
+    }
+    lignes.push('')
+  }
+  const txt = lignes.join('\n').trim()
+  return txt.length > 0 ? txt : contenu
 }
