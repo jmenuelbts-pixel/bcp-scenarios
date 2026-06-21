@@ -29,6 +29,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
   const [retour, setRetour] = useState<RetourTravail | null>(null)
+  const [docsOuverts, setDocsOuverts] = useState<Record<number, boolean>>({})
 
   useEffect(() => {
     if (!etudiantId) return
@@ -97,6 +98,41 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
         <Bloc titre="Contexte professionnel" couleur={couleur}>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: '#374151' }}>{contenu.contexte}</p>
         </Bloc>
+      )}
+
+      {/* Bibliotheque de documents a lire (depliables) */}
+      {contenu.documents && contenu.documents.length > 0 && (
+        <div style={{ background: '#FFFFFF', border: '1px solid #DCE8F4', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
+          <h3 style={{ margin: '0 0 10px 0', fontSize: 14, fontWeight: 700, color: couleur }}>Documents de la mission</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {contenu.documents.map((d) => {
+              const ouvert = docsOuverts[d.numero] ?? false
+              return (
+                <div key={d.numero} style={{ border: '1px solid #E6ECF2', borderRadius: 8, overflow: 'hidden' }}>
+                  <button
+                    type="button"
+                    onClick={() => setDocsOuverts((o) => ({ ...o, [d.numero]: !ouvert }))}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
+                      fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 600, color: '#16456E',
+                      background: ouvert ? '#EEF3F8' : '#F8FAFC', border: 'none', cursor: 'pointer', padding: '10px 12px',
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', transform: ouvert ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', color: couleur }}>▶</span>
+                    Document {d.numero} — {d.titre}
+                  </button>
+                  {ouvert && (
+                    <div style={{ padding: '10px 12px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {d.images.map((src, i) => (
+                        <img key={i} src={src} alt={`Document ${d.numero}`} style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6 }} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
       )}
 
       {/* Objectifs */}

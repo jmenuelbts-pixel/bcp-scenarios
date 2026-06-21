@@ -60,9 +60,16 @@ export interface ActiviteTravaux {
   questions: QuestionTravaux[]
 }
 
+export interface DocumentRessource {
+  numero: number // numero affiche (Document 1, 2...)
+  titre: string
+  images: string[] // chemins des images (depuis /public), une ou plusieurs pages
+}
+
 export interface ContenuTravaux {
   consigne: string // resume court de la mission a realiser
   contexte?: string // contexte professionnel
+  documents?: DocumentRessource[] // bibliotheque de documents a lire (depliables)
   objectifs?: string[] // objectifs de la mission
   competence?: {
     groupe: string // ex : Groupe de competences 1
@@ -176,6 +183,13 @@ const RENAULT_M1: ContenuMission = {
       "À partir des ressources fournies, complétez l'identité de l'unité commerciale, ses horaires, ses biens et services, puis réalisez son organigramme.",
     contexte:
       "Vous êtes en PFMP dans la concession Renault Paris Championnet, située 203-215 rue Championnet, 75018 Paris (18e arrondissement). L'entreprise est spécialisée dans la vente de véhicules neufs, de véhicules d'occasion et d'accessoires. C'est votre premier stage dans l'enseigne. Le responsable de l'agence souhaite que vous vous informiez sur l'entreprise afin de prendre en main les clients et les réclamations, sous la responsabilité de votre tuteur.",
+    documents: [
+      { numero: 1, titre: "Identité de l'entreprise (site RRG Championnet)", images: ['/docs/renault-m1/doc1.jpg'] },
+      { numero: 2, titre: "Horaires d'ouverture du showroom", images: ['/docs/renault-m1/doc2.jpg'] },
+      { numero: 3, titre: 'Les biens (site RRG Championnet)', images: ['/docs/renault-m1/doc3.jpg'] },
+      { numero: 4, titre: 'Les services', images: ['/docs/renault-m1/doc4.jpg'] },
+      { numero: 5, titre: 'Le personnel (équipes présentées dans le désordre)', images: ['/docs/renault-m1/doc5a.jpg', '/docs/renault-m1/doc5b.jpg'] },
+    ],
     objectifs: [
       "Identifier et présenter l'identité d'une unité commerciale (dénomination, statut, activité, coordonnées).",
       "Distinguer les biens et les services proposés et situer les acteurs dans l'organisation de l'entreprise.",
@@ -190,16 +204,16 @@ const RENAULT_M1: ContenuMission = {
       {
         titre: "Activité 1 — L'entreprise et ses produits",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Ressource 1, complétez l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Indiquez les horaires d\'ouverture de la partie showroom de la concession.', ressources: 'Ressource 2, complétez l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Indiquez les deux grands types de biens proposés par la concession Renault.', ressources: 'Ressource 3, complétez l\'annexe 3.', annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Indiquez les services proposés par la concession Renault.', ressources: 'Ressource 4, complétez l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez les horaires d\'ouverture de la partie showroom de la concession.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Indiquez les deux grands types de biens proposés par la concession Renault.', ressources: 'Lire le document 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Indiquez les services proposés par la concession Renault.', ressources: 'Lire le document 4, compléter l\'annexe 4.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 2 — Le personnel de l\'entreprise',
         questions: [
-          { numero: 5, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction de chaque personne.", ressources: 'Ressource 5, complétez l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 5, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction de chaque personne.", ressources: 'Lire le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
         ],
       },
     ],
