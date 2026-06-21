@@ -11,6 +11,8 @@ import type {
   AnnexeTableau,
   AnnexeHoraires,
   AnnexeOrganigramme,
+  AnnexeGrille,
+  AnnexeTexte,
 } from '../../data/contenus'
 import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 
@@ -30,7 +32,6 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [erreur, setErreur] = useState<string | null>(null)
   const [retour, setRetour] = useState<RetourTravail | null>(null)
   const [docsOuverts, setDocsOuverts] = useState<Record<number, boolean>>({})
-  const [imageZoom, setImageZoom] = useState<string | null>(null)
 
   useEffect(() => {
     if (!etudiantId) return
@@ -129,9 +130,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                           key={i}
                           src={src}
                           alt={`Document ${d.numero}`}
-                          onClick={() => setImageZoom(src)}
-                          title="Cliquer pour agrandir"
-                          style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6, cursor: 'zoom-in' }}
+                          style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6 }}
                         />
                       ))}
                     </div>
@@ -281,34 +280,6 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       )}
 
       {/* Vue agrandie d'un document */}
-      {imageZoom && (
-        <div
-          onClick={() => setImageZoom(null)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15, 23, 42, 0.85)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, cursor: 'zoom-out',
-          }}
-        >
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); setImageZoom(null) }}
-            aria-label="Fermer"
-            style={{
-              position: 'absolute', top: 16, right: 16, width: 40, height: 40, borderRadius: 20,
-              border: 'none', background: '#FFFFFF', color: '#1F2933', fontSize: 22, fontWeight: 700,
-              cursor: 'pointer', lineHeight: 1,
-            }}
-          >
-            ×
-          </button>
-          <img
-            src={imageZoom}
-            alt="Document agrandi"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '95%', maxHeight: '95%', objectFit: 'contain', borderRadius: 6, background: '#FFFFFF', cursor: 'default' }}
-          />
-        </div>
-      )}
     </div>
   )
 }
@@ -332,7 +303,52 @@ function rendreAnnexe(
 ): React.ReactNode {
   if (annexe.type === 'tableau') return rendreTableau(annexe, saisies, set, champStyle)
   if (annexe.type === 'horaires') return rendreHoraires(annexe, saisies, set, champStyle)
+  if (annexe.type === 'grille') return rendreGrille(annexe, saisies, set, champStyle)
+  if (annexe.type === 'texte') return rendreTexte(annexe, saisies, set, champStyle)
   return rendreOrganigramme(annexe, saisies, set, champStyle, verrouille, couleur)
+}
+
+function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: string) => void, champStyle: React.CSSProperties) {
+  const lignes = []
+  for (let r = 0; r < a.nbLignes; r++) lignes.push(r)
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: a.colonnes.length > 2 ? 640 : undefined }}>
+          <thead>
+            <tr>
+              {a.colonnes.map((c, ci) => (
+                <th key={ci} style={{ padding: '6px 8px', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #ECEFF2', textAlign: 'left', whiteSpace: 'nowrap' }}>{c}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {lignes.map((r) => (
+              <tr key={r} style={{ borderTop: '1px solid #F1F3F5' }}>
+                {a.colonnes.map((_, ci) => (
+                  <td key={ci} style={{ padding: '4px 6px' }}>
+                    <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+function rendreTexte(a: AnnexeTexte, saisies: Saisies, set: (id: string, v: string) => void, champStyle: React.CSSProperties) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: '10px 12px' }}>
+        <textarea value={saisies[`${a.id}.texte`] ?? ''} onChange={(e) => set(`${a.id}.texte`, e.target.value)} rows={a.lignes ?? 3} style={{ ...champStyle, resize: 'vertical', fontSize: 14, padding: 10 }} />
+      </div>
+    </div>
+  )
 }
 
 function rendreTableau(a: AnnexeTableau, saisies: Saisies, set: (id: string, v: string) => void, champStyle: React.CSSProperties) {

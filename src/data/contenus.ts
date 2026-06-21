@@ -46,7 +46,22 @@ export interface AnnexeOrganigramme {
   cases: CaseOrganigramme[] // emplacements de la trame, chacun = 2 menus (nom + fonction)
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme
+export interface AnnexeGrille {
+  type: 'grille'
+  id: string
+  titre: string
+  colonnes: string[] // en-tetes de colonnes
+  nbLignes: number // nombre de lignes a saisir
+}
+
+export interface AnnexeTexte {
+  type: 'texte'
+  id: string
+  titre: string
+  lignes?: number // hauteur de la zone de saisie (defaut 3)
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte
 
 export interface QuestionTravaux {
   numero: number
@@ -490,8 +505,221 @@ const RENAULT_M1: ContenuMission = {
 }
 
 // Registre des contenus disponibles, indexe par identifiant de mission.
+// ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 2 - La zone de chalandise
+// ---------------------------------------------------------------------------
+const RENAULT_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, identifiez la provenance des clients, déterminez la zone de chalandise en temps, puis sélectionnez les clients à inviter aux journées portes ouvertes.",
+    contexte:
+      "Votre responsable M. Prauviste souhaite mettre en place une campagne de communication. Il vous demande d'analyser le lieu de provenance des clients de la concession à partir du fichier clients, car il souhaite informer ceux qui sont à 20 minutes maximum des Journées Portes Ouvertes qui auront lieu le 11 novembre de 10 heures à 20 heures. Votre tuteur M. Yves Jamen souhaite que vous évaluiez, en voiture, la distance en temps qui sépare les clients de la concession.",
+    documents: [
+      { numero: 1, titre: 'Les explications de M. Prauvit (la zone de chalandise)', images: ['/docs/renault-m2/doc1.jpg'] },
+      { numero: 2, titre: 'Les différentes représentations de la zone de chalandise', images: ['/docs/renault-m2/doc2.jpg'] },
+      { numero: 3, titre: 'Chèques, relevés d\'identité bancaire et suggestions des clients', images: ['/docs/renault-m2/doc3a.jpg', '/docs/renault-m2/doc3b.jpg', '/docs/renault-m2/doc3c.jpg', '/docs/renault-m2/doc3d.jpg', '/docs/renault-m2/doc3e.jpg'] },
+      { numero: 4, titre: 'Tableau d\'arrondis en temps', images: ['/docs/renault-m2/doc4.jpg'] },
+      { numero: 5, titre: 'Extrait du fichier client (noms et adresses mail)', images: ['/docs/renault-m2/doc5.jpg'] },
+    ],
+    competence: {
+      groupe: 'Compétence travaillée',
+      intitule: 'C.4B.1.1',
+      detail: "Identifier, au sein du SIC, les informations internes utiles à l'opération de prospection, les extraire et les analyser.",
+    },
+    objectifs: [
+      'Comprendre la notion de zone de chalandise et ses trois zones (primaire, secondaire, tertiaire).',
+      'Identifier la provenance des clients à partir du système d\'information commercial.',
+      'Déterminer la zone de chalandise en temps et sélectionner les clients à cibler.',
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — Les éléments de provenance de la clientèle',
+        questions: [
+          { numero: 1, consigne: 'À partir des chèques, des relevés d\'identité bancaire et des suggestions des clients, complétez le tableau de provenance.', ressources: 'Lire les documents 1, 2 et 3, compléter l\'annexe 1.', annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La détermination de la zone de chalandise : en temps',
+        questions: [
+          { numero: 2, consigne: 'Retrouvez et notez l\'adresse de la concession Renault.', ressources: 'Compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Complétez le tableau en inscrivant les nom et prénom des clients, calculez la distance en temps (Google Maps) puis arrondissez à la dizaine supérieure.', ressources: 'Lire le document 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La construction de la zone de chalandise',
+        questions: [
+          { numero: 4, consigne: 'Selon vous, quel est l\'avantage pour la concession Renault de connaître d\'où viennent ses clients ?', ressources: 'Compléter l\'annexe 4.', annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 4 — Sélectionner les clients',
+        questions: [
+          { numero: 5, consigne: 'Indiquez le nom des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2015).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Provenance des clients de la concession', colonnes: ['Nom et prénom', 'Adresse', 'Téléphone', 'Produit acheté', 'Année'], nbLignes: 17 },
+      { type: 'tableau', id: 'annexe2', titre: 'Annexe 2 — Adresse de la concession', lignes: [{ id: 'adr', libelle: 'Adresse de la concession' }] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul de la distance en temps', colonnes: ['Nom', 'Prénom', 'Distance en km', 'Distance en minutes', 'Arrondi (dizaine sup.)'], nbLignes: 17 },
+      { type: 'texte', id: 'annexe4', titre: 'Annexe 4 — Avantage pour Renault', lignes: 3 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Le nom des bénéficiaires de l\'invitation', colonnes: ['Nom des clients bénéficiaires'], nbLignes: 4 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Compléter le tableau de provenance des clients (annexe 1).',
+        documents: ['Documents 1, 2 et 3'],
+        bareme: 5,
+        reponse:
+          "Tableau à compléter avec les 17 clients (nom et prénom, adresse avec le temps de trajet, téléphone, produit acheté, année). Les informations proviennent des chèques, des RIB et des suggestions du document 3.",
+      },
+      {
+        intitule: "Retrouver l'adresse de la concession (annexe 2).",
+        documents: ['Annexe 2'],
+        bareme: 1,
+        reponse: '215 rue Championnet, 75018 Paris.',
+      },
+      {
+        intitule: 'Compléter nom/prénom, calculer le temps et arrondir (annexe 3).',
+        documents: ['Document 4', 'Google Maps'],
+        bareme: 8,
+        reponse:
+          "Temps puis arrondi par client : Hutte 18→20, Tar 16→20, Huze 4→10, Aurialle 7→10, Hamour 25→30, Zion 20→20, Rhaves 8→10, Dupont 10→10, Quilau 15→20, Bon 6→10, Bambel 4→10, Dubois 24→30, Anssieux 7→10, Auchon 18→20, Hémoi 27→30, Hique 6→10, Dejeu 4→10.",
+      },
+      {
+        intitule: 'Avantage de connaître la provenance des clients (annexe 4).',
+        documents: ['Annexe 4'],
+        bareme: 2,
+        reponse:
+          "Connaître la provenance des clients permet de construire la zone de chalandise de la concession, donc de cibler la communication (ici les journées portes ouvertes) sur les clients les plus proches et de mieux orienter les actions commerciales.",
+      },
+      {
+        intitule: 'Sélectionner les bénéficiaires de l\'invitation (annexe 5).',
+        documents: ['Annexe 1', 'Document 5'],
+        bareme: 4,
+        reponse:
+          "Règle : zone primaire ou secondaire ET véhicule acheté avant 2015. Seuls deux clients remplissent les deux conditions : Eva Zion (zone secondaire, véhicule acheté en 2010) et Éric Dupont (zone primaire, véhicule acheté en 2006).",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La zone de chalandise',
+    proposition: ['Les chèques', 'Les R.I.B.', 'En temps (courbes isochrones)', 'En distance (courbes isométriques)', 'La zone primaire', 'La zone tertiaire'],
+    racine: {
+      id: 'racine',
+      texte: 'La zone de chalandise',
+      enfants: [
+        {
+          id: 'provenance', texte: '3 éléments de provenance',
+          enfants: [
+            { id: 'pr1', texte: null, reponse: 'Les chèques' },
+            { id: 'pr2', texte: null, reponse: 'Les R.I.B.' },
+            { id: 'pr3', texte: 'Les suggestions' },
+          ],
+        },
+        {
+          id: 'repr', texte: '3 types de représentation',
+          enfants: [
+            { id: 're1', texte: null, reponse: 'En temps (courbes isochrones)' },
+            { id: 're2', texte: null, reponse: 'En distance (courbes isométriques)' },
+            { id: 're3', texte: 'En densité de clients ou prospects' },
+          ],
+        },
+        {
+          id: 'zones', texte: '3 zones',
+          enfants: [
+            { id: 'zo1', texte: null, reponse: 'La zone primaire' },
+            { id: 'zo2', texte: 'La zone secondaire' },
+            { id: 'zo3', texte: null, reponse: 'La zone tertiaire' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Identifier les éléments de provenance de la clientèle',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas où trouver les informations sur les clients.' },
+          { niveau: 'debrouille', description: 'Je relève quelques informations sans les organiser.' },
+          { niveau: 'averti', description: 'Je complète le tableau de provenance de façon structurée.' },
+          { niveau: 'expert', description: "Je complète le tableau et je justifie l'origine de chaque information (chèque, RIB, suggestion)." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Déterminer la zone de chalandise en temps',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas calculer le temps de trajet.' },
+          { niveau: 'debrouille', description: 'Je calcule quelques temps mais sans les arrondir.' },
+          { niveau: 'averti', description: "Je calcule et j'arrondis correctement les temps à la dizaine supérieure." },
+          { niveau: 'expert', description: "Je calcule, j'arrondis et je classe chaque client en zone primaire, secondaire ou tertiaire." },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Sélectionner les clients à cibler',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas quels clients retenir.' },
+          { niveau: 'debrouille', description: 'Je retiens des clients sans appliquer toutes les conditions.' },
+          { niveau: 'averti', description: "J'applique la règle (zone et année du véhicule) pour sélectionner les clients." },
+          { niveau: 'expert', description: "J'applique la règle et j'explique pourquoi chaque client est retenu ou écarté." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Zone de chalandise', definition: "Zone géographique qui entoure l'unité commerciale et dans laquelle se trouvent ses clients et prospects." },
+      { terme: 'Zone primaire', definition: "Zone la plus proche de l'unité commerciale, qui comporte la majorité des clients ou prospects." },
+      { terme: 'Zone tertiaire', definition: "Zone la plus éloignée de l'unité commerciale, qui comporte un très petit nombre de clients ou prospects." },
+      { terme: 'Courbes isochrones', definition: 'Courbes reliant les points situés à un même temps de trajet de l\'unité commerciale.' },
+      { terme: 'Courbes isométriques', definition: 'Courbes reliant les points situés à une même distance de l\'unité commerciale.' },
+      { terme: 'Prospect', definition: 'Client potentiel qui n\'a pas encore acheté mais que l\'entreprise cherche à conquérir.' },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une zone de chalandise ?", verso: "La zone géographique qui entoure l'unité commerciale et dans laquelle se trouvent ses clients et ses prospects." },
+      { recto: "Quelles sont les trois zones d'une zone de chalandise ?", verso: 'La zone primaire, la zone secondaire et la zone tertiaire.' },
+      { recto: "Qu'est-ce que la zone primaire ?", verso: "La zone la plus proche de l'unité commerciale, qui comporte la majorité des clients ou prospects." },
+      { recto: "Qu'est-ce que la zone tertiaire ?", verso: "La zone la plus éloignée de l'unité commerciale, qui comporte un très petit nombre de clients ou prospects." },
+      { recto: "Quels sont les trois types de représentation d'une zone de chalandise ?", verso: 'En temps (courbes isochrones), en distance (courbes isométriques) et en densité de clients ou prospects.' },
+      { recto: "Comment appelle-t-on les courbes d'une représentation en temps ?", verso: 'Les courbes isochrones.' },
+      { recto: "Comment appelle-t-on les courbes d'une représentation en distance ?", verso: 'Les courbes isométriques.' },
+      { recto: "Quels documents permettent d'identifier la provenance des clients ?", verso: "Les chèques, les relevés d'identité bancaire (RIB) et les suggestions des clients." },
+      { recto: 'Que signifie « arrondir le temps à la dizaine supérieure » ?', verso: 'Remplacer la durée par la dizaine de minutes immédiatement au-dessus (par exemple 27 min donne 30 min).' },
+      { recto: 'À quoi sert de connaître la zone de chalandise pour une campagne de communication ?', verso: 'À cibler les clients selon leur proximité, par exemple pour inviter aux journées portes ouvertes ceux situés à 20 minutes maximum.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Qu'est-ce qu'une zone de chalandise ?", options: ["La zone géographique d'où provient la clientèle d'une unité commerciale", 'Le rayon de livraison des marchandises', 'La surface de vente du magasin'], bonne: 0 },
+      { type: 'unique', question: 'Combien de zones compose une zone de chalandise ?', options: ['Trois', 'Deux', 'Quatre'], bonne: 0 },
+      { type: 'unique', question: 'La zone primaire est :', options: ['La plus proche, avec la majorité des clients', 'La plus éloignée, avec peu de clients', 'Une zone sans client'], bonne: 0 },
+      { type: 'unique', question: 'La zone tertiaire est :', options: ['La plus éloignée, avec très peu de clients', "La plus proche de l'unité commerciale", 'La zone de stockage'], bonne: 0 },
+      { type: 'unique', question: 'Une représentation en temps utilise des courbes :', options: ['Isochrones', 'Isométriques', 'Isobares'], bonne: 0 },
+      { type: 'unique', question: 'Une représentation en distance utilise des courbes :', options: ['Isométriques', 'Isochrones', 'Isothermes'], bonne: 0 },
+      { type: 'qcm', question: "Quels éléments permettent d'identifier la provenance des clients ?", options: ['Les chèques', 'Les RIB', 'Les suggestions des clients', 'Les bons de commande fournisseurs'], bonnes: [0, 1, 2] },
+      { type: 'unique', question: 'Un temps de trajet de 27 minutes arrondi à la dizaine supérieure donne :', options: ['30 minutes', '20 minutes', '25 minutes'], bonne: 0 },
+      { type: 'unique', question: "Selon la règle des portes ouvertes, un client est invité s'il est :", options: ['En zone primaire ou secondaire et a un véhicule acheté avant 2015', 'En zone tertiaire uniquement', 'Client depuis moins d\'un an'], bonne: 0 },
+      { type: 'unique', question: 'Connaître la provenance des clients permet surtout :', options: ['De construire la zone de chalandise et cibler la communication', 'De fixer le prix des véhicules', 'De recruter des vendeurs'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Zone primaire', 'Zone secondaire', 'Zone tertiaire'],
+      zones: [
+        { libelle: 'Un client situé à 8 minutes de la concession', etiquetteIndex: 0 },
+        { libelle: 'Un client situé à 18 minutes de la concession', etiquetteIndex: 1 },
+        { libelle: 'Un client situé à 27 minutes de la concession', etiquetteIndex: 2 },
+        { libelle: 'Un client situé à 4 minutes de la concession', etiquetteIndex: 0 },
+        { libelle: 'Un client situé à 24 minutes de la concession', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
+  'renault-m2': RENAULT_M2,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
@@ -540,6 +768,14 @@ export function formaterTravail(missionId: string, contenu: string): string {
         const nom = obj[`${a.id}.${c.id}.nom`] ?? ''
         lignes.push(`  ${fonction} : ${nom}`)
       }
+    } else if (a.type === 'grille') {
+      lignes.push('  ' + a.colonnes.join(' | '))
+      for (let r = 0; r < a.nbLignes; r++) {
+        const cells = a.colonnes.map((_, ci) => obj[`${a.id}.r${r}.c${ci}`] ?? '')
+        if (cells.some((v) => v.trim().length > 0)) lignes.push('  ' + cells.join(' | '))
+      }
+    } else if (a.type === 'texte') {
+      lignes.push('  ' + (obj[`${a.id}.texte`] ?? ''))
     }
     lignes.push('')
   }
