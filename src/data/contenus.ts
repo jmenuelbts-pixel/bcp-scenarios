@@ -129,7 +129,27 @@ export interface AnnexeConfigurateur {
   impasseTexte: string // ex : Aucun vehicule correspondant...
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur
+// Dialogue de vente : bulles client (texte fixe) alternees avec questions
+// vendeur a saisir, chacune accompagnee de cases a cocher (colonnes, ex O/F/A/CM).
+export interface AnnexeDialogue {
+  type: 'dialogue'
+  id: string
+  titre: string
+  colonnes: string[] // en-tetes des cases a cocher (ex : O, F, A, CM)
+  tours: { role: 'vendeur' | 'client'; texte?: string }[]
+}
+
+// Tableau typologie SONCAS : libelle de ligne fixe + case a cocher + justification.
+export interface AnnexeSonCase {
+  type: 'soncase'
+  id: string
+  titre: string
+  colonneCoche: string // en-tete de la colonne de coche (ex : Mobile exprime)
+  colonneJustif: string // en-tete de la colonne justification
+  lignes: { id: string; libelle: string }[]
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase
 
 export interface QuestionTravaux {
   numero: number
@@ -1011,6 +1031,295 @@ const RENAULT_M3: ContenuMission = {
 
 
 // ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 4 - La decouverte des besoins
+// ---------------------------------------------------------------------------
+const RENAULT_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Menez l'entretien de découverte des besoins de la famille Dupont : construisez le questionnement, identifiez les mobiles et motivations d'achat, puis reformulez les besoins du client.",
+    contexte:
+      "L'étape de la prise de contact est passée. Vous êtes en confiance pour mener l'entretien de vente en commençant par la recherche des besoins, afin de prodiguer ensuite les meilleurs conseils à vos clients. Vous recevez M. Dupont, accompagné de sa famille, venu envisager le changement de son véhicule.",
+    documents: [
+      { numero: 1, titre: 'Comment connaître les besoins (les types de questions)', images: ['/docs/renault-m4/doc1.jpg'] },
+      { numero: 2, titre: "Les mobiles et motivations d'achat du client (SONCAS-E)", images: ['/docs/renault-m4/doc2.jpg'] },
+      { numero: 3, titre: 'Comment reformuler (les types de reformulation)', images: ['/docs/renault-m4/doc3.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre',
+      detail: 'Découvrir, analyser et reformuler les besoins du client.',
+    },
+    objectifs: [
+      "Construire un questionnement en entonnoir et identifier le type de chaque question.",
+      "Repérer les mobiles d'achat (SONCAS-E) exprimés par le client et les justifier.",
+      "Repérer les motivations d'achat du client et les justifier.",
+      'Reformuler les besoins du client par la reformulation synthèse.',
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — Le questionnement',
+        questions: [
+          { numero: 1, consigne: "Questionnez M. Dupont avec la méthode en entonnoir (du général au particulier). En fonction de chaque réponse, construisez la question du vendeur et cochez le type de question dont il s'agit.", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1dlg' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Les mobiles et les motivations d'achat",
+        questions: [
+          { numero: 2, consigne: "Cochez le ou les mobiles d'achat exprimés par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2mob' },
+          { numero: 3, consigne: "Cochez la ou les motivations d'achat exprimées par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3mot' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La reformulation',
+        questions: [
+          { numero: 4, consigne: "Reformulez toutes les demandes du client en utilisant la reformulation synthèse.", ressources: "Lire le document 3, compléter l'annexe 4. [C.1.2]", annexeId: 'annexe4ref' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'dialogue',
+        id: 'annexe1dlg',
+        titre: 'Annexe 1 — Le dialogue de vente',
+        colonnes: ['O', 'F', 'A', 'CM'],
+        tours: [
+          { role: 'vendeur' },
+          { role: 'client', texte: "Oui, j'ai un véhicule Renault que j'ai acheté en 2020. Même si je l'aime beaucoup, on aimerait bien la changer rapidement pour un modèle plus récent." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Oui, j'ai regardé un peu sur le site mais j'aime bien me faire une idée en vrai." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "On partirait plutôt sur une occasion. La voiture que j'ai actuellement c'en est une et elle est très bien." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Plutôt un véhicule de type citadine pour emmener et aller chercher les enfants à l'école et aller au travail. Ça permettra de réduire les coûts de carburant qui ne cessent d'augmenter. Et puis le week-end nous allons parfois voir mes beaux-parents en Normandie, à 450 km de Paris ; à ce moment-là nous louerons une voiture." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Ah non ! À l'époque où nous sommes, il faut penser à la planète, donc pas de voiture essence ni diésel. Plutôt électrique. Nous sommes très écolos !" },
+          { role: 'vendeur' },
+          { role: 'client', texte: "On a beaucoup réfléchi avec ma femme : on aime bien les voitures françaises, et on aime la marque Renault." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Nous avons vécu 5 ans aux États-Unis et là-bas ce ne sont que des automatiques, donc on a pris l'habitude et je préfère." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Non. On n'a pas vraiment pensé à la couleur." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Nous aimons surtout les couleurs sobres comme le gris, c'est une belle couleur." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Nous savons que ce type de voiture peut coûter cher, donc nous sommes prêts à mettre environ 8 300 € maximum." },
+          { role: 'vendeur' },
+          { role: 'client', texte: "Oui, un véhicule de moins de 20 000 km." },
+        ],
+      },
+      {
+        type: 'soncase',
+        id: 'annexe2mob',
+        titre: "Annexe 2 — Mobiles d'achat de la famille Dupont",
+        colonneCoche: "Mobile exprimé",
+        colonneJustif: "Justification (phrase de M. Dupont)",
+        lignes: [
+          { id: 'securite', libelle: 'Sécurité' },
+          { id: 'orgueil', libelle: 'Orgueil' },
+          { id: 'nouveaute', libelle: 'Nouveauté' },
+          { id: 'confort', libelle: 'Confort' },
+          { id: 'argent', libelle: 'Argent' },
+          { id: 'sympathie', libelle: 'Sympathie' },
+          { id: 'environnement', libelle: 'Environnement' },
+        ],
+      },
+      {
+        type: 'soncase',
+        id: 'annexe3mot',
+        titre: "Annexe 3 — Les motivations d'achat de la famille Dupont",
+        colonneCoche: "Motivation exprimée",
+        colonneJustif: "Justification (phrase de M. Dupont)",
+        lignes: [
+          { id: 'hedoniste', libelle: 'Hédoniste' },
+          { id: 'oblative', libelle: 'Oblative' },
+          { id: 'autoexpression', libelle: 'Auto-expression' },
+        ],
+      },
+      {
+        type: 'texte',
+        id: 'annexe4ref',
+        titre: 'Annexe 4 — La reformulation synthèse des besoins de la famille Dupont',
+        lignes: 5,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Le questionnement (annexe 1).',
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 6,
+        reponse:
+          "Questions attendues (méthode en entonnoir), avec leur type : « Je peux vous aider ? » (Ouverte). « Vous avez regardé les modèles sur notre site ? » (Fermée). « Vous recherchez plutôt un véhicule neuf ou d'occasion ? » (Alternative). « Vous cherchez une voiture pour quelle utilisation ? » (Ouverte). « Vous recherchez plutôt une essence, diésel, électrique ou hybride ? » (Choix multiple). « Vous êtes intéressé par une marque en particulier ? » (Ouverte). « Vous préférez une boîte manuelle ou automatique ? » (Alternative). « Avez-vous réfléchi à la couleur ? » (Fermée). « Vous aimez plutôt les couleurs chaudes ou froides ? » (Alternative). « Quel est votre budget ? » (Fermée). « Avez-vous d'autres exigences ? » (Fermée).",
+      },
+      {
+        intitule: "Les mobiles d'achat (annexe 2).",
+        documents: ['Document 2', 'Annexe 2'],
+        bareme: 4,
+        reponse:
+          "Nouveauté : « on aimerait bien la changer rapidement pour un modèle plus récent ». Argent : « ce type de voiture peut coûter cher, donc nous sommes prêts à mettre environ 8 300 € maximum ». Sympathie : « on aime la marque Renault ». Environnement : « plutôt électrique, nous sommes très écolos ».",
+      },
+      {
+        intitule: "Les motivations d'achat (annexe 3).",
+        documents: ['Document 2', 'Annexe 3'],
+        bareme: 3,
+        reponse:
+          "Hédoniste : l'achat est pour lui et sa femme (« on aimerait bien la changer pour un modèle plus récent »). Oblative : l'achat sert aussi la famille (emmener les enfants à l'école, rendre visite aux beaux-parents). Auto-expression : non exprimée.",
+      },
+      {
+        intitule: 'La reformulation synthèse (annexe 4).',
+        documents: ['Document 3', 'Annexe 4'],
+        bareme: 4,
+        reponse:
+          "« Si j'ai bien compris, vous recherchez un véhicule d'occasion électrique de type citadine, gris et de la marque Renault, avec une boîte automatique et moins de 20 000 km, pour un budget maximum de 8 300 €. C'est bien cela ? »",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La découverte des besoins',
+    proposition: [
+      'Questions ouvertes', 'Questions fermées', 'Questions alternatives', 'Questions à choix multiple', 'Questions ricochet', 'Questions miroir',
+      'Sécurité', 'Orgueil', 'Nouveauté', 'Confort', 'Argent', 'Sympathie', 'Environnement',
+      'Hédoniste', 'Oblative', 'Auto-expression',
+      'Écho ou perroquet', 'Miroir ou reflet', 'Résumé ou synthèse',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La découverte des besoins',
+      enfants: [
+        {
+          id: 'quest', texte: 'Les différents types de question',
+          enfants: [
+            { id: 'q1', texte: null, reponse: 'Questions ouvertes' },
+            { id: 'q2', texte: null, reponse: 'Questions fermées' },
+            { id: 'q3', texte: null, reponse: 'Questions alternatives' },
+            { id: 'q4', texte: null, reponse: 'Questions à choix multiple' },
+            { id: 'q5', texte: null, reponse: 'Questions ricochet' },
+            { id: 'q6', texte: null, reponse: 'Questions miroir' },
+          ],
+        },
+        {
+          id: 'mob', texte: "Les mobiles d'achat (SONCAS-E)",
+          enfants: [
+            { id: 'm1', texte: null, reponse: 'Sécurité' },
+            { id: 'm2', texte: null, reponse: 'Orgueil' },
+            { id: 'm3', texte: null, reponse: 'Nouveauté' },
+            { id: 'm4', texte: null, reponse: 'Confort' },
+            { id: 'm5', texte: null, reponse: 'Argent' },
+            { id: 'm6', texte: null, reponse: 'Sympathie' },
+            { id: 'm7', texte: null, reponse: 'Environnement' },
+          ],
+        },
+        {
+          id: 'mot', texte: "Les motivations d'achat",
+          enfants: [
+            { id: 'mo1', texte: null, reponse: 'Hédoniste' },
+            { id: 'mo2', texte: null, reponse: 'Oblative' },
+            { id: 'mo3', texte: null, reponse: 'Auto-expression' },
+          ],
+        },
+        {
+          id: 'ref', texte: 'Les types de reformulation',
+          enfants: [
+            { id: 'r1', texte: null, reponse: 'Écho ou perroquet' },
+            { id: 'r2', texte: null, reponse: 'Miroir ou reflet' },
+            { id: 'r3', texte: null, reponse: 'Résumé ou synthèse' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Construire un questionnement adapté',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas poser de questions au client.' },
+          { niveau: 'debrouille', description: 'Je pose quelques questions sans méthode.' },
+          { niveau: 'averti', description: "J'applique la méthode en entonnoir." },
+          { niveau: 'expert', description: "J'applique la méthode en entonnoir et j'identifie le type de chaque question." },
+        ],
+      },
+      {
+        id: 'c2', intitule: "Identifier les mobiles d'achat (SONCAS-E)",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas les mobiles d'achat." },
+          { niveau: 'debrouille', description: "Je cite un ou deux mobiles sans justifier." },
+          { niveau: 'averti', description: "J'identifie les mobiles exprimés par le client." },
+          { niveau: 'expert', description: "J'identifie chaque mobile et je le justifie par une phrase du client." },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Identifier les motivations d'achat",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas les motivations d'achat." },
+          { niveau: 'debrouille', description: 'Je confonds mobiles et motivations.' },
+          { niveau: 'averti', description: "J'identifie les motivations exprimées." },
+          { niveau: 'expert', description: "J'identifie chaque motivation et je la justifie." },
+        ],
+      },
+      {
+        id: 'c4', intitule: 'Reformuler les besoins du client',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas reformuler.' },
+          { niveau: 'debrouille', description: 'Je répète une partie des besoins.' },
+          { niveau: 'averti', description: "Je reformule l'essentiel des besoins." },
+          { niveau: 'expert', description: 'Je réalise une reformulation synthèse complète et vérifie auprès du client.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Découverte des besoins', definition: "Étape de la vente où le vendeur cherche à connaître les attentes du client." },
+      { terme: 'Méthode en entonnoir', definition: "Technique de questionnement qui va des questions générales aux questions précises." },
+      { terme: 'Question ouverte', definition: "Question qui laisse le client s'exprimer librement." },
+      { terme: 'Question fermée', definition: "Question qui n'appelle qu'une réponse précise (oui/non, un chiffre)." },
+      { terme: 'Question alternative', definition: "Question qui propose un choix entre deux possibilités." },
+      { terme: "Mobile d'achat", definition: "Motivation profonde qui pousse à acheter (méthode SONCAS-E)." },
+      { terme: "Motivation d'achat", definition: "Raison personnelle de l'achat : hédoniste, oblative ou auto-expression." },
+      { terme: 'Reformulation', definition: "Reprise des propos du client pour vérifier la bonne compréhension de ses besoins." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce que la découverte des besoins ?", verso: "L'étape de la vente où le vendeur cherche à connaître les attentes du client." },
+      { recto: "Qu'est-ce que la méthode en entonnoir ?", verso: "Questionner du général au particulier." },
+      { recto: 'Donne un exemple de question ouverte.', verso: "« Pour quelle utilisation cherchez-vous une voiture ? »" },
+      { recto: 'Donne un exemple de question fermée.', verso: "« Avez-vous réfléchi à la couleur ? »" },
+      { recto: 'Donne un exemple de question alternative.', verso: "« Vous préférez une boîte manuelle ou automatique ? »" },
+      { recto: 'Que signifie SONCAS-E ?', verso: 'Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement.' },
+      { recto: "Quels mobiles d'achat exprime la famille Dupont ?", verso: 'Nouveauté, Argent, Sympathie, Environnement.' },
+      { recto: "Différence entre mobile et motivation d'achat ?", verso: "Le mobile est la raison liée au produit (SONCAS-E) ; la motivation est personnelle (hédoniste, oblative, auto-expression)." },
+      { recto: "Qu'est-ce que la reformulation synthèse ?", verso: "Résumer tout ce que le client a dit pour vérifier sa compréhension." },
+      { recto: 'Comment introduire une reformulation synthèse ?', verso: "« Si j'ai bien compris… C'est bien cela ? »" },
+    ],
+    quiz: [
+      { type: 'unique', question: "À quoi sert la découverte des besoins ?", options: ['À connaître les attentes du client', 'À signer le contrat', 'À livrer le véhicule', 'À encaisser le paiement'], bonne: 0 },
+      { type: 'unique', question: "Qu'est-ce que la méthode en entonnoir ?", options: ['Questionner du général au particulier', 'Parler sans écouter', 'Poser une seule question', 'Commencer par le prix'], bonne: 0 },
+      { type: 'unique', question: 'Quelle est une question ouverte ?', options: ['« Pour quelle utilisation ? »', '« Oui ou non ? »', '« Manuelle ou automatique ? »', '« Avez-vous un budget ? »'], bonne: 0 },
+      { type: 'unique', question: 'Quelle est une question alternative ?', options: ['« Neuf ou occasion ? »', '« Pourquoi ? »', '« Quelle utilisation ? »', '« Décrivez vos besoins »'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie le « N » de SONCAS-E ?', options: ['Nouveauté', 'Nature', 'Nécessité', 'Nominal'], bonne: 0 },
+      { type: 'unique', question: "Quel mobile d'achat correspond à « nous sommes très écolos » ?", options: ['Environnement', 'Argent', 'Orgueil', 'Sécurité'], bonne: 0 },
+      { type: 'unique', question: "Quel mobile correspond à « on aime la marque Renault » ?", options: ['Sympathie', 'Sécurité', 'Nouveauté', 'Confort'], bonne: 0 },
+      { type: 'unique', question: "Quelle motivation d'achat signifie « acheter pour faire plaisir aux autres » ?", options: ['Oblative', 'Hédoniste', 'Auto-expression', 'Sécuritaire'], bonne: 0 },
+      { type: 'unique', question: 'Quel type de reformulation résume tout le discours du client ?', options: ['Résumé ou synthèse', 'Écho ou perroquet', 'Miroir ou reflet', 'Question ricochet'], bonne: 0 },
+      { type: 'unique', question: 'Comment introduire une reformulation synthèse ?', options: ["« Si j'ai bien compris… »", '« Combien ? »', '« Oui ou non ? »', '« Au revoir »'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Type de question', "Mobile d'achat", 'Type de reformulation'],
+      zones: [
+        { libelle: 'Ouverte', etiquetteIndex: 0 },
+        { libelle: 'Alternative', etiquetteIndex: 0 },
+        { libelle: 'Environnement', etiquetteIndex: 1 },
+        { libelle: 'Sympathie', etiquetteIndex: 1 },
+        { libelle: 'Écho ou perroquet', etiquetteIndex: 2 },
+        { libelle: 'Résumé ou synthèse', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
 // CONTENU : Renault, mission 5 - Le conseil et la proposition de produit
 // ---------------------------------------------------------------------------
 const RENAULT_M5: ContenuMission = {
@@ -1332,6 +1641,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,
+  'renault-m4': RENAULT_M4,
   'renault-m5': RENAULT_M5,
 }
 
@@ -1424,7 +1734,24 @@ export function formaterTravail(missionId: string, contenu: string): string {
         const v = obj[`${a.id}.e${i}`] ?? ''
         if (v.trim().length > 0) lignes.push(`      - ${v}`)
       }
-      ;['Prix', 'Année', 'Kilométrage', 'Garantie', 'Nombre de points de contrôle', 'Assistance', 'Satisfaction', 'Contrôle'].forEach((c, i) => lignes.push(`    ${c} : ${obj[`${a.id}.c${i}`] ?? ''}`))
+    } else if (a.type === 'dialogue') {
+      let qn = 0
+      for (const t of a.tours) {
+        if (t.role === 'client') {
+          lignes.push('  Client : ' + (t.texte ?? ''))
+        } else {
+          const q = obj[`${a.id}.q${qn}`] ?? ''
+          const coches = a.colonnes.filter((c) => (obj[`${a.id}.q${qn}.${c}`] ?? '') === '1')
+          lignes.push(`  Vendeur : ${q}` + (coches.length > 0 ? `  [${coches.join(', ')}]` : ''))
+          qn++
+        }
+      }
+    } else if (a.type === 'soncase') {
+      for (const l of a.lignes) {
+        const coche = (obj[`${a.id}.${l.id}.coche`] ?? '') === '1' ? 'X' : '-'
+        const justif = obj[`${a.id}.${l.id}.justif`] ?? ''
+        lignes.push(`  [${coche}] ${l.libelle} : ${justif}`)
+      }
     }
     lignes.push('')
   }

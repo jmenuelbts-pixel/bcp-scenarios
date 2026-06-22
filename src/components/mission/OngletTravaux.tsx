@@ -18,6 +18,8 @@ import type {
   AnnexeFicheProduit,
   AnnexeCap,
   AnnexeConfigurateur,
+  AnnexeDialogue,
+  AnnexeSonCase,
 } from '../../data/contenus'
 import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 
@@ -314,6 +316,8 @@ function rendreAnnexe(
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'cap') return rendreCap(annexe, saisies, set, champStyle, couleur)
   if (annexe.type === 'configurateur') return rendreConfigurateur(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'dialogue') return rendreDialogue(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'soncase') return rendreSonCase(annexe, saisies, set, verrouille, couleur)
   return rendreOrganigramme(annexe, saisies, set, champStyle, verrouille, couleur)
 }
 
@@ -590,6 +594,91 @@ function rendreConfigurateur(a: AnnexeConfigurateur, saisies: Saisies, set: (id:
           commercial={['Prix', 'Année', 'Kilométrage', 'Garantie', 'Nombre de points de contrôle', 'Assistance', 'Satisfaction', 'Contrôle']}
           saisies={saisies} set={set} verrouille={verrouille} couleur={couleur}
         />
+      </div>
+    </div>
+  )
+}
+
+// Dialogue de vente : bulles client fixes alternees avec questions vendeur a
+// saisir, chacune avec ses cases a cocher (O/F/A/CM).
+function rendreDialogue(a: AnnexeDialogue, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  let qn = -1
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, background: '#F7FAFC' }}>
+        {a.tours.map((t, i) => {
+          if (t.role === 'client') {
+            return (
+              <div key={i} style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <div style={{ maxWidth: '82%', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '4px 14px 14px 14px', padding: '10px 14px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#9AA5B1', marginBottom: 3 }}>Client</div>
+                  <div style={{ fontSize: 14, color: '#1F2933', lineHeight: 1.5 }}>{t.texte}</div>
+                </div>
+              </div>
+            )
+          }
+          qn++
+          const qid = `${a.id}.q${qn}`
+          return (
+            <div key={i} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ maxWidth: '82%', width: '82%', background: '#EAF2FB', border: `1px solid ${couleur}`, borderRadius: '14px 4px 14px 14px', padding: '10px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: couleur, marginBottom: 4, textAlign: 'right' }}>Vendeur — votre question</div>
+                <textarea disabled={verrouille} value={saisies[qid] ?? ''} onChange={(e) => set(qid, e.target.value)} rows={2} placeholder="Rédigez votre question…" style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #C9D6E3', borderRadius: 8, padding: 8, resize: 'vertical', fontFamily: 'Arial, sans-serif', fontSize: 14, color: verrouille ? '#6B7280' : '#1F2933', background: verrouille ? '#F1F3F5' : '#FFFFFF', outline: 'none' }} />
+                <div style={{ display: 'flex', gap: 14, justifyContent: 'flex-end', marginTop: 6 }}>
+                  {a.colonnes.map((c) => {
+                    const cid = `${qid}.${c}`
+                    const actif = (saisies[cid] ?? '') === '1'
+                    return (
+                      <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#374151', cursor: verrouille ? 'not-allowed' : 'pointer' }}>
+                        <input type="checkbox" disabled={verrouille} checked={actif} onChange={(e) => set(cid, e.target.checked ? '1' : '')} />
+                        {c}
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        <div style={{ fontSize: 11, color: '#9AA5B1', textAlign: 'right' }}>O : ouverte &middot; F : fermée &middot; A : alternative &middot; CM : choix multiple</div>
+      </div>
+    </div>
+  )
+}
+
+// Tableau SONCAS : libelle fixe + case a cocher + justification a saisir.
+function rendreSonCase(a: AnnexeSonCase, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
+          <thead>
+            <tr>
+              <th style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, textAlign: 'left' }}>Typologie</th>
+              <th style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, textAlign: 'center', width: 110 }}>{a.colonneCoche}</th>
+              <th style={{ padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, textAlign: 'left' }}>{a.colonneJustif}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {a.lignes.map((l) => {
+              const cid = `${a.id}.${l.id}.coche`
+              const actif = (saisies[cid] ?? '') === '1'
+              return (
+                <tr key={l.id} style={{ borderTop: '1px solid #EEF2F5' }}>
+                  <td style={{ padding: '8px 10px', fontSize: 13, fontWeight: 600, color: '#374151' }}>{l.libelle}</td>
+                  <td style={{ padding: '8px 10px', textAlign: 'center' }}>
+                    <input type="checkbox" disabled={verrouille} checked={actif} onChange={(e) => set(cid, e.target.checked ? '1' : '')} />
+                  </td>
+                  <td style={{ padding: '6px 8px' }}>
+                    <input type="text" disabled={verrouille} value={saisies[`${a.id}.${l.id}.justif`] ?? ''} onChange={(e) => set(`${a.id}.${l.id}.justif`, e.target.value)} placeholder="Phrase de M. Dupont…" style={{ fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '6px 8px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', width: '100%', boxSizing: 'border-box' }} />
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   )
