@@ -345,6 +345,9 @@ function rendreTexte(a: AnnexeTexte, saisies: Saisies, set: (id: string, v: stri
     <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
       <div style={{ padding: '10px 12px' }}>
+        {a.support && (
+          <img src={a.support} alt={a.titre} style={{ maxWidth: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6, marginBottom: 10, display: 'block' }} />
+        )}
         <textarea value={saisies[`${a.id}.texte`] ?? ''} onChange={(e) => set(`${a.id}.texte`, e.target.value)} rows={a.lignes ?? 3} style={{ ...champStyle, resize: 'vertical', fontSize: 14, padding: 10 }} />
       </div>
     </div>

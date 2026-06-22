@@ -59,6 +59,7 @@ export interface AnnexeTexte {
   id: string
   titre: string
   lignes?: number // hauteur de la zone de saisie (defaut 3)
+  support?: string // image de support affichee au-dessus de la zone (optionnel)
 }
 
 export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte
@@ -717,9 +718,235 @@ const RENAULT_M2: ContenuMission = {
 }
 
 
+// ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 3 - La prise de contact
+// ---------------------------------------------------------------------------
+const RENAULT_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Prenez contact avec les clients sélectionnés par différents canaux : rédigez le courriel d'invitation aux Journées Portes Ouvertes, le SMS de rappel, puis préparez votre accueil en face-à-face (communication non verbale et phrase d'accueil).",
+    contexte:
+      "Nous sommes le 2 novembre. Votre tuteur est absent et vous laisse une note vous demandant de rédiger le courriel commercial qui sera envoyé aux clients sélectionnés pour les Journées Portes Ouvertes du 11 novembre. Les jours suivants, vous préparerez le SMS de rappel puis l'accueil des clients le jour de l'évènement.",
+    documents: [
+      { numero: 1, titre: 'Note de M. Prauviste (contenu du courriel)', images: ['/docs/renault-m3/doc1.jpg'] },
+      { numero: 2, titre: "Consignes pour la rédaction d'un SMS commercial", images: ['/docs/renault-m3/doc2.jpg'] },
+      { numero: 3, titre: "Consignes d'accueil de M. Prauviste", images: ['/docs/renault-m3/doc3.jpg'] },
+      { numero: 4, titre: 'Le paralangage (éléments non verbaux et signification)', images: ['/docs/renault-m3/doc4.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre',
+      detail: 'Prendre contact avec le client.',
+    },
+    objectifs: [
+      'Prendre contact avec le client par différents canaux (courriel, SMS, face-à-face).',
+      "Adapter son message et sa communication non verbale à la situation d'accueil.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La rédaction du courriel pour les Journées Portes Ouvertes',
+        questions: [
+          { numero: 1, consigne: 'Rédigez le courriel destiné aux clients sélectionnés. Vous pouvez le rédiger directement sur l\'annexe 1a, ou en ligne (lien Quizinière / QR code, annexe 1b).', ressources: 'Lire le document 1, compléter l\'annexe 1a.', annexeId: 'annexe1a' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La prise de contact par SMS',
+        questions: [
+          { numero: 2, consigne: 'Rédigez le SMS destiné aux clients sélectionnés pour rappeler l\'évènement.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La prise de contact en face-à-face',
+        questions: [
+          { numero: 3, consigne: 'Pour chaque élément non verbal et sa signification, indiquez la communication que vous adopterez face au client.', ressources: 'Lire les documents 3 et 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Rédigez la phrase d\'accueil que vous prononcerez pour répondre au client.', ressources: 'Lire et compléter l\'annexe 4.', annexeId: 'annexe4' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'texte', id: 'annexe1a', titre: 'Annexe 1a — Rédaction du courriel commercial', lignes: 8, support: '/docs/renault-m3/mail.jpg' },
+      { type: 'texte', id: 'annexe2', titre: 'Annexe 2 — Rédaction du SMS', lignes: 5, support: '/docs/renault-m3/iphone.jpg' },
+      { type: 'tableau', id: 'annexe3', titre: 'Annexe 3 — La communication non verbale face au client', lignes: [
+        { id: 'regard', libelle: 'Regard' },
+        { id: 'visage', libelle: 'Expression du visage' },
+        { id: 'voix', libelle: 'Timbre de la voix' },
+        { id: 'gestes', libelle: 'Gestes' },
+        { id: 'posture', libelle: 'Posture' },
+      ] },
+      { type: 'texte', id: 'annexe4', titre: 'Annexe 4 — Phrase d\'accueil et de prise en charge du client', lignes: 3 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Le courriel des Journées Portes Ouvertes (annexe 1a).',
+        documents: ['Document 1', 'Annexe 1a'],
+        bareme: 5,
+        reponse:
+          "Le courriel comporte les destinataires (clients + dpo@renault.com), un objet accrocheur, le nom de la concession, une phrase d'accroche, la date et l'heure (11 novembre, 10h00), l'adresse (215 rue Championnet, 75018 Paris) et la photo d'un modèle récent.",
+      },
+      {
+        intitule: 'Le SMS de rappel (annexe 2).',
+        documents: ['Document 2', 'Annexe 2'],
+        bareme: 5,
+        reponse:
+          "Le SMS contient le nom de l'entreprise, une accroche, la date et l'heure, le site et le numéro de téléphone, et la mention STOP 36321.",
+      },
+      {
+        intitule: 'La communication non verbale (annexe 3).',
+        documents: ['Documents 3 et 4', 'Annexe 3'],
+        bareme: 5,
+        reponse:
+          "Regard : franc, orienté vers le client. Expression du visage : sourire franc, yeux grands ouverts (écoute et empathie). Timbre de la voix : respiration maîtrisée, timbre clair, prononciation soignée. Gestes : mouvements amples, maîtrisés et lents, poignée de main appuyée. Posture : dos droit, pieds ancrés, mains contrôlées, regard non fuyant.",
+      },
+      {
+        intitule: 'La phrase d\'accueil (annexe 4).',
+        documents: ['Annexe 4'],
+        bareme: 5,
+        reponse:
+          "« Bonjour M. Dupont, bonjour Mme Dupont, comment allez-vous ? Bonjour jeune fille, tu vas bien ? Je vous remercie d'être venus à ces Journées Portes Ouvertes. »",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La prise de contact',
+    proposition: [
+      'Nom de la concession en gros', 'Phrase d\'accroche', 'Date et heure de l\'évènement', 'Photo d\'un modèle récent', 'Adresse de la concession', 'Mails des destinataires', 'Mail entreprise',
+      'Nom de l\'entreprise', 'Site et numéro de téléphone', 'STOP au 36321',
+      'Regard', 'Expression du visage', 'Timbre de la voix', 'Gestes', 'Posture',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La prise de contact',
+      enfants: [
+        {
+          id: 'email', texte: 'Règles e-mail',
+          enfants: [
+            { id: 'em1', texte: null, reponse: 'Nom de la concession en gros' },
+            { id: 'em2', texte: null, reponse: 'Phrase d\'accroche' },
+            { id: 'em3', texte: null, reponse: 'Date et heure de l\'évènement' },
+            { id: 'em4', texte: null, reponse: 'Photo d\'un modèle récent' },
+            { id: 'em5', texte: null, reponse: 'Adresse de la concession' },
+            { id: 'em6', texte: null, reponse: 'Mails des destinataires' },
+            { id: 'em7', texte: null, reponse: 'Mail entreprise' },
+          ],
+        },
+        {
+          id: 'sms', texte: 'Règles SMS',
+          enfants: [
+            { id: 'sm1', texte: null, reponse: 'Nom de l\'entreprise' },
+            { id: 'sm2', texte: null, reponse: 'Phrase d\'accroche' },
+            { id: 'sm3', texte: null, reponse: 'Date et heure de l\'évènement' },
+            { id: 'sm4', texte: null, reponse: 'Site et numéro de téléphone' },
+            { id: 'sm5', texte: null, reponse: 'STOP au 36321' },
+          ],
+        },
+        {
+          id: 'para', texte: 'Paralangage',
+          enfants: [
+            { id: 'pa1', texte: null, reponse: 'Regard' },
+            { id: 'pa2', texte: null, reponse: 'Expression du visage' },
+            { id: 'pa3', texte: null, reponse: 'Timbre de la voix' },
+            { id: 'pa4', texte: null, reponse: 'Gestes' },
+            { id: 'pa5', texte: null, reponse: 'Posture' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Rédiger un courriel commercial',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas rédiger un courriel.' },
+          { niveau: 'debrouille', description: 'Je rédige un courriel incomplet.' },
+          { niveau: 'averti', description: 'Je rédige un courriel structuré avec les informations essentielles.' },
+          { niveau: 'expert', description: 'Je rédige un courriel complet, accrocheur et adapté au client.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Rédiger un SMS commercial',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas rédiger un SMS de rappel.' },
+          { niveau: 'debrouille', description: 'Je rédige un SMS trop long ou incomplet.' },
+          { niveau: 'averti', description: 'Je rédige un SMS court contenant l\'essentiel.' },
+          { niveau: 'expert', description: 'Je rédige un SMS court, complet et conforme (dont STOP).' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Adapter sa communication non verbale',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les éléments du paralangage.' },
+          { niveau: 'debrouille', description: 'Je cite un ou deux éléments.' },
+          { niveau: 'averti', description: 'J\'associe chaque élément à la bonne attitude.' },
+          { niveau: 'expert', description: 'J\'adapte ma communication non verbale à l\'accueil du client.' },
+        ],
+      },
+      {
+        id: 'c4', intitule: 'Formuler une phrase d\'accueil',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas accueillir le client.' },
+          { niveau: 'debrouille', description: 'Je salue sans personnaliser.' },
+          { niveau: 'averti', description: 'Je formule un accueil clair et poli.' },
+          { niveau: 'expert', description: 'Je formule un accueil chaleureux et adapté à toute la famille.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Prise de contact', definition: 'Premier échange avec le client, qui doit être positif et professionnel.' },
+      { terme: 'SMS', definition: 'Short Message Service : service de messages courts.' },
+      { terme: 'Mention STOP', definition: 'Mention (STOP 36321) qui permet au client de ne plus recevoir de messages publicitaires.' },
+      { terme: 'Paralangage', definition: 'Ensemble des éléments non verbaux de la communication (regard, voix, gestes, posture, expression).' },
+      { terme: 'Communication non verbale', definition: 'Tout ce qui est transmis sans les mots : attitude, regard, gestes, ton de la voix.' },
+      { terme: 'Phrase d\'accueil', definition: 'Salutation polie et personnalisée adressée au client à son arrivée.' },
+    ],
+    flashcards: [
+      { recto: 'Qu\'est-ce que la prise de contact ?', verso: 'Le premier échange avec le client, qui doit être positif et professionnel.' },
+      { recto: 'Cite trois canaux de prise de contact.', verso: 'Le courriel, le SMS, le face-à-face (le téléphone aussi).' },
+      { recto: 'Que signifie SMS ?', verso: 'Short Message Service, service de messages courts.' },
+      { recto: 'À quoi sert la mention STOP dans un SMS commercial ?', verso: 'À permettre au client de ne plus recevoir de messages publicitaires.' },
+      { recto: 'Que doit contenir un courriel commercial pour les JPO ?', verso: 'Destinataires, objet, accroche, date et heure, adresse, photo d\'un modèle.' },
+      { recto: 'Qu\'est-ce que le paralangage ?', verso: 'L\'ensemble des éléments non verbaux de la communication.' },
+      { recto: 'Cite deux éléments du paralangage.', verso: 'Au choix : regard, expression du visage, voix, gestes, posture.' },
+      { recto: 'Quelle attitude adopter avec le regard ?', verso: 'Un regard franc, orienté vers le client.' },
+      { recto: 'Quelle posture traduit la confiance en soi ?', verso: 'Dos droit, pieds ancrés, mains contrôlées, regard non fuyant.' },
+      { recto: 'Comment commencer une phrase d\'accueil ?', verso: 'Par une salutation polie et personnalisée (« Bonjour M., bonjour Mme »).' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Qu\'est-ce que la prise de contact ?', options: ['Le premier échange avec le client', 'La signature du contrat', 'La livraison du véhicule', 'Le service après-vente'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie SMS ?', options: ['Short Message Service', 'Service Mobile Sécurisé', 'Système de Messagerie Sociale', 'Service Marketing Spécial'], bonne: 0 },
+      { type: 'unique', question: 'À quoi sert la mention STOP dans un SMS commercial ?', options: ['À se désabonner des messages publicitaires', 'À confirmer la commande', 'À obtenir une réduction', 'À contacter le vendeur'], bonne: 0 },
+      { type: 'unique', question: 'Quel élément ne doit PAS figurer dans le courriel des JPO ?', options: ['Le prix de reprise de chaque client', 'La date et l\'heure', 'L\'adresse de la concession', 'Une phrase d\'accroche'], bonne: 0 },
+      { type: 'unique', question: 'Quelle adresse doit figurer comme expéditeur du courriel ?', options: ['dpo@renault.com', 'contact@gmail.com', 'client@caramail.com', 'info@free.fr'], bonne: 0 },
+      { type: 'unique', question: 'Qu\'est-ce que le paralangage ?', options: ['La communication non verbale', 'La langue étrangère', 'Le langage technique', 'Le vocabulaire commercial'], bonne: 0 },
+      { type: 'unique', question: 'Quel regard adopter face au client ?', options: ['Un regard franc orienté vers lui', 'Un regard fuyant', 'Un regard fixé sur l\'écran', 'Un regard vers le sol'], bonne: 0 },
+      { type: 'unique', question: 'Quelle posture traduit la confiance en soi ?', options: ['Dos droit, pieds ancrés', 'Bras croisés', 'Dos courbé', 'Mains dans les poches'], bonne: 0 },
+      { type: 'unique', question: 'Que traduit un sourire franc et des yeux ouverts ?', options: ['L\'écoute et l\'empathie', 'L\'ennui', 'La colère', 'Le mépris'], bonne: 0 },
+      { type: 'unique', question: 'Comment débuter une phrase d\'accueil ?', options: ['Par une salutation polie et personnalisée', 'Par le prix du véhicule', 'Par une question fermée', 'Par un reproche'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Courriel', 'SMS', 'Communication non verbale'],
+      zones: [
+        { libelle: 'Objet accrocheur', etiquetteIndex: 0 },
+        { libelle: 'Adresse mail des destinataires', etiquetteIndex: 0 },
+        { libelle: 'Mention STOP 36321', etiquetteIndex: 1 },
+        { libelle: 'Message très court', etiquetteIndex: 1 },
+        { libelle: 'Regard franc', etiquetteIndex: 2 },
+        { libelle: 'Poignée de main appuyée', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
+  'renault-m3': RENAULT_M3,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
