@@ -62,7 +62,21 @@ export interface AnnexeTexte {
   support?: string // image de support affichee au-dessus de la zone (optionnel)
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte
+export interface AnnexeMail {
+  type: 'mail'
+  id: string
+  titre: string
+}
+
+export interface AnnexeSms {
+  type: 'sms'
+  id: string
+  titre: string
+  entete?: string // nom affiche en haut (ex : RENAULT)
+  date?: string // date affichee (ex : Mar. 10 nov. à 11:15)
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms
 
 export interface QuestionTravaux {
   numero: number
@@ -764,8 +778,8 @@ const RENAULT_M3: ContenuMission = {
       },
     ],
     annexes: [
-      { type: 'texte', id: 'annexe1a', titre: 'Annexe 1a — Rédaction du courriel commercial', lignes: 8, support: '/docs/renault-m3/mail.jpg' },
-      { type: 'texte', id: 'annexe2', titre: 'Annexe 2 — Rédaction du SMS', lignes: 5, support: '/docs/renault-m3/iphone.jpg' },
+      { type: 'mail', id: 'annexe1a', titre: 'Annexe 1a — Rédaction du courriel commercial' },
+      { type: 'sms', id: 'annexe2', titre: 'Annexe 2 — Rédaction du SMS', entete: 'RENAULT', date: 'Mar. 10 nov. à 11:15' },
       { type: 'tableau', id: 'annexe3', titre: 'Annexe 3 — La communication non verbale face au client', lignes: [
         { id: 'regard', libelle: 'Regard' },
         { id: 'visage', libelle: 'Expression du visage' },
@@ -1003,6 +1017,13 @@ export function formaterTravail(missionId: string, contenu: string): string {
       }
     } else if (a.type === 'texte') {
       lignes.push('  ' + (obj[`${a.id}.texte`] ?? ''))
+    } else if (a.type === 'mail') {
+      lignes.push('  De : ' + (obj[`${a.id}.de`] ?? ''))
+      lignes.push('  À : ' + (obj[`${a.id}.a`] ?? ''))
+      lignes.push('  Objet : ' + (obj[`${a.id}.objet`] ?? ''))
+      lignes.push('  ' + (obj[`${a.id}.corps`] ?? ''))
+    } else if (a.type === 'sms') {
+      lignes.push('  ' + (obj[`${a.id}.corps`] ?? ''))
     }
     lignes.push('')
   }
