@@ -33,7 +33,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
   const [retour, setRetour] = useState<RetourTravail | null>(null)
-  const [docsOuverts, setDocsOuverts] = useState<Record<number, boolean>>({})
+  const [docActif, setDocActif] = useState<number | null>(null)
 
   useEffect(() => {
     if (!etudiantId) return
@@ -104,42 +104,40 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
         </Bloc>
       )}
 
-      {/* Bibliotheque de documents a lire (depliables) */}
+      {/* Explorateur de documents (liste a gauche, lecture a droite) */}
       {contenu.documents && contenu.documents.length > 0 && (
-        <div style={{ background: '#FFFFFF', border: '1px solid #DCE8F4', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
-          <h3 style={{ margin: '0 0 10px 0', fontSize: 14, fontWeight: 700, color: couleur }}>Documents de la mission</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {contenu.documents.map((d) => {
-              const ouvert = docsOuverts[d.numero] ?? false
-              return (
-                <div key={d.numero} style={{ border: '1px solid #E6ECF2', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #DCE8F4', borderRadius: 10, overflow: 'hidden', marginBottom: 16 }}>
+          <div style={{ background: '#16456E', color: '#FFFFFF', padding: '10px 14px', fontSize: 14, fontWeight: 700 }}>
+            Documents de la mission
+          </div>
+          <div className="bcp-doc-explorer" style={{ display: 'flex', minHeight: 280 }}>
+            <div className="bcp-doc-liste" style={{ width: 230, flexShrink: 0, borderRight: '1px solid #E6ECF2', background: '#F8FAFC' }}>
+              {contenu.documents.map((d) => {
+                const actif = (docActif ?? contenu.documents![0].numero) === d.numero
+                return (
                   <button
+                    key={d.numero}
                     type="button"
-                    onClick={() => setDocsOuverts((o) => ({ ...o, [d.numero]: !ouvert }))}
+                    onClick={() => setDocActif(d.numero)}
                     style={{
-                      width: '100%', display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
-                      fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 600, color: '#16456E',
-                      background: ouvert ? '#EEF3F8' : '#F8FAFC', border: 'none', cursor: 'pointer', padding: '10px 12px',
+                      width: '100%', textAlign: 'left', cursor: 'pointer', border: 'none',
+                      borderBottom: '1px solid #E6ECF2', borderLeft: actif ? `3px solid ${couleur}` : '3px solid transparent',
+                      background: actif ? '#FFFFFF' : 'transparent', padding: '10px 12px',
+                      fontFamily: 'Arial, sans-serif', fontSize: 13, fontWeight: actif ? 700 : 400,
+                      color: actif ? '#16456E' : '#4B5563', lineHeight: 1.4,
                     }}
                   >
-                    <span style={{ display: 'inline-block', transform: ouvert ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', color: couleur }}>▶</span>
-                    Document {d.numero} — {d.titre}
+                    <span style={{ display: 'block', fontSize: 11, color: '#9AA5B1', marginBottom: 2 }}>Document {d.numero}</span>
+                    {d.titre}
                   </button>
-                  {ouvert && (
-                    <div style={{ padding: '10px 12px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {d.images.map((src, i) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt={`Document ${d.numero}`}
-                          style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6 }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
+            <div style={{ flex: 1, padding: 14, background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
+              {(contenu.documents.find((d) => d.numero === (docActif ?? contenu.documents![0].numero)) ?? contenu.documents[0]).images.map((src, i) => (
+                <img key={i} src={src} alt="Document" style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6 }} />
+              ))}
+            </div>
           </div>
         </div>
       )}

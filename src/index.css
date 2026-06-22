@@ -7,3 +7,10 @@ html, body, #root {
   padding: 0;
   font-family: Arial, sans-serif;
 }
+
+/* Explorateur de documents : empilement sur petit ecran */
+@media (max-width: 640px) {
+  .bcp-doc-explorer { flex-direction: column; }
+  .bcp-doc-liste { width: 100% !important; border-right: none !important; border-bottom: 1px solid #E6ECF2; display: flex; flex-wrap: wrap; }
+  .bcp-doc-liste > button { width: auto !important; flex: 1 1 auto; }
+}
