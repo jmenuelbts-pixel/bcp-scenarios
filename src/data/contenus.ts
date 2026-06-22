@@ -60,6 +60,8 @@ export interface AnnexeTexte {
   titre: string
   lignes?: number // hauteur de la zone de saisie (defaut 3)
   support?: string // image de support affichee au-dessus de la zone (optionnel)
+  boutonLien?: string // URL ouverte par un bouton (le lien n'apparait jamais en clair)
+  boutonLibelle?: string // libelle du bouton (ex : Voir la video de demonstration)
 }
 
 export interface AnnexeMail {
@@ -76,7 +78,58 @@ export interface AnnexeSms {
   date?: string // date affichee (ex : Mar. 10 nov. à 11:15)
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms
+// Fiche produit : interface logiciel pro a 3 onglets (technique, equipements,
+// commercial), tout en champs saisissables par l'eleve.
+export interface AnnexeFicheProduit {
+  type: 'ficheproduit'
+  id: string
+  titre: string
+  technique: string[] // libelles des lignes techniques (Energie, Portes...)
+  nbEquipements: number // nombre de lignes equipement a saisir
+  commercial: string[] // libelles des lignes commerciales (Prix, Annee...)
+}
+
+// Tableau methode C.A.P. a 4 colonnes (Mobile / Caracteristique / Avantage / Preuve).
+export interface AnnexeCap {
+  type: 'cap'
+  id: string
+  titre: string
+  nbLignes: number
+}
+
+// Configurateur : simulateur de recherche de vehicule a branchements.
+// L'eleve avance etape par etape ; certaines options menent a une impasse,
+// le bon chemin mene a l'ecran resultat. Chemin complet enregistre.
+export interface OptionConfigurateur {
+  libelle: string
+  // etape suivante a afficher (id) ; 'resultat' = vehicules trouves ;
+  // 'impasse' = aucun vehicule disponible.
+  vers: string
+}
+export interface EtapeConfigurateur {
+  id: string
+  bandeau: string // titre de section (ex : TYPES, PRIX)
+  question: string
+  options: OptionConfigurateur[]
+}
+export interface VehiculeResultat {
+  nom: string // ex : RENAULT ZOE
+  version: string // ex : Zoe Gris - Electrique - Automatique
+  details: string // ex : 18 343 km - 2022
+  prix: string // ex : 8 290 EUR TTC
+}
+export interface AnnexeConfigurateur {
+  type: 'configurateur'
+  id: string
+  titre: string
+  intro: string
+  etapes: EtapeConfigurateur[]
+  resultatTitre: string // ex : 2 vehicules disponibles
+  vehicules: VehiculeResultat[]
+  impasseTexte: string // ex : Aucun vehicule correspondant...
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur
 
 export interface QuestionTravaux {
   numero: number
@@ -957,10 +1010,329 @@ const RENAULT_M3: ContenuMission = {
 }
 
 
+// ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 5 - Le conseil et la proposition de produit
+// ---------------------------------------------------------------------------
+const RENAULT_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez la fiche produit de deux véhicules à l'aide du configurateur Renault, proposez le véhicule le plus adapté aux besoins de la famille Dupont, puis construisez les arguments de vente avec la méthode C.A.P.",
+    contexte:
+      "Les clients vous ont confirmé que vous avez bien compris leurs besoins (mission 4). Il est donc temps de leur proposer des produits qui y correspondent. Vous allez utiliser le configurateur de recherche de la concession pour identifier les véhicules disponibles, réaliser leur fiche produit, choisir le plus pertinent, en faire la démonstration puis l'argumenter.",
+    documents: [
+      { numero: 1, titre: 'Comment convaincre le client (méthode C.A.P. et SONCAS-E)', images: ['/docs/renault-m5/doc1.jpg'] },
+      { numero: 2, titre: 'Fiche technique du premier véhicule (Renault Zoé Zen)', images: ['/docs/renault-m5/doc2.jpg'] },
+      { numero: 3, titre: 'Fiche technique du second véhicule (Renault Zoé Life)', images: ['/docs/renault-m5/doc3.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre',
+      detail: 'Conseiller le client en proposant la solution adaptée.',
+    },
+    objectifs: [
+      'Traduire les besoins du client en critères de recherche dans un configurateur professionnel.',
+      'Réaliser la fiche produit (caractéristiques techniques et commerciales) de chaque véhicule.',
+      'Choisir et proposer le véhicule le plus adapté en justifiant son choix.',
+      "Construire des arguments de vente avec la méthode C.A.P. et les mobiles d'achat.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La réalisation de la fiche produit du véhicule',
+        questions: [
+          { numero: 1, consigne: "Utilisez le configurateur Renault en reportant les besoins de la famille Dupont (mission 4, annexe 1) pour faire apparaître les véhicules disponibles, puis réalisez la fiche produit du premier véhicule.", ressources: "Utiliser le configurateur (annexe 1), lire le document 2, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1cfg' },
+          { numero: 2, consigne: 'Réalisez la fiche produit du second véhicule correspondant aux besoins du couple.', ressources: "Lire le document 3, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2fp' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La proposition de produit',
+        questions: [
+          { numero: 3, consigne: 'Quel est le véhicule le plus approprié ? Justifiez votre réponse.', ressources: "Comparer les fiches produit, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3choix' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La démonstration',
+        questions: [
+          { numero: 4, consigne: "Montrez aux clients quelques secondes de la vidéo du véhicule pour qu'ils se l'imaginent, puis indiquez ce que vous mettez en avant pendant la démonstration.", ressources: 'Visionner la vidéo de démonstration, compléter l\'annexe 4. [C.1.2]', annexeId: 'annexe4demo' },
+        ],
+      },
+      {
+        titre: "Activité 4 — L'argumentation",
+        questions: [
+          { numero: 5, consigne: 'Construisez les 3 arguments que vous présenterez à la famille Dupont en respectant la méthode C.A.P.', ressources: "Lire le document 1, compléter l'annexe 5. [C.1.2]", annexeId: 'annexe5cap' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'configurateur',
+        id: 'annexe1cfg',
+        titre: 'Annexe 1 — Configurateur de recherche de véhicule et fiche produit du premier véhicule',
+        intro: "Sélectionnez les critères correspondant aux besoins de la famille Dupont. Une recherche bien ciblée fait apparaître les véhicules disponibles ; un critère mal choisi mène à une impasse.",
+        etapes: [
+          { id: 'type', bandeau: 'TYPES', question: 'Le type de véhicule', options: [
+            { libelle: 'Véhicule neuf', vers: 'categorie' },
+            { libelle: "Véhicule d'occasion", vers: 'categorie' },
+            { libelle: 'Véhicule de démonstration', vers: 'categorie' },
+          ] },
+          { id: 'categorie', bandeau: 'CATEGORIES', question: 'La catégorie du véhicule', options: [
+            { libelle: '4x4 / SUV / Crossover', vers: 'marque' },
+            { libelle: 'Berline / Break', vers: 'marque' },
+            { libelle: 'Citadine', vers: 'marque' },
+            { libelle: 'Coupé et Cabriolet', vers: 'marque' },
+            { libelle: 'Monospace', vers: 'marque' },
+            { libelle: 'Utilitaire', vers: 'marque' },
+          ] },
+          { id: 'marque', bandeau: 'MARQUES', question: 'La marque du véhicule', options: [
+            { libelle: 'RENAULT', vers: 'energie' },
+            { libelle: 'DACIA', vers: 'energie' },
+            { libelle: 'ALFA ROMEO', vers: 'energie' },
+            { libelle: 'AUDI', vers: 'energie' },
+            { libelle: 'BMW', vers: 'energie' },
+            { libelle: 'CITROËN', vers: 'energie' },
+          ] },
+          { id: 'energie', bandeau: 'ENERGIE', question: "L'énergie du véhicule", options: [
+            { libelle: 'Diésel', vers: 'boite' },
+            { libelle: 'Essence', vers: 'boite' },
+            { libelle: 'GPL', vers: 'boite' },
+            { libelle: 'Hybride', vers: 'boite' },
+            { libelle: 'Électrique', vers: 'boite' },
+          ] },
+          { id: 'boite', bandeau: 'BOITE DE VITESSES', question: 'La boîte de vitesses du véhicule', options: [
+            { libelle: 'Automatique', vers: 'couleur' },
+            { libelle: 'Manuelle', vers: 'couleur' },
+          ] },
+          { id: 'couleur', bandeau: 'COULEUR', question: 'La couleur du véhicule', options: [
+            { libelle: 'Beige', vers: 'prix' },
+            { libelle: 'Blanc', vers: 'prix' },
+            { libelle: 'Bleu', vers: 'prix' },
+            { libelle: 'Bordeaux', vers: 'prix' },
+            { libelle: 'Gris', vers: 'prix' },
+            { libelle: 'Jaune', vers: 'prix' },
+          ] },
+          { id: 'prix', bandeau: 'PRIX', question: 'Le budget', options: [
+            { libelle: 'Moins de 5 000 €', vers: 'impasse' },
+            { libelle: 'Entre 5 001 € et 6 400 €', vers: 'impasse' },
+            { libelle: 'Entre 6 400 € et 7 400 €', vers: 'impasse' },
+            { libelle: 'Entre 7 400 € et 8 400 €', vers: 'resultat' },
+            { libelle: 'Entre 8 400 € et 9 400 €', vers: 'impasse' },
+            { libelle: 'Entre 9 400 € et 15 000 €', vers: 'impasse' },
+            { libelle: 'Entre 15 000 € et 25 000 €', vers: 'impasse' },
+            { libelle: 'Plus de 25 000 €', vers: 'impasse' },
+          ] },
+        ],
+        resultatTitre: '2 véhicules correspondent à votre recherche',
+        vehicules: [
+          { nom: 'RENAULT ZOE', version: 'Zoé Gris — Électrique — Automatique', details: '18 343 km — 2022', prix: '8 290 € TTC' },
+          { nom: 'RENAULT ZOE', version: 'Zoé Gris — Électrique — Automatique', details: '50 218 km — 2021', prix: '7 900 € TTC' },
+        ],
+        impasseTexte: "Aucun véhicule correspondant à votre recherche n'est disponible. Revenez aux critères et reportez-vous aux besoins exprimés par la famille Dupont (mission 4).",
+      },
+      {
+        type: 'ficheproduit',
+        id: 'annexe2fp',
+        titre: 'Annexe 2 — Fiche produit du second véhicule',
+        technique: ['Énergie', 'Puissance fiscale', 'Transmission', 'Portes', 'Places', 'Catégorie', 'Version', 'Teinte', 'Poids à vide', 'Longueur', 'Motricité', 'Cylindrée'],
+        nbEquipements: 10,
+        commercial: ['Prix', 'Année', 'Kilométrage', 'Garantie', 'Nombre de points de contrôle', 'Assistance', 'Satisfaction', 'Contrôle'],
+      },
+      {
+        type: 'tableau',
+        id: 'annexe3choix',
+        titre: 'Annexe 3 — Choix du véhicule le plus pertinent',
+        lignes: [
+          { id: 'choix', libelle: 'Le véhicule choisi' },
+          { id: 'justif', libelle: 'Justification du choix' },
+        ],
+      },
+      {
+        type: 'texte',
+        id: 'annexe4demo',
+        titre: 'Annexe 4 — La démonstration du véhicule',
+        lignes: 4,
+        boutonLien: 'https://drive.google.com/file/d/1NQMRC263L6EArw3YJVN-WnrWKhv7-Slx/view',
+        boutonLibelle: 'Voir la vidéo de démonstration',
+      },
+      {
+        type: 'cap',
+        id: 'annexe5cap',
+        titre: 'Annexe 5 — Construction des arguments (méthode C.A.P.)',
+        nbLignes: 3,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Configurateur et fiche produit du premier véhicule (annexe 1).',
+        documents: ['Configurateur', 'Document 2', 'Annexe 1'],
+        bareme: 5,
+        reponse:
+          "Critères à reporter depuis les besoins Dupont (mission 4) : Occasion, Citadine, Renault, Électrique, Automatique, Gris, budget entre 7 400 € et 8 400 €. Cette combinaison fait apparaître 2 véhicules. Fiche produit du véhicule 1 : électrique, 1 CV, automatique, 5 portes, 5 places, citadine, Zoé, grise, 1435 kg, 4084 cm, traction avant, cylindrée 0 m3. Commercial : 8 290 € TTC, 2022, 18 343 km, garantie jusqu'à 36 mois, 76 points de contrôle, assistance 24h/24, satisfait ou remboursé, contrôle gratuit après 1 mois.",
+      },
+      {
+        intitule: 'Fiche produit du second véhicule (annexe 2).',
+        documents: ['Document 3', 'Annexe 2'],
+        bareme: 5,
+        reponse:
+          "Véhicule 2 : électrique, 1 CV, automatique, 5 portes, 5 places, citadine, Zoé, grise, 1435 kg, 4084 cm, traction avant, cylindrée 0 m3. Commercial : 7 900 € TTC, 2021, 50 218 km, garantie jusqu'à 36 mois, 76 points de contrôle, assistance 24h/24, satisfait ou remboursé, contrôle gratuit après 1 mois.",
+      },
+      {
+        intitule: 'Choix du véhicule le plus pertinent (annexe 3).',
+        documents: ['Annexes 1 et 2', 'Annexe 3'],
+        bareme: 4,
+        reponse:
+          "Le premier véhicule. Les deux véhicules possèdent la plupart des critères exigés par les clients, sauf le kilométrage : les clients veulent une voiture de moins de 20 000 km. Le premier véhicule affiche 18 343 km ; le second 50 218 km. Le premier véhicule est donc le plus adapté.",
+      },
+      {
+        intitule: 'La démonstration (annexe 4).',
+        documents: ['Vidéo de démonstration', 'Annexe 4'],
+        bareme: 2,
+        reponse:
+          "L'élève projette la vidéo de démonstration du véhicule retenu et met en avant des éléments concrets : silhouette de citadine, motorisation électrique silencieuse, équipements de confort et de sécurité, afin que les clients se projettent dans l'usage du véhicule.",
+      },
+      {
+        intitule: "Construction des arguments avec la méthode C.A.P. (annexe 5).",
+        documents: ['Document 1', 'Annexe 5'],
+        bareme: 4,
+        reponse:
+          "Trois arguments attendus reliant un mobile d'achat, une caractéristique, un avantage et une preuve. Exemples : Nouveauté — Modèle de 2022 — équipements d'un modèle récent — montrer l'année sur le site. Argent — 8 290 € TTC — correspond au budget maximum — montrer le prix sur le site. Sympathie — Renault — marque française — montrer le logo. Environnement — Électrique — véhicule non polluant conforme aux convictions écologistes — montrer la trappe de recharge.",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'Le conseil et la proposition de produit',
+    proposition: [
+      'Nombre de places', 'Type de moteur', 'Couleur',
+      'Prix', 'Garantie', "L'année du véhicule",
+      "Mobiles d'achat", 'Caractéristiques', 'Avantages', 'Preuves',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Les caractéristiques du produit',
+      enfants: [
+        {
+          id: 'tech', texte: 'Les caractéristiques techniques',
+          enfants: [
+            { id: 't1', texte: null, reponse: 'Nombre de places' },
+            { id: 't2', texte: null, reponse: 'Type de moteur' },
+            { id: 't3', texte: null, reponse: 'Couleur' },
+          ],
+        },
+        {
+          id: 'com', texte: 'Les caractéristiques commerciales',
+          enfants: [
+            { id: 'c1', texte: null, reponse: 'Prix' },
+            { id: 'c2', texte: null, reponse: 'Garantie' },
+            { id: 'c3', texte: null, reponse: "L'année du véhicule" },
+          ],
+        },
+        {
+          id: 'arg', texte: 'Argumenter (méthode C.A.P. et SONCAS-E)',
+          enfants: [
+            { id: 'a1', texte: null, reponse: "Mobiles d'achat" },
+            { id: 'a2', texte: null, reponse: 'Caractéristiques' },
+            { id: 'a3', texte: null, reponse: 'Avantages' },
+            { id: 'a4', texte: null, reponse: 'Preuves' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Réaliser la fiche produit d\'un véhicule',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas où trouver les caractéristiques du véhicule.' },
+          { niveau: 'debrouille', description: 'Je complète une partie de la fiche produit.' },
+          { niveau: 'averti', description: 'Je complète les caractéristiques techniques et commerciales.' },
+          { niveau: 'expert', description: 'Je réalise une fiche produit complète et exacte pour chaque véhicule.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Utiliser le configurateur à partir des besoins du client',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas traduire les besoins en critères.' },
+          { niveau: 'debrouille', description: 'Je sélectionne quelques critères au hasard.' },
+          { niveau: 'averti', description: 'Je reporte la plupart des besoins du client.' },
+          { niveau: 'expert', description: 'Je traduis tous les besoins du client et fais apparaître les véhicules adaptés.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Choisir et proposer le véhicule le plus adapté',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas comparer les véhicules.' },
+          { niveau: 'debrouille', description: 'Je choisis sans justifier.' },
+          { niveau: 'averti', description: 'Je choisis et donne une justification simple.' },
+          { niveau: 'expert', description: 'Je choisis et justifie précisément à partir des besoins du client.' },
+        ],
+      },
+      {
+        id: 'c4', intitule: 'Construire un argument avec la méthode C.A.P.',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas la méthode C.A.P.' },
+          { niveau: 'debrouille', description: 'Je cite une caractéristique sans la relier au client.' },
+          { niveau: 'averti', description: 'Je construis un argument complet (C.A.P.).' },
+          { niveau: 'expert', description: "Je construis plusieurs arguments reliés aux mobiles d'achat du client." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Fiche produit', definition: "Document qui récapitule les caractéristiques techniques et commerciales d'un produit." },
+      { terme: 'Caractéristique technique', definition: "Élément lié à la conception du véhicule (énergie, transmission, poids, motricité...)." },
+      { terme: 'Caractéristique commerciale', definition: "Élément lié à la vente (prix, année, kilométrage, garantie...)." },
+      { terme: 'Méthode C.A.P.', definition: 'Caractéristique, Avantage, Preuve : méthode de construction d\'un argument de vente.' },
+      { terme: 'SONCAS-E', definition: "Sept mobiles d'achat : Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement." },
+      { terme: "Mobile d'achat", definition: "Motivation profonde qui pousse un client à acheter." },
+      { terme: 'Argument', definition: "Affirmation qui relie une caractéristique du produit à un avantage pour le client, appuyée par une preuve." },
+      { terme: 'Configurateur', definition: "Outil de recherche qui sélectionne les véhicules selon des critères choisis." },
+    ],
+    flashcards: [
+      { recto: 'Que contient une fiche produit ?', verso: 'Les caractéristiques techniques et commerciales du véhicule.' },
+      { recto: 'Cite trois caractéristiques techniques.', verso: 'Au choix : énergie, transmission, places, poids, longueur, motricité, cylindrée.' },
+      { recto: 'Cite trois caractéristiques commerciales.', verso: 'Au choix : prix, année, kilométrage, garantie, points de contrôle, assistance.' },
+      { recto: 'Que signifie la méthode C.A.P. ?', verso: 'Caractéristique, Avantage, Preuve.' },
+      { recto: 'Que signifie SONCAS-E ?', verso: 'Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement.' },
+      { recto: "Qu'est-ce qu'un mobile d'achat ?", verso: 'La motivation profonde qui pousse un client à acheter.' },
+      { recto: "Quel critère départage les deux Zoé pour la famille Dupont ?", verso: 'Le kilométrage : ils veulent moins de 20 000 km. Le véhicule 1 (18 343 km) convient.' },
+      { recto: "À quel mobile d'achat associer l'énergie électrique ?", verso: "À l'Environnement (véhicule non polluant)." },
+      { recto: "À quel mobile d'achat associer le prix de 8 290 € ?", verso: "À l'Argent (correspond au budget du client)." },
+      { recto: 'Comment apporter la preuve d\'un argument ?', verso: "Par une démonstration, un document ou un chiffre (ex : montrer le prix sur le site)." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Que contient une fiche produit ?', options: ['Les caractéristiques techniques et commerciales', 'Uniquement le prix', 'Le contrat de vente', "L'adresse du client"], bonne: 0 },
+      { type: 'unique', question: 'Laquelle est une caractéristique technique ?', options: ['La motricité', 'Le prix', 'La garantie', 'Le kilométrage'], bonne: 0 },
+      { type: 'unique', question: 'Laquelle est une caractéristique commerciale ?', options: ['Le prix', "L'énergie", 'La transmission', 'Le poids à vide'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie la méthode C.A.P. ?', options: ['Caractéristique, Avantage, Preuve', 'Client, Achat, Prix', 'Conseil, Argument, Produit', 'Catégorie, Année, Puissance'], bonne: 0 },
+      { type: 'unique', question: 'Combien de mobiles d\'achat compte la méthode SONCAS-E ?', options: ['7', '5', '6', '8'], bonne: 0 },
+      { type: 'unique', question: 'Le « E » de SONCAS-E correspond à :', options: ['Environnement', 'Économie', 'Énergie', 'Équipement'], bonne: 0 },
+      { type: 'unique', question: 'Quel critère départage les deux véhicules pour la famille Dupont ?', options: ['Le kilométrage', 'La couleur', 'La marque', 'Le nombre de portes'], bonne: 0 },
+      { type: 'unique', question: 'Quel véhicule proposer à la famille Dupont ?', options: ['Le premier (18 343 km)', 'Le second (50 218 km)', 'Aucun des deux', 'Les deux à la fois'], bonne: 0 },
+      { type: 'unique', question: "À quel mobile d'achat relier l'énergie électrique ?", options: ['Environnement', 'Orgueil', 'Sécurité', 'Argent'], bonne: 0 },
+      { type: 'unique', question: "Qu'est-ce qu'une preuve dans un argument ?", options: ["L'élément qui démontre l'avantage", 'Le prix du véhicule', 'Le mobile du client', 'La marque du véhicule'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Caractéristique technique', 'Caractéristique commerciale', "Mobile d'achat (SONCAS-E)"],
+      zones: [
+        { libelle: 'Énergie électrique', etiquetteIndex: 0 },
+        { libelle: 'Traction avant', etiquetteIndex: 0 },
+        { libelle: 'Prix 8 290 € TTC', etiquetteIndex: 1 },
+        { libelle: 'Garantie 36 mois', etiquetteIndex: 1 },
+        { libelle: 'Nouveauté', etiquetteIndex: 2 },
+        { libelle: 'Environnement', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,
+  'renault-m5': RENAULT_M5,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
@@ -1024,6 +1396,35 @@ export function formaterTravail(missionId: string, contenu: string): string {
       lignes.push('  ' + (obj[`${a.id}.corps`] ?? ''))
     } else if (a.type === 'sms') {
       lignes.push('  ' + (obj[`${a.id}.corps`] ?? ''))
+    } else if (a.type === 'ficheproduit') {
+      lignes.push('  Caractéristiques techniques :')
+      a.technique.forEach((t, i) => lignes.push(`    ${t} : ${obj[`${a.id}.t${i}`] ?? ''}`))
+      lignes.push('  Équipements :')
+      for (let i = 0; i < a.nbEquipements; i++) {
+        const v = obj[`${a.id}.e${i}`] ?? ''
+        if (v.trim().length > 0) lignes.push(`    - ${v}`)
+      }
+      lignes.push('  Caractéristiques commerciales :')
+      a.commercial.forEach((c, i) => lignes.push(`    ${c} : ${obj[`${a.id}.c${i}`] ?? ''}`))
+    } else if (a.type === 'cap') {
+      lignes.push("  Mobile d'achat | Caractéristique | Avantage | Preuve")
+      for (let r = 0; r < a.nbLignes; r++) {
+        const cells = ['mobile', 'carac', 'avantage', 'preuve'].map((c) => obj[`${a.id}.r${r}.${c}`] ?? '')
+        if (cells.some((v) => v.trim().length > 0)) lignes.push('  ' + cells.join(' | '))
+      }
+    } else if (a.type === 'configurateur') {
+      const chemin = obj[`${a.id}.chemin`] ?? ''
+      lignes.push('  Chemin suivi dans le configurateur : ' + (chemin.length > 0 ? chemin : '(non renseigné)'))
+      const issue = obj[`${a.id}.issue`] ?? ''
+      if (issue) lignes.push('  Résultat atteint : ' + issue)
+      lignes.push('  Fiche produit du premier véhicule :')
+      ;['Énergie', 'Puissance fiscale', 'Transmission', 'Portes', 'Places', 'Catégorie', 'Version', 'Teinte', 'Poids à vide', 'Longueur', 'Motricité', 'Cylindrée'].forEach((t, i) => lignes.push(`    ${t} : ${obj[`${a.id}.t${i}`] ?? ''}`))
+      lignes.push('    Équipements :')
+      for (let i = 0; i < 14; i++) {
+        const v = obj[`${a.id}.e${i}`] ?? ''
+        if (v.trim().length > 0) lignes.push(`      - ${v}`)
+      }
+      ;['Prix', 'Année', 'Kilométrage', 'Garantie', 'Nombre de points de contrôle', 'Assistance', 'Satisfaction', 'Contrôle'].forEach((c, i) => lignes.push(`    ${c} : ${obj[`${a.id}.c${i}`] ?? ''}`))
     }
     lignes.push('')
   }

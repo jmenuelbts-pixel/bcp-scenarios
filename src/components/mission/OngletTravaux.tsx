@@ -15,6 +15,9 @@ import type {
   AnnexeTexte,
   AnnexeMail,
   AnnexeSms,
+  AnnexeFicheProduit,
+  AnnexeCap,
+  AnnexeConfigurateur,
 } from '../../data/contenus'
 import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 
@@ -64,9 +67,10 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     if (a.type === 'horaires') a.jours.forEach((j) => champs.push(`${a.id}.${j}`))
     if (a.type === 'organigramme') a.cases.forEach((c) => { champs.push(`${a.id}.${c.id}.nom`); champs.push(`${a.id}.${c.id}.fonction`) })
   })
+  const aDesAnnexes = (contenu.annexes?.length ?? 0) > 0
   const toutRempli =
     champs.length === 0
-      ? (saisies._texte ?? '').trim().length > 0
+      ? (aDesAnnexes ? true : (saisies._texte ?? '').trim().length > 0)
       : champs.every((c) => (saisies[c] ?? '').trim().length > 0)
 
   async function envoyer() {
@@ -307,7 +311,288 @@ function rendreAnnexe(
   if (annexe.type === 'texte') return rendreTexte(annexe, saisies, set, champStyle)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
+  if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'cap') return rendreCap(annexe, saisies, set, champStyle, couleur)
+  if (annexe.type === 'configurateur') return rendreConfigurateur(annexe, saisies, set, verrouille, couleur)
   return rendreOrganigramme(annexe, saisies, set, champStyle, verrouille, couleur)
+}
+
+// Bloc fiche produit a onglets (technique / equipements / commercial),
+// reutilise par l'annexe ficheproduit et par le configurateur.
+function BlocFicheProduit({
+  baseId, technique, nbEquipements, commercial, saisies, set, verrouille, couleur, ongletInitial,
+}: {
+  baseId: string
+  technique: string[]
+  nbEquipements: number
+  commercial: string[]
+  saisies: Saisies
+  set: (id: string, v: string) => void
+  verrouille: boolean
+  couleur: string
+  ongletInitial?: 'tech' | 'equip' | 'com'
+}) {
+  const [onglet, setOnglet] = useState<'tech' | 'equip' | 'com'>(ongletInitial ?? 'tech')
+  const champ: React.CSSProperties = {
+    fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '6px 8px', borderRadius: 6,
+    border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF',
+    color: verrouille ? '#6B7280' : '#1F2933', width: '100%', boxSizing: 'border-box',
+  }
+  const tab = (id: 'tech' | 'equip' | 'com', label: string) => (
+    <button type="button" onClick={() => setOnglet(id)} style={{
+      flex: 1, border: 'none', cursor: 'pointer', padding: '9px 8px', fontFamily: 'Arial, sans-serif',
+      fontSize: 13, fontWeight: onglet === id ? 700 : 500,
+      color: onglet === id ? '#FFFFFF' : '#4B5563',
+      background: onglet === id ? couleur : '#EEF3F8',
+      borderBottom: onglet === id ? `2px solid ${couleur}` : '2px solid transparent',
+    }}>{label}</button>
+  )
+  return (
+    <div style={{ border: '1px solid #C9D6E3', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+      <div style={{ background: '#16456E', color: '#FFFFFF', padding: '8px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1B9E5A', display: 'inline-block' }} />
+        Logiciel concession — Fiche produit
+      </div>
+      <div style={{ display: 'flex' }}>
+        {tab('tech', 'Caractéristiques techniques')}
+        {tab('equip', 'Équipements')}
+        {tab('com', 'Caractéristiques commerciales')}
+      </div>
+      <div style={{ padding: 12 }}>
+        {onglet === 'tech' && (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}><tbody>
+            {technique.map((t, i) => (
+              <tr key={i} style={{ borderTop: '1px solid #EEF2F5' }}>
+                <td style={{ padding: '6px 8px', fontSize: 13, color: '#374151', width: '42%' }}>{t}</td>
+                <td style={{ padding: '6px 8px' }}>
+                  <input type="text" disabled={verrouille} value={saisies[`${baseId}.t${i}`] ?? ''} onChange={(e) => set(`${baseId}.t${i}`, e.target.value)} style={champ} />
+                </td>
+              </tr>
+            ))}
+          </tbody></table>
+        )}
+        {onglet === 'equip' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <p style={{ margin: '0 0 4px', fontSize: 12, color: '#6B7280' }}>Saisissez les équipements du véhicule, un par ligne.</p>
+            {Array.from({ length: nbEquipements }).map((_, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#1B73B0', flexShrink: 0 }} />
+                <input type="text" disabled={verrouille} value={saisies[`${baseId}.e${i}`] ?? ''} onChange={(e) => set(`${baseId}.e${i}`, e.target.value)} style={champ} />
+              </div>
+            ))}
+          </div>
+        )}
+        {onglet === 'com' && (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}><tbody>
+            {commercial.map((c, i) => (
+              <tr key={i} style={{ borderTop: '1px solid #EEF2F5' }}>
+                <td style={{ padding: '6px 8px', fontSize: 13, color: '#374151', width: '42%' }}>{c}</td>
+                <td style={{ padding: '6px 8px' }}>
+                  <input type="text" disabled={verrouille} value={saisies[`${baseId}.c${i}`] ?? ''} onChange={(e) => set(`${baseId}.c${i}`, e.target.value)} style={champ} />
+                </td>
+              </tr>
+            ))}
+          </tbody></table>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function rendreFicheProduit(a: AnnexeFicheProduit, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 12 }}>
+        <BlocFicheProduit baseId={a.id} technique={a.technique} nbEquipements={a.nbEquipements} commercial={a.commercial} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
+      </div>
+    </div>
+  )
+}
+
+function rendreCap(a: AnnexeCap, saisies: Saisies, set: (id: string, v: string) => void, champStyle: React.CSSProperties, couleur: string) {
+  const cols = [
+    { id: 'mobile', label: "Mobile d'achat" },
+    { id: 'carac', label: 'Caractéristique' },
+    { id: 'avantage', label: 'Avantage' },
+    { id: 'preuve', label: 'Preuve' },
+  ]
+  const lignes = Array.from({ length: a.nbLignes })
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 680 }}>
+          <thead>
+            <tr>
+              {cols.map((c) => (
+                <th key={c.id} style={{ padding: '8px 8px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, textAlign: 'left', whiteSpace: 'nowrap' }}>{c.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {lignes.map((_, r) => (
+              <tr key={r} style={{ borderTop: '1px solid #F1F3F5' }}>
+                {cols.map((c) => (
+                  <td key={c.id} style={{ padding: '4px 6px' }}>
+                    <input type="text" value={saisies[`${a.id}.r${r}.${c.id}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.${c.id}`, e.target.value)} style={{ ...champStyle, minWidth: 130 }} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// Configurateur a branchements : etapes successives, impasse ou resultat.
+// Non bloquant ; le chemin complet est enregistre. Apres le resultat, la fiche
+// produit du premier vehicule est a completer.
+function rendreConfigurateur(a: AnnexeConfigurateur, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  // Etat de navigation : id de l'etape courante (ou resultat / impasse).
+  const [etapeId, setEtapeId] = useState<string>(a.etapes[0].id)
+  const [chemin, setChemin] = useState<{ bandeau: string; choix: string }[]>([])
+
+  const etapeCourante = a.etapes.find((e) => e.id === etapeId)
+  const indexEtape = a.etapes.findIndex((e) => e.id === etapeId)
+  const total = a.etapes.length
+
+  function choisir(opt: { libelle: string; vers: string }) {
+    if (verrouille) return
+    const nouveau = [...chemin, { bandeau: etapeCourante?.bandeau ?? '', choix: opt.libelle }]
+    setChemin(nouveau)
+    setEtapeId(opt.vers)
+    // Enregistre le chemin complet (lisible cote prof) + l'issue atteinte.
+    const texteChemin = nouveau.map((c) => `${c.bandeau} = ${c.choix}`).join(' ; ')
+    set(`${a.id}.chemin`, texteChemin)
+    if (opt.vers === 'resultat') set(`${a.id}.issue`, 'Véhicules trouvés')
+    else if (opt.vers === 'impasse') set(`${a.id}.issue`, 'Impasse (aucun véhicule)')
+    else set(`${a.id}.issue`, 'En cours')
+  }
+
+  function recommencer() {
+    if (verrouille) return
+    setChemin([])
+    setEtapeId(a.etapes[0].id)
+    set(`${a.id}.issue`, 'En cours')
+    set(`${a.id}.chemin`, '')
+  }
+
+  const recap = chemin.length > 0 && (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+      {chemin.map((c, i) => (
+        <span key={i} style={{ fontSize: 11, background: '#EEF3F8', color: '#16456E', borderRadius: 14, padding: '3px 10px', fontWeight: 600 }}>
+          {c.bandeau} : {c.choix}
+        </span>
+      ))}
+    </div>
+  )
+
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 12 }}>
+        {/* Fenetre logiciel */}
+        <div style={{ border: '1px solid #C9D6E3', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+          <div style={{ background: '#16456E', color: '#FFFFFF', padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700 }}>
+            <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFCC00' }} />
+            Nos offres véhicules — Renault Championnet
+          </div>
+
+          {/* Barre de progression (etapes 1..N) */}
+          {etapeCourante && (
+            <div style={{ padding: '10px 12px', borderBottom: '1px solid #EEF2F5', background: '#F8FAFC' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B7280', marginBottom: 6 }}>
+                <span>Critère {indexEtape + 1} sur {total}</span>
+                <span>{etapeCourante.bandeau}</span>
+              </div>
+              <div style={{ height: 6, background: '#E3ECF4', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ width: `${((indexEtape + 1) / total) * 100}%`, height: '100%', background: couleur }} />
+              </div>
+            </div>
+          )}
+
+          <div style={{ padding: 14 }}>
+            {recap}
+
+            {/* Etape de selection */}
+            {etapeCourante && (
+              <>
+                <div style={{ background: '#FFCC00', color: '#1F2933', fontWeight: 700, fontSize: 12, padding: '5px 10px', borderRadius: 6, display: 'inline-block', marginBottom: 10 }}>
+                  {etapeCourante.bandeau}
+                </div>
+                <p style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 700, color: '#1F2933' }}>{etapeCourante.question}</p>
+                <p style={{ margin: '0 0 10px', fontSize: 12, color: '#6B7280', fontStyle: 'italic' }}>Une seule réponse possible.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {etapeCourante.options.map((opt, i) => (
+                    <button key={i} type="button" disabled={verrouille} onClick={() => choisir(opt)} style={{
+                      display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', cursor: verrouille ? 'not-allowed' : 'pointer',
+                      border: '1px solid #D5DBE1', borderRadius: 8, padding: '10px 12px', background: '#FFFFFF',
+                      fontFamily: 'Arial, sans-serif', fontSize: 14, color: '#1F2933',
+                    }}>
+                      <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid #B7C2CD', flexShrink: 0 }} />
+                      {opt.libelle}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Impasse */}
+            {etapeId === 'impasse' && (
+              <div style={{ textAlign: 'center', padding: '10px 6px' }}>
+                <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#FBEAEA', color: '#9B2C2C', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 26, fontWeight: 700 }}>!</div>
+                <p style={{ margin: '0 0 14px', fontSize: 14, color: '#374151', lineHeight: 1.6 }}>{a.impasseTexte}</p>
+                <button type="button" disabled={verrouille} onClick={recommencer} style={{
+                  border: 'none', borderRadius: 8, padding: '9px 18px', cursor: verrouille ? 'not-allowed' : 'pointer',
+                  background: couleur, color: '#FFFFFF', fontFamily: 'Arial, sans-serif', fontSize: 13, fontWeight: 700,
+                }}>Revenir aux critères</button>
+              </div>
+            )}
+
+            {/* Resultat */}
+            {etapeId === 'resultat' && (
+              <div>
+                <p style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 700, color: '#16456E' }}>{a.resultatTitre}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                  {a.vehicules.map((v, i) => (
+                    <div key={i} style={{ flex: '1 1 220px', border: '1px solid #D9E2EC', borderRadius: 10, overflow: 'hidden' }}>
+                      <div style={{ background: '#EEF3F8', padding: '8px 12px', fontWeight: 700, fontSize: 14, color: '#16456E', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {v.nom}
+                        <span style={{ background: '#1B9E5A', color: '#FFFFFF', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 12 }}>ZE</span>
+                      </div>
+                      <div style={{ padding: '10px 12px' }}>
+                        <div style={{ fontSize: 13, color: '#374151', marginBottom: 4 }}>{v.version}</div>
+                        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 8 }}>{v.details}</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: couleur }}>{v.prix}</div>
+                        <div style={{ fontSize: 11, color: '#9AA5B1', marginTop: 4 }}>Occasion — Paris Championnet</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" disabled={verrouille} onClick={recommencer} style={{
+                  marginTop: 12, border: '1px solid #C9D6E3', borderRadius: 8, padding: '7px 14px', cursor: verrouille ? 'not-allowed' : 'pointer',
+                  background: '#FFFFFF', color: '#16456E', fontFamily: 'Arial, sans-serif', fontSize: 12, fontWeight: 600,
+                }}>Relancer une recherche</button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fiche produit du premier vehicule, a completer apres recherche */}
+        <p style={{ margin: '16px 0 8px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>Fiche produit du premier véhicule</p>
+        <BlocFicheProduit
+          baseId={a.id}
+          technique={['Énergie', 'Puissance fiscale', 'Transmission', 'Portes', 'Places', 'Catégorie', 'Version', 'Teinte', 'Poids à vide', 'Longueur', 'Motricité', 'Cylindrée']}
+          nbEquipements={14}
+          commercial={['Prix', 'Année', 'Kilométrage', 'Garantie', 'Nombre de points de contrôle', 'Assistance', 'Satisfaction', 'Contrôle']}
+          saisies={saisies} set={set} verrouille={verrouille} couleur={couleur}
+        />
+      </div>
+    </div>
+  )
 }
 
 function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: string) => void, champStyle: React.CSSProperties) {
@@ -349,6 +634,16 @@ function rendreTexte(a: AnnexeTexte, saisies: Saisies, set: (id: string, v: stri
       <div style={{ padding: '10px 12px' }}>
         {a.support && (
           <img src={a.support} alt={a.titre} style={{ maxWidth: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6, marginBottom: 10, display: 'block' }} />
+        )}
+        {a.boutonLien && (
+          <a href={a.boutonLien} target="_blank" rel="noopener noreferrer" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
+            background: '#16456E', color: '#FFFFFF', borderRadius: 8, padding: '9px 16px',
+            fontSize: 13, fontWeight: 700, marginBottom: 12,
+          }}>
+            <span style={{ display: 'inline-flex', width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>▶</span>
+            {a.boutonLibelle ?? 'Ouvrir le lien'}
+          </a>
         )}
         <textarea value={saisies[`${a.id}.texte`] ?? ''} onChange={(e) => set(`${a.id}.texte`, e.target.value)} rows={a.lignes ?? 3} style={{ ...champStyle, resize: 'vertical', fontSize: 14, padding: 10 }} />
       </div>
