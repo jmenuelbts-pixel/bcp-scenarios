@@ -5,6 +5,7 @@
 // verrouillees apres envoi.
 
 import { useEffect, useState } from 'react'
+import { VisionneuseDocument } from '../ui/VisionneuseDocument'
 import type {
   ContenuTravaux,
   Annexe,
@@ -41,6 +42,8 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [erreur, setErreur] = useState<string | null>(null)
   const [retour, setRetour] = useState<RetourTravail | null>(null)
   const [docActif, setDocActif] = useState<number | null>(null)
+  // Document ouvert en plein ecran dans la visionneuse (zoom).
+  const [docZoom, setDocZoom] = useState<{ src: string; alt: string } | null>(null)
 
   useEffect(() => {
     if (!etudiantId) return
@@ -142,9 +145,28 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
               })}
             </div>
             <div style={{ flex: 1, padding: 14, background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
-              {(contenu.documents.find((d) => d.numero === (docActif ?? contenu.documents![0].numero)) ?? contenu.documents[0]).images.map((src, i) => (
-                <img key={i} src={src} alt="Document" style={{ width: '100%', height: 'auto', border: '1px solid #E6ECF2', borderRadius: 6 }} />
-              ))}
+              {(() => {
+                const docCourant = contenu.documents.find((d) => d.numero === (docActif ?? contenu.documents![0].numero)) ?? contenu.documents[0]
+                return (
+                  <>
+                    <div style={{ fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ display: 'inline-flex', width: 18, height: 18, alignItems: 'center', justifyContent: 'center', borderRadius: 4, background: '#EEF3F8', color: '#16456E', fontWeight: 700 }}>+</span>
+                      Cliquez sur le document pour l'agrandir.
+                    </div>
+                    {docCourant.images.map((src, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setDocZoom({ src, alt: `Document ${docCourant.numero} — ${docCourant.titre}` })}
+                        title="Cliquer pour agrandir"
+                        style={{ padding: 0, border: '1px solid #E6ECF2', borderRadius: 6, background: '#FFFFFF', cursor: 'zoom-in', display: 'block', width: '100%' }}
+                      >
+                        <img src={src} alt={`Document ${docCourant.numero}`} style={{ width: '100%', height: 'auto', borderRadius: 6, display: 'block' }} />
+                      </button>
+                    ))}
+                  </>
+                )
+              })()}
             </div>
           </div>
         </div>
@@ -288,6 +310,9 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       )}
 
       {/* Vue agrandie d'un document */}
+      {docZoom && (
+        <VisionneuseDocument src={docZoom.src} alt={docZoom.alt} onClose={() => setDocZoom(null)} />
+      )}
     </div>
   )
 }
