@@ -2037,6 +2037,321 @@ const RENAULT_M6: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 7 - La conclusion de la vente et le financement
+// ---------------------------------------------------------------------------
+const RENAULT_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Repérez les signaux d'achat de la famille Dupont, concluez la vente avec la technique du « joker », calculez le crédit et le montant final après prime à la conversion, puis commentez le résultat.",
+    contexte:
+      "Le prix a été annoncé et les clients semblent séduits. Vous devez être attentif à tous les signaux d'achat du couple pour repérer le bon moment de conclure, puis proposer un financement réaliste et vérifier que le crédit peut être accordé.",
+    documents: [
+      { numero: 1, titre: "Les signaux d'achat positifs ou négatifs", images: ['/docs/renault-m7/doc1.jpg'] },
+      { numero: 3, titre: 'Comment conclure la vente (techniques de conclusion)', images: ['/docs/renault-m7/doc3.jpg'] },
+      { numero: 4, titre: 'La prime à la conversion (pour un véhicule plus propre)', images: ['/docs/renault-m7/doc4a.jpg'] },
+      { numero: 5, titre: 'Réponses au test « prime à la conversion »', images: ['/docs/renault-m7/doc5.jpg'] },
+      { numero: 6, titre: 'La méthode de calcul du crédit', images: ['/docs/renault-m7/doc6.jpg'] },
+      { numero: 7, titre: 'La situation financière de la famille Dupont', images: ['/docs/renault-m7/doc7.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: "Conseiller et vendre",
+      detail: "Formaliser l'accord du client et mettre en place les modalités de règlement.",
+    },
+    objectifs: [
+      "Repérer les signaux d'achat verbaux et non verbaux, positifs et négatifs.",
+      "Conclure la vente avec la technique du « joker ».",
+      'Calculer le crédit (reste à vivre, taux d\'endettement, intérêts).',
+      'Déterminer le montant final après la prime à la conversion et commenter.',
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Les signaux d'achat",
+        questions: [
+          { numero: 1, consigne: "Indiquez les signaux d'achat de M. et Mme Dupont (verbaux et non verbaux, positifs et négatifs).", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1sig' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Conclure la vente',
+        questions: [
+          { numero: 2, consigne: "Retrouvez les deux arguments « joker » importants à présenter aux prospects.", ressources: "Lire les documents 3 et 4, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2joker' },
+          { numero: 3, consigne: "Complétez le test « prime à la conversion » avec les informations du couple. Le test est intégré ci-dessous.", ressources: "Lire les documents 4 et 5, compléter le test (annexe 4b). [C.1.2]", annexeId: 'annexe4btest' },
+          { numero: 4, consigne: "Rédigez la phrase que vous prononcerez pour annoncer le résultat, en utilisant la conclusion « joker ».", ressources: "Lire le document 3 et l'annexe 2, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3phrase' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Calculer le crédit',
+        questions: [
+          { numero: 5, consigne: "Calculez le crédit proposé à M. et Mme Dupont (reste à vivre, reste à vivre minimum, taux d'endettement, intérêts à payer), puis concluez.", ressources: "Lire les documents 6 et 7, compléter l'annexe 4a. [C.1.3]", annexeId: 'annexe4acredit' },
+          { numero: 6, consigne: "Calculez le montant que le couple paiera après déduction de la prime à la conversion.", ressources: "Lire le document 5, consulter l'annexe 4, compléter l'annexe 5. [C.1.3]", annexeId: 'annexe5remise' },
+          { numero: 7, consigne: "Commentez les résultats trouvés à l'annexe 5.", ressources: "Compléter l'annexe 6. [C.1.3]", annexeId: 'annexe6comm' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'grille',
+        id: 'annexe1sig',
+        titre: "Annexe 1 — Les signaux d'achat",
+        colonnes: ['Client', 'Signaux verbaux positifs', 'Signaux verbaux négatifs', 'Signaux non verbaux positifs', 'Signaux non verbaux négatifs'],
+        nbLignes: 2,
+      },
+      {
+        type: 'grille',
+        id: 'annexe2joker',
+        titre: 'Annexe 2 — Les deux arguments « joker »',
+        colonnes: ['Les deux arguments « joker »'],
+        nbLignes: 2,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4btest',
+        titre: 'Annexe 4b — Test « prime à la conversion » (à compléter)',
+        colonnes: ['Question du test', 'Votre réponse'],
+        nbLignes: 6,
+      },
+      {
+        type: 'texte',
+        id: 'annexe3phrase',
+        titre: 'Annexe 3 — La phrase de conclusion « joker »',
+        lignes: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4acredit',
+        titre: 'Annexe 4a — Demande de crédit',
+        colonnes: ['Éléments', 'Calculs', 'Résultats'],
+        nbLignes: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe5remise',
+        titre: 'Annexe 5 — Montant après la prime',
+        colonnes: ['Élément', 'Montant'],
+        nbLignes: 3,
+      },
+      {
+        type: 'texte',
+        id: 'annexe6comm',
+        titre: 'Annexe 6 — Commentaire',
+        lignes: 3,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Les signaux d'achat (annexe 1).",
+        documents: ['Documents 1 et 2', 'Annexe 1'],
+        bareme: 4,
+        reponse: "Signaux relevés dans le dialogue (document 2).",
+        tableau: {
+          colonnes: ['Client', 'Verbal +', 'Verbal −', 'Non verbal +', 'Non verbal −'],
+          lignes: [
+            ['M. Dupont', "Fait valider sa décision : « T'en penses quoi ? C'est pas mal ! »", '« C\'est pas faux… »', 'Enthousiaste', "S'enfonce dans sa chaise"],
+            ['Mme Dupont', '« …elle est très bien cette voiture ! »', "« …ce qui m'embête un peu c'est le prix… »", 'Un grand sourire', 'Se gratte la tête'],
+          ],
+        },
+      },
+      {
+        intitule: 'Les deux arguments « joker » (annexe 2).',
+        documents: ['Documents 3 et 4', 'Annexe 2'],
+        bareme: 2,
+        reponse: "Deux arguments gardés pour précipiter la décision.",
+        tableau: {
+          colonnes: ['Les deux arguments « joker »'],
+          lignes: [
+            ['Prime à la conversion de 5 000 €'],
+            ['Offre réservée aux 200 000 premiers acheteurs'],
+          ],
+        },
+      },
+      {
+        intitule: 'Test « prime à la conversion » (annexe 4b).',
+        documents: ['Documents 4 et 5', 'Annexe 4b'],
+        bareme: 3,
+        reponse: "Réponses à saisir dans le test, d'après le document 5.",
+        tableau: {
+          colonnes: ['Question du test', 'Réponse'],
+          lignes: [
+            ['Type d\'achat', "Véhicule d'occasion"],
+            ['Type de véhicule', 'Véhicule particulier'],
+            ['Énergie', 'Électrique'],
+            ['Véhicule actuel mis au rebut', 'Acheté en 2005'],
+            ['Revenu fiscal de référence', '17 000 €'],
+            ['Résultat', 'Éligible à la prime de 5 000 €'],
+          ],
+        },
+      },
+      {
+        intitule: 'La phrase de conclusion « joker » (annexe 3).',
+        documents: ['Document 3', 'Annexe 2', 'Annexe 3'],
+        bareme: 3,
+        reponse:
+          "« Bravo ! Vous êtes éligible à la prime à la conversion de 5 000 €. Je ne veux pas vous presser, mais cette prime n'est réservée qu'aux 200 000 premiers acheteurs sur toute la France, ce qui est très peu. Il ne faut donc pas trop tarder à vous décider. »",
+      },
+      {
+        intitule: 'Le calcul du crédit (annexe 4a).',
+        documents: ['Documents 6 et 7', 'Annexe 4a'],
+        bareme: 8,
+        reponse: "Calculs selon la méthode du document 6.",
+        tableau: {
+          colonnes: ['Éléments', 'Calculs', 'Résultats'],
+          lignes: [
+            ['Reste à vivre', '2290 + 2240 + 151,05 − 1030 − 315,67', '3 335,38 €'],
+            ['Reste à vivre doit être supérieur à…', '1400 (couple) + 400 + 400 (2 enfants)', '2 200 €'],
+            ["Taux d'endettement", '(1030 + 315,67 + 200) / (2290 + 2240) × 100', '34,12 %'],
+            ['Intérêts à payer', '(200 × 12 × 5) − 8290', '3 710 €'],
+          ],
+        },
+        complement:
+          "Le reste à vivre (3 335,38 €) est supérieur au minimum exigé (2 200 €) et le taux d'endettement (34,12 %) est inférieur au plafond de 35 %. Le crédit peut donc être accordé. Remarque : la future mensualité de 200 € est intégrée au taux d'endettement mais pas au reste à vivre (qui décrit la situation actuelle).",
+      },
+      {
+        intitule: 'Le montant après la prime (annexe 5).',
+        documents: ['Document 5', 'Annexe 4', 'Annexe 5'],
+        bareme: 4,
+        reponse: "Application de la prime à la conversion.",
+        tableau: {
+          colonnes: ['Élément', 'Montant'],
+          lignes: [
+            ['Montant total du crédit (200 × 12 × 5)', '12 000 €'],
+            ['Prime à la conversion', '5 000 €'],
+            ['Montant final payé par le couple (12 000 − 5 000)', '7 000 €'],
+          ],
+        },
+      },
+      {
+        intitule: 'Le commentaire (annexe 6).',
+        documents: ['Annexe 5', 'Annexe 6'],
+        bareme: 2,
+        reponse:
+          "Le crédit est accordé (taux d'endettement 34,12 % < 35 %, reste à vivre confortable). Après la prime à la conversion de 5 000 €, le couple paiera 7 000 €, soit moins que le budget maximum de 8 300 € qu'il s'était fixé.",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La conclusion de la vente et le financement du crédit',
+    proposition: [
+      'Signaux verbaux', 'Signaux non verbaux', 'Signaux positifs', 'Signaux négatifs',
+      'La conclusion directe', 'La conclusion alternative', 'La conclusion « joker »',
+      'Le reste à vivre', "Le taux d'endettement", 'Les intérêts à payer',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La conclusion de la vente et le crédit',
+      enfants: [
+        {
+          id: 'sig', texte: "Les signaux d'achat",
+          enfants: [
+            { id: 's1', texte: null, reponse: 'Signaux verbaux' },
+            { id: 's2', texte: null, reponse: 'Signaux non verbaux' },
+            { id: 's3', texte: null, reponse: 'Signaux positifs' },
+            { id: 's4', texte: null, reponse: 'Signaux négatifs' },
+          ],
+        },
+        {
+          id: 'concl', texte: 'Les techniques de conclusion',
+          enfants: [
+            { id: 'co1', texte: null, reponse: 'La conclusion directe' },
+            { id: 'co2', texte: null, reponse: 'La conclusion alternative' },
+            { id: 'co3', texte: null, reponse: 'La conclusion « joker »' },
+          ],
+        },
+        {
+          id: 'cred', texte: 'Le calcul du crédit',
+          enfants: [
+            { id: 'cr1', texte: null, reponse: 'Le reste à vivre' },
+            { id: 'cr2', texte: null, reponse: "Le taux d'endettement" },
+            { id: 'cr3', texte: null, reponse: 'Les intérêts à payer' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Repérer les signaux d'achat",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas ce qu'est un signal d'achat." },
+          { niveau: 'debrouille', description: 'Je repère un ou deux signaux.' },
+          { niveau: 'averti', description: 'Je distingue signaux verbaux et non verbaux.' },
+          { niveau: 'expert', description: 'Je classe les signaux verbaux/non verbaux et positifs/négatifs.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Conclure la vente',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les techniques de conclusion.' },
+          { niveau: 'debrouille', description: 'Je cite une technique.' },
+          { niveau: 'averti', description: "J'utilise la conclusion « joker »." },
+          { niveau: 'expert', description: "Je rédige une phrase de conclusion « joker » convaincante." },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Calculer le crédit',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas calculer le crédit.' },
+          { niveau: 'debrouille', description: 'Je calcule le reste à vivre.' },
+          { niveau: 'averti', description: "Je calcule le taux d'endettement et les intérêts." },
+          { niveau: 'expert', description: 'Je calcule tout et je conclus sur l\'octroi du crédit.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Signal d'achat", definition: "Indice (verbal ou non verbal) montrant que le client est prêt à acheter." },
+      { terme: 'Signal verbal', definition: "Ce que le client dit (questions sur le délai, le paiement, projection dans l'avenir...)." },
+      { terme: 'Signal non verbal', definition: "Attitude du client (sourire, posture, gestes)." },
+      { terme: 'Conclusion directe', definition: "Inviter naturellement le client à finaliser la vente." },
+      { terme: 'Conclusion alternative', definition: "Proposer un choix entre deux solutions." },
+      { terme: 'Conclusion « joker »', definition: "Garder un argument fort pour précipiter la décision." },
+      { terme: 'Reste à vivre', definition: "Somme restante après paiement de toutes les charges." },
+      { terme: "Taux d'endettement", definition: "Part des revenus consacrée aux dettes (35 % maximum)." },
+      { terme: 'Prime à la conversion', definition: "Aide à l'achat d'un véhicule propre en échange d'un vieux véhicule mis au rebut." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'un signal d'achat ?", verso: "Un indice montrant que le client est prêt à acheter." },
+      { recto: 'Donne un signal verbal positif.', verso: 'Le client demande les délais de livraison ou de paiement.' },
+      { recto: 'Donne un signal non verbal positif.', verso: 'Le client sourit, est détendu, avance vers le bureau.' },
+      { recto: 'Donne un signal non verbal négatif.', verso: "Le client se gratte la tête, s'enfonce dans sa chaise." },
+      { recto: 'Les trois techniques de conclusion ?', verso: 'Directe, alternative, « joker ».' },
+      { recto: "Qu'est-ce que la conclusion « joker » ?", verso: "Garder un argument fort pour précipiter la décision." },
+      { recto: 'Formule du reste à vivre ?', verso: 'Rentrées d\'argent − dépenses du ménage.' },
+      { recto: "Plafond du taux d'endettement ?", verso: '35 % maximum.' },
+      { recto: "Formule des intérêts à payer ?", verso: '(mensualité × 12 × années) − montant du véhicule.' },
+      { recto: 'Montant de la prime à la conversion pour la famille Dupont ?', verso: '5 000 € (véhicule électrique).' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Un signal d'achat, c'est :", options: ['Un indice que le client est prêt à acheter', 'Une réduction de prix', 'Un type de contrat', 'Une garantie'], bonne: 0 },
+      { type: 'unique', question: 'Lequel est un signal verbal positif ?', options: ['Demander les délais de livraison', 'Regarder par la fenêtre', 'Rester silencieux', 'Tapoter des doigts'], bonne: 0 },
+      { type: 'unique', question: 'Lequel est un signal non verbal négatif ?', options: ["S'enfoncer dans sa chaise", 'Sourire', 'Avancer vers le bureau', 'Être enthousiaste'], bonne: 0 },
+      { type: 'unique', question: 'La conclusion « joker » consiste à :', options: ['Garder un argument fort pour précipiter la décision', 'Baisser le prix', 'Proposer deux choix', 'Attendre'], bonne: 0 },
+      { type: 'unique', question: 'Formule du reste à vivre ?', options: ['Rentrées − dépenses', 'Dépenses − rentrées', 'Salaires × 35 %', 'Loyer + crédit'], bonne: 0 },
+      { type: 'unique', question: "Plafond du taux d'endettement en 2026 ?", options: ['35 %', '33 %', '40 %', '30 %'], bonne: 0 },
+      { type: 'unique', question: "Formule du taux d'endettement ?", options: ['Dépenses / salaires × 100', 'Salaires / dépenses × 100', 'Loyer / revenus', 'Dépenses − salaires'], bonne: 0 },
+      { type: 'unique', question: 'Le couple Dupont obtient-il le crédit ?', options: ['Oui, 34,12 % < 35 %', 'Non, taux trop élevé', 'Non, reste à vivre insuffisant', 'On ne peut pas savoir'], bonne: 0 },
+      { type: 'unique', question: 'Montant de la prime à la conversion (Dupont) ?', options: ['5 000 €', '3 000 €', '2 000 €', '7 000 €'], bonne: 0 },
+      { type: 'unique', question: 'Montant final payé après la prime ?', options: ['7 000 €', '12 000 €', '8 290 €', '5 000 €'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ["Signal d'achat", 'Technique de conclusion', 'Calcul du crédit'],
+      zones: [
+        { libelle: 'Le client sourit', etiquetteIndex: 0 },
+        { libelle: 'Le client demande le délai de paiement', etiquetteIndex: 0 },
+        { libelle: 'La conclusion « joker »', etiquetteIndex: 1 },
+        { libelle: 'La conclusion alternative', etiquetteIndex: 1 },
+        { libelle: 'Le reste à vivre', etiquetteIndex: 2 },
+        { libelle: "Le taux d'endettement", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -2044,6 +2359,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'renault-m4': RENAULT_M4,
   'renault-m5': RENAULT_M5,
   'renault-m6': RENAULT_M6,
+  'renault-m7': RENAULT_M7,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
