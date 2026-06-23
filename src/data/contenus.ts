@@ -149,7 +149,26 @@ export interface AnnexeSonCase {
   lignes: { id: string; libelle: string }[]
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase
+// Identification d'objections : cartes "phrase du client" (fixe) + menu
+// deroulant pour qualifier le type (sincere / pretexte).
+export interface AnnexeObjections {
+  type: 'objections'
+  id: string
+  titre: string
+  options: string[] // choix du menu (ex : Sincère, Prétexte)
+  lignes: { id: string; phrase: string }[]
+}
+
+// Traitement d'objections : objection fixe + technique imposee (fixe) +
+// zone de reponse a saisir.
+export interface AnnexeTraitObjections {
+  type: 'traitobjections'
+  id: string
+  titre: string
+  lignes: { id: string; objection: string; technique: string }[]
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections
 
 export interface QuestionTravaux {
   numero: number
@@ -256,12 +275,19 @@ export interface PosteOrganigramme {
   sousPostes?: PosteOrganigramme[] // niveaux rattaches en dessous
 }
 
+export interface TableauCorrige {
+  colonnes: string[] // en-tetes
+  lignes: string[][] // chaque ligne = valeurs alignees sur colonnes
+}
+
 export interface QuestionCorrige {
   intitule: string // la question/le travail tel que pose a l'eleve
   documents: string[] // documents a mobiliser pour repondre
-  reponse: string // reponse precise attendue
+  reponse: string // reponse precise attendue (utilisee si pas de tableau)
   bareme: number // points attribues a cette question
   organigramme?: PosteOrganigramme // organigramme corrige (optionnel)
+  tableau?: TableauCorrige // si present, la reponse s'affiche sous forme de tableau
+  complement?: string // texte court affiche sous le tableau si necessaire
 }
 
 export interface ContenuCorrige {
@@ -401,6 +427,18 @@ const RENAULT_M1: ContenuMission = {
         bareme: 4,
         reponse:
           "Dénomination : Renault Paris Championnet (RRG, Renault Retail Group).\nSecteur d'activité : concessionnaire automobile.\nForme juridique : filiale.\nAnnée de création : 1978.\nAdresse : 203-215 rue Championnet, 75018 Paris.\nTéléphone : 01 42 28 36 36 ou 01 53 53 60 75 (les deux numéros sont acceptés, établissement ou atelier).\nSite internet : renault-occasions-paris-championnet.espacevo.fr",
+        tableau: {
+          colonnes: ['Élément', 'Réponse attendue'],
+          lignes: [
+            ['Dénomination', 'Renault Paris Championnet (RRG, Renault Retail Group)'],
+            ["Secteur d'activité", 'Concessionnaire automobile'],
+            ['Forme juridique', 'Filiale'],
+            ['Année de création', '1978'],
+            ['Adresse', '203-215 rue Championnet, 75018 Paris'],
+            ['Téléphone', '01 42 28 36 36 ou 01 53 53 60 75 (les deux acceptés)'],
+            ['Site internet', 'renault-occasions-paris-championnet.espacevo.fr'],
+          ],
+        },
       },
       {
         intitule: "Indiquez les horaires d'ouverture de la partie showroom de la concession.",
@@ -408,6 +446,14 @@ const RENAULT_M1: ContenuMission = {
         bareme: 3,
         reponse:
           "Du lundi au vendredi : 09h-19h.\nSamedi : 09h-18h.\nDimanche : fermé.",
+        tableau: {
+          colonnes: ['Jour', 'Horaires showroom'],
+          lignes: [
+            ['Lundi au vendredi', '09h - 19h'],
+            ['Samedi', '09h - 18h'],
+            ['Dimanche', 'Fermé'],
+          ],
+        },
       },
       {
         intitule: "Indiquez les deux grands types de biens proposés par la concession Renault.",
@@ -421,6 +467,13 @@ const RENAULT_M1: ContenuMission = {
         bareme: 4,
         reponse:
           "Services disponibles : je recherche un véhicule, j'entretiens mon véhicule, j'ai besoin d'un dépannage, je loue un véhicule.\nEntretien et réparation : entretien, carrosserie / vitrage, révision, diagnostic / réparation.",
+        tableau: {
+          colonnes: ['Catégorie', 'Services'],
+          lignes: [
+            ['Services disponibles', "Je recherche un véhicule ; j'entretiens mon véhicule ; j'ai besoin d'un dépannage ; je loue un véhicule"],
+            ['Entretien et réparation', 'Entretien ; carrosserie / vitrage ; révision ; diagnostic / réparation'],
+          ],
+        },
       },
       {
         intitule:
@@ -675,6 +728,17 @@ const RENAULT_M2: ContenuMission = {
         bareme: 8,
         reponse:
           "Temps puis arrondi par client : Hutte 18→20, Tar 16→20, Huze 4→10, Aurialle 7→10, Hamour 25→30, Zion 20→20, Rhaves 8→10, Dupont 10→10, Quilau 15→20, Bon 6→10, Bambel 4→10, Dubois 24→30, Anssieux 7→10, Auchon 18→20, Hémoi 27→30, Hique 6→10, Dejeu 4→10.",
+        tableau: {
+          colonnes: ['Client', 'Temps réel (min)', 'Arrondi (dizaine sup.)'],
+          lignes: [
+            ['Hutte', '18', '20'], ['Tar', '16', '20'], ['Huze', '4', '10'],
+            ['Aurialle', '7', '10'], ['Hamour', '25', '30'], ['Zion', '20', '20'],
+            ['Rhaves', '8', '10'], ['Dupont', '10', '10'], ['Quilau', '15', '20'],
+            ['Bon', '6', '10'], ['Bambel', '4', '10'], ['Dubois', '24', '30'],
+            ['Anssieux', '7', '10'], ['Auchon', '18', '20'], ['Hémoi', '27', '30'],
+            ['Hique', '6', '10'], ['Dejeu', '4', '10'],
+          ],
+        },
       },
       {
         intitule: 'Avantage de connaître la provenance des clients (annexe 4).',
@@ -689,6 +753,14 @@ const RENAULT_M2: ContenuMission = {
         bareme: 4,
         reponse:
           "Règle : zone primaire ou secondaire ET véhicule acheté avant 2015. Seuls deux clients remplissent les deux conditions : Eva Zion (zone secondaire, véhicule acheté en 2010) et Éric Dupont (zone primaire, véhicule acheté en 2006).",
+        tableau: {
+          colonnes: ['Bénéficiaire', 'Zone', 'Année du véhicule'],
+          lignes: [
+            ['Eva Zion', 'Zone secondaire', '2010'],
+            ['Éric Dupont', 'Zone primaire', '2006'],
+          ],
+        },
+        complement: "Règle appliquée : zone primaire ou secondaire ET véhicule acheté avant 2015. Seuls ces deux clients remplissent les deux conditions.",
       },
     ],
   },
@@ -885,6 +957,16 @@ const RENAULT_M3: ContenuMission = {
         bareme: 5,
         reponse:
           "Regard : franc, orienté vers le client. Expression du visage : sourire franc, yeux grands ouverts (écoute et empathie). Timbre de la voix : respiration maîtrisée, timbre clair, prononciation soignée. Gestes : mouvements amples, maîtrisés et lents, poignée de main appuyée. Posture : dos droit, pieds ancrés, mains contrôlées, regard non fuyant.",
+        tableau: {
+          colonnes: ['Élément non verbal', 'Attitude à adopter'],
+          lignes: [
+            ['Regard', 'Franc, orienté vers le client'],
+            ['Expression du visage', 'Sourire franc, yeux grands ouverts (écoute et empathie)'],
+            ['Timbre de la voix', 'Respiration maîtrisée, timbre clair, prononciation soignée'],
+            ['Gestes', 'Mouvements amples, maîtrisés et lents, poignée de main appuyée'],
+            ['Posture', 'Dos droit, pieds ancrés, mains contrôlées, regard non fuyant'],
+          ],
+        },
       },
       {
         intitule: 'La phrase d\'accueil (annexe 4).',
@@ -1151,6 +1233,22 @@ const RENAULT_M4: ContenuMission = {
         bareme: 6,
         reponse:
           "Questions attendues (méthode en entonnoir), avec leur type : « Je peux vous aider ? » (Ouverte). « Vous avez regardé les modèles sur notre site ? » (Fermée). « Vous recherchez plutôt un véhicule neuf ou d'occasion ? » (Alternative). « Vous cherchez une voiture pour quelle utilisation ? » (Ouverte). « Vous recherchez plutôt une essence, diésel, électrique ou hybride ? » (Choix multiple). « Vous êtes intéressé par une marque en particulier ? » (Ouverte). « Vous préférez une boîte manuelle ou automatique ? » (Alternative). « Avez-vous réfléchi à la couleur ? » (Fermée). « Vous aimez plutôt les couleurs chaudes ou froides ? » (Alternative). « Quel est votre budget ? » (Fermée). « Avez-vous d'autres exigences ? » (Fermée).",
+        tableau: {
+          colonnes: ['Question du vendeur', 'Type'],
+          lignes: [
+            ['Je peux vous aider ?', 'Ouverte'],
+            ['Vous avez regardé les modèles sur notre site ?', 'Fermée'],
+            ['Vous recherchez plutôt un véhicule neuf ou d\'occasion ?', 'Alternative'],
+            ['Vous cherchez une voiture pour quelle utilisation ?', 'Ouverte'],
+            ['Essence, diésel, électrique ou hybride ?', 'Choix multiple'],
+            ['Vous êtes intéressé par une marque en particulier ?', 'Ouverte'],
+            ['Boîte manuelle ou automatique ?', 'Alternative'],
+            ['Avez-vous réfléchi à la couleur ?', 'Fermée'],
+            ['Couleurs chaudes ou froides ?', 'Alternative'],
+            ['Quel est votre budget ?', 'Fermée'],
+            ['Avez-vous d\'autres exigences ?', 'Fermée'],
+          ],
+        },
       },
       {
         intitule: "Les mobiles d'achat (annexe 2).",
@@ -1158,6 +1256,16 @@ const RENAULT_M4: ContenuMission = {
         bareme: 4,
         reponse:
           "Nouveauté : « on aimerait bien la changer rapidement pour un modèle plus récent ». Argent : « ce type de voiture peut coûter cher, donc nous sommes prêts à mettre environ 8 300 € maximum ». Sympathie : « on aime la marque Renault ». Environnement : « plutôt électrique, nous sommes très écolos ».",
+        tableau: {
+          colonnes: ['Mobile exprimé', 'Justification (phrase de M. Dupont)'],
+          lignes: [
+            ['Nouveauté', '« on aimerait bien la changer rapidement pour un modèle plus récent »'],
+            ['Argent', '« nous sommes prêts à mettre environ 8 300 € maximum »'],
+            ['Sympathie', '« on aime la marque Renault »'],
+            ['Environnement', '« plutôt électrique, nous sommes très écolos »'],
+          ],
+        },
+        complement: "Mobiles non exprimés : Sécurité, Orgueil, Confort.",
       },
       {
         intitule: "Les motivations d'achat (annexe 3).",
@@ -1165,6 +1273,14 @@ const RENAULT_M4: ContenuMission = {
         bareme: 3,
         reponse:
           "Hédoniste : l'achat est pour lui et sa femme (« on aimerait bien la changer pour un modèle plus récent »). Oblative : l'achat sert aussi la famille (emmener les enfants à l'école, rendre visite aux beaux-parents). Auto-expression : non exprimée.",
+        tableau: {
+          colonnes: ['Motivation', 'Exprimée ?', 'Justification'],
+          lignes: [
+            ['Hédoniste', 'Oui', "L'achat est pour lui et sa femme (« la changer pour un modèle plus récent »)"],
+            ['Oblative', 'Oui', "L'achat sert la famille (emmener les enfants, visiter les beaux-parents)"],
+            ['Auto-expression', 'Non', '—'],
+          ],
+        },
       },
       {
         intitule: 'La reformulation synthèse (annexe 4).',
@@ -1477,6 +1593,16 @@ const RENAULT_M5: ContenuMission = {
         bareme: 5,
         reponse:
           "Critères à reporter depuis les besoins Dupont (mission 4) : Occasion, Citadine, Renault, Électrique, Automatique, Gris, budget entre 7 400 € et 8 400 €. Cette combinaison fait apparaître 2 véhicules. Fiche produit du véhicule 1 : électrique, 1 CV, automatique, 5 portes, 5 places, citadine, Zoé, grise, 1435 kg, 4084 cm, traction avant, cylindrée 0 m3. Commercial : 8 290 € TTC, 2022, 18 343 km, garantie jusqu'à 36 mois, 76 points de contrôle, assistance 24h/24, satisfait ou remboursé, contrôle gratuit après 1 mois.",
+        tableau: {
+          colonnes: ['Critère / Caractéristique', 'Réponse attendue'],
+          lignes: [
+            ['Critères du configurateur', 'Occasion, Citadine, Renault, Électrique, Automatique, Gris, budget 7 400-8 400 €'],
+            ['Énergie', 'Électrique'], ['Puissance fiscale', '1 CV'], ['Transmission', 'Automatique'],
+            ['Portes / Places', '5 / 5'], ['Catégorie', 'Citadine'], ['Version', 'Zoé'], ['Teinte', 'Grise'],
+            ['Poids à vide', '1435 kg'], ['Longueur', '4084 cm'], ['Motricité', 'Traction avant'], ['Cylindrée', '0 m3'],
+            ['Prix', '8 290 € TTC'], ['Année', '2022'], ['Kilométrage', '18 343 km'], ['Garantie', "Jusqu'à 36 mois"],
+          ],
+        },
       },
       {
         intitule: 'Fiche produit du second véhicule (annexe 2).',
@@ -1484,6 +1610,15 @@ const RENAULT_M5: ContenuMission = {
         bareme: 5,
         reponse:
           "Véhicule 2 : électrique, 1 CV, automatique, 5 portes, 5 places, citadine, Zoé, grise, 1435 kg, 4084 cm, traction avant, cylindrée 0 m3. Commercial : 7 900 € TTC, 2021, 50 218 km, garantie jusqu'à 36 mois, 76 points de contrôle, assistance 24h/24, satisfait ou remboursé, contrôle gratuit après 1 mois.",
+        tableau: {
+          colonnes: ['Caractéristique', 'Réponse attendue'],
+          lignes: [
+            ['Énergie', 'Électrique'], ['Puissance fiscale', '1 CV'], ['Transmission', 'Automatique'],
+            ['Portes / Places', '5 / 5'], ['Catégorie', 'Citadine'], ['Version', 'Zoé'], ['Teinte', 'Grise'],
+            ['Poids à vide', '1435 kg'], ['Longueur', '4084 cm'], ['Motricité', 'Traction avant'], ['Cylindrée', '0 m3'],
+            ['Prix', '7 900 € TTC'], ['Année', '2021'], ['Kilométrage', '50 218 km'], ['Garantie', "Jusqu'à 36 mois"],
+          ],
+        },
       },
       {
         intitule: 'Choix du véhicule le plus pertinent (annexe 3).',
@@ -1505,6 +1640,16 @@ const RENAULT_M5: ContenuMission = {
         bareme: 4,
         reponse:
           "Trois arguments attendus reliant un mobile d'achat, une caractéristique, un avantage et une preuve. Exemples : Nouveauté — Modèle de 2022 — équipements d'un modèle récent — montrer l'année sur le site. Argent — 8 290 € TTC — correspond au budget maximum — montrer le prix sur le site. Sympathie — Renault — marque française — montrer le logo. Environnement — Électrique — véhicule non polluant conforme aux convictions écologistes — montrer la trappe de recharge.",
+        tableau: {
+          colonnes: ["Mobile d'achat", 'Caractéristique', 'Avantage', 'Preuve'],
+          lignes: [
+            ['Nouveauté', 'Modèle de 2022', "Équipements d'un modèle récent", "Montrer l'année sur le site"],
+            ['Argent', '8 290 € TTC', 'Correspond au budget maximum', 'Montrer le prix sur le site'],
+            ['Sympathie', 'Renault', 'Marque française', 'Montrer le logo'],
+            ['Environnement', 'Électrique', 'Véhicule non polluant, conforme aux convictions écologistes', 'Montrer la trappe de recharge'],
+          ],
+        },
+        complement: "Trois arguments suffisent ; ces quatre exemples sont acceptés.",
       },
     ],
   },
@@ -1637,12 +1782,268 @@ const RENAULT_M5: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 6 - Le traitement des objections (produit et prix)
+// ---------------------------------------------------------------------------
+const RENAULT_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Identifiez le type des objections formulées par M. Dupont, traitez chacune d'elles avec la technique appropriée, puis annoncez le prix du véhicule en respectant les consignes de votre responsable.",
+    contexte:
+      "Vous avez conseillé la famille Dupont et lui avez proposé le véhicule le plus adapté. Le client émet désormais des objections sur le produit. Vous devez les lever, puis annoncer le prix avec méthode pour conclure sereinement la vente.",
+    documents: [
+      { numero: 1, titre: 'Les objections (types et techniques de traitement)', images: ['/docs/renault-m6/doc1.jpg'] },
+      { numero: 2, titre: "L'app My Renault (gestion à distance du véhicule électrique)", images: ['/docs/renault-m6/doc2.jpg'] },
+      { numero: 4, titre: 'Le courriel de votre responsable (annoncer le prix)', images: ['/docs/renault-m6/doc4.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre',
+      detail: "Traiter les objections du client et présenter le prix.",
+    },
+    objectifs: [
+      "Distinguer une objection sincère d'une objection prétexte.",
+      'Traiter une objection avec la technique adaptée.',
+      "Annoncer le prix avec empathie et la technique de l'addition.",
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — L'identification des objections",
+        questions: [
+          { numero: 1, consigne: "Pour chaque phrase de M. Dupont, indiquez s'il s'agit d'une objection sincère ou d'une objection prétexte.", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1obj' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Le traitement des objections',
+        questions: [
+          { numero: 2, consigne: "Traitez chaque objection de M. Dupont en utilisant la technique indiquée. Appuyez-vous sur le document 2 pour l'objection liée à l'autonomie et à la recharge.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2trait' },
+        ],
+      },
+      {
+        titre: "Activité 3 — L'annonce du prix",
+        questions: [
+          { numero: 3, consigne: "Rédigez l'annonce du prix du véhicule (8 290 €) en respectant les consignes de votre responsable : faire preuve d'empathie puis utiliser la technique de l'addition.", ressources: "Lire le document 4, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3prix' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'objections',
+        id: 'annexe1obj',
+        titre: 'Annexe 1 — Le type des objections de M. Dupont',
+        options: ['Sincère', 'Prétexte'],
+        lignes: [
+          { id: 'o1', phrase: "Le problème, c'est que mon fils aime bien jouer avec la portière quand on roule." },
+          { id: 'o2', phrase: "Bon, écoutez, je vais réfléchir et je reviendrai sûrement plus tard." },
+          { id: 'o3', phrase: "Il est dommage qu'en électrique on ne puisse faire que 200 km avec une recharge à 100 % !" },
+          { id: 'o4', phrase: "J'ai vu que la recharge atteint 100 % en 3 à 5h, mais devoir vérifier régulièrement, ça risque d'être fastidieux !" },
+        ],
+      },
+      {
+        type: 'traitobjections',
+        id: 'annexe2trait',
+        titre: 'Annexe 2 — Le traitement des objections',
+        lignes: [
+          { id: 't1', objection: "Mon fils aime bien jouer avec la portière quand on roule.", technique: 'Anticipation' },
+          { id: 't2', objection: "Je vais réfléchir et je reviendrai sûrement plus tard.", technique: 'Témoignage' },
+          { id: 't3', objection: "En électrique on ne peut faire que 200 km avec une recharge à 100 %.", technique: 'Oui... mais' },
+          { id: 't4', objection: "Devoir vérifier régulièrement la recharge, ça risque d'être fastidieux.", technique: 'Affaiblissement' },
+        ],
+      },
+      {
+        type: 'texte',
+        id: 'annexe3prix',
+        titre: "Annexe 3 — L'annonce du prix (empathie + technique de l'addition)",
+        lignes: 5,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Identifier le type des objections (annexe 1).",
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 4,
+        reponse:
+          "Objection 1 : sincère. Objection 2 : prétexte. Objection 3 : prétexte. Objection 4 : sincère.",
+        tableau: {
+          colonnes: ['Objection de M. Dupont', 'Type'],
+          lignes: [
+            ["Mon fils aime jouer avec la portière quand on roule.", 'Sincère'],
+            ["Je vais réfléchir et je reviendrai plus tard.", 'Prétexte'],
+            ["On ne fait que 200 km avec une recharge à 100 %.", 'Prétexte'],
+            ["Vérifier régulièrement la recharge, ça risque d'être fastidieux.", 'Sincère'],
+          ],
+        },
+      },
+      {
+        intitule: "Traiter les objections avec la technique indiquée (annexe 2).",
+        documents: ['Documents 1 et 2', 'Annexe 2'],
+        bareme: 8,
+        reponse:
+          "Traitement attendu par objection et par technique imposée.",
+        tableau: {
+          colonnes: ['Objection', 'Technique', 'Traitement attendu'],
+          lignes: [
+            [
+              "Mon fils joue avec la portière en roulant.",
+              'Anticipation',
+              "« Je sais que vous allez me parler de la sécurité des enfants : c'est justement pourquoi ce véhicule dispose de la sécurité enfant qui verrouille les portes arrière. »",
+            ],
+            [
+              "Je vais réfléchir et je reviendrai plus tard.",
+              'Témoignage',
+              "« Je comprends, c'est une décision importante. Un client dans la même situation la semaine dernière hésitait aussi ; il est reparti avec le modèle et m'a rappelé pour me dire qu'il ne regrettait pas. Profitons-en pendant que vous êtes là tous les deux. »",
+            ],
+            [
+              "On ne fait que 200 km avec une recharge à 100 %.",
+              'Oui... mais',
+              "« Oui, l'autonomie est de 200 km, mais vous m'avez dit utiliser la voiture pour les trajets quotidiens (école, travail) ; 200 km couvrent largement ces besoins, et pour la Normandie vous louez un véhicule. »",
+            ],
+            [
+              "Vérifier la recharge, c'est fastidieux.",
+              'Affaiblissement',
+              "« Ce point est en réalité un avantage : avec l'application My Renault, vous suivez l'état de charge et programmez la recharge à distance depuis votre téléphone, sans avoir à vérifier vous-même. »",
+            ],
+          ],
+        },
+      },
+      {
+        intitule: "Annoncer le prix (annexe 3).",
+        documents: ['Document 4', 'Annexe 3'],
+        bareme: 4,
+        reponse:
+          "Annonce attendue : empathie puis technique de l'addition (énumérer des avantages forts avant d'annoncer le prix). Exemple : « Je comprends que le budget compte beaucoup pour vous. Avec ce véhicule, vous avez une motorisation électrique économique, une garantie jusqu'à 36 mois, 76 points de contrôle et l'application de gestion à distance. Le tout pour 8 290 € seulement. »",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'Le traitement des objections',
+    proposition: [
+      'Objection sincère', 'Objection prétexte',
+      'Oui... mais', 'Affaiblissement', 'Témoignage', 'Compensation', 'Anticipation',
+      "L'empathie", "La technique de l'addition",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Le traitement des objections et l'annonce du prix",
+      enfants: [
+        {
+          id: 'types', texte: "Les types d'objections",
+          enfants: [
+            { id: 'ty1', texte: null, reponse: 'Objection sincère' },
+            { id: 'ty2', texte: null, reponse: 'Objection prétexte' },
+          ],
+        },
+        {
+          id: 'tech', texte: 'Les techniques de traitement',
+          enfants: [
+            { id: 'te1', texte: null, reponse: 'Oui... mais' },
+            { id: 'te2', texte: null, reponse: 'Affaiblissement' },
+            { id: 'te3', texte: null, reponse: 'Témoignage' },
+            { id: 'te4', texte: null, reponse: 'Compensation' },
+            { id: 'te5', texte: null, reponse: 'Anticipation' },
+          ],
+        },
+        {
+          id: 'prix', texte: "L'annonce du prix",
+          enfants: [
+            { id: 'pr1', texte: null, reponse: "L'empathie" },
+            { id: 'pr2', texte: null, reponse: "La technique de l'addition" },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Distinguer une objection sincère d'un prétexte",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas ce qu'est une objection." },
+          { niveau: 'debrouille', description: 'Je repère une objection sans la qualifier.' },
+          { niveau: 'averti', description: 'Je distingue la plupart des objections sincères et prétextes.' },
+          { niveau: 'expert', description: 'Je qualifie correctement chaque objection.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Traiter une objection avec la bonne technique',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les techniques de traitement.' },
+          { niveau: 'debrouille', description: 'Je réponds sans méthode.' },
+          { niveau: 'averti', description: "J'applique la technique demandée à la plupart des objections." },
+          { niveau: 'expert', description: "J'applique précisément chaque technique et je rassure le client." },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Annoncer le prix avec méthode",
+        indicateurs: [
+          { niveau: 'novice', description: "J'annonce le prix sans préparation." },
+          { niveau: 'debrouille', description: 'Je montre un peu d\'empathie.' },
+          { niveau: 'averti', description: "J'utilise l'empathie ou la technique de l'addition." },
+          { niveau: 'expert', description: "J'utilise l'empathie ET la technique de l'addition." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Objection', definition: "Frein ou réserve exprimé par le client au cours de la vente." },
+      { terme: 'Objection sincère', definition: "Crainte réelle du client, fondée sur une inquiétude ; il a besoin d'être rassuré." },
+      { terme: 'Objection prétexte', definition: "Faux motif que le client avance pour fuir l'entretien de vente." },
+      { terme: 'Oui... mais', definition: "Donner raison au client puis avancer un argument." },
+      { terme: 'Affaiblissement', definition: "Montrer qu'un point perçu comme faible est en réalité un point fort." },
+      { terme: 'Témoignage', definition: "Utiliser l'expérience d'un autre client pour rassurer." },
+      { terme: 'Compensation', definition: "Montrer que les points forts sont plus nombreux que les points faibles." },
+      { terme: 'Anticipation', definition: "Devancer l'objection du client en avançant soi-même l'argument." },
+      { terme: "Technique de l'addition", definition: "Énumérer plusieurs avantages forts du produit avant d'annoncer le prix." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une objection sincère ?", verso: "Une crainte réelle du client ; il a besoin d'être rassuré." },
+      { recto: "Qu'est-ce qu'une objection prétexte ?", verso: "Un faux motif pour fuir l'entretien de vente." },
+      { recto: 'Technique « Oui... mais » ?', verso: "Donner raison au client puis avancer un argument." },
+      { recto: "Technique de l'affaiblissement ?", verso: "Transformer un point faible apparent en point fort." },
+      { recto: 'Technique du témoignage ?', verso: "S'appuyer sur l'expérience d'un autre client." },
+      { recto: 'Technique de la compensation ?', verso: "Montrer que les points forts dépassent les points faibles." },
+      { recto: "Technique de l'anticipation ?", verso: "Devancer l'objection en avançant soi-même l'argument." },
+      { recto: "Comment annoncer le prix ?", verso: "Avec empathie, puis la technique de l'addition." },
+      { recto: "Qu'est-ce que la technique de l'addition ?", verso: "Énumérer des avantages forts avant d'annoncer le prix." },
+      { recto: "Quel outil lève l'objection sur la recharge ?", verso: "L'application My Renault (suivi et programmation à distance)." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Une objection sincère, c'est :", options: ['Une crainte réelle du client', 'Un faux motif pour fuir', 'Une question sur le prix', 'Un compliment'], bonne: 0 },
+      { type: 'unique', question: "Une objection prétexte, c'est :", options: ['Un faux motif pour fuir', 'Une crainte réelle', 'Une demande de remise', 'Un accord'], bonne: 0 },
+      { type: 'unique', question: 'La technique « Oui... mais » consiste à :', options: ['Donner raison puis argumenter', 'Ignorer le client', 'Baisser le prix', 'Changer de sujet'], bonne: 0 },
+      { type: 'unique', question: "L'affaiblissement consiste à :", options: ['Transformer un point faible en point fort', 'Affaiblir le client', 'Réduire le prix', 'Réduire la garantie'], bonne: 0 },
+      { type: 'unique', question: 'Le témoignage utilise :', options: ["L'expérience d'un autre client", 'Le prix', 'La fiche technique', 'Le contrat'], bonne: 0 },
+      { type: 'unique', question: "La compensation consiste à :", options: ['Montrer plus de points forts que de points faibles', 'Offrir un cadeau', 'Annuler la vente', 'Anticiper l\'objection'], bonne: 0 },
+      { type: 'unique', question: "L'anticipation consiste à :", options: ["Devancer l'objection du client", 'Attendre la fin', 'Reformuler', 'Conclure'], bonne: 0 },
+      { type: 'unique', question: "Pour annoncer le prix, il faut d'abord :", options: ["Faire preuve d'empathie", 'Donner le prix sans rien dire', 'Proposer un crédit', 'Montrer la concurrence'], bonne: 0 },
+      { type: 'unique', question: "La technique de l'addition consiste à :", options: ['Énumérer des avantages avant le prix', 'Additionner les options payantes', 'Ajouter une remise', 'Cumuler les objections'], bonne: 0 },
+      { type: 'unique', question: "Quel outil rassure sur la recharge à distance ?", options: ['My Renault', 'Google Maps', 'Le configurateur', 'Le contrat'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ["Type d'objection", 'Technique de traitement', "Annonce du prix"],
+      zones: [
+        { libelle: 'Sincère', etiquetteIndex: 0 },
+        { libelle: 'Prétexte', etiquetteIndex: 0 },
+        { libelle: 'Oui... mais', etiquetteIndex: 1 },
+        { libelle: 'Témoignage', etiquetteIndex: 1 },
+        { libelle: "L'empathie", etiquetteIndex: 2 },
+        { libelle: "La technique de l'addition", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,
   'renault-m4': RENAULT_M4,
   'renault-m5': RENAULT_M5,
+  'renault-m6': RENAULT_M6,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
@@ -1746,11 +2147,15 @@ export function formaterTravail(missionId: string, contenu: string): string {
           qn++
         }
       }
-    } else if (a.type === 'soncase') {
+    } else if (a.type === 'objections') {
       for (const l of a.lignes) {
-        const coche = (obj[`${a.id}.${l.id}.coche`] ?? '') === '1' ? 'X' : '-'
-        const justif = obj[`${a.id}.${l.id}.justif`] ?? ''
-        lignes.push(`  [${coche}] ${l.libelle} : ${justif}`)
+        const t = obj[`${a.id}.${l.id}`] ?? ''
+        lignes.push(`  « ${l.phrase} » → ${t}`)
+      }
+    } else if (a.type === 'traitobjections') {
+      for (const l of a.lignes) {
+        lignes.push(`  Objection : ${l.objection} [${l.technique}]`)
+        lignes.push(`    Réponse : ${obj[`${a.id}.${l.id}`] ?? ''}`)
       }
     }
     lignes.push('')

@@ -223,20 +223,48 @@ export function Corriges() {
                                         </div>
                                       )}
 
-                                      <div
-                                        style={{
-                                          fontSize: 14,
-                                          color: '#1F2933',
-                                          lineHeight: 1.6,
-                                          background: eclaircir(scenario.couleur, 0.85),
-                                          border: `1px solid ${eclaircir(scenario.couleur, 0.6)}`,
-                                          borderRadius: 8,
-                                          padding: '10px 12px',
-                                          whiteSpace: 'pre-wrap',
-                                        }}
-                                      >
-                                        {q.reponse}
-                                      </div>
+                                      {q.tableau ? (
+                                        <div style={{ overflowX: 'auto', border: `1px solid ${eclaircir(scenario.couleur, 0.6)}`, borderRadius: 8 }}>
+                                          <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: q.tableau.colonnes.length > 2 ? 560 : undefined }}>
+                                            <thead>
+                                              <tr>
+                                                {q.tableau.colonnes.map((c, ci) => (
+                                                  <th key={ci} style={{ background: scenario.couleur, color: couleurTexteSur(scenario.couleur), fontSize: 13, fontWeight: 700, textAlign: 'left', padding: '8px 10px', whiteSpace: 'nowrap' }}>{c}</th>
+                                                ))}
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {q.tableau.lignes.map((ligne, li) => (
+                                                <tr key={li} style={{ background: li % 2 === 0 ? '#FFFFFF' : eclaircir(scenario.couleur, 0.9) }}>
+                                                  {ligne.map((cell, cj) => (
+                                                    <td key={cj} style={{ fontSize: 13, color: '#1F2933', lineHeight: 1.5, padding: '8px 10px', borderTop: `1px solid ${eclaircir(scenario.couleur, 0.7)}`, verticalAlign: 'top', fontWeight: cj === 0 ? 700 : 400 }}>{cell}</td>
+                                                  ))}
+                                                </tr>
+                                              ))}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          style={{
+                                            fontSize: 14,
+                                            color: '#1F2933',
+                                            lineHeight: 1.6,
+                                            background: eclaircir(scenario.couleur, 0.85),
+                                            border: `1px solid ${eclaircir(scenario.couleur, 0.6)}`,
+                                            borderRadius: 8,
+                                            padding: '10px 12px',
+                                            whiteSpace: 'pre-wrap',
+                                          }}
+                                        >
+                                          {q.reponse}
+                                        </div>
+                                      )}
+                                      {q.complement && (
+                                        <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginTop: 8, background: eclaircir(scenario.couleur, 0.9), borderRadius: 8, padding: '8px 12px', whiteSpace: 'pre-wrap' }}>
+                                          {q.complement}
+                                        </div>
+                                      )}
                                       {q.organigramme && (
                                         <div style={{ marginTop: 10 }}>
                                           <OrganigrammeCorrige

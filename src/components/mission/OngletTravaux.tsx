@@ -20,6 +20,8 @@ import type {
   AnnexeConfigurateur,
   AnnexeDialogue,
   AnnexeSonCase,
+  AnnexeObjections,
+  AnnexeTraitObjections,
 } from '../../data/contenus'
 import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 
@@ -318,6 +320,8 @@ function rendreAnnexe(
   if (annexe.type === 'configurateur') return rendreConfigurateur(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'dialogue') return rendreDialogue(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'soncase') return rendreSonCase(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'objections') return rendreObjections(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'traitobjections') return rendreTraitObjections(annexe, saisies, set, verrouille, couleur)
   return rendreOrganigramme(annexe, saisies, set, champStyle, verrouille, couleur)
 }
 
@@ -679,6 +683,55 @@ function rendreSonCase(a: AnnexeSonCase, saisies: Saisies, set: (id: string, v: 
             })}
           </tbody>
         </table>
+      </div>
+    </div>
+  )
+}
+
+// Identification d'objections : phrase fixe du client + menu deroulant (type).
+function rendreObjections(a: AnnexeObjections, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {a.lignes.map((l, idx) => (
+          <div key={l.id} style={{ display: 'flex', flexDirection: 'column', gap: 8, border: '1px solid #E2E8F0', borderRadius: 10, padding: 12, background: '#FFFFFF' }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <span style={{ flexShrink: 0, width: 24, height: 24, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{idx + 1}</span>
+              <div style={{ fontSize: 14, color: '#1F2933', fontStyle: 'italic', lineHeight: 1.5 }}>« {l.phrase} »</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 34 }}>
+              <span style={{ fontSize: 13, color: '#6B7280' }}>Type :</span>
+              <select disabled={verrouille} value={saisies[`${a.id}.${l.id}`] ?? ''} onChange={(e) => set(`${a.id}.${l.id}`, e.target.value)} style={{ fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '6px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933' }}>
+                <option value="">— Choisir —</option>
+                {a.options.map((o) => (<option key={o} value={o}>{o}</option>))}
+              </select>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Traitement d'objections : objection fixe + technique imposee + reponse a saisir.
+function rendreTraitObjections(a: AnnexeTraitObjections, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {a.lignes.map((l, idx) => (
+          <div key={l.id} style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: '#F7FAFC', borderBottom: '1px solid #EEF2F5' }}>
+              <span style={{ flexShrink: 0, width: 24, height: 24, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{idx + 1}</span>
+              <div style={{ flex: 1, fontSize: 14, color: '#1F2933', fontStyle: 'italic' }}>« {l.objection} »</div>
+              <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: '#16456E', background: '#FFCC00', borderRadius: 14, padding: '4px 10px' }}>{l.technique}</span>
+            </div>
+            <div style={{ padding: 12 }}>
+              <textarea disabled={verrouille} value={saisies[`${a.id}.${l.id}`] ?? ''} onChange={(e) => set(`${a.id}.${l.id}`, e.target.value)} rows={3} placeholder={`Traitez l'objection avec la technique « ${l.technique} »…`} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #C9D6E3', borderRadius: 8, padding: 10, resize: 'vertical', fontFamily: 'Arial, sans-serif', fontSize: 14, color: verrouille ? '#6B7280' : '#1F2933', background: verrouille ? '#F1F3F5' : '#FFFFFF', outline: 'none' }} />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
