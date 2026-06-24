@@ -168,7 +168,56 @@ export interface AnnexeTraitObjections {
   lignes: { id: string; objection: string; technique: string }[]
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections
+// Simulateur de test en ligne a branchements (type Google Form d'eligibilite).
+// Ecran d'accueil, puis questions une par une, branchements, ecran resultat.
+// Agrandissable en plein ecran. Chemin complet enregistre.
+export interface OptionSimulateur {
+  libelle: string
+  vers: string // id de l'etape suivante (ou d'un ecran resultat)
+}
+export interface EtapeSimulateur {
+  id: string
+  bandeau: string
+  question: string
+  options: OptionSimulateur[]
+}
+export interface EcranResultatSimulateur {
+  id: string
+  type: 'ok' | 'ko'
+  texte: string
+}
+export interface AnnexeSimulateur {
+  type: 'simulateur'
+  id: string
+  titre: string
+  introTitre: string
+  introTexte: string
+  introBouton: string
+  nbEtapesAffiche: number // pour la barre de progression (ex : 6)
+  etapes: EtapeSimulateur[]
+  resultats: EcranResultatSimulateur[]
+}
+
+// Catalogue d'accessoires facon site marchand pro : compteur, filtres par
+// categorie, grille de produits (nom, categorie, prix). L'eleve selectionne
+// l'accessoire a proposer (clic) et saisit une justification.
+export interface ProduitCatalogue {
+  id: string
+  nom: string
+  categorie: string
+  prix: string // ex : 20,50 € TTC
+}
+export interface AnnexeCatalogue {
+  type: 'catalogue'
+  id: string
+  titre: string
+  compteurAffiche: number // ex : 42 (compteur du site)
+  categories: string[] // filtres disponibles
+  produits: ProduitCatalogue[]
+  demandeJustif: string // libelle de la zone de justification
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -182,15 +231,52 @@ export interface ActiviteTravaux {
   questions: QuestionTravaux[]
 }
 
+// Fiche technique d'un vehicule, affichee en plein ecran depuis le catalogue.
+// Chaque section regroupe des lignes (libelle + valeur) ou de simples valeurs.
+export interface SectionFicheVehicule {
+  titre: string // ex : Equipements, Securite
+  lignes: { libelle?: string; valeur: string }[] // libelle optionnel (liste simple si absent)
+}
+export interface VehiculeCatalogue {
+  id: string
+  nom: string // ex : Citroen C3
+  type: string // ex : Citadine
+  prix: string // ex : 19 500 euros
+  badge?: string // pastille optionnelle (ex : Electrique)
+  sections: SectionFicheVehicule[] // contenu de la fiche technique plein ecran
+}
+export interface CatalogueVehicules {
+  titreLogiciel: string // titre de la fenetre facon logiciel concessionnaire
+  intro?: string // phrase d'introduction affichee au-dessus des vignettes
+  vehicules: VehiculeCatalogue[]
+}
+
+export interface BlocDocumentTexte {
+  // Un bloc de texte d'un document : titre de section optionnel + paragraphes,
+  // et liste optionnelle (puces). Permet d'afficher un document a lire sans image.
+  intertitre?: string
+  paragraphes?: string[]
+  puces?: string[]
+  dialogue?: { locuteur?: string; texte: string; italique?: boolean }[]
+  tableau?: { colonnes: string[]; lignes: string[][] }
+}
 export interface DocumentRessource {
   numero: number // numero affiche (Document 1, 2...)
   titre: string
   images: string[] // chemins des images (depuis /public), une ou plusieurs pages
+  // Contenu textuel du document (reproduit mot pour mot), affiche quand il n'y
+  // a pas d'image. Sert pour les documents entierement redactionnels.
+  texte?: BlocDocumentTexte[]
+  // Document interactif de consultation (lecture seule) : catalogue de
+  // vehicules cliquables ouvrant chacun une fiche technique en plein ecran.
+  // Quand ce champ est present, il remplace l'affichage des images.
+  catalogueVehicules?: CatalogueVehicules
 }
 
 export interface ContenuTravaux {
   consigne: string // resume court de la mission a realiser
   contexte?: string // contexte professionnel
+  videoContexte?: string // lien video pour ecouter le contexte (bouton discret)
   documents?: DocumentRessource[] // bibliotheque de documents a lire (depliables)
   objectifs?: string[] // objectifs de la mission
   competence?: {
@@ -658,7 +744,7 @@ const RENAULT_M2: ContenuMission = {
     documents: [
       { numero: 1, titre: 'Les explications de M. Prauvit (la zone de chalandise)', images: ['/docs/renault-m2/doc1.jpg'] },
       { numero: 2, titre: 'Les différentes représentations de la zone de chalandise', images: ['/docs/renault-m2/doc2.jpg'] },
-      { numero: 3, titre: 'Chèques, relevés d\'identité bancaire et suggestions des clients', images: ['/docs/renault-m2/doc3a.jpg', '/docs/renault-m2/doc3b.jpg', '/docs/renault-m2/doc3c.jpg', '/docs/renault-m2/doc3d.jpg', '/docs/renault-m2/doc3e.jpg'] },
+      { numero: 3, titre: 'Chèques, relevés d\'identité bancaire et suggestions des clients', images: ['/docs/renault-m2/doc3.jpg'] },
       { numero: 4, titre: 'Tableau d\'arrondis en temps', images: ['/docs/renault-m2/doc4.jpg'] },
       { numero: 5, titre: 'Extrait du fichier client (noms et adresses mail)', images: ['/docs/renault-m2/doc5.jpg'] },
     ],
@@ -695,7 +781,7 @@ const RENAULT_M2: ContenuMission = {
       {
         titre: 'Activité 4 — Sélectionner les clients',
         questions: [
-          { numero: 5, consigne: 'Indiquez le nom des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2015).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 5, consigne: 'Indiquez le nom des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2022).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
         ],
       },
     ],
@@ -714,7 +800,7 @@ const RENAULT_M2: ContenuMission = {
         documents: ['Documents 1, 2 et 3'],
         bareme: 5,
         reponse:
-          "Tableau à compléter avec les 17 clients (nom et prénom, adresse avec le temps de trajet, téléphone, produit acheté, année). Les informations proviennent des chèques, des RIB et des suggestions du document 3.",
+          "Tableau à compléter avec les 17 clients (nom et prénom, adresse avec le temps de trajet, téléphone, produit acheté, année). Les informations proviennent des chèques, des RIB et des suggestions du document 3. Années des achats : Hutte 2023, Tar 2024, Huze 2023, Aurialle 2022, Hamour 2023, Zion 2020, Rhaves 2022, Dupont 2019, Quilau 2023, Bon 2024, Bambel 2025, Dubois 2022, Anssieux 2024, Auchon 2023, Hémoi 2025, Hique 2022, Dejeu 2024.",
       },
       {
         intitule: "Retrouver l'adresse de la concession (annexe 2).",
@@ -752,15 +838,15 @@ const RENAULT_M2: ContenuMission = {
         documents: ['Annexe 1', 'Document 5'],
         bareme: 4,
         reponse:
-          "Règle : zone primaire ou secondaire ET véhicule acheté avant 2015. Seuls deux clients remplissent les deux conditions : Eva Zion (zone secondaire, véhicule acheté en 2010) et Éric Dupont (zone primaire, véhicule acheté en 2006).",
+          "Règle : zone primaire ou secondaire ET véhicule acheté avant 2022. Seuls deux clients remplissent les deux conditions : Eva Zion (zone secondaire, véhicule acheté en 2020) et Éric Dupont (zone primaire, véhicule acheté en 2019).",
         tableau: {
           colonnes: ['Bénéficiaire', 'Zone', 'Année du véhicule'],
           lignes: [
-            ['Eva Zion', 'Zone secondaire', '2010'],
-            ['Éric Dupont', 'Zone primaire', '2006'],
+            ['Eva Zion', 'Zone secondaire', '2020'],
+            ['Éric Dupont', 'Zone primaire', '2019'],
           ],
         },
-        complement: "Règle appliquée : zone primaire ou secondaire ET véhicule acheté avant 2015. Seuls ces deux clients remplissent les deux conditions.",
+        complement: "Règle appliquée : zone primaire ou secondaire ET véhicule acheté avant 2022. Seuls ces deux clients remplissent les deux conditions.",
       },
     ],
   },
@@ -859,7 +945,7 @@ const RENAULT_M2: ContenuMission = {
       { type: 'unique', question: 'Une représentation en distance utilise des courbes :', options: ['Isométriques', 'Isochrones', 'Isothermes'], bonne: 0 },
       { type: 'qcm', question: "Quels éléments permettent d'identifier la provenance des clients ?", options: ['Les chèques', 'Les RIB', 'Les suggestions des clients', 'Les bons de commande fournisseurs'], bonnes: [0, 1, 2] },
       { type: 'unique', question: 'Un temps de trajet de 27 minutes arrondi à la dizaine supérieure donne :', options: ['30 minutes', '20 minutes', '25 minutes'], bonne: 0 },
-      { type: 'unique', question: "Selon la règle des portes ouvertes, un client est invité s'il est :", options: ['En zone primaire ou secondaire et a un véhicule acheté avant 2015', 'En zone tertiaire uniquement', 'Client depuis moins d\'un an'], bonne: 0 },
+      { type: 'unique', question: "Selon la règle des portes ouvertes, un client est invité s'il est :", options: ['En zone primaire ou secondaire et a un véhicule acheté avant 2022', 'En zone tertiaire uniquement', 'Client depuis moins d\'un an'], bonne: 0 },
       { type: 'unique', question: 'Connaître la provenance des clients permet surtout :', options: ['De construire la zone de chalandise et cibler la communication', 'De fixer le prix des véhicules', 'De recruter des vendeurs'], bonne: 0 },
     ],
     glisserDeposer: {
@@ -2105,11 +2191,55 @@ const RENAULT_M7: ContenuMission = {
         nbLignes: 2,
       },
       {
-        type: 'grille',
+        type: 'simulateur',
         id: 'annexe4btest',
-        titre: 'Annexe 4b — Test « prime à la conversion » (à compléter)',
-        colonnes: ['Question du test', 'Votre réponse'],
-        nbLignes: 6,
+        titre: 'Annexe 4b — Test « prime à la conversion »',
+        introTitre: 'Prime à la conversion des véhicules',
+        introTexte: "Bénéficiez de la prime à la conversion en échange de la mise au rebut d'un vieux véhicule. Jusqu'à 5 000 € pour un véhicule électrique ou hybride rechargeable, neuf ou d'occasion. Reportez les réponses du couple Dupont (document 5).",
+        introBouton: 'Je fais le test',
+        nbEtapesAffiche: 6,
+        etapes: [
+          { id: 'energie', bandeau: 'CARACTÉRISTIQUES', question: 'Précisez les caractéristiques de votre voiture particulière', options: [
+            { libelle: 'Véhicule diesel', vers: 'annee_diesel' },
+            { libelle: 'Véhicule essence, gaz…', vers: 'rfr_essence' },
+          ] },
+          { id: 'annee_diesel', bandeau: 'VÉHICULE À RECYCLER', question: 'Votre véhicule diesel a-t-il été immatriculé avant 2011 ?', options: [
+            { libelle: 'Oui, avant 2011', vers: 'type' },
+            { libelle: 'Non, après 2011', vers: 'ko_recent' },
+          ] },
+          { id: 'rfr_essence', bandeau: 'REVENU FISCAL', question: "Votre revenu fiscal de référence est-il supérieur à 18 000 € ?", options: [
+            { libelle: 'Oui, supérieur à 18 000 €', vers: 'annee_essence' },
+            { libelle: 'Non, inférieur à 18 000 €', vers: 'annee_essence' },
+          ] },
+          { id: 'annee_essence', bandeau: 'VÉHICULE À RECYCLER', question: 'Votre véhicule essence a-t-il été immatriculé avant 2006 ?', options: [
+            { libelle: 'Oui, avant 2006', vers: 'type' },
+            { libelle: 'Non, après 2006', vers: 'ko_recent' },
+          ] },
+          { id: 'type', bandeau: 'VÉHICULE À ACHETER', question: 'Quel type de véhicule souhaitez-vous acheter ?', options: [
+            { libelle: 'Véhicule particulier ou utilitaire léger', vers: 'neuf' },
+            { libelle: 'Vélo, trottinette…', vers: 'ko_type' },
+          ] },
+          { id: 'neuf', bandeau: 'VÉHICULE À ACHETER', question: "S'agit-il d'un véhicule neuf ou d'occasion ?", options: [
+            { libelle: 'Neuf', vers: 'critair' },
+            { libelle: 'Occasion', vers: 'critair' },
+          ] },
+          { id: 'critair', bandeau: "CLASSEMENT CRIT'AIR", question: "Quel est le classement Crit'Air du véhicule à acheter ?", options: [
+            { libelle: 'Véhicule électrique ou hydrogène', vers: 'cout' },
+            { libelle: "Véhicule Crit'Air 1", vers: 'cout' },
+            { libelle: "Véhicule Crit'Air 3, 4, 5 ou non classé", vers: 'ko_critair' },
+          ] },
+          { id: 'cout', bandeau: "COÛT D'ACQUISITION", question: "Quel est le coût d'acquisition (batterie incluse) du véhicule ?", options: [
+            { libelle: 'Inférieur ou égal à 60 000 €', vers: 'ok' },
+            { libelle: 'Supérieur à 60 000 €', vers: 'ko_cout' },
+          ] },
+        ],
+        resultats: [
+          { id: 'ok', type: 'ok', texte: "Vous pouvez, sous réserve d'instruction du dossier, bénéficier de la prime à la conversion de 5 000 €." },
+          { id: 'ko_recent', type: 'ko', texte: "Votre véhicule à recycler n'est pas éligible : il est trop récent." },
+          { id: 'ko_type', type: 'ko', texte: "Ce type de véhicule n'ouvre pas droit à la prime à la conversion." },
+          { id: 'ko_critair', type: 'ko', texte: "Ce véhicule n'est pas éligible : envisagez un véhicule plus récent (électrique ou Crit'Air 1)." },
+          { id: 'ko_cout', type: 'ko', texte: "Ce véhicule n'est pas éligible : le coût d'acquisition dépasse 60 000 €." },
+        ],
       },
       {
         type: 'texte',
@@ -2352,6 +2482,1004 @@ const RENAULT_M7: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// CONTENU : Renault, mission 8 - La vente additionnelle
+// ---------------------------------------------------------------------------
+const RENAULT_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Repérez dans la découverte des besoins (mission 4) la phrase de M. Dupont qui peut donner lieu à une vente additionnelle, puis proposez l'accessoire le plus adapté et son prix à partir du catalogue.",
+    contexte:
+      "Vous avez emporté l'adhésion du client grâce à l'argument « joker ». Il est temps de penser à la vente additionnelle. Votre responsable a fait passer une note rappelant l'intérêt de proposer des produits complémentaires ou supplémentaires.",
+    documents: [
+      { numero: 1, titre: 'La note de M. Prauviste (vente complémentaire et supplémentaire)', images: ['/docs/renault-m8/doc1.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre',
+      detail: 'Proposer une vente additionnelle adaptée aux besoins du client.',
+    },
+    objectifs: [
+      'Distinguer vente complémentaire et vente supplémentaire.',
+      "Repérer dans le dialogue un besoin pouvant donner lieu à une vente additionnelle.",
+      "Proposer l'accessoire adapté et indiquer son prix à partir du catalogue.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La phrase de M. Dupont',
+        questions: [
+          { numero: 1, consigne: "Relisez la mission 4 (annexe 1, découverte des besoins). Retrouvez la phrase de M. Dupont qui peut faire l'objet d'une vente additionnelle, puis recopiez-la.", ressources: "Relire la mission 4 (annexe 1), compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1phrase' },
+        ],
+      },
+      {
+        titre: "Activité 2 — L'accessoire à proposer",
+        questions: [
+          { numero: 2, consigne: "Dans le catalogue d'accessoires, sélectionnez l'accessoire le plus adapté à la phrase de M. Dupont, puis justifiez votre choix et indiquez son prix.", ressources: "Consulter le catalogue (annexe 2), compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2cat' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'texte',
+        id: 'annexe1phrase',
+        titre: 'Annexe 1 — La phrase de M. Dupont',
+        lignes: 3,
+      },
+      {
+        type: 'catalogue',
+        id: 'annexe2cat',
+        titre: 'Annexe 2 — Le catalogue des accessoires Renault',
+        compteurAffiche: 42,
+        categories: ['Tous', 'Signalisation secours', 'Diffuseur parfum', 'Stickers', 'Accessoires de la marque'],
+        demandeJustif: "Justifiez votre choix au regard de la phrase de M. Dupont",
+        produits: [
+          { id: 'sacbagoto', nom: 'Sac Bagoto', categorie: 'Accessoires de la marque', prix: '2,00 € TTC' },
+          { id: 'stylorenaultb', nom: 'Stylo Renault B', categorie: 'Accessoires de la marque', prix: '1,25 € TTC' },
+          { id: 'extincteur2kg', nom: 'Extincteur 2kg avec manomètre', categorie: 'Signalisation secours', prix: '33,74 € TTC' },
+          { id: 'fixationmaster', nom: 'Fixation pour extincteur (Master III)', categorie: 'Signalisation secours', prix: '32,24 € TTC' },
+          { id: 'etuiip6', nom: 'Étui iP6 Alpine', categorie: 'Accessoires de la marque', prix: '20,00 € TTC' },
+          { id: 'stickerslignes', nom: 'Stickers personnalisation - Lignes blanches (Twingo III)', categorie: 'Stickers', prix: '387,29 € TTC' },
+          { id: 'stickersvintage', nom: 'Stickers personnalisation - Vintage (Twingo III)', categorie: 'Stickers', prix: '387,29 € TTC' },
+          { id: 'oursonalpine', nom: 'Ourson Alpine', categorie: 'Accessoires de la marque', prix: '35,00 € TTC' },
+          { id: 'portecleslosange', nom: 'Porte-clés Losange', categorie: 'Accessoires de la marque', prix: '2,00 € TTC' },
+          { id: 'kitalpine', nom: 'Kit de sécurité pour Nouvelle Alpine', categorie: 'Signalisation secours', prix: '20,40 € TTC' },
+          { id: 'kitsecurite', nom: 'Kit Sécurité (gilet, triangle…)', categorie: 'Signalisation secours', prix: '20,50 € TTC' },
+          { id: 'pinslosange', nom: 'Pins Losange 9mm', categorie: 'Accessoires de la marque', prix: '1,50 € TTC' },
+          { id: 'tasserenaultb', nom: 'Tasse Renault B', categorie: 'Accessoires de la marque', prix: '15,00 € TTC' },
+          { id: 'batterierenaultb', nom: 'Batterie Renault B', categorie: 'Accessoires de la marque', prix: '30,00 € TTC' },
+          { id: 'rechargeparfum', nom: 'Recharge Parfum Stimulating Forest', categorie: 'Diffuseur parfum', prix: '6,49 € TTC' },
+          { id: 'portecles', nom: 'Porte-clés', categorie: 'Accessoires de la marque', prix: '5,50 € TTC' },
+          { id: 'stylo', nom: 'Stylo', categorie: 'Accessoires de la marque', prix: '30,00 € TTC' },
+          { id: 'extincteur1kg', nom: 'Extincteur 1kg avec manomètre (Nouvelle Alpine)', categorie: 'Signalisation secours', prix: '21,67 € TTC' },
+          { id: 'stickerssecu', nom: 'Stickers Sécurité véhicule de société (Trafic III)', categorie: 'Stickers', prix: '104,11 € TTC' },
+          { id: 'styloblancf1', nom: 'Stylo Blanc F1', categorie: 'Accessoires de la marque', prix: '2,95 € TTC' },
+          { id: 'stickercartecle', nom: 'Sticker carte-clé - Diamant Noir', categorie: 'Stickers', prix: '8,69 € TTC' },
+          { id: 'coquetwingo', nom: 'Coque Tel Twingo', categorie: 'Accessoires de la marque', prix: '15,00 € TTC' },
+        ],
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'La phrase de M. Dupont (annexe 1).',
+        documents: ['Mission 4 (annexe 1)', 'Annexe 1'],
+        bareme: 4,
+        reponse:
+          "« D'ailleurs il faudra qu'on achète un autre kit de sécurité parce que celui qui est dans ma voiture est complètement déchiré. »",
+      },
+      {
+        intitule: "L'accessoire à proposer (annexe 2).",
+        documents: ['Catalogue (annexe 2)', 'Annexe 2'],
+        bareme: 6,
+        reponse: "Accessoire adapté à la phrase de M. Dupont.",
+        tableau: {
+          colonnes: ['Élément', 'Réponse attendue'],
+          lignes: [
+            ['Accessoire proposé', 'Kit Sécurité (gilet, triangle…)'],
+            ['Prix', '20,50 € TTC'],
+            ['Type de vente', 'Vente supplémentaire'],
+            ['Justification', "M. Dupont a indiqué que son kit de sécurité actuel est déchiré : on lui propose donc un kit de remplacement."],
+          ],
+        },
+        complement: "Attention au piège : le « Kit de sécurité pour Nouvelle Alpine » à 20,40 € est destiné à un autre véhicule. Le bon choix est le Kit Sécurité (gilet, triangle) à 20,50 €.",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La vente additionnelle',
+    proposition: ['La vente complémentaire', 'La vente supplémentaire', 'Augmenter le chiffre d\'affaires', 'Obtenir des primes'],
+    racine: {
+      id: 'racine',
+      texte: 'La vente additionnelle',
+      enfants: [
+        {
+          id: 'types', texte: 'Les 2 types de vente additionnelle',
+          enfants: [
+            { id: 't1', texte: null, reponse: 'La vente complémentaire' },
+            { id: 't2', texte: null, reponse: 'La vente supplémentaire' },
+          ],
+        },
+        {
+          id: 'enjeux', texte: 'Les enjeux pour le commercial',
+          enfants: [
+            { id: 'e1', texte: null, reponse: "Augmenter le chiffre d'affaires" },
+            { id: 'e2', texte: null, reponse: 'Obtenir des primes' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Distinguer vente complémentaire et supplémentaire',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas la vente additionnelle." },
+          { niveau: 'debrouille', description: 'Je confonds les deux types.' },
+          { niveau: 'averti', description: 'Je distingue vente complémentaire et supplémentaire.' },
+          { niveau: 'expert', description: 'Je distingue les deux et je donne un exemple de chaque.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Repérer un besoin de vente additionnelle',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne repère pas le besoin dans le dialogue.' },
+          { niveau: 'debrouille', description: 'Je repère un besoin sans le relier au bon produit.' },
+          { niveau: 'averti', description: 'Je repère la phrase pertinente.' },
+          { niveau: 'expert', description: 'Je repère la phrase et propose le produit adapté.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Proposer l'accessoire adapté",
+        indicateurs: [
+          { niveau: 'novice', description: 'Je propose un accessoire au hasard.' },
+          { niveau: 'debrouille', description: 'Je propose un accessoire approchant.' },
+          { niveau: 'averti', description: "Je propose le bon accessoire." },
+          { niveau: 'expert', description: "Je propose le bon accessoire, son prix et je justifie." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Vente additionnelle', definition: "Vente d'un produit ou service en plus du produit principal." },
+      { terme: 'Vente complémentaire', definition: "Produit qui complète l'esthétique ou l'usage du produit principal (ex : pare-soleil)." },
+      { terme: 'Vente supplémentaire', definition: "Produit sans lien direct avec le produit principal mais utile au client (ex : siège bébé)." },
+      { terme: "Chiffre d'affaires", definition: "Montant total des ventes de l'entreprise." },
+      { terme: 'Prime', definition: "Rémunération supplémentaire accordée au commercial sur ses ventes." },
+      { terme: 'Accessoire', definition: "Produit annexe proposé en complément du véhicule." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce que la vente additionnelle ?", verso: "Vendre un produit ou service en plus du produit principal." },
+      { recto: "Qu'est-ce que la vente complémentaire ?", verso: "Un produit qui complète l'esthétique ou l'usage du produit principal." },
+      { recto: "Qu'est-ce que la vente supplémentaire ?", verso: "Un produit sans lien direct avec le produit principal mais utile au client." },
+      { recto: 'Exemple de vente complémentaire ?', verso: "Un pare-soleil pour l'achat d'une voiture." },
+      { recto: 'Exemple de vente supplémentaire ?', verso: 'Un siège bébé.' },
+      { recto: 'Deux intérêts de la vente additionnelle ?', verso: "Augmenter le chiffre d'affaires et obtenir des primes." },
+      { recto: 'Quel accessoire proposer à M. Dupont ?', verso: 'Le Kit Sécurité (gilet, triangle) à 20,50 €.' },
+      { recto: 'Pourquoi ce kit de sécurité ?', verso: 'Parce que son kit actuel est déchiré (besoin exprimé en M4).' },
+      { recto: 'La vente du kit de sécurité est de quel type ?', verso: 'Vente supplémentaire (sans lien direct avec la voiture mais utile).' },
+      { recto: 'Quel est le piège du catalogue ?', verso: 'Le « Kit pour Nouvelle Alpine » à 20,40 € concerne un autre véhicule.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "La vente additionnelle, c'est :", options: ['Vendre un produit en plus du principal', 'Baisser le prix', 'Refuser une vente', 'Reprendre un véhicule'], bonne: 0 },
+      { type: 'unique', question: 'La vente complémentaire est :', options: ["Un produit qui complète le produit principal", 'Un produit sans lien', 'Une remise', 'Un crédit'], bonne: 0 },
+      { type: 'unique', question: 'La vente supplémentaire est :', options: ['Un produit utile mais sans lien direct', 'Une option du véhicule', 'Une réduction', 'Une reprise'], bonne: 0 },
+      { type: 'unique', question: 'Exemple de vente complémentaire ?', options: ['Un pare-soleil', 'Un siège bébé sans rapport', 'Un crédit', 'Une assurance vie'], bonne: 0 },
+      { type: 'unique', question: 'Exemple de vente supplémentaire ?', options: ['Un siège bébé', 'Une option moteur', 'Une jante', 'Un toit ouvrant'], bonne: 0 },
+      { type: 'unique', question: 'Deux intérêts de la vente additionnelle ?', options: ["Chiffre d'affaires et primes", 'Remise et fidélité', 'Stock et livraison', 'Garantie et SAV'], bonne: 0 },
+      { type: 'unique', question: 'Quel accessoire proposer à M. Dupont ?', options: ['Le Kit Sécurité à 20,50 €', 'Un porte-clés', 'Une tasse Renault', 'Un ourson Alpine'], bonne: 0 },
+      { type: 'unique', question: 'Pourquoi ce kit ?', options: ['Son kit actuel est déchiré', 'Il aime la sécurité', 'Il est en promotion', 'Le vendeur le pousse'], bonne: 0 },
+      { type: 'unique', question: 'La vente de ce kit est :', options: ['Supplémentaire', 'Complémentaire', 'Une reprise', 'Un crédit'], bonne: 0 },
+      { type: 'unique', question: 'Quel est le piège du catalogue ?', options: ['Le kit Alpine à 20,40 € (autre véhicule)', 'Le prix trop élevé', 'La rupture de stock', 'La couleur'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque exemple dans la bonne catégorie.',
+      etiquettes: ['Vente complémentaire', 'Vente supplémentaire'],
+      zones: [
+        { libelle: 'Un pare-soleil', etiquetteIndex: 0 },
+        { libelle: 'La proposition d\'options', etiquetteIndex: 0 },
+        { libelle: 'Un tapis de sol', etiquetteIndex: 0 },
+        { libelle: 'Un siège bébé', etiquetteIndex: 1 },
+        { libelle: 'Un kit de sécurité', etiquetteIndex: 1 },
+        { libelle: 'Une gourde', etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Citroën, mission 1 - La présentation de l'entreprise
+// ---------------------------------------------------------------------------
+const CITROEN_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Analysez l'entreprise Citroën : son histoire et ses valeurs, son marché et sa gamme de produits, à partir des documents fournis par votre tuteur.",
+    contexte:
+      "Depuis quelques années, l'industrie automobile en France est en pleine transformation, avec un accent croissant sur l'innovation technologique et la durabilité. Citroën se positionne comme un acteur clé, proposant des modèles adaptés aux jeunes conducteurs, alliant style, économie de carburant et respect de l'environnement.\nClara, 19 ans, vient d'obtenir son permis de conduire et est actuellement en première année de BTS NDRC (Négociation et digitalisation de la relation client). Elle doit se déplacer fréquemment entre son lycée et ses stages, ce qui nécessite un moyen de transport fiable.\nSon père, Marc, souhaite lui offrir une voiture pour marquer son entrée dans l'âge adulte. Ensemble, ils se rendent chez un concessionnaire Citroën, où ils exploreront les différentes citadines, qui sont adaptées aux trajets urbains et au style de vie étudiant. Ce processus d'achat est une étape cruciale pour Clara. Il lui permettra d'acquérir autonomie et responsabilité dans sa vie quotidienne.",
+    videoContexte: 'https://drive.google.com/file/d/1Z-bYMIdGDl-rkupJOdxDk_6QDqBPftSK/view',
+    documents: [
+      { numero: 1, titre: 'Histoire de Citroën', images: ['/docs/citroen-m1/doc1.jpg'] },
+      { numero: 2, titre: 'Vision et valeurs de Citroën', images: ['/docs/citroen-m1/doc2.jpg'] },
+      { numero: 3, titre: 'Chiffres clés de Citroën', images: ['/docs/citroen-m1/doc3.jpg'] },
+      { numero: 4, titre: 'Analyse de marché', images: ['/docs/citroen-m1/doc4.jpg'] },
+      { numero: 5, titre: 'Tendances de consommation', images: ['/docs/citroen-m1/doc5.jpg'] },
+      { numero: 6, titre: 'Gamme de produits Citroën', images: ['/docs/citroen-m1/doc6.jpg'] },
+      { numero: 7, titre: 'Nouveaux modèles', images: ['/docs/citroen-m1/doc7.jpg'] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: "Rechercher et actualiser les informations sur l'entreprise et son marché",
+      detail: "Maîtriser la technologie des produits et le positionnement de la marque.",
+    },
+    objectifs: [
+      "Identifier l'histoire, les valeurs et les chiffres clés de Citroën.",
+      'Analyser le marché : concurrents, positionnement, tendances.',
+      'Étudier la gamme de produits et les innovations de la marque.',
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Recherche d'informations sur l'entreprise",
+        questions: [
+          { numero: 1, consigne: "Donnez le nom du fondateur de l'entreprise et l'année de création.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Expliquez comment l'entreprise voit les déplacements écologiques.", ressources: "Consulter le document 2, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
+          { numero: 3, consigne: "Indiquez le chiffre d'affaires réalisé par Citroën.", ressources: "Consulter le document 3, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
+          { numero: 4, consigne: "Énumérez les 2 modèles marquants de l'histoire de Citroën.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
+          { numero: 5, consigne: 'Indiquez le nombre de voitures vendues par Citroën en 2023.', ressources: "Consulter le document 3, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Analyse du marché de Citroën',
+        questions: [
+          { numero: 6, consigne: 'Citez les principaux concurrents de Citroën sur le marché français.', ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
+          { numero: 7, consigne: 'Indiquez les 2 gammes principales de véhicules que vend la marque.', ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
+          { numero: 8, consigne: "Détaillez la méthode qui a permis à l'entreprise de conquérir le marché français.", ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
+          { numero: 9, consigne: 'Précisez les tendances de consommation actuelles en matière de véhicules.', ressources: "Consulter le document 5, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
+          { numero: 10, consigne: 'Indiquez pourquoi les jeunes consommateurs sont attirés par les véhicules Citroën.', ressources: "Consulter le document 5, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Étude des produits de la marque',
+        questions: [
+          { numero: 11, consigne: 'Indiquez les 4 types de véhicules de la gamme Citroën.', ressources: "Consulter le document 6, compléter l'annexe 3. [C.1.1]", annexeId: 'annexe3' },
+          { numero: 12, consigne: 'Citez les deux points forts des modèles Citroën mentionnés dans le document.', ressources: "Consulter le document 6, compléter l'annexe 4. [C.1.1]", annexeId: 'annexe4' },
+          { numero: 13, consigne: 'Donnez le nom du nouveau modèle lancé par Citroën en 2023.', ressources: "Consulter le document 7, compléter l'annexe 5. [C.1.1]", annexeId: 'annexe5' },
+          { numero: 14, consigne: 'Précisez comment Citroën répond à la demande de véhicules électriques.', ressources: "Consulter le document 6, compléter l'annexe 6. [C.1.1]", annexeId: 'annexe6' },
+          { numero: 15, consigne: 'Nommez la nouvelle technologie intégrée dans les modèles récents pour améliorer la conduite.', ressources: "Consulter le document 6, compléter l'annexe 7. [C.1.1]", annexeId: 'annexe7' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Éléments de l'histoire de l'entreprise", colonnes: ['Élément', 'Réponse'], nbLignes: 7 },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le marché de Citroën', colonnes: ["Éléments d'analyse", 'Réponses'], nbLignes: 5 },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Les types de véhicules de la gamme', colonnes: ['Type 1', 'Type 2', 'Type 3', 'Type 4'], nbLignes: 1 },
+      { type: 'texte', id: 'annexe4', titre: 'Annexe 4 — Les points forts des modèles', lignes: 3 },
+      { type: 'texte', id: 'annexe5', titre: 'Annexe 5 — Le nouveau modèle', lignes: 2 },
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — La réponse à la demande de véhicules électriques', lignes: 3 },
+      { type: 'texte', id: 'annexe7', titre: 'Annexe 7 — La nouvelle technologie', lignes: 3 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Éléments de l'histoire de l'entreprise (annexe 1).",
+        documents: ['Documents 1, 2 et 3', 'Annexe 1'],
+        bareme: 10,
+        reponse: "Voir tableau.",
+        tableau: {
+          colonnes: ['Élément', 'Réponse'],
+          lignes: [
+            ["Créateur de l'entreprise", 'André Citroën'],
+            ['Date de création', '1919'],
+            ["Secteur d'activité", 'Automobile'],
+            ['Vision sur les déplacements écologiques', "Devenir un leader de la mobilité durable en développant des solutions de transport respectueuses de l'environnement, en plaçant le client au cœur de ses préoccupations."],
+            ["Chiffre d'affaires", "20 milliards d'euros (2023)"],
+            ['Nombre de véhicules vendus', '1,2 million (2023)'],
+            ['2 modèles marquants', 'Traction Avant (1934) et 2CV (1948)'],
+          ],
+        },
+      },
+      {
+        intitule: 'Le marché de Citroën (annexe 2).',
+        documents: ['Documents 4 et 5', 'Annexe 2'],
+        bareme: 10,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ["Éléments d'analyse", 'Réponses'],
+          lignes: [
+            ['Concurrents', 'Renault, Peugeot, Volkswagen, Toyota'],
+            ['Segments de marché', 'Citadines et SUV'],
+            ['Méthode de conquête', "Marketing digital ciblant les jeunes : campagnes sur les réseaux sociaux et partenariats avec des influenceurs."],
+            ['Tendances de consommation', "Intérêt pour les véhicules écologiques et connectés, demande de voitures compactes et de solutions respectueuses de l'environnement."],
+            ['Attirance des jeunes', 'Fonctionnalités, style, pratiques durables.'],
+          ],
+        },
+      },
+      {
+        intitule: 'Les types de véhicules de la gamme (annexe 3).',
+        documents: ['Document 6', 'Annexe 3'],
+        bareme: 4,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['Type 1', 'Type 2', 'Type 3', 'Type 4'],
+          lignes: [
+            ['Citadines', 'SUV', 'Électriques et hybrides', 'Utilitaires'],
+          ],
+        },
+      },
+      {
+        intitule: 'Les points forts des modèles (annexe 4).',
+        documents: ['Document 6', 'Annexe 4'],
+        bareme: 2,
+        reponse: "Le design moderne et la compacité de la C3 pour la vie urbaine ; l'espace intérieur généreux et les technologies avancées du C5 Aircross.",
+      },
+      {
+        intitule: 'Le nouveau modèle (annexe 5).',
+        documents: ['Document 7', 'Annexe 5'],
+        bareme: 2,
+        reponse: "Le nouveau modèle lancé par Citroën en 2023 est la ë-C3, un véhicule entièrement électrique.",
+      },
+      {
+        intitule: 'La réponse à la demande de véhicules électriques (annexe 6).',
+        documents: ['Document 6', 'Annexe 6'],
+        bareme: 2,
+        reponse: "Citroën développe plusieurs modèles électriques, dont la ë-C3, qui offre une autonomie de 300 km et intègre des technologies optimisées pour l'efficacité énergétique.",
+      },
+      {
+        intitule: 'La nouvelle technologie (annexe 7).',
+        documents: ['Document 6', 'Annexe 7'],
+        bareme: 2,
+        reponse: "Les modèles récents intègrent des systèmes d'assistance à la conduite et des technologies de connectivité avancées pour améliorer le confort et la sécurité des passagers.",
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La présentation de l\'entreprise Citroën',
+    proposition: ['Renault', 'Peugeot', 'Volkswagen', 'Toyota', 'Citadines', 'SUV', 'Électriques et hybrides', 'Utilitaires', 'Fonctionnalités', 'Style', 'Pratiques durables'],
+    racine: {
+      id: 'racine',
+      texte: 'Le marché de Citroën',
+      enfants: [
+        {
+          id: 'conc', texte: 'Les 4 concurrents',
+          enfants: [
+            { id: 'c1', texte: null, reponse: 'Renault' },
+            { id: 'c2', texte: null, reponse: 'Peugeot' },
+            { id: 'c3', texte: null, reponse: 'Volkswagen' },
+            { id: 'c4', texte: null, reponse: 'Toyota' },
+          ],
+        },
+        {
+          id: 'prod', texte: 'Les 4 types de véhicules',
+          enfants: [
+            { id: 'p1', texte: null, reponse: 'Citadines' },
+            { id: 'p2', texte: null, reponse: 'SUV' },
+            { id: 'p3', texte: null, reponse: 'Électriques et hybrides' },
+            { id: 'p4', texte: null, reponse: 'Utilitaires' },
+          ],
+        },
+        {
+          id: 'jeune', texte: "L'attirance des jeunes (3 critères)",
+          enfants: [
+            { id: 'j1', texte: null, reponse: 'Fonctionnalités' },
+            { id: 'j2', texte: null, reponse: 'Style' },
+            { id: 'j3', texte: null, reponse: 'Pratiques durables' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Rechercher des informations sur l'entreprise",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne retrouve pas les informations dans les documents." },
+          { niveau: 'debrouille', description: 'Je retrouve quelques informations.' },
+          { niveau: 'averti', description: "Je retrouve la plupart des informations demandées." },
+          { niveau: 'expert', description: "Je retrouve et organise toutes les informations clés." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Analyser le marché',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas identifier les concurrents." },
+          { niveau: 'debrouille', description: 'Je cite un ou deux concurrents.' },
+          { niveau: 'averti', description: 'Je distingue concurrents, segments et tendances.' },
+          { niveau: 'expert', description: 'Je relie marché, positionnement et tendances de consommation.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Étudier la gamme de produits',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas la gamme." },
+          { niveau: 'debrouille', description: 'Je cite un ou deux types de véhicules.' },
+          { niveau: 'averti', description: 'Je liste les 4 types de véhicules.' },
+          { niveau: 'expert', description: 'Je relie les modèles à leurs points forts et innovations.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Citadine', definition: 'Voiture compacte conçue pour les trajets urbains (ex : C3).' },
+      { terme: 'SUV', definition: 'Véhicule spacieux et surélevé (ex : C5 Aircross).' },
+      { terme: 'Véhicule électrique', definition: 'Véhicule fonctionnant uniquement à l\'électricité (ex : ë-C3).' },
+      { terme: 'Mobilité durable', definition: 'Solutions de transport respectueuses de l\'environnement.' },
+      { terme: 'Marketing digital', definition: 'Promotion via Internet et les réseaux sociaux.' },
+      { terme: "Chiffre d'affaires", definition: "Montant total des ventes de l'entreprise." },
+      { terme: 'Positionnement', definition: 'Place qu\'occupe une marque sur son marché par rapport aux concurrents.' },
+      { terme: 'Tendance de consommation', definition: 'Évolution des comportements et attentes des clients.' },
+    ],
+    flashcards: [
+      { recto: 'Qui a fondé Citroën et en quelle année ?', verso: 'André Citroën, en 1919.' },
+      { recto: "Secteur d'activité de Citroën ?", verso: 'Automobile.' },
+      { recto: "Chiffre d'affaires en 2023 ?", verso: "20 milliards d'euros." },
+      { recto: 'Nombre de véhicules vendus en 2023 ?', verso: '1,2 million.' },
+      { recto: 'Deux modèles marquants ?', verso: 'Traction Avant (1934) et 2CV (1948).' },
+      { recto: 'Les 4 concurrents principaux ?', verso: 'Renault, Peugeot, Volkswagen, Toyota.' },
+      { recto: 'Les 2 segments principaux ?', verso: 'Citadines et SUV.' },
+      { recto: 'Les 4 types de véhicules de la gamme ?', verso: 'Citadines, SUV, électriques et hybrides, utilitaires.' },
+      { recto: 'Nouveau modèle 2023 ?', verso: 'La ë-C3, entièrement électrique.' },
+      { recto: 'Autonomie de la ë-C3 ?', verso: '300 km.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Qui a fondé Citroën ?', options: ['André Citroën', 'Louis Renault', 'Armand Peugeot', 'Henri Ford'], bonne: 0 },
+      { type: 'unique', question: 'En quelle année Citroën a-t-elle été créée ?', options: ['1919', '1934', '1948', '1900'], bonne: 0 },
+      { type: 'unique', question: "Secteur d'activité de Citroën ?", options: ['Automobile', 'Aéronautique', 'Énergie', 'Informatique'], bonne: 0 },
+      { type: 'unique', question: "Chiffre d'affaires 2023 ?", options: ["20 milliards d'euros", "2 milliards d'euros", "200 millions d'euros", "50 milliards d'euros"], bonne: 0 },
+      { type: 'unique', question: 'Combien de véhicules vendus en 2023 ?', options: ['1,2 million', '12 millions', '120 000', '500 000'], bonne: 0 },
+      { type: 'unique', question: 'Lequel n\'est PAS un concurrent cité ?', options: ['Ferrari', 'Renault', 'Peugeot', 'Toyota'], bonne: 0 },
+      { type: 'unique', question: 'Les 2 segments principaux de Citroën ?', options: ['Citadines et SUV', 'Berlines et coupés', 'Camions et bus', 'Motos et scooters'], bonne: 0 },
+      { type: 'unique', question: 'Nouveau modèle électrique 2023 ?', options: ['ë-C3', '2CV', 'C5 Aircross', 'Berlingo'], bonne: 0 },
+      { type: 'unique', question: 'Autonomie de la ë-C3 ?', options: ['300 km', '100 km', '600 km', '150 km'], bonne: 0 },
+      { type: 'unique', question: 'Quelle méthode pour conquérir le marché ?', options: ['Marketing digital et influenceurs', 'Baisse des prix uniquement', 'Publicité télévisée seule', 'Vente par correspondance'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Concurrent', 'Type de véhicule', "Valeur de la marque"],
+      zones: [
+        { libelle: 'Renault', etiquetteIndex: 0 },
+        { libelle: 'Toyota', etiquetteIndex: 0 },
+        { libelle: 'Citadine', etiquetteIndex: 1 },
+        { libelle: 'SUV', etiquetteIndex: 1 },
+        { libelle: 'Innovation', etiquetteIndex: 2 },
+        { libelle: 'Durabilité', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Citroen, mission 2 - Le processus d'achat chez Citroen
+// ---------------------------------------------------------------------------
+const CITROEN_M2: ContenuMission = { //x
+  
+  travaux: {
+    consigne:
+      "Étudiez le processus d'achat d'un véhicule chez Citroën, de la prise de contact jusqu'à l'accord final du client.",
+    contexte:
+      "Votre responsable vous demande maintenant d'étudier le processus d'achat d'un véhicule chez Citroën. Vous en profitez pour découvrir les différentes étapes que suit un client, depuis la prise de contact initiale avec le concessionnaire jusqu'à l'accord final pour l'achat du véhicule. Chaque étape est essentielle pour garantir une expérience client positive.",
+    documents: [
+      { numero: 1, titre: 'Comment prendre contact avec un client', images: [], texte: [
+        { paragraphes: ['La prise de contact avec un client est une étape cruciale dans le processus de vente. Voici quelques étapes clés à suivre :'] },
+        { puces: [
+          'Préparation : Avant d\u2019aborder le client, assurez-vous de connaître les produits que vous proposez et d\'être informé des promotions en cours. Ayez également un sourire accueillant et un langage corporel ouvert.',
+          'Accueillir le client : Lorsque vous approchez le client, saluez-le avec courtoisie et présentez-vous.',
+          'Écouter : Posez des questions ouvertes pour comprendre les besoins et les attentes du client. Montrez un intérêt sincère pour ses souhaits.',
+          'Créer un lien : Engagez la conversation sur des sujets d\'intérêt commun, comme l\'automobile ou les besoins spécifiques du client. Cela aide à établir une relation de confiance.',
+          'Transmettre des informations : Donnez des informations pertinentes sur les véhicules, en mettant en avant leurs caractéristiques et avantages.',
+          'Proposer une suite : Suggérez de visiter les véhicules disponibles ou de fixer un rendez-vous pour une démonstration.',
+        ] },
+      ] },
+      { numero: 2, titre: 'Dialogue entre Clara et son père', images: [], texte: [
+        { dialogue: [
+          { texte: 'Clara et son père Marc sont dans la concession Citroën, et regarde les voitures.', italique: true },
+          { locuteur: 'Clara', texte: 'Bonjour, papa. Je pense qu\'il est temps que je choisisse ma première voiture. J\'ai quelques critères en tête.' },
+          { locuteur: 'Marc', texte: 'Bien sûr, Clara. Quels sont tes critères ?' },
+          { locuteur: 'Clara', texte: 'Eh bien, je voudrais une voiture qui soit :' },
+        ] },
+        { puces: [
+          'Économique en carburant,',
+          'Assez petite pour se garer facilement en ville,',
+          'Équipée de la technologie Bluetooth pour écouter ma musique et passer des appels,',
+          'Et idéalement, une voiture avec une bonne sécurité.',
+        ] },
+        { dialogue: [
+          { locuteur: 'Marc', texte: 'Ça a l\'air bien réfléchi. Est-ce que tu as un budget en tête ?' },
+          { locuteur: 'Clara', texte: 'Je préfère ne pas dépasser 20 000 euros, si possible.' },
+        ] },
+      ] },
+      { numero: 3, titre: 'Critères détaillés de Clara pour sa voiture', images: [], texte: [
+        { dialogue: [
+          { texte: 'Vous vous approchez de Clara et son père Marc pour leur proposer des options.', italique: true },
+        ] },
+        { tableau: { colonnes: ['Critères', 'Détails'], lignes: [
+          ['Économie de carburant', 'Clara souhaite une consommation inférieure à 5 L/100 km.'],
+          ['Taille compacte', 'Elle préfère un modèle de moins de 4 mètres de long pour faciliter le stationnement.'],
+          ['Technologie', 'Elle veut un système Bluetooth, un écran tactile, et éventuellement une caméra de recul.'],
+          ['Sécurité', "Clara recherche des véhicules avec au moins 5 étoiles aux tests Euro NCAP et des systèmes d'aide à la conduite (freinage d'urgence, aide au maintien de voie)."],
+          ['Budget', 'Elle a un budget maximum de 20 000 euros, mais souhaite également connaître les options de financement.'],
+        ] } },
+      ] },
+      { numero: 4, titre: 'Dialogue entre Vous, Clara et son père Marc', images: [], texte: [
+        { dialogue: [
+          { texte: 'Vous vous approchez de Clara et son père Marc pour leur proposer des options.', italique: true },
+          { locuteur: 'Vous', texte: '« Bonjour, Clara et Marc. Je comprends que vous cherchez une citadine pour Clara. Voici trois modèles qui pourraient correspondre à vos critères. »' },
+          { locuteur: 'Clara', texte: '« Oui, nous avons quelques critères en tête. »' },
+          { locuteur: 'Vous', texte: '« Parfait, regardons les options. »' },
+        ] },
+      ] },
+      {
+        numero: 5,
+        titre: 'Fiches techniques des véhicules que vous proposez',
+        images: [],
+        catalogueVehicules: {
+          titreLogiciel: 'Citroën — Catalogue véhicules',
+          intro: 'Cliquez sur un véhicule pour consulter sa fiche technique complète.',
+          vehicules: [
+            {
+              id: 'c3',
+              nom: 'Citroën C3',
+              type: 'Citadine',
+              prix: '19 500 euros',
+              sections: [
+                { titre: 'Caractéristiques', lignes: [
+                  { libelle: 'Modèle', valeur: 'Citroën C3' },
+                  { libelle: 'Type', valeur: 'Citadine' },
+                  { libelle: 'Moteur', valeur: '1.2 PureTech 110 ch' },
+                  { libelle: 'Transmission', valeur: 'Manuelle à 6 vitesses / Automatique' },
+                  { libelle: 'Consommation', valeur: '4,8 L/100 km (cycle mixte)' },
+                  { libelle: 'Émissions de CO2', valeur: '109 g/km' },
+                ] },
+                { titre: 'Dimensions', lignes: [
+                  { libelle: 'Longueur', valeur: '3 994 mm' },
+                  { libelle: 'Largeur', valeur: '1 749 mm' },
+                  { libelle: 'Hauteur', valeur: '1 467 mm' },
+                  { libelle: 'Capacité du coffre', valeur: '300 L' },
+                ] },
+                { titre: 'Équipements', lignes: [
+                  { valeur: "Système d'info-divertissement avec écran tactile 7 pouces" },
+                  { valeur: 'Connectivité Bluetooth et USB' },
+                  { valeur: '6 airbags (avant, latéraux, rideaux)' },
+                  { valeur: 'Aide au stationnement arrière' },
+                  { valeur: 'Climatisation manuelle' },
+                ] },
+                { titre: 'Sécurité', lignes: [
+                  { valeur: 'Note de sécurité : 5 étoiles Euro' },
+                  { valeur: "Système de freinage d'urgence automatique" },
+                ] },
+                { titre: 'Tarif et garantie', lignes: [
+                  { libelle: 'Prix', valeur: '19 500 euros' },
+                  { libelle: 'Garantie', valeur: '5 ans ou 100 000 km' },
+                ] },
+              ],
+            },
+            {
+              id: 'c4',
+              nom: 'Citroën C4',
+              type: 'Berline compacte',
+              prix: '21 000 euros',
+              sections: [
+                { titre: 'Caractéristiques', lignes: [
+                  { libelle: 'Modèle', valeur: 'Citroën C4' },
+                  { libelle: 'Type', valeur: 'Berline compacte' },
+                  { libelle: 'Moteur', valeur: '1.5 BlueHDi 130 ch.' },
+                  { libelle: 'Transmission', valeur: 'Manuelle à 6 vitesses / Automatique' },
+                  { libelle: 'Consommation', valeur: '5,2 L/100 km (cycle mixte)' },
+                  { libelle: 'Émissions de CO2', valeur: '122 g/km' },
+                ] },
+                { titre: 'Dimensions', lignes: [
+                  { libelle: 'Longueur', valeur: '4 360 mm' },
+                  { libelle: 'Largeur', valeur: '1 830 mm' },
+                  { libelle: 'Hauteur', valeur: '1 525 mm' },
+                  { libelle: 'Capacité du coffre', valeur: '380 L' },
+                ] },
+                { titre: 'Équipements', lignes: [
+                  { valeur: 'Système de navigation intégré' },
+                  { valeur: 'Connectivité Bluetooth et Apple CarPlay/Android Auto' },
+                  { valeur: '6 airbags (avant, latéraux, rideaux)' },
+                  { valeur: 'Aide au stationnement avant et arrière' },
+                  { valeur: 'Climatisation automatique' },
+                ] },
+                { titre: 'Sécurité', lignes: [
+                  { valeur: 'Note de sécurité : 5 étoiles Euro NCAP' },
+                  { valeur: 'Système de contrôle de la stabilité' },
+                  { valeur: 'Alerte de franchissement de ligne' },
+                ] },
+                { titre: 'Tarif et garantie', lignes: [
+                  { libelle: 'Prix', valeur: '21 000 euros' },
+                  { libelle: 'Garantie', valeur: '5 ans ou 100 000 km' },
+                ] },
+              ],
+            },
+            {
+              id: 'ec3',
+              nom: 'Citroën ë-C3',
+              type: 'Citadine électrique',
+              prix: '24 000 euros',
+              badge: 'Électrique',
+              sections: [
+                { titre: 'Caractéristiques', lignes: [
+                  { libelle: 'Modèle', valeur: 'Citroën ë-C3' },
+                  { libelle: 'Type', valeur: 'Citadine électrique' },
+                  { libelle: 'Moteur', valeur: 'Électrique 136 ch.' },
+                  { libelle: 'Transmission', valeur: 'Automatique' },
+                  { libelle: 'Autonomie', valeur: '300 km (cycle WLTP)' },
+                  { libelle: 'Consommation', valeur: '0,0 L/100 km' },
+                  { libelle: 'Émissions de CO2', valeur: '0 g/km' },
+                ] },
+                { titre: 'Temps de recharge', lignes: [
+                  { valeur: 'Recharge rapide (80% en 30 minutes)' },
+                  { valeur: 'Recharge domestique (0 à 100% en 7 heures)' },
+                ] },
+                { titre: 'Dimensions', lignes: [
+                  { libelle: 'Longueur', valeur: '4 000 mm' },
+                  { libelle: 'Largeur', valeur: '1 749 mm' },
+                  { libelle: 'Hauteur', valeur: '1 467 mm' },
+                  { libelle: 'Capacité du coffre', valeur: '311 L' },
+                ] },
+                { titre: 'Équipements', lignes: [
+                  { valeur: 'Écran tactile 10 pouces avec navigation' },
+                  { valeur: 'Connectivité Bluetooth et USB' },
+                  { valeur: '6 airbags (avant, latéraux, rideaux)' },
+                  { valeur: 'Aide au stationnement arrière' },
+                  { valeur: 'Climatisation automatique' },
+                  { valeur: 'Système de régulateur de vitesse adaptatif' },
+                ] },
+                { titre: 'Sécurité', lignes: [
+                  { valeur: 'Note de sécurité : 5 étoiles Euro' },
+                  { valeur: 'Système de détection de fatigue' },
+                  { valeur: "Système de freinage d'urgence automatique" },
+                ] },
+                { titre: 'Tarif et garantie', lignes: [
+                  { libelle: 'Prix', valeur: '24 000 euros' },
+                  { libelle: 'Garantie', valeur: '8 ans ou 160 000 km pour la batterie' },
+                ] },
+              ],
+            },
+          ],
+        },
+      },
+      { numero: 6, titre: "La procédure d'accord du client", images: [], texte: [
+        { intertitre: 'Étape 1 : Évaluation des options', paragraphes: [
+          'Marc, conscient que c\'est un moment important pour sa fille, propose de faire un dernier point sur les options. « Alors Clara, qu\'est-ce qui te plaît le plus dans la C3 par rapport aux autres modèles ? » demande-t-il. Clara réfléchit un instant et répond : « Je trouve qu\u2019elle est parfaite pour mes trajets au lycée. Elle est économique, et j\u2019adore les fonctionnalités connectées. En plus, elle est assez compacte pour me garer facilement en ville. »',
+          'En tant que vendeur, vous intervenez pour confirmer son choix. « La C3 est effectivement une excellente option, Clara. En plus de ses équipements, elle a reçu d\'excellentes notes en matière de sécurité. »',
+        ] },
+        { intertitre: 'Étape 2 : Choix du modèle', paragraphes: [
+          'Après cette discussion, Clara prend sa décision. « Je suis prête à avancer avec la Citroën C3, » déclare-t-elle avec un sourire. Marc acquiesce, fier de sa fille. « Très bien, je pense que c\u2019est un bon choix. »',
+        ] },
+        { intertitre: 'Étape 3 : Discussion sur le financement', paragraphes: [
+          'Vous commencez alors à expliquer les différentes options de financement. « Nous avons plusieurs solutions qui peuvent convenir. » « Si vous le souhaitez, nous pouvons discuter d\'un crédit auto classique ou d\'un leasing. Cela dépend vraiment de ce que vous préférez. »',
+          'Marc demande : « Quels sont les avantages de chaque option ? » Vous lui expliquez : « Avec un crédit, vous devenez propriétaire de la voiture dès le premier paiement, tandis qu\u2019avec un leasing, vous payez pour utiliser le véhicule pendant une période déterminée. Les mensualités peuvent être plus faibles avec le leasing, mais vous n\u2019avez pas de propriété à la fin du contrat. »',
+          'Clara et Marc prennent le temps de réfléchir. Clara, ayant un budget limité, se demande ce qui serait le mieux pour elle. Vous proposez de préparer un tableau comparatif des deux options pour faciliter la décision.',
+        ] },
+        { intertitre: 'Étape 4 : Signature du contrat', paragraphes: [
+          'Une fois le choix du financement fait, Vous invitez Clara et Marc à votre bureau pour finaliser la transaction. Vous sortez un contrat de vente détaillé. « Voici le contrat. Je vais vous expliquer chaque section, pour que vous soyez à l\u2019aise avec tout ce qui y est inscrit. »',
+          'Vous parcourez les clauses du contrat, expliquant les conditions de garantie, les assurances possibles et les obligations liées au financement. Clara écoute attentivement, posant des questions sur les aspects qui lui semblent flous. Après avoir clarifié tous les points, elle se sent prête à signer.',
+          '« Je suis vraiment excitée de commencer cette nouvelle aventure avec ma première voiture, » dit-elle en signant le document. Marc sourit, heureux de voir sa fille si enthousiaste.',
+        ] },
+        { intertitre: 'Étape 5 : Remise des clés', paragraphes: [
+          'Après la signature, Vous les accompagnez vers la voiture. « Voilà, votre nouvelle Citroën C3 est prête ! » dites-vous en ouvrant la porte. Clara monte à l\u2019intérieur, et vous lui montrez les différentes fonctionnalités, y compris le système de navigation, le Bluetooth, et l\u2019aide au stationnement.',
+          '« N\u2019oubliez pas de vérifier le manuel pour toute question, et vous pouvez toujours revenir ici si vous avez besoin d\'assistance, » concluez-vous.',
+        ] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Prendre contact avec le client',
+      detail:
+        "Découvrir, analyser et identifier les besoins du client, proposer les produits et/ou les services, formaliser l'accord du client.",
+    },
+    objectifs: [
+      'Maîtriser les étapes de la prise de contact avec un client en concession.',
+      "Découvrir et analyser les besoins d'une cliente pour lui proposer un véhicule adapté.",
+      "Suivre le processus de finalisation de l'achat jusqu'à l'accord du client.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — Prise de contact en face-à-face',
+        questions: [
+          { numero: 1, consigne: 'Énumérez les étapes clés à suivre lors de la prise de contact avec un client dans une concession automobile.', ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez pourquoi il est important d'avoir une bonne préparation avant d'aborder un client.", ressources: "Consulter le document 1, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Créez 2 questions ouvertes et 2 questions fermées qui seront posées au client pour mieux découvrir ses besoins.', ressources: "Consulter le document 1, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Expliquez comment un vendeur peut créer un lien de confiance avec le client lors de la première rencontre.', ressources: "Consulter le document 1, compléter l'annexe 4. [C.1.2]", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Indiquez l'importance de donner aux clients des informations utiles sur les véhicules.", ressources: "Consulter le document 1, compléter l'annexe 5. [C.1.2]", annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Découverte des besoins',
+        questions: [
+          { numero: 6, consigne: 'Énumérez les critères mentionnés par Clara pour sa voiture.', ressources: "Consulter le document 2 et le document 3, compléter l'annexe 6. [C.1.2]", annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Indiquez pourquoi la taille de la voiture est importante pour Clara.', ressources: "Consulter le document 2, compléter l'annexe 7. [C.1.2]", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Donnez le budget maximum que Clara souhaite respecter.', ressources: "Consulter le document 2, compléter l'annexe 8. [C.1.2]", annexeId: 'annexe8' },
+        ],
+      },
+      {
+        titre: "Activité 3 — La proposition d'une voiture",
+        questions: [
+          { numero: 9, consigne: 'Citez les 3 modèles proposés par le vendeur.', ressources: "Consulter le document 4, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
+          { numero: 10, consigne: 'Indiquez quel modèle est entièrement électrique et quel est son prix.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
+          { numero: 11, consigne: 'Donnez le nom du modèle le plus économique en termes de consommation de carburant. Justifiez votre réponse.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
+          { numero: 12, consigne: 'Précisez quel équipement commun est présent sur les 3 véhicules.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
+          { numero: 13, consigne: 'Citez le modèle qui dépasse le budget de Clara. Justifiez votre réponse.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
+        ],
+      },
+      {
+        titre: "Activité 4 — L'accord du client",
+        questions: [
+          { numero: 14, consigne: "Citez les étapes que Clara et son père doivent suivre pour finaliser l'achat de la voiture.", ressources: "Consulter le document 6, compléter l'annexe 10. [C.1.2]", annexeId: 'annexe10' },
+          { numero: 15, consigne: "Indiquez les 2 types d'options de financement proposé par le vendeur.", ressources: "Consulter le document 6, compléter l'annexe 11. [C.1.2]", annexeId: 'annexe11' },
+          { numero: 16, consigne: 'Selon vous, pourquoi est-il importante que Clara comprenne bien le contrat avant de le signer.', ressources: "Consulter le document 6, compléter l'annexe 12. [C.1.2]", annexeId: 'annexe12' },
+          { numero: 17, consigne: 'Racontez ce qui se passe au moment de la remise des clés.', ressources: "Consulter le document 6, compléter l'annexe 12. [C.1.2]", annexeId: 'annexe12' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les étapes clés', colonnes: ['Étape', 'Réponse'], nbLignes: 6 },
+      { type: 'texte', id: 'annexe2', titre: "Annexe 2 — L'importance d'une bonne préparation", lignes: 3 },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Questions aux clients', colonnes: ['4 questions', 'Réponse'], nbLignes: 4 },
+      { type: 'texte', id: 'annexe4', titre: 'Annexe 4 — Création du lien de confiance', lignes: 3 },
+      { type: 'texte', id: 'annexe5', titre: "Annexe 5 — Importance de donner des informations sur le véhicule", lignes: 3 },
+      { type: 'grille', id: 'annexe6', titre: 'Annexe 6 — Critères de Clara pour sa voiture', colonnes: ['5 critères', 'Réponse'], nbLignes: 5 },
+      { type: 'texte', id: 'annexe7', titre: 'Annexe 7 — Taille du véhicule', lignes: 3 },
+      { type: 'texte', id: 'annexe8', titre: 'Annexe 8 — Budget', lignes: 2 },
+      { type: 'grille', id: 'annexe9', titre: "Annexe 9 — Proposition d'une voiture", colonnes: ['Élément', 'Réponse'], nbLignes: 7 },
+      { type: 'grille', id: 'annexe10', titre: "Annexe 10 — Étapes de finalisation de l'achat", colonnes: ['Étape', 'Réponse'], nbLignes: 5 },
+      { type: 'texte', id: 'annexe11', titre: 'Annexe 11 — Options de financement', lignes: 2 },
+      { type: 'grille', id: 'annexe12', titre: 'Annexe 12 — Lire le contrat et la remise des clés', colonnes: ['Élément', 'Réponse'], nbLignes: 2 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Les étapes clés (annexe 1).',
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 6,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['Étape', 'Réponse'],
+          lignes: [
+            ['Étape 1', 'La préparation'],
+            ['Étape 2', "L'accueil du client"],
+            ['Étape 3', "L'écoute des besoins"],
+            ['Étape 4', "La création d'un lien"],
+            ['Étape 5', "La transmission d'information sur les produits"],
+            ['Étape 6', "La proposition d'une suite"],
+          ],
+        },
+      },
+      {
+        intitule: "L'importance d'une bonne préparation (annexe 2).",
+        documents: ['Document 1', 'Annexe 2'],
+        bareme: 2,
+        reponse:
+          "Une bonne préparation permet au vendeur de connaître les produits, les promotions, et d'adopter une attitude accueillante, ce qui contribue à établir une relation de confiance dès le départ.",
+      },
+      {
+        intitule: 'Questions aux clients (annexe 3).',
+        documents: ['Document 1', 'Annexe 3'],
+        bareme: 4,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['4 questions', 'Réponse'],
+          lignes: [
+            ['Question 1', '« Que recherchez-vous dans une voiture ? »'],
+            ['Question 2', '« Quels sont vos critères principaux ? »'],
+            ['Question 3', '« Avez-vous un type de voiture en tête ? »'],
+            ['Question 4', '« Pour quel type d\'utilisation recherchez-vous une voiture ? »'],
+          ],
+        },
+      },
+      {
+        intitule: 'Création du lien de confiance (annexe 4).',
+        documents: ['Document 1', 'Annexe 4'],
+        bareme: 2,
+        reponse:
+          "En s'engageant dans une conversation amicale, en posant des questions sur les besoins spécifiques du client, et en montrant un intérêt sincère pour ses souhaits.",
+      },
+      {
+        intitule: "Importance de donner des informations sur le véhicule (annexe 5).",
+        documents: ['Document 1', 'Annexe 5'],
+        bareme: 2,
+        reponse:
+          "Transmettre des informations pertinentes aide le client à prendre une décision éclairée et démontre que le vendeur connaît bien ses produits, renforçant ainsi la confiance.",
+      },
+      {
+        intitule: 'Critères de Clara pour sa voiture (annexe 6).',
+        documents: ['Documents 2 et 3', 'Annexe 6'],
+        bareme: 5,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['5 critères', 'Réponse'],
+          lignes: [
+            ['Critère 1', 'Économique en carburant'],
+            ['Critère 2', 'Taille compacte'],
+            ['Critère 3', 'Équipée de technologie Bluetooth'],
+            ['Critère 4', 'Bonne sécurité'],
+            ['Critère 5', 'Budget maximum de 20 000 euros'],
+          ],
+        },
+      },
+      {
+        intitule: 'Taille du véhicule (annexe 7).',
+        documents: ['Document 2', 'Annexe 7'],
+        bareme: 2,
+        reponse:
+          "Clara souhaite une voiture suffisamment petite pour faciliter le stationnement en ville, ce qui est crucial pour ses trajets quotidiens au lycée.",
+      },
+      {
+        intitule: 'Budget (annexe 8).',
+        documents: ['Document 2', 'Annexe 8'],
+        bareme: 2,
+        reponse: "Clara ne souhaite pas dépasser 20 000 euros pour l'achat de sa voiture.",
+      },
+      {
+        intitule: "Proposition d'une voiture (annexe 9).",
+        documents: ['Documents 4 et 5', 'Annexe 9'],
+        bareme: 10,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['Élément', 'Réponse'],
+          lignes: [
+            ['3 modèles', 'Citroën C3, Citroën C4, Citroën ë-C3'],
+            ['Modèle complètement électrique et son prix', 'Citroën ë-C3 — Prix : 24 000 €'],
+            ['Modèle le plus économique', 'La Citroën C3, avec une consommation de 4,8 L/100 km'],
+            ['Équipement commun aux 3 véhicules', 'Un système de connectivité Bluetooth pour écouter de la musique et passer des appels.'],
+            ['Modèle au-dessus de son budget', 'La Citroën C4, qui coûte 21 000 euros, dépasse le budget de Clara si elle souhaite rester sous 20 000 euros.'],
+          ],
+        },
+      },
+      {
+        intitule: "Étapes de finalisation de l'achat (annexe 10).",
+        documents: ['Document 6', 'Annexe 10'],
+        bareme: 5,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['Étape', 'Réponse'],
+          lignes: [
+            ['Étape 1', 'Évaluation des options'],
+            ['Étape 2', 'Choix du modèle'],
+            ['Étape 3', 'Discussion sur le financement'],
+            ['Étape 4', 'Signature du contrat'],
+            ['Étape 5', 'Remise des clés'],
+          ],
+        },
+      },
+      {
+        intitule: 'Options de financement (annexe 11).',
+        documents: ['Document 6', 'Annexe 11'],
+        bareme: 2,
+        reponse: 'Le vendeur propose un crédit auto classique et un leasing.',
+      },
+      {
+        intitule: 'Lire le contrat et la remise des clés (annexe 12).',
+        documents: ['Document 6', 'Annexe 12'],
+        bareme: 4,
+        reponse: 'Voir tableau.',
+        tableau: {
+          colonnes: ['Élément', 'Réponse'],
+          lignes: [
+            ["L'importance de bien lire le contrat", "Comprendre le contrat est crucial pour connaître les conditions de garantie, les obligations de paiement et les options d'assurance, afin d'éviter les surprises après l'achat."],
+            ['Le moment de la remise des clés', "Le vendeur montre à Clara les différentes fonctionnalités de la voiture, lui explique comment les utiliser, et l'encourage à revenir si elle a besoin d'assistance."],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: "Le processus d'achat chez Citroën",
+    proposition: ['La préparation', "L'accueil du client", "L'écoute des besoins", "La création d'un lien", "La transmission d'information", "La proposition d'une suite"],
+    racine: {
+      id: 'racine',
+      texte: "Le processus d'achat",
+      enfants: [
+        {
+          id: 'contact', texte: 'La prise de contact en face-à-face (6 étapes)',
+          enfants: [
+            { id: 'e1', texte: null, reponse: 'La préparation' },
+            { id: 'e2', texte: null, reponse: "L'accueil du client" },
+            { id: 'e3', texte: null, reponse: "L'écoute des besoins" },
+            { id: 'e4', texte: null, reponse: "La création d'un lien" },
+            { id: 'e5', texte: null, reponse: "La transmission d'information" },
+            { id: 'e6', texte: null, reponse: "La proposition d'une suite" },
+          ],
+        },
+        {
+          id: 'etapes', texte: 'Les autres étapes du processus',
+          enfants: [
+            { id: 'b1', texte: 'La découverte des besoins' },
+            { id: 'b2', texte: "La proposition d'une voiture" },
+            { id: 'b3', texte: "L'accord du client" },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Prendre contact avec le client',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les étapes de la prise de contact.' },
+          { niveau: 'debrouille', description: 'Je cite quelques étapes de la prise de contact.' },
+          { niveau: 'averti', description: 'Je connais les 6 étapes de la prise de contact.' },
+          { niveau: 'expert', description: "Je relie chaque étape à son rôle dans la relation de confiance." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Découvrir et analyser les besoins',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne retrouve pas les critères du client.' },
+          { niveau: 'debrouille', description: 'Je retrouve un ou deux critères.' },
+          { niveau: 'averti', description: 'Je liste tous les critères et le budget du client.' },
+          { niveau: 'expert', description: 'Je relie les critères du client aux véhicules proposés.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Proposer un produit et formaliser l'accord",
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas quel véhicule proposer.' },
+          { niveau: 'debrouille', description: 'Je propose un véhicule sans justifier.' },
+          { niveau: 'averti', description: 'Je propose un véhicule adapté et justifie mon choix.' },
+          { niveau: 'expert', description: "Je conduis le client jusqu'à l'accord et la remise des clés." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Prise de contact', definition: "Première étape de la vente où le vendeur établit le contact avec le client." },
+      { terme: 'Question ouverte', definition: "Question qui invite le client à s'exprimer librement (commence souvent par pourquoi, comment, que)." },
+      { terme: 'Question fermée', definition: 'Question à laquelle on répond par oui, non ou une information précise.' },
+      { terme: 'Découverte des besoins', definition: "Étape où le vendeur identifie les attentes et critères du client." },
+      { terme: 'Citadine', definition: 'Voiture compacte conçue pour les trajets urbains (ex : C3).' },
+      { terme: 'Véhicule électrique', definition: "Véhicule fonctionnant uniquement à l'électricité (ex : ë-C3)." },
+      { terme: 'Crédit auto', definition: 'Financement par lequel le client devient propriétaire du véhicule dès le premier paiement.' },
+      { terme: 'Leasing', definition: "Location du véhicule pendant une période déterminée, sans propriété à la fin du contrat." },
+      { terme: 'Contrat de vente', definition: 'Document détaillant les conditions de garantie, les assurances et les obligations de financement.' },
+      { terme: 'Remise des clés', definition: "Dernière étape de la vente où le vendeur remet le véhicule et présente ses fonctionnalités." },
+    ],
+    flashcards: [
+      { recto: 'Quelle est la première étape de la prise de contact ?', verso: 'La préparation.' },
+      { recto: 'Combien y a-t-il d\'étapes dans la prise de contact ?', verso: 'Six étapes.' },
+      { recto: 'Quels sont les critères de Clara ?', verso: 'Économique, taille compacte, Bluetooth, bonne sécurité, budget de 20 000 euros.' },
+      { recto: 'Quel est le budget maximum de Clara ?', verso: '20 000 euros.' },
+      { recto: 'Quels sont les 3 modèles proposés ?', verso: 'Citroën C3, Citroën C4, Citroën ë-C3.' },
+      { recto: 'Quel modèle est entièrement électrique et à quel prix ?', verso: 'La ë-C3, à 24 000 euros.' },
+      { recto: 'Quel est le modèle le plus économique en carburant ?', verso: 'La C3, avec 4,8 L/100 km.' },
+      { recto: 'Quel équipement est commun aux 3 véhicules ?', verso: 'La connectivité Bluetooth.' },
+      { recto: 'Quel modèle dépasse le budget de Clara ?', verso: 'La C4, à 21 000 euros.' },
+      { recto: 'Quelles sont les 2 options de financement ?', verso: 'Le crédit auto classique et le leasing.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Quelle est la première étape de la prise de contact ?', options: ['La préparation', "L'accueil du client", 'La proposition', 'La signature'], bonne: 0 },
+      { type: 'unique', question: 'Combien y a-t-il d\'étapes dans la prise de contact ?', options: ['6', '4', '5', '3'], bonne: 0 },
+      { type: 'unique', question: 'Quel est le budget maximum de Clara ?', options: ['20 000 euros', '24 000 euros', '21 000 euros', '19 500 euros'], bonne: 0 },
+      { type: 'unique', question: 'Quel modèle est entièrement électrique ?', options: ['La ë-C3', 'La C3', 'La C4', 'La C5 Aircross'], bonne: 0 },
+      { type: 'unique', question: 'Quel est le prix de la ë-C3 ?', options: ['24 000 euros', '19 500 euros', '21 000 euros', '20 000 euros'], bonne: 0 },
+      { type: 'unique', question: 'Quel modèle est le plus économique en carburant ?', options: ['La C3 (4,8 L/100 km)', 'La C4 (5,2 L/100 km)', 'La ë-C3', 'Aucun'], bonne: 0 },
+      { type: 'unique', question: 'Quel équipement est commun aux 3 véhicules ?', options: ['La connectivité Bluetooth', 'La navigation intégrée', 'La climatisation automatique', 'Le régulateur adaptatif'], bonne: 0 },
+      { type: 'unique', question: 'Quel modèle dépasse le budget de Clara ?', options: ['La C4 (21 000 euros)', 'La C3', 'La ë-C3', 'Aucun'], bonne: 0 },
+      { type: 'unique', question: 'Que devient le client avec un crédit auto ?', options: ['Propriétaire dès le premier paiement', 'Locataire du véhicule', 'Sans aucune obligation', 'Propriétaire à la fin seulement'], bonne: 0 },
+      { type: 'unique', question: "Quelle est la dernière étape du processus d'achat ?", options: ['La remise des clés', 'La signature', 'Le financement', "L'accueil"], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Étape de la prise de contact', 'Critère de Clara', 'Option de financement'],
+      zones: [
+        { libelle: 'La préparation', etiquetteIndex: 0 },
+        { libelle: "L'accueil du client", etiquetteIndex: 0 },
+        { libelle: 'Économique en carburant', etiquetteIndex: 1 },
+        { libelle: 'Bonne sécurité', etiquetteIndex: 1 },
+        { libelle: 'Le crédit auto', etiquetteIndex: 2 },
+        { libelle: 'Le leasing', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -2360,6 +3488,9 @@ const CONTENUS: Record<string, ContenuMission> = {
   'renault-m5': RENAULT_M5,
   'renault-m6': RENAULT_M6,
   'renault-m7': RENAULT_M7,
+  'renault-m8': RENAULT_M8,
+  'citroen-m1': CITROEN_M1,
+  'citroen-m2': CITROEN_M2,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
@@ -2371,6 +3502,57 @@ export function getContenuMission(missionId: string): ContenuMission | undefined
 export function aContenu(missionId: string): boolean {
   return missionId in CONTENUS
 }
+
+// --- Fiche de deroulement (enseignant) -------------------------------------
+export interface PhaseDeroule {
+  phase: string
+  duree: string
+  modalite: string
+  supports: string
+}
+export interface FicheDeroule {
+  intitule: string
+  contexte?: string
+  competence?: { groupe: string; intitule: string; detail: string }
+  objectifs: string[]
+  dureeTotale: string
+  phases: PhaseDeroule[]
+  nbActivites: number
+  nbQuestions: number
+}
+
+// Construit automatiquement la fiche de deroulement d'une mission a partir de
+// son contenu (objectifs, competence, activites, annexes). Renvoie undefined
+// si la mission n'a pas de contenu.
+export function construireDeroule(missionId: string, titre: string): FicheDeroule | undefined {
+  const c = CONTENUS[missionId]
+  if (!c) return undefined
+  const t = c.travaux
+  const activites = t.activites ?? []
+  const nbQuestions = activites.reduce((s, a) => s + a.questions.length, 0)
+
+  // Deroule pedagogique type (1 seance d'1 heure), commun a la trame des missions.
+  const phases: PhaseDeroule[] = [
+    { phase: 'Mise en situation et lecture du contexte', duree: '5 min', modalite: 'Classe entière', supports: 'Vidéoprojecteur, contexte de la mission' },
+    { phase: 'Consultation des documents de la mission', duree: '10 min', modalite: 'Individuel', supports: 'Documents (onglet Travaux), visionneuse' },
+    { phase: `Réalisation des activités (${nbQuestions} question${nbQuestions > 1 ? 's' : ''} dans ${activites.length} activité${activites.length > 1 ? 's' : ''})`, duree: '30 min', modalite: 'Individuel', supports: 'Annexes à compléter (onglet Travaux)' },
+    { phase: 'Synthèse de la mission', duree: '5 min', modalite: 'Classe entière', supports: 'Onglet Synthèse (carte à compléter)' },
+    { phase: 'Auto-évaluation', duree: '5 min', modalite: 'Individuel', supports: 'Onglet Auto-évaluation' },
+    { phase: "Activités d'entraînement (glossaire, flashcards, quiz, glisser-déposer)", duree: '5 min', modalite: 'Individuel', supports: 'Onglet Activités' },
+  ]
+
+  return {
+    intitule: titre,
+    contexte: t.contexte,
+    competence: t.competence,
+    objectifs: t.objectifs ?? [],
+    dureeTotale: '1 heure',
+    phases,
+    nbActivites: activites.length,
+    nbQuestions,
+  }
+}
+
 
 // Formate les saisies d'annexes (JSON) d'un travail eleve en texte lisible
 // pour l'affichage cote enseignant. Si le contenu n'est pas du JSON d'annexes
@@ -2473,6 +3655,16 @@ export function formaterTravail(missionId: string, contenu: string): string {
         lignes.push(`  Objection : ${l.objection} [${l.technique}]`)
         lignes.push(`    Réponse : ${obj[`${a.id}.${l.id}`] ?? ''}`)
       }
+    } else if (a.type === 'simulateur') {
+      const chemin = obj[`${a.id}.chemin`] ?? ''
+      lignes.push('  Chemin suivi dans le test : ' + (chemin.length > 0 ? chemin : '(non renseigné)'))
+      const issue = obj[`${a.id}.issue`] ?? ''
+      if (issue) lignes.push('  Résultat atteint : ' + issue)
+    } else if (a.type === 'catalogue') {
+      const selId = obj[`${a.id}.choix`] ?? ''
+      const prod = a.produits.find((p) => p.id === selId)
+      lignes.push('  Accessoire choisi : ' + (prod ? `${prod.nom} (${prod.prix})` : '(aucun)'))
+      lignes.push('  Justification : ' + (obj[`${a.id}.justif`] ?? ''))
     }
     lignes.push('')
   }

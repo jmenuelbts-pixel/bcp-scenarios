@@ -9,4 +9,11 @@ export default defineConfig({
   // chargement des assets sur les routes profondes (avec _redirects pour le
   // fallback SPA de createBrowserRouter).
   base: '/',
+  build: {
+    // Le tree-shaking de rolldown (Vite 8) elague par erreur une partie du
+    // graphe de modules (le contenu des missions et l'app n'etaient pas
+    // inclus dans le bundle de production). On le desactive pour garantir un
+    // build complet et fidele au code source.
+    rollupOptions: { treeshake: false },
+  },
 })

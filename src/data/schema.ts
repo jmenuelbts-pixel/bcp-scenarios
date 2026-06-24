@@ -208,7 +208,7 @@ const FREE: Scenario = {
 const CITROEN: Scenario = {
   id: 'citroen',
   nom: 'Citroen',
-  couleur: '#6E2C91',
+  couleur: '#DA291C',
   missions: construireMissions('citroen', [
     "La presentation de l'entreprise Citroen",
     "Le processus d'achat chez Citroen",

@@ -23,6 +23,11 @@ import type {
   AnnexeSonCase,
   AnnexeObjections,
   AnnexeTraitObjections,
+  AnnexeSimulateur,
+  AnnexeCatalogue,
+  ProduitCatalogue,
+  VehiculeCatalogue,
+  BlocDocumentTexte,
 } from '../../data/contenus'
 import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 
@@ -44,6 +49,8 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   const [docActif, setDocActif] = useState<number | null>(null)
   // Document ouvert en plein ecran dans la visionneuse (zoom).
   const [docZoom, setDocZoom] = useState<{ src: string; alt: string } | null>(null)
+  // Fiche technique de vehicule ouverte en plein ecran (catalogue Document 5).
+  const [ficheVehicule, setFicheVehicule] = useState<VehiculeCatalogue | null>(null)
 
   useEffect(() => {
     if (!etudiantId) return
@@ -111,7 +118,15 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       {/* Contexte professionnel */}
       {contenu.contexte && (
         <Bloc titre="Contexte professionnel" couleur={couleur}>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: '#374151' }}>{contenu.contexte}</p>
+          {contenu.contexte.split('\n').map((par, i) => (
+            <p key={i} style={{ margin: i === 0 ? 0 : '8px 0 0', fontSize: 14, lineHeight: 1.6, color: '#374151' }}>{par}</p>
+          ))}
+          {contenu.videoContexte && (
+            <a href={contenu.videoContexte} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 12, padding: '8px 14px', borderRadius: 8, border: `1px solid ${couleur}`, background: '#FFFFFF', color: couleur, fontSize: 13, fontWeight: 700, textDecoration: 'none', cursor: 'pointer' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={couleur} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+              Écouter le contexte (vidéo)
+            </a>
+          )}
         </Bloc>
       )}
 
@@ -149,21 +164,33 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                 const docCourant = contenu.documents.find((d) => d.numero === (docActif ?? contenu.documents![0].numero)) ?? contenu.documents[0]
                 return (
                   <>
-                    <div style={{ fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ display: 'inline-flex', width: 18, height: 18, alignItems: 'center', justifyContent: 'center', borderRadius: 4, background: '#EEF3F8', color: '#16456E', fontWeight: 700 }}>+</span>
-                      Cliquez sur le document pour l'agrandir.
-                    </div>
-                    {docCourant.images.map((src, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setDocZoom({ src, alt: `Document ${docCourant.numero} — ${docCourant.titre}` })}
-                        title="Cliquer pour agrandir"
-                        style={{ padding: 0, border: '1px solid #E6ECF2', borderRadius: 6, background: '#FFFFFF', cursor: 'zoom-in', display: 'block', width: '100%' }}
-                      >
-                        <img src={src} alt={`Document ${docCourant.numero}`} style={{ width: '100%', height: 'auto', borderRadius: 6, display: 'block' }} />
-                      </button>
-                    ))}
+                    {docCourant.catalogueVehicules ? (
+                      <CatalogueVehiculesVue
+                        catalogue={docCourant.catalogueVehicules}
+                        couleur={couleur}
+                        onOuvrir={(v) => setFicheVehicule(v)}
+                      />
+                    ) : docCourant.texte ? (
+                      <DocumentTexteVue blocs={docCourant.texte} couleur={couleur} />
+                    ) : (
+                      <>
+                        <div style={{ fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ display: 'inline-flex', width: 18, height: 18, alignItems: 'center', justifyContent: 'center', borderRadius: 4, background: '#EEF3F8', color: '#16456E', fontWeight: 700 }}>+</span>
+                          Cliquez sur le document pour l'agrandir.
+                        </div>
+                        {docCourant.images.map((src, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setDocZoom({ src, alt: `Document ${docCourant.numero} — ${docCourant.titre}` })}
+                            title="Cliquer pour agrandir"
+                            style={{ padding: 0, border: '1px solid #E6ECF2', borderRadius: 6, background: '#FFFFFF', cursor: 'zoom-in', display: 'block', width: '100%' }}
+                          >
+                            <img src={src} alt={`Document ${docCourant.numero}`} style={{ width: '100%', height: 'auto', borderRadius: 6, display: 'block' }} />
+                          </button>
+                        ))}
+                      </>
+                    )}
                   </>
                 )
               })()}
@@ -313,13 +340,181 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       {docZoom && (
         <VisionneuseDocument src={docZoom.src} alt={docZoom.alt} onClose={() => setDocZoom(null)} />
       )}
+
+      {/* Fiche technique d'un vehicule en plein ecran (catalogue Document 5) */}
+      {ficheVehicule && (
+        <FicheVehiculePleinEcran v={ficheVehicule} couleur={couleur} onClose={() => setFicheVehicule(null)} />
+      )}
+    </div>
+  )
+}
+
+// Vue d'un document entierement redactionnel (sans image) : intertitres,
+// paragraphes, listes a puces et dialogues, dans un cadre de lecture sobre.
+function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; couleur: string }) {
+  return (
+    <div style={{ border: '1px solid #E6ECF2', borderRadius: 8, padding: '14px 18px', background: '#FFFFFF', lineHeight: 1.6, fontSize: 14, color: '#1F2933' }}>
+      {blocs.map((b, bi) => (
+        <div key={bi} style={{ marginBottom: bi === blocs.length - 1 ? 0 : 12 }}>
+          {b.intertitre && (
+            <div style={{ fontSize: 14, fontWeight: 800, color: couleur, margin: '6px 0 6px' }}>{b.intertitre}</div>
+          )}
+          {b.paragraphes?.map((para, pi) => (
+            <p key={pi} style={{ margin: '0 0 8px' }}>{para}</p>
+          ))}
+          {b.puces && (
+            <ul style={{ margin: '0 0 8px', paddingLeft: 18 }}>
+              {b.puces.map((li, i) => <li key={i} style={{ marginBottom: 4 }}>{li}</li>)}
+            </ul>
+          )}
+          {b.dialogue?.map((d, di) => (
+            <p key={di} style={{ margin: '0 0 6px', fontStyle: d.italique ? 'italic' : 'normal', color: d.italique ? '#6B7280' : '#1F2933' }}>
+              {d.locuteur && <span style={{ fontWeight: 700 }}>{d.locuteur} : </span>}
+              {d.texte}
+            </p>
+          ))}
+          {b.tableau && (
+            <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: 4 }}>
+              <thead>
+                <tr>
+                  {b.tableau.colonnes.map((col, ci) => (
+                    <th key={ci} style={{ textAlign: 'left', padding: '8px 10px', fontSize: 13, fontWeight: 700, color: '#374151', background: '#EEF3F8', border: '1px solid #DCE8F4' }}>{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {b.tableau.lignes.map((ligne, li) => (
+                  <tr key={li}>
+                    {ligne.map((c, cj) => (
+                      <td key={cj} style={{ padding: '8px 10px', fontSize: 14, color: '#1F2933', border: '1px solid #DCE8F4', fontWeight: cj === 0 ? 700 : 400, verticalAlign: 'top', width: cj === 0 ? '28%' : undefined }}>{c}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Vue catalogue (Document 5) : grille de vignettes vehicule cliquables, facon
+// logiciel concessionnaire. Chaque vignette ouvre la fiche technique complete.
+function CatalogueVehiculesVue({ catalogue, couleur, onOuvrir }: {
+  catalogue: import('../../data/contenus').CatalogueVehicules
+  couleur: string
+  onOuvrir: (v: VehiculeCatalogue) => void
+}) {
+  // Silhouette vectorielle sobre d'une voiture (pas de photo : reseau bloque).
+  const silhouette = (
+    <svg width="100%" height="96" viewBox="0 0 200 96" preserveAspectRatio="xMidYMid meet" style={{ display: 'block' }} aria-hidden="true">
+      <rect width="200" height="96" fill="#F4F1F7" />
+      <path d="M28 64 L46 44 Q52 37 62 37 L128 37 Q140 37 150 46 L172 60 Q180 62 180 70 L180 74 L20 74 L20 70 Q20 65 28 64 Z" fill={couleur} opacity="0.92" />
+      <path d="M58 46 L66 40 L104 40 L104 46 Z" fill="#FFFFFF" opacity="0.85" />
+      <path d="M110 40 L128 40 Q136 40 142 46 L142 46 L110 46 Z" fill="#FFFFFF" opacity="0.85" />
+      <circle cx="62" cy="74" r="12" fill="#1F2933" /><circle cx="62" cy="74" r="5" fill="#9AA5B1" />
+      <circle cx="148" cy="74" r="12" fill="#1F2933" /><circle cx="148" cy="74" r="5" fill="#9AA5B1" />
+    </svg>
+  )
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#16456E', color: '#FFFFFF', padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700 }}>
+        <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFCC00' }} />
+        {catalogue.titreLogiciel}
+      </div>
+      {catalogue.intro && (
+        <div style={{ padding: '10px 12px', borderBottom: '1px solid #EEF2F5', fontSize: 13, color: '#4B5563' }}>{catalogue.intro}</div>
+      )}
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 12 }}>
+          {catalogue.vehicules.map((v) => (
+            <button
+              key={v.id}
+              type="button"
+              onClick={() => onOuvrir(v)}
+              title={`Voir la fiche technique : ${v.nom}`}
+              style={{
+                textAlign: 'left', cursor: 'pointer', padding: 0, overflow: 'hidden',
+                border: '1px solid #E2E8F0', borderRadius: 10, background: '#FFFFFF',
+              }}
+            >
+              {silhouette}
+              <div style={{ padding: '10px 12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: '#1F2933' }}>{v.nom}</span>
+                  {v.badge && <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: couleur, borderRadius: 4, padding: '2px 6px' }}>{v.badge}</span>}
+                </div>
+                <div style={{ fontSize: 12, color: '#9AA5B1', margin: '3px 0 8px' }}>{v.type}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: couleur }}>{v.prix}</div>
+                <div style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: '#16456E' }}>Voir la fiche technique</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Fiche technique d'un vehicule affichee en plein ecran (lecture seule).
+function FicheVehiculePleinEcran({ v, couleur, onClose }: {
+  v: VehiculeCatalogue
+  couleur: string
+  onClose: () => void
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    const ancien = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ancien }
+  }, [onClose])
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,32,0.88)', display: 'flex', flexDirection: 'column', padding: 16 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ margin: '0 auto', width: '100%', maxWidth: 760, background: '#FFFFFF', borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '100%' }}>
+        <div style={{ background: couleur, color: '#FFFFFF', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexShrink: 0 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 18, fontWeight: 800 }}>{v.nom}</span>
+              {v.badge && <span style={{ fontSize: 11, fontWeight: 700, color: couleur, background: '#FFFFFF', borderRadius: 4, padding: '2px 7px' }}>{v.badge}</span>}
+            </div>
+            <div style={{ fontSize: 13, opacity: 0.9, marginTop: 2 }}>{v.type} — {v.prix}</div>
+          </div>
+          <button type="button" aria-label="Fermer" title="Fermer" onClick={onClose} style={{ width: 40, height: 40, borderRadius: 10, border: 'none', cursor: 'pointer', background: '#FFFFFF', color: couleur, fontSize: 18, fontWeight: 700, flexShrink: 0 }}>✕</button>
+        </div>
+        <div style={{ padding: 18, overflowY: 'auto' }}>
+          {v.sections.map((s, si) => (
+            <div key={si} style={{ marginBottom: si === v.sections.length - 1 ? 0 : 18 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: couleur, textTransform: 'uppercase', letterSpacing: 0.3, borderBottom: `2px solid ${couleur}`, paddingBottom: 4, marginBottom: 8 }}>{s.titre}</div>
+              {s.lignes[0]?.libelle !== undefined ? (
+                <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+                  <tbody>
+                    {s.lignes.map((l, li) => (
+                      <tr key={li}>
+                        <td style={{ padding: '5px 10px 5px 0', fontSize: 13, color: '#6B7280', verticalAlign: 'top', whiteSpace: 'nowrap', width: '40%' }}>{l.libelle}</td>
+                        <td style={{ padding: '5px 0', fontSize: 14, fontWeight: 600, color: '#1F2933' }}>{l.valeur}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 14, lineHeight: 1.7, color: '#374151' }}>
+                  {s.lignes.map((l, li) => <li key={li}>{l.valeur}</li>)}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '10px 18px', borderTop: '1px solid #EEF2F5', fontSize: 12, color: '#9AA5B1', flexShrink: 0 }}>Échap ou ✕ pour fermer.</div>
+      </div>
     </div>
   )
 }
 
 function Bloc({ titre, couleur, children }: { titre: string; couleur: string; children: React.ReactNode }) {
-  return (
-    <div style={{ background: '#F4F8FC', border: '1px solid #DCE8F4', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
+  return (    <div style={{ background: '#F4F8FC', border: '1px solid #DCE8F4', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
       <h3 style={{ margin: '0 0 8px 0', fontSize: 14, fontWeight: 700, color: couleur }}>{titre}</h3>
       {children}
     </div>
@@ -347,6 +542,8 @@ function rendreAnnexe(
   if (annexe.type === 'soncase') return rendreSonCase(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'objections') return rendreObjections(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'traitobjections') return rendreTraitObjections(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'simulateur') return rendreSimulateur(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'catalogue') return rendreCatalogue(annexe, saisies, set, verrouille, couleur)
   return rendreOrganigramme(annexe, saisies, set, champStyle, verrouille, couleur)
 }
 
@@ -757,6 +954,294 @@ function rendreTraitObjections(a: AnnexeTraitObjections, saisies: Saisies, set: 
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Coeur du simulateur : accueil -> questions a branchements -> resultat.
+// Etat de navigation interne ; le chemin et l'issue sont remontes via set().
+function BlocSimulateur({ a, set, verrouille, couleur, plein }: {
+  a: AnnexeSimulateur
+  set: (id: string, v: string) => void
+  verrouille: boolean
+  couleur: string
+  plein?: boolean
+}) {
+  const [ecran, setEcran] = useState<string>('intro')
+  const [chemin, setChemin] = useState<{ bandeau: string; choix: string }[]>([])
+
+  const etape = a.etapes.find((e) => e.id === ecran)
+  const resultat = a.resultats.find((r) => r.id === ecran)
+  const indexEtape = a.etapes.findIndex((e) => e.id === ecran)
+
+  function choisir(opt: { libelle: string; vers: string }) {
+    if (verrouille) return
+    const nouveau = [...chemin, { bandeau: etape?.bandeau ?? '', choix: opt.libelle }]
+    setChemin(nouveau)
+    setEcran(opt.vers)
+    set(`${a.id}.chemin`, nouveau.map((c) => `${c.bandeau} = ${c.choix}`).join(' ; '))
+    const res = a.resultats.find((r) => r.id === opt.vers)
+    if (res) set(`${a.id}.issue`, res.type === 'ok' ? 'Éligible' : 'Non éligible')
+  }
+  function recommencer() {
+    if (verrouille) return
+    setChemin([]); setEcran('intro'); set(`${a.id}.chemin`, ''); set(`${a.id}.issue`, '')
+  }
+
+  const numEtape = indexEtape >= 0 ? indexEtape + 1 : 1
+  const showProg = !!etape || !!resultat
+
+  return (
+    <div style={{ border: '1px solid #C9D6E3', borderRadius: 12, overflow: 'hidden', background: '#FFFFFF', maxWidth: plein ? 480 : '100%', margin: plein ? '0 auto' : undefined }}>
+      <div style={{ background: '#16456E', color: '#FFFFFF', padding: '11px 14px', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFCC00' }} />
+        Prime à la conversion — Test d'éligibilité
+      </div>
+
+      {showProg && (
+        <div style={{ padding: '11px 14px', borderBottom: '1px solid #EEF2F5', background: '#F8FAFC' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B7280', marginBottom: 6 }}>
+            <span>{resultat ? 'Résultat' : `Étape ${numEtape} sur ${a.nbEtapesAffiche}`}</span>
+            <span>{resultat ? 'ÉLIGIBILITÉ' : etape?.bandeau}</span>
+          </div>
+          <div style={{ height: 6, background: '#E3ECF4', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ width: resultat ? '100%' : `${Math.min(100, (numEtape / a.nbEtapesAffiche) * 100)}%`, height: '100%', background: couleur }} />
+          </div>
+        </div>
+      )}
+
+      <div style={{ padding: 18 }}>
+        {/* Accueil */}
+        {ecran === 'intro' && (
+          <div>
+            <div style={{ background: 'linear-gradient(135deg,#3FA9E0,#2E8BC0)', borderRadius: 10, padding: 22, textAlign: 'center', color: '#FFFFFF', marginBottom: 14 }}>
+              <div style={{ fontSize: 18, fontWeight: 800 }}>Testez votre éligibilité</div>
+              <div style={{ fontSize: 15, fontStyle: 'italic' }}>… en {a.nbEtapesAffiche} étapes maximum</div>
+            </div>
+            <h3 style={{ fontSize: 19, color: '#16456E', margin: '0 0 10px' }}>{a.introTitre}</h3>
+            <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 14 }}>{a.introTexte}</p>
+            <button type="button" disabled={verrouille} onClick={() => setEcran(a.etapes[0].id)} style={{ background: couleur, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '12px 20px', fontSize: 14, fontWeight: 700, cursor: verrouille ? 'not-allowed' : 'pointer', fontFamily: 'Arial, sans-serif' }}>
+              {a.introBouton} &nbsp;→
+            </button>
+          </div>
+        )}
+
+        {/* Question */}
+        {etape && (
+          <div>
+            <div style={{ background: '#FFCC00', color: '#1F2933', fontWeight: 700, fontSize: 12, padding: '6px 12px', borderRadius: 6, display: 'inline-block', marginBottom: 12 }}>{etape.bandeau}</div>
+            <p style={{ fontSize: 16, fontWeight: 700, margin: '2px 0 4px' }}>{etape.question}</p>
+            <p style={{ fontSize: 12, color: '#6B7280', fontStyle: 'italic', marginBottom: 14 }}>Une seule réponse possible.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+              {etape.options.map((opt, i) => (
+                <button key={i} type="button" disabled={verrouille} onClick={() => choisir(opt)} style={{ display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', cursor: verrouille ? 'not-allowed' : 'pointer', border: '1px solid #D5DBE1', borderRadius: 8, padding: '12px 13px', background: '#FFFFFF', fontFamily: 'Arial, sans-serif', fontSize: 14, color: '#1F2933' }}>
+                  <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid #B7C2CD', flexShrink: 0 }} />
+                  {opt.libelle}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Resultat */}
+        {resultat && (
+          <div style={{ textAlign: 'center', padding: '10px 4px' }}>
+            <div style={{ width: 58, height: 58, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, fontWeight: 700, margin: '0 auto 14px', background: resultat.type === 'ok' ? '#E4F6EC' : '#FBEAEA', color: resultat.type === 'ok' ? '#1B7F4B' : '#9B2C2C' }}>
+              {resultat.type === 'ok' ? '✓' : '!'}
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: resultat.type === 'ok' ? '#1B7F4B' : '#9B2C2C', marginBottom: 6 }}>
+              {resultat.type === 'ok' ? 'Bonne nouvelle !' : 'Non éligible'}
+            </div>
+            <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6 }}>{resultat.texte}</div>
+            <button type="button" disabled={verrouille} onClick={recommencer} style={{ marginTop: 14, background: '#FFFFFF', color: '#16456E', border: '1px solid #C9D6E3', borderRadius: 8, padding: '9px 16px', fontSize: 13, fontWeight: 700, cursor: verrouille ? 'not-allowed' : 'pointer', fontFamily: 'Arial, sans-serif' }}>↻ Recommencer le test</button>
+            {chemin.length > 0 && (
+              <div style={{ marginTop: 14, padding: '10px 12px', background: '#F5F9FC', borderRadius: 8, fontSize: 12, color: '#4B5563', lineHeight: 1.6, textAlign: 'left' }}>
+                <b style={{ color: '#16456E' }}>Chemin suivi :</b><br />
+                {chemin.map((c, i) => <span key={i}>{c.bandeau} : {c.choix}<br /></span>)}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function rendreSimulateur(a: AnnexeSimulateur, _saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return <SimulateurAvecAgrandir a={a} set={set} verrouille={verrouille} couleur={couleur} />
+}
+
+// Enveloppe : affiche le simulateur inline + un bouton pour l'ouvrir en plein ecran.
+function SimulateurAvecAgrandir({ a, set, verrouille, couleur }: {
+  a: AnnexeSimulateur
+  set: (id: string, v: string) => void
+  verrouille: boolean
+  couleur: string
+}) {
+  const [plein, setPlein] = useState(false)
+  useEffect(() => {
+    if (!plein) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setPlein(false) }
+    window.addEventListener('keydown', onKey)
+    const ancien = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ancien }
+  }, [plein])
+
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <span>{a.titre}</span>
+        <button type="button" onClick={() => setPlein(true)} title="Agrandir le test" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #C9D6E3', background: '#FFFFFF', color: '#16456E', borderRadius: 7, padding: '5px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Arial, sans-serif' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16456E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          Agrandir
+        </button>
+      </div>
+      <div style={{ padding: 12 }}>
+        <BlocSimulateur a={a} set={set} verrouille={verrouille} couleur={couleur} />
+      </div>
+
+      {plein && (
+        <div onClick={() => setPlein(false)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,32,0.88)', display: 'flex', flexDirection: 'column', padding: 16, overflow: 'auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+            <button type="button" onClick={() => setPlein(false)} title="Fermer" style={{ width: 44, height: 44, borderRadius: 10, border: 'none', cursor: 'pointer', background: '#FFFFFF', color: '#9B2C2C', fontSize: 18, fontWeight: 700, boxShadow: '0 2px 8px rgba(0,0,0,0.25)' }}>✕</button>
+          </div>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 560, margin: '0 auto' }}>
+            <BlocSimulateur a={a} set={set} verrouille={verrouille} couleur={couleur} plein />
+          </div>
+          <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: 12, padding: '12px 0' }}>Échap ou clic sur le fond pour fermer.</div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+const ILLUSTRATIONS_ACCESSOIRES: Record<string, string> = {
+  sacbagoto: `<defs><linearGradient id="sb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#E5A800"/></linearGradient></defs> <path d="M50 44 h60 l-6 36 a6 6 0 0 1 -6 5 h-36 a6 6 0 0 1 -6 -5 z" fill="url(#sb)" stroke="#C28E00" stroke-width="2"/> <path d="M66 44 v-6 a14 14 0 0 1 28 0 v6" fill="none" stroke="#5A4A1A" stroke-width="4"/> <rect x="70" y="56" width="20" height="14" rx="2" fill="#fff" opacity=".7"/><path d="M74 63 l4 4 8-9" stroke="#E5A800" stroke-width="3" fill="none"/>`,
+  stylorenaultb: `<defs><linearGradient id="sp" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16456E"/><stop offset="1" stop-color="#0E2E4A"/></linearGradient></defs> <g transform="rotate(35 80 48)"><rect x="74" y="12" width="12" height="64" rx="6" fill="url(#sp)"/><polygon points="74,12 86,12 80,2" fill="#C2CCD6"/><circle cx="80" cy="6" r="2" fill="#7A8694"/><rect x="74" y="56" width="12" height="7" fill="#FFD43B"/><rect x="76" y="30" width="8" height="3" rx="1" fill="#9AA5B1"/></g>`,
+  extincteur2kg: `<defs><linearGradient id="ex2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E63329"/><stop offset="1" stop-color="#B81E16"/></linearGradient></defs> <rect x="62" y="26" width="36" height="56" rx="11" fill="url(#ex2)"/><rect x="68" y="16" width="24" height="12" rx="3" fill="#3A3A3A"/><rect x="54" y="22" width="14" height="6" rx="2" fill="#222"/><circle cx="100" cy="26" r="5" fill="#DDE3E8" stroke="#888" stroke-width="2"/><line x1="100" y1="26" x2="103" y2="23" stroke="#E63329" stroke-width="2"/><rect x="68" y="40" width="24" height="26" rx="3" fill="#fff" opacity=".88"/><text x="80" y="57" font-size="12" fill="#B81E16" text-anchor="middle" font-family="Arial" font-weight="bold">2kg</text>`,
+  fixationmaster: `<rect x="56" y="40" width="48" height="12" rx="3" fill="#5A6470"/><rect x="56" y="58" width="48" height="12" rx="3" fill="#5A6470"/><circle cx="64" cy="46" r="3" fill="#C2CCD6"/><circle cx="96" cy="46" r="3" fill="#C2CCD6"/><circle cx="64" cy="64" r="3" fill="#C2CCD6"/><circle cx="96" cy="64" r="3" fill="#C2CCD6"/><rect x="74" y="34" width="12" height="42" rx="3" fill="#E63329"/>`,
+  etuiip6: `<defs><linearGradient id="et" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2F3A"/><stop offset="1" stop-color="#11151C"/></linearGradient></defs> <rect x="60" y="20" width="40" height="60" rx="8" fill="url(#et)" stroke="#3A4250" stroke-width="2"/><pattern id="dia" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke="#3D4654" stroke-width="2"/></pattern><rect x="60" y="20" width="40" height="60" rx="8" fill="url(#dia)"/><circle cx="80" cy="30" r="3" fill="#1A1E26"/>`,
+  stickerslignes: `<rect x="44" y="40" width="72" height="34" rx="6" fill="#2A2F3A"/><path d="M44 64 q36 -18 72 0" fill="none" stroke="#fff" stroke-width="4"/><path d="M44 54 q36 -16 72 0" fill="none" stroke="#fff" stroke-width="2" opacity=".7"/><circle cx="58" cy="70" r="5" fill="#11151C"/><circle cx="102" cy="70" r="5" fill="#11151C"/>`,
+  stickersvintage: `<rect x="44" y="40" width="72" height="34" rx="6" fill="#F2C200"/><path d="M44 50 h72 M44 58 h72 M44 66 h72" stroke="#B88A00" stroke-width="3"/><circle cx="58" cy="74" r="5" fill="#3A3A3A"/><circle cx="102" cy="74" r="5" fill="#3A3A3A"/>`,
+  oursonalpine: `<defs><radialGradient id="ou" cx="0.5" cy="0.4" r="0.7"><stop offset="0" stop-color="#3FA9E0"/><stop offset="1" stop-color="#1E6FA8"/></radialGradient></defs> <circle cx="62" cy="30" r="9" fill="url(#ou)"/><circle cx="98" cy="30" r="9" fill="url(#ou)"/><circle cx="80" cy="48" r="24" fill="url(#ou)"/><circle cx="72" cy="44" r="3.5" fill="#fff"/><circle cx="88" cy="44" r="3.5" fill="#fff"/><circle cx="72" cy="45" r="1.6" fill="#11151C"/><circle cx="88" cy="45" r="1.6" fill="#11151C"/><circle cx="80" cy="52" r="4" fill="#11151C"/><path d="M72 58 q8 6 16 0" stroke="#11151C" stroke-width="2.5" fill="none"/>`,
+  portecleslosange: `<circle cx="66" cy="42" r="16" fill="none" stroke="#C9A24B" stroke-width="6"/><circle cx="66" cy="42" r="6" fill="#E8C77A"/><g transform="rotate(40 92 52)"><rect x="84" y="48" width="34" height="10" rx="5" fill="#9AA5B1"/><polygon points="118,46 118,60 130,56 130,50" fill="#FFD43B" stroke="#C28E00" stroke-width="1.5"/></g>`,
+  kitalpine: `<rect x="52" y="34" width="56" height="40" rx="5" fill="#11151C" stroke="#3A4250" stroke-width="2"/><circle cx="68" cy="46" r="4" fill="#E63329"/><circle cx="82" cy="46" r="4" fill="#FFD43B"/><rect x="62" y="58" width="36" height="6" rx="2" fill="#2E8BC0"/><text x="80" y="74" font-size="8" fill="#9AA5B1" text-anchor="middle" font-family="Arial">ALPINE</text>`,
+  kitsecurite: `<polygon points="104,22 126,66 82,66" fill="none" stroke="#E63329" stroke-width="7" stroke-linejoin="round"/><path d="M40 44 h34 v30 a4 4 0 0 1 -4 4 h-26 a4 4 0 0 1 -4 -4 z" fill="#F2C200" stroke="#C28E00" stroke-width="2"/><path d="M46 44 v-6 a11 11 0 0 1 22 0 v6" fill="none" stroke="#F2C200" stroke-width="5"/><rect x="46" y="52" width="22" height="4" rx="2" fill="#fff"/><rect x="46" y="60" width="22" height="4" rx="2" fill="#fff"/>`,
+  pinslosange: `<defs><linearGradient id="pin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8E8E8"/><stop offset="1" stop-color="#9AA5B1"/></linearGradient></defs> <polygon points="80,28 98,48 80,68 62,48" fill="url(#pin)" stroke="#7A8694" stroke-width="2"/><polygon points="80,36 90,48 80,60 70,48" fill="#C2CCD6"/>`,
+  tasserenaultb: `<path d="M54 34 h40 v26 a16 16 0 0 1 -16 16 h-8 a16 16 0 0 1 -16 -16 z" fill="#fff" stroke="#C2CCD6" stroke-width="3"/><path d="M94 40 h9 a8 8 0 0 1 0 16 h-9" fill="none" stroke="#C2CCD6" stroke-width="3"/><rect x="54" y="60" width="40" height="16" rx="2" fill="#2A2F3A"/><rect x="58" y="28" width="32" height="6" rx="3" fill="#16456E"/>`,
+  batterierenaultb: `<defs><linearGradient id="bat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2F3A"/><stop offset="1" stop-color="#14181F"/></linearGradient></defs> <rect x="54" y="44" width="52" height="22" rx="6" fill="url(#bat)"/><rect x="60" y="50" width="30" height="10" rx="2" fill="#2E8BC0"/><path d="M70 52 l-3 4 h4 l-3 4" stroke="#fff" stroke-width="1.6" fill="none"/><path d="M106 50 q12 -10 14 4 q2 12 -10 12" fill="none" stroke="#C2CCD6" stroke-width="3"/>`,
+  rechargeparfum: `<rect x="64" y="30" width="32" height="46" rx="6" fill="#8BC34A" opacity=".85"/><rect x="70" y="22" width="20" height="10" rx="2" fill="#5A8A2A"/><rect x="74" y="14" width="12" height="8" rx="2" fill="#3F6B1A"/><path d="M80 40 q-8 8 0 16 q8 -8 0 -16" fill="#fff" opacity=".6"/>`,
+  portecles: `<circle cx="62" cy="46" r="14" fill="none" stroke="#9AA5B1" stroke-width="5"/><rect x="74" y="40" width="44" height="14" rx="7" fill="#16456E"/><polygon points="92,40 108,40 100,54" fill="#FFD43B"/><text x="98" y="51" font-size="7" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">RS</text>`,
+  stylo: `<defs><linearGradient id="st2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2A2F3A"/><stop offset="1" stop-color="#11151C"/></linearGradient></defs> <g transform="rotate(40 80 48)"><rect x="72" y="10" width="16" height="68" rx="8" fill="url(#st2)"/><polygon points="72,10 88,10 80,0" fill="#C2CCD6"/><rect x="72" y="52" width="16" height="8" fill="#FFD43B"/><text x="80" y="44" font-size="6" fill="#fff" text-anchor="middle" font-family="Arial" transform="rotate(90 80 44)">RENAULT SPORT</text></g>`,
+  extincteur1kg: `<defs><linearGradient id="ex1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E63329"/><stop offset="1" stop-color="#B81E16"/></linearGradient></defs> <rect x="66" y="32" width="28" height="48" rx="9" fill="url(#ex1)"/><rect x="71" y="22" width="18" height="10" rx="3" fill="#3A3A3A"/><circle cx="96" cy="32" r="4" fill="#DDE3E8" stroke="#888" stroke-width="1.6"/><rect x="71" y="44" width="18" height="22" rx="3" fill="#fff" opacity=".88"/><text x="80" y="59" font-size="10" fill="#B81E16" text-anchor="middle" font-family="Arial" font-weight="bold">1kg</text>`,
+  stickerssecu: `<rect x="44" y="42" width="72" height="20" rx="3" fill="#fff" stroke="#C2CCD6" stroke-width="2"/><g fill="#E63329"><polygon points="48,42 58,42 48,62"/><polygon points="64,42 74,42 64,62"/><polygon points="80,42 90,42 80,62"/><polygon points="96,42 106,42 96,62"/></g><rect x="44" y="62" width="72" height="6" fill="#F2C200"/>`,
+  styloblancf1: `<g transform="rotate(40 80 48)"><rect x="74" y="12" width="12" height="64" rx="6" fill="#fff" stroke="#C2CCD6" stroke-width="2"/><polygon points="74,12 86,12 80,3" fill="#9AA5B1"/><rect x="74" y="40" width="12" height="14" fill="#16456E"/><rect x="74" y="56" width="12" height="5" fill="#E63329"/></g>`,
+  stickercartecle: `<rect x="56" y="28" width="48" height="60" rx="8" fill="#2A2F3A" stroke="#3A4250" stroke-width="2"/><circle cx="72" cy="46" r="4" fill="#444"/><circle cx="88" cy="46" r="4" fill="#444"/><polygon points="80,58 92,70 80,82 68,70" fill="#11151C" stroke="#4A5160" stroke-width="1.5"/><polygon points="80,64 86,70 80,76 74,70" fill="#2A2F3A"/>`,
+  coquetwingo: `<rect x="58" y="22" width="44" height="62" rx="9" fill="#3FA9E0"/><rect x="64" y="30" width="32" height="40" rx="3" fill="#FFD43B"/><circle cx="80" cy="50" r="10" fill="#E63329"/><path d="M80 44 a6 6 0 0 1 0 12" fill="#fff"/><rect x="72" y="76" width="16" height="3" rx="1.5" fill="#1E6FA8"/>`,
+}
+
+// Catalogue d'accessoires facon site marchand : compteur, recherche, filtres
+// par categorie, grille de produits cliquables. L'eleve selectionne un produit
+// et saisit une justification.
+function rendreCatalogue(a: AnnexeCatalogue, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return <BlocCatalogue a={a} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
+}
+
+function BlocCatalogue({ a, saisies, set, verrouille, couleur }: {
+  a: AnnexeCatalogue
+  saisies: Saisies
+  set: (id: string, v: string) => void
+  verrouille: boolean
+  couleur: string
+}) {
+  const [cat, setCat] = useState<string>(a.categories[0] ?? 'Tous')
+  const [recherche, setRecherche] = useState('')
+  const choix = saisies[`${a.id}.choix`] ?? ''
+
+  const filtres = a.produits.filter((p) => {
+    const okCat = cat === 'Tous' || cat === a.categories[0] ? true : p.categorie === cat
+    const okRech = recherche.trim().length === 0 || p.nom.toLowerCase().includes(recherche.toLowerCase())
+    return okCat && okRech
+  })
+  const prodChoisi = a.produits.find((p) => p.id === choix)
+
+  // Illustration vectorielle propre a chaque produit (pas de photo : reseau bloque).
+  const vignette = (p: ProduitCatalogue) => (
+    <svg width="100%" height="92" viewBox="0 0 160 100" preserveAspectRatio="xMidYMid meet" style={{ display: 'block' }}>
+      <rect width="160" height="100" fill="#F4F7FA" />
+      <g dangerouslySetInnerHTML={{ __html: ILLUSTRATIONS_ACCESSOIRES[p.id] ?? '' }} />
+    </svg>
+  )
+
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 12 }}>
+        {/* Fenetre logiciel */}
+        <div style={{ border: '1px solid #C9D6E3', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+          <div style={{ background: '#16456E', color: '#FFFFFF', padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700 }}>
+            <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFCC00' }} />
+            RRG — Trouver mes accessoires
+          </div>
+          <div style={{ padding: '10px 12px', borderBottom: '1px solid #EEF2F5', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{ fontSize: 18, fontWeight: 800, color: '#1F2933' }}>{a.compteurAffiche}</span>
+            <span style={{ fontSize: 13, color: '#6B7280' }}>accessoires disponibles</span>
+          </div>
+
+          <div style={{ display: 'flex', gap: 0, minHeight: 320 }}>
+            {/* Filtres */}
+            <div style={{ width: 190, flexShrink: 0, borderRight: '1px solid #EEF2F5', background: '#F8FAFC', padding: 10 }}>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                <input type="text" value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher…" disabled={verrouille} style={{ flex: 1, minWidth: 0, fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '6px 8px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF' }} />
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#9AA5B1', textTransform: 'uppercase', marginBottom: 6 }}>Filtres</div>
+              {a.categories.map((c) => (
+                <button key={c} type="button" onClick={() => setCat(c)} style={{
+                  display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
+                  background: cat === c ? '#FFFFFF' : 'transparent', borderLeft: cat === c ? `3px solid ${couleur}` : '3px solid transparent',
+                  padding: '8px 10px', fontFamily: 'Arial, sans-serif', fontSize: 12, fontWeight: cat === c ? 700 : 400, color: cat === c ? '#16456E' : '#4B5563',
+                }}>{c}</button>
+              ))}
+            </div>
+
+            {/* Grille produits */}
+            <div style={{ flex: 1, padding: 12, minWidth: 0 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 10 }}>
+                {filtres.map((p) => {
+                  const sel = choix === p.id
+                  return (
+                    <button key={p.id} type="button" disabled={verrouille} onClick={() => set(`${a.id}.choix`, p.id)} style={{
+                      textAlign: 'left', cursor: verrouille ? 'not-allowed' : 'pointer', padding: 0, overflow: 'hidden',
+                      border: sel ? `2px solid ${couleur}` : '1px solid #E2E8F0', borderRadius: 10, background: '#FFFFFF',
+                      boxShadow: sel ? '0 2px 10px rgba(22,69,110,0.18)' : 'none',
+                    }}>
+                      {vignette(p)}
+                      <div style={{ padding: '8px 10px' }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2933', lineHeight: 1.3, minHeight: 32 }}>{p.nom}</div>
+                        <div style={{ fontSize: 11, color: '#9AA5B1', margin: '2px 0 6px' }}>{p.categorie}</div>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: couleur }}>{p.prix}</div>
+                        {sel && <div style={{ marginTop: 6, fontSize: 11, fontWeight: 700, color: '#1B7F4B' }}>✓ Sélectionné</div>}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              {filtres.length === 0 && <div style={{ fontSize: 13, color: '#6B7280', padding: 12 }}>Aucun accessoire ne correspond à votre recherche.</div>}
+            </div>
+          </div>
+        </div>
+
+        {/* Selection + justification */}
+        <div style={{ marginTop: 12, border: '1px solid #DCE8F4', borderRadius: 10, padding: 12, background: '#F8FAFC' }}>
+          <div style={{ fontSize: 13, marginBottom: 8 }}>
+            <span style={{ color: '#6B7280' }}>Accessoire proposé : </span>
+            <span style={{ fontWeight: 700, color: '#16456E' }}>{prodChoisi ? `${prodChoisi.nom} — ${prodChoisi.prix}` : 'aucun (sélectionnez un accessoire ci-dessus)'}</span>
+          </div>
+          <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6 }}>{a.demandeJustif}</div>
+          <textarea disabled={verrouille} value={saisies[`${a.id}.justif`] ?? ''} onChange={(e) => set(`${a.id}.justif`, e.target.value)} rows={3} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #C9D6E3', borderRadius: 8, padding: 10, resize: 'vertical', fontFamily: 'Arial, sans-serif', fontSize: 14, color: verrouille ? '#6B7280' : '#1F2933', background: verrouille ? '#F1F3F5' : '#FFFFFF', outline: 'none' }} />
+        </div>
       </div>
     </div>
   )

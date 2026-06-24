@@ -1,7 +1,9 @@
 // VisionneuseDocument.tsx
 // Visionneuse plein ecran pour agrandir un document (image).
-// Ergonomie : boutons +/- / reinitialiser / fermer, molette, pincement deux
-// doigts, glisser pour deplacer, defilement vertical et horizontal.
+// Ergonomie : boutons +/- / reinitialiser / fermer, pincement deux doigts
+// (tactile uniquement), glisser pour deplacer, defilement vertical et horizontal.
+// Le zoom a la molette est volontairement desactive sur ordinateur : seuls les
+// boutons +/- (ou les touches +/-) agrandissent et reduisent le document.
 // Reutilisable partout ou un document est affiche.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -46,10 +48,11 @@ export function VisionneuseDocument({ src, alt = 'Document', onClose }: Props) {
     }
   }, [onClose, borne])
 
-  // Molette : zoom (empeche le defilement page).
+  // Molette : volontairement neutralisee. Sur ordinateur, le zoom se fait
+  // uniquement avec les boutons +/- (ou les touches +/-). On empeche seulement
+  // le defilement de la page derriere l'overlay, sans modifier le zoom.
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault()
-    setZoom((z) => borne(z + (e.deltaY < 0 ? ZOOM_PAS : -ZOOM_PAS)))
   }
 
   // Glisser souris.
@@ -152,7 +155,7 @@ export function VisionneuseDocument({ src, alt = 'Document', onClose }: Props) {
 
       {/* Aide breve */}
       <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '6px 0 12px' }}>
-        Molette ou pincement pour zoomer, glisser pour déplacer, Échap pour fermer.
+        Boutons + et &minus; (ou pincement à deux doigts sur tablette) pour zoomer, glisser pour déplacer, Échap pour fermer.
       </div>
     </div>
   )
