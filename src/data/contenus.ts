@@ -64,6 +64,37 @@ export interface AnnexeTexte {
   boutonLibelle?: string // libelle du bouton (ex : Voir la video de demonstration)
 }
 
+// Formulaire de saisie facon logiciel de gestion : liste de champs labellises.
+// Rendu comme une fiche professionnelle (label + champ), pas de simples rectangles.
+export interface AnnexeFormulaire {
+  type: 'formulaire'
+  id: string
+  titre: string
+  entete?: string // titre de la fenetre facon logiciel (ex : Fiche entreprise)
+  champs: { cle: string; libelle: string; aire?: boolean }[] // aire = zone multiligne
+}
+
+// Module de saisie geographique facon logiciel commercial : lignes
+// "ville + departement" ajoutables, le departement etant choisi dans une liste.
+export interface AnnexeSaisieGeo {
+  type: 'saisiegeo'
+  id: string
+  titre: string
+  entete?: string
+  departements: string[] // codes proposes dans le menu deroulant
+  nbLignesInitiales?: number
+}
+
+// Tableau de services avec cases a cocher Marchand / Non marchand.
+export interface AnnexeCasesServices {
+  type: 'casesservices'
+  id: string
+  titre: string
+  entete?: string
+  colonnes: string[] // ex : ['Marchand', 'Non marchand']
+  nbLignes: number
+}
+
 export interface AnnexeMail {
   type: 'mail'
   id: string
@@ -217,13 +248,17 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
   consigne: string // ex : Completez l'identite de l'entreprise.
   ressources?: string // ex : Ressource 1, completez l'annexe 1.
   annexeId?: string // annexe rattachee a remplir
+  // Bouton optionnel ouvrant une ressource externe (le lien n'apparait jamais
+  // en clair). Utilise par AMParis pour consulter les sites de l'entreprise.
+  boutonLien?: string
+  boutonLibelle?: string
 }
 
 export interface ActiviteTravaux {
@@ -3704,6 +3739,220 @@ const CITROEN_M3: ContenuMission = {
   },
 }
 
+const AMPARIS_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez la carte d'identité de l'entreprise AMParis : identifiez l'entreprise, ses biens et services, sa zone de chalandise, son partenaire et son type de clientèle.",
+    contexte:
+      "Vous êtes en stage dans la société AMParis, située à Asnières-sur-Seine. L'entreprise est spécialisée dans la vente et la location de photocopieurs, d'imprimantes et de télécopieurs. C'est votre premier jour et donc avant de vous confier des tâches importantes, votre tutrice Mme Eva Pauret souhaite que vous vous familiarisiez avec l'entreprise, son personnel et son marché. Votre tutrice vous demande de réaliser la « carte d'identité » de l'entreprise.",
+    documents: [
+      { numero: 1, titre: 'Les différents types de clientèle', images: [], texte: [
+        { paragraphes: [
+          "Par définition, le marketing B2B (entre professionnels) concerne les échanges commerciaux par une entreprise avec une autre entreprise, et le marketing B2C les échanges commerciaux entre une entreprise et une clientèle de particuliers. La cible de ces deux types de marketing est donc très différente : limitée en nombre, mais spécialisée en Business to Business (B2B), beaucoup plus large, mais moins experte en Business to Consumer (B2C). En effet, les entreprises visées en B2B, déjà a priori mieux informées que le particulier, font en plus un travail de recherches important auprès d'experts pour l'analyse de leurs besoins et la recherche de solutions adéquates. Il faut donc mettre en œuvre, en B2B, une stratégie marketing qui fournit des informations beaucoup plus spécifiques et pointues qu'en B2C, car les clients, en général, connaissent moins bien les produits et solutions proposées. Dans ce dernier cas, l'utilisation d'un langage plus simple fonctionne mieux auprès des particuliers.",
+        ] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4B',
+      intitule: 'Rechercher et analyser les informations à des fins d\u2019exploitation',
+      detail: "Identifier l'entreprise, ses biens et services, son marché et sa clientèle.",
+    },
+    objectifs: [
+      "Identifier l'entreprise et établir sa carte d'identité.",
+      "Distinguer les biens et les services, marchands et non marchands.",
+      'Délimiter la zone de chalandise et identifier le type de clientèle.',
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Identification de l'entreprise",
+        questions: [
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Consulter les sites internet de l'entreprise, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1', boutonLien: 'https://drive.google.com/file/d/1smdm5cPY4Q2i4UCzypX7GH-Xe4Gj0reI/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Les biens et les services de l'entreprise",
+        questions: [
+          { numero: 2, consigne: "Listez les 3 grands types de biens vendus par l'entreprise.", ressources: "Consulter le site internet, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2', boutonLien: 'https://drive.google.com/file/d/1EZJvMQSCDVGsZ_Cm6zj4v67nKvoR5Omh/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
+          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise puis cochez s'ils sont marchands ou non marchands.", ressources: "Consulter le site internet, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3', boutonLien: 'https://drive.google.com/file/d/183fTqCjedjRvvF9bOkjDfgykCG4SQf6C/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
+          { numero: 4, consigne: "Quelles sont les villes dans lesquelles s'étend la zone de chalandise (secteur d'intervention) de AMParis. Dans quel département se trouve chacune d'elle.", ressources: "Consulter le site internet, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4', boutonLien: 'https://drive.google.com/file/d/1PqGCgYIdKCsevdTVYtY-EsWrvgyQVu5Y/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
+          { numero: 5, consigne: "Donnez le nom du partenaire de l'entreprise.", ressources: "Consulter le site internet, compléter l'annexe 5. [C.4B.1]", annexeId: 'annexe5', boutonLien: 'https://drive.google.com/file/d/1PqGCgYIdKCsevdTVYtY-EsWrvgyQVu5Y/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
+          { numero: 6, consigne: "Après avoir lu les différents documents de l'entreprise, dites selon vous quel est le type de clientèle de l'entreprise.", ressources: "Lire le document, compléter l'annexe 6. [C.4B.1]", annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'formulaire', id: 'annexe1', titre: "Annexe 1 — Identité de l'entreprise", entete: 'Fiche entreprise',
+        champs: [
+          { cle: 'denomination', libelle: 'Dénomination' },
+          { cle: 'forme', libelle: 'Forme juridique' },
+          { cle: 'rcs', libelle: "Date de création ou d'immatriculation RCS" },
+          { cle: 'telephone', libelle: 'Téléphone' },
+          { cle: 'ca', libelle: "Chiffre d'affaires" },
+          { cle: 'secteur', libelle: "Secteur d'activité" },
+          { cle: 'email', libelle: 'E-mail' },
+          { cle: 'nationalite', libelle: 'Nationalité' },
+          { cle: 'adresse', libelle: 'Adresse', aire: true },
+        ],
+      },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Les biens', colonnes: ['Les grands types de biens vendus'], nbLignes: 3 },
+      { type: 'casesservices', id: 'annexe3', titre: 'Annexe 3 — Les services', entete: 'Services proposés', colonnes: ['Marchand', 'Non marchand'], nbLignes: 6 },
+      { type: 'saisiegeo', id: 'annexe4', titre: 'Annexe 4 — La zone de chalandise', entete: 'Secteur d\u2019intervention', departements: ['60', '75', '78', '92', '93', '94'], nbLignesInitiales: 16 },
+      { type: 'texte', id: 'annexe5', titre: 'Annexe 5 — Le partenaire', lignes: 1 },
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — La clientèle', lignes: 2 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Identité de l'entreprise (annexe 1).", documents: ['Sites internet', 'Annexe 1'], bareme: 9, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Champ', 'Réponse'], lignes: [
+          ['Dénomination', 'AMParis'],
+          ['Forme juridique', 'S.A.S'],
+          ["Date de création ou d'immatriculation RCS", '18.06.1992'],
+          ['Téléphone', '0147902779'],
+          ["Chiffre d'affaires", '6 385 500 €'],
+          ["Secteur d'activité", "Réparation d'ordinateurs et d'équipements périphériques"],
+          ['E-mail', 'contact@amparis.fr'],
+          ['Nationalité', 'Française'],
+          ['Adresse', "50 avenue d'Argenteuil, 92600 Asnières-sur-Seine"],
+        ] },
+      },
+      {
+        intitule: 'Les biens (annexe 2).', documents: ['Site internet', 'Annexe 2'], bareme: 3, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Les grands types de biens vendus'], lignes: [['Photocopieurs'], ['Imprimantes'], ['Télécopieurs']] },
+      },
+      {
+        intitule: 'Les services (annexe 3).', documents: ['Site internet', 'Annexe 3'], bareme: 6, reponse: 'Voir tableau. (X* : selon le cas, le commercial peut proposer la gratuité quand il veut emporter l\u2019adhésion de l\u2019acheteur.)',
+        tableau: { colonnes: ['Les services', 'Marchand', 'Non marchand'], lignes: [
+          ['Livraison', 'X*', 'X*'],
+          ['Location', 'X', ''],
+          ['Location longue durée', 'X', ''],
+          ['GEI/GEIDE (gestion électronique de documents et d\u2019information)', 'X', ''],
+          ['Contrat de maintenance (= entretien)', 'X*', 'X*'],
+          ['Besoin d\u2019aide ? (014790...)', 'X', ''],
+        ] },
+      },
+      {
+        intitule: 'La zone de chalandise (annexe 4).', documents: ['Site internet', 'Annexe 4'], bareme: 8, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Villes', 'Département'], lignes: [
+          ['Paris', '75'], ['Boulogne-Billancourt', '92'], ['Saint-Denis', '93'], ['Montreuil', '93'],
+          ['Nanterre', '92'], ['Créteil', '94'], ['Courbevoie', '92'], ['Versailles', '78'],
+          ['Puteaux', '92'], ['Asnières', '92'], ['Rueil-Malmaison', '92'], ['Saint-Maur-des-Fossés', '94'],
+          ['Champigny-sur-Marne', '94'], ['Aubervilliers', '93'], ['Issy-les-Moulineaux', '92'], ['Beauvais', '60'],
+        ] },
+      },
+      { intitule: 'Le partenaire (annexe 5).', documents: ['Site internet', 'Annexe 5'], bareme: 1, reponse: 'Ricoh.' },
+      { intitule: 'La clientèle (annexe 6).', documents: ['Document', 'Annexe 6'], bareme: 2, reponse: "C'est une clientèle de professionnels." },
+    ],
+  },
+  synthese: {
+    titre: "La carte d'identité de l'entreprise",
+    proposition: ["L'identité de l'entreprise", 'Les types de produits vendus', 'Les services', 'La clientèle'],
+    racine: {
+      id: 'racine', texte: "La présentation de l'entreprise",
+      enfants: [
+        {
+          id: 'ident', texte: "L'identité de l'entreprise",
+          enfants: [
+            { id: 'fj', texte: null, reponse: 'Forme juridique' },
+            { id: 'ca', texte: null, reponse: "Chiffre d'affaires" },
+            { id: 'nat', texte: null, reponse: 'Nationalité' },
+          ],
+        },
+        {
+          id: 'prod', texte: "Les types de produits vendus par l'entreprise",
+          enfants: [
+            { id: 'biens', texte: '2 types de produits' },
+            { id: 'serv', texte: 'Les services' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Identifier l'entreprise",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas retrouver l'identité de l'entreprise." },
+          { niveau: 'debrouille', description: 'Je complète quelques champs de la carte d\u2019identité.' },
+          { niveau: 'averti', description: 'Je complète toute la carte d\u2019identité.' },
+          { niveau: 'expert', description: "Je vérifie et recoupe les informations entre les sources." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Distinguer biens et services',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je confonds biens et services.' },
+          { niveau: 'debrouille', description: 'Je liste les biens.' },
+          { niveau: 'averti', description: 'Je distingue services marchands et non marchands.' },
+          { niveau: 'expert', description: "Je justifie le caractère marchand ou non d'un service." },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Analyser le marché et la clientèle',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas définir la zone de chalandise.' },
+          { niveau: 'debrouille', description: 'Je cite quelques villes du secteur.' },
+          { niveau: 'averti', description: 'Je délimite la zone et identifie le type de clientèle.' },
+          { niveau: 'expert', description: 'Je relie le type de clientèle (B2B/B2C) à la stratégie commerciale.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Bien', definition: "Produit matériel et tangible vendu par l'entreprise (ex : photocopieur)." },
+      { terme: 'Service', definition: 'Prestation immatérielle proposée au client (ex : livraison, maintenance).' },
+      { terme: 'Service marchand', definition: 'Service vendu contre paiement.' },
+      { terme: 'Service non marchand', definition: 'Service fourni gratuitement ou à un prix non significatif.' },
+      { terme: 'Zone de chalandise', definition: "Secteur géographique d'où provient la clientèle d'une unité commerciale." },
+      { terme: 'B2B (Business to Business)', definition: 'Échanges commerciaux entre une entreprise et une autre entreprise.' },
+      { terme: 'B2C (Business to Consumer)', definition: 'Échanges commerciaux entre une entreprise et des particuliers.' },
+      { terme: 'Forme juridique', definition: "Statut légal de l'entreprise (ex : S.A.S)." },
+      { terme: "Chiffre d'affaires", definition: "Montant total des ventes réalisées sur une période." },
+      { terme: 'RCS', definition: 'Registre du commerce et des sociétés, où sont immatriculées les entreprises.' },
+    ],
+    flashcards: [
+      { recto: "Dénomination de l'entreprise ?", verso: 'AMParis.' },
+      { recto: "Forme juridique ?", verso: 'S.A.S.' },
+      { recto: "Chiffre d'affaires ?", verso: '6 385 500 €.' },
+      { recto: "Date d'immatriculation RCS ?", verso: '18.06.1992.' },
+      { recto: 'Nationalité ?', verso: 'Française.' },
+      { recto: 'Les 3 grands types de biens ?', verso: 'Photocopieurs, imprimantes, télécopieurs.' },
+      { recto: 'Nom du partenaire ?', verso: 'Ricoh.' },
+      { recto: "Type de clientèle ?", verso: 'Une clientèle de professionnels (B2B).' },
+      { recto: 'Que signifie B2B ?', verso: 'Business to Business : échanges entre entreprises.' },
+      { recto: 'Que signifie B2C ?', verso: 'Business to Consumer : échanges avec des particuliers.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Forme juridique d'AMParis ?", options: ['S.A.S', 'S.A.R.L', 'S.A', 'Auto-entreprise'], bonne: 0 },
+      { type: 'unique', question: "Chiffre d'affaires d'AMParis ?", options: ['6 385 500 €', '638 550 €', '63 855 000 €', '1 000 000 €'], bonne: 0 },
+      { type: 'unique', question: 'Quel est le partenaire ?', options: ['Ricoh', 'Canon', 'Xerox', 'HP'], bonne: 0 },
+      { type: 'unique', question: "Lequel n'est PAS un bien vendu par AMParis ?", options: ['Ordinateur portable', 'Photocopieur', 'Imprimante', 'Télécopieur'], bonne: 0 },
+      { type: 'unique', question: 'La location est un service...', options: ['Marchand', 'Non marchand', 'Gratuit', 'Interdit'], bonne: 0 },
+      { type: 'unique', question: "Type de clientèle d'AMParis ?", options: ['Professionnels (B2B)', 'Particuliers (B2C)', 'Étudiants', 'Administrations uniquement'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie B2C ?', options: ['Business to Consumer', 'Business to Company', 'Back to Class', 'Buy to Choose'], bonne: 0 },
+      { type: 'unique', question: 'La zone de chalandise désigne...', options: ['Le secteur géographique de la clientèle', "Le chiffre d'affaires", 'La forme juridique', 'Le nombre de salariés'], bonne: 0 },
+      { type: 'unique', question: 'Dans quel département se trouve Paris ?', options: ['75', '92', '93', '94'], bonne: 0 },
+      { type: 'unique', question: 'En B2B, la stratégie marketing est...', options: ['Spécifique et pointue', 'Toujours simple', 'Identique au B2C', 'Inutile'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ["Identité de l'entreprise", 'Bien vendu', 'Service'],
+      zones: [
+        { libelle: 'S.A.S', etiquetteIndex: 0 },
+        { libelle: '6 385 500 €', etiquetteIndex: 0 },
+        { libelle: 'Photocopieur', etiquetteIndex: 1 },
+        { libelle: 'Imprimante', etiquetteIndex: 1 },
+        { libelle: 'La location', etiquetteIndex: 2 },
+        { libelle: 'Le contrat de maintenance', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -3716,6 +3965,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'citroen-m1': CITROEN_M1,
   'citroen-m2': CITROEN_M2,
   'citroen-m3': CITROEN_M3,
+  'amparis-m1': AMPARIS_M1,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

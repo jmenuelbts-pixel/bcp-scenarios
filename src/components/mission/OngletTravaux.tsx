@@ -14,6 +14,9 @@ import type {
   AnnexeOrganigramme,
   AnnexeGrille,
   AnnexeTexte,
+  AnnexeFormulaire,
+  AnnexeSaisieGeo,
+  AnnexeCasesServices,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -247,6 +250,18 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                 {q.ressources && (
                   <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 8, marginLeft: 18 }}>
                     {q.ressources}
+                  </div>
+                )}
+                {q.boutonLien && (
+                  <div style={{ marginLeft: 18, marginBottom: 10 }}>
+                    <a href={q.boutonLien} target="_blank" rel="noopener noreferrer" style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
+                      background: couleur, color: '#FFFFFF', borderRadius: 8, padding: '8px 14px',
+                      fontSize: 13, fontWeight: 700,
+                    }}>
+                      <span style={{ display: 'inline-flex', width: 18, height: 18, borderRadius: 4, background: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>↗</span>
+                      {q.boutonLibelle ?? 'Ouvrir la ressource'}
+                    </a>
                   </div>
                 )}
                 {annexe && (
@@ -533,6 +548,9 @@ function rendreAnnexe(
   if (annexe.type === 'horaires') return rendreHoraires(annexe, saisies, set, champStyle)
   if (annexe.type === 'grille') return rendreGrille(annexe, saisies, set, champStyle)
   if (annexe.type === 'texte') return rendreTexte(annexe, saisies, set, champStyle)
+  if (annexe.type === 'formulaire') return rendreFormulaire(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'saisiegeo') return rendreSaisieGeo(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'casesservices') return rendreCasesServices(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1298,6 +1316,106 @@ function rendreTexte(a: AnnexeTexte, saisies: Saisies, set: (id: string, v: stri
           </a>
         )}
         <textarea value={saisies[`${a.id}.texte`] ?? ''} onChange={(e) => set(`${a.id}.texte`, e.target.value)} rows={a.lignes ?? 3} style={{ ...champStyle, resize: 'vertical', fontSize: 14, padding: 10 }} />
+      </div>
+    </div>
+  )
+}
+
+// Formulaire facon logiciel de gestion : fiche avec champs labellises.
+function rendreFormulaire(a: AnnexeFormulaire, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = {
+    width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14,
+    padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3',
+    background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none',
+  }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 9, height: 9, borderRadius: 2, background: 'rgba(255,255,255,0.5)' }} />
+        {a.entete ?? a.titre}
+      </div>
+      <div style={{ padding: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+        {a.champs.map((c) => (
+          <div key={c.cle} style={{ gridColumn: c.aire ? '1 / -1' : undefined }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4B5563', marginBottom: 4 }}>{c.libelle}</label>
+            {c.aire ? (
+              <textarea value={saisies[`${a.id}.${c.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${c.cle}`, e.target.value)} rows={2} disabled={verrouille} style={{ ...champ, resize: 'vertical' }} />
+            ) : (
+              <input value={saisies[`${a.id}.${c.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${c.cle}`, e.target.value)} disabled={verrouille} style={champ} />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Module de saisie geographique : lignes ville + departement (menu deroulant),
+// ajout/suppression de lignes, facon logiciel de gestion de secteur commercial.
+function rendreSaisieGeo(a: AnnexeSaisieGeo, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const nbStocke = parseInt(saisies[`${a.id}.nb`] ?? '', 10)
+  const nb = Number.isFinite(nbStocke) && nbStocke > 0 ? nbStocke : (a.nbLignesInitiales ?? 8)
+  const champ: React.CSSProperties = {
+    fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '7px 9px', borderRadius: 6,
+    border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF',
+    color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', boxSizing: 'border-box',
+  }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.entete ?? a.titre}</div>
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: 8, marginBottom: 6, fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+          <div>Ville</div><div>Département</div>
+        </div>
+        {Array.from({ length: nb }).map((_, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: 8, marginBottom: 6 }}>
+            <input value={saisies[`${a.id}.ville${i}`] ?? ''} onChange={(e) => set(`${a.id}.ville${i}`, e.target.value)} disabled={verrouille} placeholder={`Ville ${i + 1}`} style={champ} />
+            <select value={saisies[`${a.id}.dep${i}`] ?? ''} onChange={(e) => set(`${a.id}.dep${i}`, e.target.value)} disabled={verrouille} style={champ}>
+              <option value="">--</option>
+              {a.departements.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+        ))}
+        {!verrouille && (
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <button type="button" onClick={() => set(`${a.id}.nb`, String(nb + 1))} style={{ border: `1px solid ${couleur}`, color: couleur, background: '#FFFFFF', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>+ Ajouter une ville</button>
+            {nb > 1 && <button type="button" onClick={() => set(`${a.id}.nb`, String(nb - 1))} style={{ border: '1px solid #C9D6E3', color: '#6B7280', background: '#FFFFFF', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>- Retirer</button>}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Tableau de services avec cases a cocher Marchand / Non marchand.
+function rendreCasesServices(a: AnnexeCasesServices, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = {
+    width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14,
+    padding: '7px 9px', borderRadius: 6, border: '1px solid #C9D6E3',
+    background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none',
+  }
+  const coche = (cle: string) => (saisies[cle] ?? '') === '1'
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.entete ?? a.titre}</div>
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `1fr ${a.colonnes.map(() => '110px').join(' ')}`, gap: 8, marginBottom: 6, fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+          <div>Les services</div>
+          {a.colonnes.map((c) => <div key={c} style={{ textAlign: 'center' }}>{c}</div>)}
+        </div>
+        {Array.from({ length: a.nbLignes }).map((_, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: `1fr ${a.colonnes.map(() => '110px').join(' ')}`, gap: 8, marginBottom: 6, alignItems: 'center' }}>
+            <input value={saisies[`${a.id}.service${i}`] ?? ''} onChange={(e) => set(`${a.id}.service${i}`, e.target.value)} disabled={verrouille} placeholder={`Service ${i + 1}`} style={champ} />
+            {a.colonnes.map((_, cj) => {
+              const cle = `${a.id}.l${i}c${cj}`
+              return (
+                <div key={cj} style={{ display: 'flex', justifyContent: 'center' }}>
+                  <input type="checkbox" checked={coche(cle)} disabled={verrouille} onChange={(e) => set(cle, e.target.checked ? '1' : '')} style={{ width: 18, height: 18, cursor: verrouille ? 'default' : 'pointer', accentColor: couleur }} />
+                </div>
+              )
+            })}
+          </div>
+        ))}
       </div>
     </div>
   )
