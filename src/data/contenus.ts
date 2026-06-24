@@ -3746,7 +3746,90 @@ const AMPARIS_M1: ContenuMission = {
     contexte:
       "Vous êtes en stage dans la société AMParis, située à Asnières-sur-Seine. L'entreprise est spécialisée dans la vente et la location de photocopieurs, d'imprimantes et de télécopieurs. C'est votre premier jour et donc avant de vous confier des tâches importantes, votre tutrice Mme Eva Pauret souhaite que vous vous familiarisiez avec l'entreprise, son personnel et son marché. Votre tutrice vous demande de réaliser la « carte d'identité » de l'entreprise.",
     documents: [
-      { numero: 1, titre: 'Les différents types de clientèle', images: [], texte: [
+      { numero: 1, titre: "Fiche d'identité de l'entreprise", images: [], texte: [
+        { tableau: { colonnes: ['Information', 'Valeur'], lignes: [
+          ['Statut RCS', 'Immatriculée au RCS le 18-06-1992'],
+          ['Statut INSEE', "Enregistrée à l'INSEE le 01-05-1992"],
+          ['Dénomination', 'A.M.PARIS'],
+          ['Adresse', '50 AV D ARGENTEUIL 92600 ASNIERES-SUR-SEINE'],
+          ['Téléphone', 'Afficher le numéro'],
+          ['SIREN', '387 749 914'],
+          ['SIRET (siege)', '38774991400025'],
+          ['N° de TVA Intracommunautaire', 'Obtenir le numéro de TVA'],
+          ['Activité (Code NAF ou APE)', "Réparation d'ordinateurs et d'équipements périphériques (9511Z)"],
+          ['Forme juridique', 'Société par actions simplifiée'],
+          ['Date immatriculation RCS', '18-06-1992'],
+          ['Date de dernière mise à jour', '01-10-2020'],
+          ['Effectif moyen', '22'],
+          ['Capital social', '400 000,00 €'],
+          ["Chiffre d'affaires 2018", '6 385 500.00 €'],
+        ] } },
+        { intertitre: 'Des services sur mesure', paragraphes: [
+          "AM Paris vend, loue et se charge de l'entretien ou du dépannage de photocopieurs, d'imprimantes et de télécopieurs dans toute l'Ile-de-France, mais aussi dans le reste de la France par l'intermédiaire de ses nombreux partenaires.",
+          "AMParis propose également des solutions de gestion électronique de documents et de l'information (GED/GEIDE) aux petites et grandes entreprises, via la commercialisation du logiciel Docuware 5.",
+        ] },
+        { intertitre: "Notre secteur d'intervention", paragraphes: ["Quelques exemples de communes sur lesquelles nous assurons nos services de location d'imprimante et de photocopieur :"] },
+        { puces: ['Paris', 'Boulogne-Billancourt', 'Saint-Denis', 'Montreuil', 'Nanterre', 'Créteil', 'Courbevoie', 'Versailles', 'Puteaux', 'Asnières-sur-Seine', 'Rueil-Malmaison', 'Saint-Maur-des-Fossés', 'Champigny-sur-Marne', 'Aubervilliers', 'Issy-les-Moulineaux', 'Beauvais'] },
+        { intertitre: 'NOS PRODUITS', puces: ['Photocopieur couleur', 'Photocopieur noir et blanc', 'Copieur tireur de plan', 'Copieur haut volume', 'Duplicopieur'] },
+        { intertitre: 'NOTRE PARTENAIRE', puces: ['Ricoh'] },
+        { intertitre: 'NOS SERVICES', puces: ['Vente', 'Location', 'Location courte durée', 'GEI/GEIDE', 'Contrat de maintenance'] },
+        { intertitre: 'Coordonnées', paragraphes: ['29, bd du Général Delambre', '95870 BEZONS', '+33(0)1 47 90 27 79', 'contact@amparis.fr'] },
+      ] },
+      { numero: 2, titre: "Page produits et présentation de l'entreprise", images: [], texte: [
+        { intertitre: 'Catalogue produits', puces: [
+          'PHOTOCOPIEUR COULEUR', 'PHOTOCOPIEUR NOIR ET BLANC', 'IMPRIMANTE NOIR ET BLANC', 'IMPRIMANTE COULEUR', 'DUPLICOPIEUR', 'COPIEUR HAUT VOLUME', 'COPIEUR TIREUR DE PLAN', 'IMPRIMANTE GRAND FORMAT', "PHOTOCOPIEUR D'OCCASION", "IMPRIMANTE D'OCCASION", 'IMPRIMANTE RECONDITIONNÉE', 'CONTRÔLEUR IMPRESSION', 'FAX TÉLÉCOPIEUR', 'SCANNER', 'ÉCRAN INTERACTIF', 'SYSTÈME DE VISIOCONFÉRENCE', 'CAMÉRA 360°', 'IMPRIMANTE TEXTILE', 'IMPRIMANTE 3D',
+        ] },
+        { paragraphes: [
+          "La société AM Paris est spécialisée dans la vente, la location et l'entretien de photocopieurs, d'imprimantes et de télécopieurs.",
+          "Elle apporte aussi des solutions logicielles (GED/GEIDE) destinées aux professionnels, qu'elle conseille afin de leur permettre d'acquérir le produit conforme à leurs besoins.",
+          "Distributeur agréé de RICOH, leader sur le marché des photocopieurs, imprimantes et télécopieurs.",
+        ] },
+      ] },
+      { numero: 3, titre: 'Page services et secteur', images: [], texte: [
+        { intertitre: 'Services proposés', puces: [
+          'Livraison — sur toute la France',
+          'Location courte durée — pour salons, événements...',
+          "Matériel d'occasion — reconditionné par nos soins",
+          "Besoin d'aide ? — 01 47 90 27 79",
+          "Contrat d'entretien — dépannage et maintenance",
+        ] },
+        { intertitre: 'Une réputation solide', paragraphes: [
+          "En croissance régulière depuis 1992, date de sa création, AM Paris ne néglige aucun aspect de son activité : conseils avisés, services personnalisés et respect des engagements font partie de ses atouts, renforcés par des procédés techniques et commerciaux en constante évolution.",
+          "La qualité de ses services et sa rigueur lui ont permis de devenir l'un des partenaires « Privilège » de RICOH, dont elle distribue et promeut les produits.",
+        ] },
+        { intertitre: 'Une équipe fiable', paragraphes: [
+          "AM Paris, spécialiste de l'impression depuis près de 25 ans, intègre également un centre de reprographie qui exécute des travaux exceptionnels ou confidentiels.",
+          "Cette exploitation est située au 50, avenue d'Argenteuil à Asnières (92), tandis que la plateforme technique d'AM Paris, qui regroupe les livraisons, les stocks de consommables, les pièces détachées, le centre d'appel et la direction technique, se situe au 55, rue du Révérend Père Christian Gilbert à Asnières.",
+          "AM Paris possède également une filiale, AM Paris Finance, une société de management en pleine expansion, et s'est également entourée des partenaires suivants :",
+        ] },
+        { puces: [
+          "Trematique, spécialisée, depuis plus de 30 ans, dans la vente, la location et l'entretien de matériel mais aussi dans le facility management (travaille principalement avec des entreprises de l'Est Parisien) ;",
+          "Eurohead, spécialiste du fax et des systèmes de transmission sécurisés pour les données confidentielles.",
+        ] },
+        { intertitre: 'Des services sur mesure', paragraphes: [
+          "AM Paris vend, loue et se charge de l'entretien ou du dépannage de photocopieurs, d'imprimantes et de télécopieurs dans toute l'Ile-de-France, mais aussi dans le reste de la France par l'intermédiaire de ses nombreux partenaires.",
+          "AMParis propose également des solutions de gestion électronique de documents et de l'information (GED/GEIDE) aux petites et grandes entreprises, via la commercialisation du logiciel Docuware 5.",
+        ] },
+        { intertitre: "Notre secteur d'intervention", paragraphes: ["Quelques exemples de communes sur lesquelles nous assurons nos services de location d'imprimante et de photocopieur :"] },
+        { puces: ['Paris', 'Boulogne-Billancourt', 'Saint-Denis', 'Montreuil', 'Nanterre', 'Créteil', 'Courbevoie', 'Versailles', 'Puteaux', 'Asnières-sur-Seine', 'Rueil-Malmaison', 'Saint-Maur-des-Fossés', 'Champigny-sur-Marne', 'Aubervilliers', 'Issy-les-Moulineaux', 'Beauvais'] },
+        { intertitre: 'NOS PRODUITS', puces: ['Photocopieur couleur', 'Photocopieur noir et blanc', 'Copieur tireur de plan', 'Copieur haut volume', 'Duplicopieur'] },
+        { intertitre: 'NOTRE PARTENAIRE', puces: ['Ricoh'] },
+        { intertitre: 'NOS SERVICES', puces: ['Vente', 'Location', 'Location courte durée', 'GEI/GEIDE', 'Contrat de maintenance'] },
+      ] },
+      { numero: 4, titre: "Notre secteur d'intervention", images: [], texte: [
+        { intertitre: "Notre secteur d'intervention", paragraphes: ["Quelques exemples de communes sur lesquelles nous assurons nos services de location d'imprimante et de photocopieur :"] },
+        { puces: ['Paris', 'Boulogne-Billancourt', 'Saint-Denis', 'Montreuil', 'Nanterre', 'Créteil', 'Courbevoie', 'Versailles', 'Puteaux', 'Asnières-sur-Seine', 'Rueil-Malmaison', 'Saint-Maur-des-Fossés', 'Champigny-sur-Marne', 'Aubervilliers', 'Issy-les-Moulineaux', 'Beauvais'] },
+        { intertitre: 'NOS PRODUITS', puces: ['Photocopieur couleur', 'Photocopieur noir et blanc', 'Copieur tireur de plan', 'Copieur haut volume', 'Duplicopieur'] },
+        { intertitre: 'NOTRE PARTENAIRE', puces: ['Ricoh'] },
+        { intertitre: 'NOS SERVICES', puces: ['Vente', 'Location', 'Location courte durée', 'GEI/GEIDE', 'Contrat de maintenance'] },
+        { intertitre: 'Coordonnées', paragraphes: ['29, bd du Général Delambre', '95870 BEZONS', '+33(0)1 47 90 27 79', 'contact@amparis.fr'] },
+      ] },
+      { numero: 5, titre: 'Notre partenaire', images: [], texte: [
+        { intertitre: 'NOTRE PARTENAIRE', puces: ['Ricoh'] },
+        { intertitre: 'NOS PRODUITS', puces: ['Photocopieur couleur', 'Photocopieur noir et blanc', 'Copieur tireur de plan', 'Copieur haut volume', 'Duplicopieur'] },
+        { intertitre: 'NOS SERVICES', puces: ['Vente', 'Location', 'Location courte durée', 'GEI/GEIDE', 'Contrat de maintenance'] },
+      ] },
+      { numero: 6, titre: 'Les différents types de clientèle', images: [], texte: [
         { paragraphes: [
           "Par définition, le marketing B2B (entre professionnels) concerne les échanges commerciaux par une entreprise avec une autre entreprise, et le marketing B2C les échanges commerciaux entre une entreprise et une clientèle de particuliers. La cible de ces deux types de marketing est donc très différente : limitée en nombre, mais spécialisée en Business to Business (B2B), beaucoup plus large, mais moins experte en Business to Consumer (B2C). En effet, les entreprises visées en B2B, déjà a priori mieux informées que le particulier, font en plus un travail de recherches important auprès d'experts pour l'analyse de leurs besoins et la recherche de solutions adéquates. Il faut donc mettre en œuvre, en B2B, une stratégie marketing qui fournit des informations beaucoup plus spécifiques et pointues qu'en B2C, car les clients, en général, connaissent moins bien les produits et solutions proposées. Dans ce dernier cas, l'utilisation d'un langage plus simple fonctionne mieux auprès des particuliers.",
         ] },
@@ -3766,17 +3849,17 @@ const AMPARIS_M1: ContenuMission = {
       {
         titre: "Activité 1 — Identification de l'entreprise",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Consulter les sites internet de l'entreprise, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1', boutonLien: 'https://drive.google.com/file/d/1smdm5cPY4Q2i4UCzypX7GH-Xe4Gj0reI/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 — Les biens et les services de l'entreprise",
         questions: [
-          { numero: 2, consigne: "Listez les 3 grands types de biens vendus par l'entreprise.", ressources: "Consulter le site internet, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2', boutonLien: 'https://drive.google.com/file/d/1EZJvMQSCDVGsZ_Cm6zj4v67nKvoR5Omh/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
-          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise puis cochez s'ils sont marchands ou non marchands.", ressources: "Consulter le site internet, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3', boutonLien: 'https://drive.google.com/file/d/183fTqCjedjRvvF9bOkjDfgykCG4SQf6C/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
-          { numero: 4, consigne: "Quelles sont les villes dans lesquelles s'étend la zone de chalandise (secteur d'intervention) de AMParis. Dans quel département se trouve chacune d'elle.", ressources: "Consulter le site internet, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4', boutonLien: 'https://drive.google.com/file/d/1PqGCgYIdKCsevdTVYtY-EsWrvgyQVu5Y/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
-          { numero: 5, consigne: "Donnez le nom du partenaire de l'entreprise.", ressources: "Consulter le site internet, compléter l'annexe 5. [C.4B.1]", annexeId: 'annexe5', boutonLien: 'https://drive.google.com/file/d/1PqGCgYIdKCsevdTVYtY-EsWrvgyQVu5Y/view', boutonLibelle: 'Ouvrir le site de l\u2019entreprise' },
-          { numero: 6, consigne: "Après avoir lu les différents documents de l'entreprise, dites selon vous quel est le type de clientèle de l'entreprise.", ressources: "Lire le document, compléter l'annexe 6. [C.4B.1]", annexeId: 'annexe6' },
+          { numero: 2, consigne: "Listez les 3 grands types de biens vendus par l'entreprise.", ressources: "Consulter le document 2, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise puis cochez s'ils sont marchands ou non marchands.", ressources: "Consulter le document 3, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Quelles sont les villes dans lesquelles s'étend la zone de chalandise (secteur d'intervention) de AMParis. Dans quel département se trouve chacune d'elle.", ressources: "Consulter le document 4, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Donnez le nom du partenaire de l'entreprise.", ressources: "Consulter le document 5, compléter l'annexe 5. [C.4B.1]", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Après avoir lu les différents documents de l'entreprise, dites selon vous quel est le type de clientèle de l'entreprise.", ressources: "Consulter le document 6, compléter l'annexe 6. [C.4B.1]", annexeId: 'annexe6' },
         ],
       },
     ],
@@ -3807,15 +3890,15 @@ const AMPARIS_M1: ContenuMission = {
       {
         intitule: "Identité de l'entreprise (annexe 1).", documents: ['Sites internet', 'Annexe 1'], bareme: 9, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Champ', 'Réponse'], lignes: [
-          ['Dénomination', 'AMParis'],
-          ['Forme juridique', 'S.A.S'],
-          ["Date de création ou d'immatriculation RCS", '18.06.1992'],
-          ['Téléphone', '0147902779'],
+          ['Dénomination', 'A.M.PARIS'],
+          ['Forme juridique', 'Société par actions simplifiée (S.A.S)'],
+          ["Date de création ou d'immatriculation RCS", '18-06-1992'],
+          ['Téléphone', '+33 (0)1 47 90 27 79'],
           ["Chiffre d'affaires", '6 385 500 €'],
-          ["Secteur d'activité", "Réparation d'ordinateurs et d'équipements périphériques"],
+          ["Secteur d'activité", "Réparation d'ordinateurs et d'équipements périphériques (9511Z)"],
           ['E-mail', 'contact@amparis.fr'],
           ['Nationalité', 'Française'],
-          ['Adresse', "50 avenue d'Argenteuil, 92600 Asnières-sur-Seine"],
+          ['Adresse', "50 av. d'Argenteuil, 92600 Asnières-sur-Seine"],
         ] },
       },
       {
