@@ -436,23 +436,45 @@ function CrmConsultable({ crm, couleur }: {
 function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; couleur: string }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
   const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme))
+  // Premier intertitre = titre de la page (sert au bandeau hero).
+  const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
-    <div style={{ border: '1px solid #E6ECF2', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+    <div style={{ border: '1px solid #E6ECF2', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
       {estPageWeb && (
-        <div style={{ background: '#1F2933', color: '#FFFFFF', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#000000', borderRadius: 6, padding: '6px 12px' }}>
-            <span style={{ display: 'inline-flex', width: 22, height: 22, alignItems: 'center', justifyContent: 'center', background: couleur, borderRadius: 4, fontWeight: 800, fontSize: 13 }}>L</span>
-            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: 0.5 }}>AMParis</span>
-            <span style={{ display: 'flex', gap: 3, marginLeft: 2 }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
-            </span>
+        <>
+          {/* Barre de navigateur facon onglet */}
+          <div style={{ background: '#E9EDF1', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#FF5F57' }} />
+            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#FEBC2E' }} />
+            <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#28C840' }} />
+            <div style={{ marginLeft: 10, flex: 1, background: '#FFFFFF', borderRadius: 14, padding: '4px 12px', fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: couleur }}>🔒</span> https://www.amparis.fr
+            </div>
           </div>
-          <span style={{ fontSize: 12, opacity: 0.7 }}>Documents &amp; Systèmes — www.amparis.fr</span>
-        </div>
+          {/* En-tete site : logo + navigation */}
+          <div style={{ background: '#1F2933', color: '#FFFFFF', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#000000', borderRadius: 6, padding: '6px 12px' }}>
+              <span style={{ display: 'inline-flex', width: 22, height: 22, alignItems: 'center', justifyContent: 'center', background: couleur, borderRadius: 4, fontWeight: 800, fontSize: 13, color: '#FFFFFF' }}>L</span>
+              <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: 0.5 }}>AMParis</span>
+              <span style={{ display: 'flex', gap: 3, marginLeft: 2 }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
+              </span>
+            </div>
+            <nav style={{ display: 'flex', gap: 16, fontSize: 13, fontWeight: 600, opacity: 0.92, flexWrap: 'wrap' }}>
+              <span>Accueil</span><span>Produits</span><span>Services</span><span>Secteur</span><span>Contact</span>
+            </nav>
+            <span style={{ marginLeft: 'auto', fontSize: 12, opacity: 0.7 }}>Documents &amp; Systèmes — tél. 01 47 90 27 79</span>
+          </div>
+          {/* Bandeau hero */}
+          <div style={{ background: `linear-gradient(110deg, ${couleur} 0%, #14532b 100%)`, color: '#FFFFFF', padding: '18px 22px' }}>
+            <div style={{ fontSize: 12, opacity: 0.85, marginBottom: 4 }}>Accueil › Documentation</div>
+            <div style={{ fontSize: 20, fontWeight: 800 }}>{titrePage ?? 'AMParis — Documents & Systèmes'}</div>
+          </div>
+        </>
       )}
-      <div style={{ padding: '14px 18px', lineHeight: 1.6, fontSize: 14, color: '#1F2933' }}>
+      <div style={{ padding: '16px 20px', lineHeight: 1.65, fontSize: 14, color: '#1F2933' }}>
       {contenu.map((b, bi) => (
         <div key={bi} style={{ marginBottom: bi === contenu.length - 1 ? 0 : 12 }}>
           {b.intertitre && (
