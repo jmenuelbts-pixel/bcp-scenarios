@@ -95,6 +95,30 @@ export interface AnnexeCritereSeg {
   criteres: string[] // libelles des criteres a evaluer
 }
 
+// Gabarit de courrier postal (publipostage) facon traitement de texte : zones
+// expediteur, destinataire, date, objet, corps, signature, a remplir.
+export interface AnnexeCourrier {
+  type: 'courrier'
+  id: string
+  titre: string
+}
+
+// Fiche d'appel CROC facon logiciel : 4 zones (Contact, Raison, Objectif,
+// Conclusion) a rediger.
+export interface AnnexeCroc {
+  type: 'croc'
+  id: string
+  titre: string
+}
+
+// Fiche contact / prospect facon CRM : sections coordonnees organisation,
+// decisionnaire, besoins, resultat, a completer.
+export interface AnnexeFicheContact {
+  type: 'fichecontact'
+  id: string
+  titre: string
+}
+
 // Tableau de services avec cases a cocher Marchand / Non marchand.
 export interface AnnexeCasesServices {
   type: 'casesservices'
@@ -258,7 +282,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -296,6 +320,15 @@ export interface CatalogueVehicules {
   vehicules: VehiculeCatalogue[]
 }
 
+// Noeud d'un organigramme : libelle, sous-titre optionnel, teinte de branche
+// et enfants (recursif). teinte = cle de couleur (orange, bleu, jaune, vert...).
+export interface NoeudOrga {
+  libelle: string
+  sousTitre?: string
+  teinte?: 'tete' | 'bleu' | 'jaune' | 'vert' | 'rose' | 'gris'
+  enfants?: NoeudOrga[]
+}
+
 export interface BlocDocumentTexte {
   // Un bloc de texte d'un document : titre de section optionnel + paragraphes,
   // et liste optionnelle (puces). Permet d'afficher un document a lire sans image.
@@ -307,6 +340,16 @@ export interface BlocDocumentTexte {
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
   crm?: { entete?: string; fiches: { nom: string; activite: string; adresse: string; ville: string; telephone: string; email?: string; fax?: string }[] }
+  // Organigramme hierarchique affiche facon logiciel : arbre recursif (chaque
+  // noeud peut avoir des enfants), couleur par branche, plus une bande
+  // transversale optionnelle (ex : le corps professoral). Lecture seule.
+  organigramme?: {
+    tete: NoeudOrga
+    transversal?: string // bande pleine largeur en bas (ex : Le corps professoral)
+  }
+  // Habillage facon page web riche : quand true, le bloc est encadre avec un
+  // bandeau de marque (logo AMParis) et une mise en page de site.
+  pageWeb?: boolean
 }
 export interface DocumentRessource {
   numero: number // numero affiche (Document 1, 2...)
@@ -4274,6 +4317,350 @@ const AMPARIS_M2: ContenuMission = {
   },
 }
 
+const AMPARIS_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez l'opération de prospection : choisissez les techniques adaptées, rédigez la prospection écrite, préparez l'appel téléphonique (méthode CROC) et réalisez la fiche prospect.",
+    contexte:
+      "Vous avez désormais toutes les informations nécessaires sur la clientèle à cibler et ses caractéristiques. Vous pouvez donc préparer l'opération de prospection.",
+    documents: [
+      { numero: 1, titre: 'Les explications de Mme Pauret', images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { texte: "« Il existe plusieurs techniques de prospection tels que le boîtage, le mailing, le publipostage, le phoning...", italique: true },
+          { texte: "Lorsqu'on lance des opérations de prospection chez AMParis, il peut nous arriver d'utiliser l'une d'entre elle, mais le plus souvent nous faisons une combinaison de deux techniques et quelques rares fois de trois techniques.", italique: true },
+          { texte: "La première technique que nous utilisons est souvent une technique de prospection à distance : l'écrit. Elle permet d'attirer l'attention du client/prospect et de le faire réfléchir. On laisse passer un peu de temps puis pour le relancer, on utilise une deuxième technique : dite de contact direct. Cette technique permet, comme son nom l'indique, d'entrer directement en contact avec le client afin de répondre à ses questions pour essayer d'obtenir un rendez-vous. »", italique: true },
+          { texte: "Dans tous les cas, je ne veux pas que les techniques qui seront utilisées nous coûtent chères. Le budget que nous pouvons mettre est très faible : 20 € maximum. Pour autant il faut que celles qui seront choisies dynamiques et attirent l'œil du prospect.", italique: true },
+        ] },
+      ] },
+      { numero: 2, titre: 'Les techniques de prospection', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Le boîtage', paragraphes: [
+          "Le boîtage est l'action de déposer, dans les boîtes à lettres d'un ensemble de prospects, d'où le terme boîtage, un prospectus leur donnant des informations sur un service ou un produit donné.",
+          "Il permet un ciblage extrêmement précis. Qu'il s'agisse de cibler un quartier spécifique, une rue, voire un type de bien.",
+          "C'est un moyen efficace de générer de la sympathie. Par exemple, certaines agences envoient un mot pour les fêtes de fin d'année.",
+          "Le boîtage peut être perçu comme étant assez envahissant. De ce fait, en répétant de façon plus que nécessaire votre distribution, vous risquez de lasser le client potentiel.",
+          "Mettre en place une opération de ce type est plutôt chronophage. Sachez que la création d'un contenu de qualité et sa distribution peuvent prendre de nombreuses heures.",
+        ] },
+        { intertitre: "L'e-mailing", paragraphes: [
+          "Une campagne d'e-mailing a l'avantage d'être très peu coûteuse. Elle peut permettre de générer des demandes de devis ou de prises de rendez-vous. Elle permet également de mettre des liens vers les produits de l'entreprise, de mettre des images animées et dynamique qui attirent l'attention de celui qui le lit. Mais il présente aussi des inconvénients. D'abord, son taux de retour (= réponse) extrêmement faible, inférieur à 1 % car l'emailing est souvent considéré comme un Spam.",
+        ] },
+        { intertitre: 'Le publipostage (= courrier adressé à un client ou prospect pour lui proposer une offre)', paragraphes: [
+          "S'il touche 100 % de vos cibles, le mailing est cependant long en conception et en délai d'acheminement. Autre inconvénient : son coût. On estime qu'un mailing revient entre 1 et 2 euros l'unité.",
+        ] },
+        { intertitre: 'Le phoning (= prospection téléphonique)', paragraphes: [
+          "Le téléphone reste, et de loin, l'outil roi en matière de prospection commerciale. Une condition est néanmoins pré-requise : que le fichier clients soit à jour. « Le téléphone reste le meilleur outil en B to B car les clients veulent aujourd'hui une bonne offre mais aussi et surtout un bon relationnel », indique Francine Carton, auteur de « Trouver ses clients ».",
+          "Les vastes campagnes de télémarketing BtoC issues de centres d'appels ont entaché durablement la vision du phoning, y compris en BtoB. Appels de masse, démarches proches de l'arnaque, basse qualité de l'échange, ces coups de fil intempestifs pèsent lourdement dans la vision publique du télémarketing.",
+        ] },
+        { intertitre: 'La prospection de terrain (= le démarchage à domicile)', paragraphes: [
+          "Cela vous permet de connaitre parfaitement votre secteur et de détecter tous les avantages et inconvénients d'un quartier : proximité des commerces, des services publiques, parcs, métro, nuisances sonores... Toutes ces informations vous seront très utiles pour vendre des biens lorsque vous aurez obtenu plusieurs mandats.",
+          "L'exercice est très chronophage (= demande beaucoup de temps) dans sa préparation et son exécution.",
+        ] },
+      ] },
+      { numero: 3, titre: 'Intervention de Mme Pauret', images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { texte: "« Comme je te l'ai déjà dit, je veux que le document que tu rédigeras soit dynamique. Ton document devra donc comporter :", italique: true },
+        ] },
+        { puces: [
+          "Un destinataire, un expéditeur et un objet ;",
+          "Une phrase d'accroche pour donner envie de lire (nous faisons – 20% la première année) ;",
+          "Rappeler la date limite de l'offre le 28 mars 202N ;",
+          "Insérer un lien cliquable et menant directement aux photocopieurs en location : https://www.amparis.fr/photocopieur-couleur",
+          "Précisez le téléphone de l'entreprise pour être rappelé. » Fais bien attention à ton orthographe !!! »",
+        ] },
+      ] },
+      { numero: 4, titre: "Conseil d'Eva Pauret", images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { texte: "« Le phoning peut-être une technique de prospection très efficace, à condition qu'elle ne soit pas faite n'importe comment. Rappelez-vous toujours que le prospect n'est pas en train de vous attendre. Donc s'il se rend compte que vous ne maîtrisez pas votre sujet, il raccrochera… parfois sans même vous prévenir.", italique: true },
+          { texte: "Le phoning doit être préparé en amont par le commercial qui veut réussir son appel et pour cela il doit utiliser la méthode : CROC. »", italique: true },
+        ] },
+        { paragraphes: ["En émission d'appel, utilisez le C.R.O.C.", "Lorsque vous appelez un client où un prospect, vous appliquerez pendant l'appel, la méthode C.R.O.C."] },
+      ] },
+      { numero: 5, titre: 'Méthode CROC', images: [], texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['CROC', 'Éléments de communication'], lignes: [
+          ['Contact', "Saluer, se présenter, présenter l'entreprise, demander l'interlocuteur désiré"],
+          ["Raison d'appel", 'Dire la raison pour laquelle vous appelez le client'],
+          ['Objectif', 'Proposer et obtenir un rendez-vous'],
+          ['Conclusion', "Reformuler : date, heure et lieu du rendez-vous. Prendre congé : remercier, saluer et raccrocher après l'interlocuteur"],
+        ] } },
+      ] },
+      { numero: 6, titre: 'Consignes de votre tutrice pour réaliser une fiche contact', images: [], texte: [
+        { pageWeb: true },
+        { paragraphes: ["« Lorsque vous réaliserez la fiche contact pour les prospects, elle devra comporter quatre grandes parties en plus de la date du contact qui doit y figurer :"] },
+        { intertitre: 'Avant le rendez-vous', puces: ["Les coordonnées de l'entreprises ;", 'Les coordonnées du décisionnaire ;'] },
+        { intertitre: 'Pendant le rendez-vous', puces: ['Les besoins du client ;', 'Le résultat de la prospection (rappel, rendez-vous…) »'] },
+      ] },
+      { numero: 7, titre: 'Organigramme', images: [], texte: [
+        { pageWeb: true },
+        { organigramme: {
+          tete: {
+            libelle: 'Proviseur', teinte: 'tete',
+            enfants: [
+              { libelle: 'Vie scolaire', teinte: 'bleu', enfants: [
+                { libelle: 'C.P.E 1', teinte: 'bleu', enfants: [ { libelle: 'A.E.D', teinte: 'bleu' } ] },
+                { libelle: 'C.P.E 2', teinte: 'bleu' },
+              ] },
+              { libelle: 'Secrétariat direction', teinte: 'jaune' },
+              { libelle: 'Gestionnaire', sousTitre: 'Mme Barbara Larue — 01.46.27.94.37', teinte: 'vert', enfants: [
+                { libelle: 'Secrétariat Intendance', teinte: 'vert' },
+                { libelle: 'Agents', teinte: 'vert' },
+              ] },
+            ],
+          },
+          transversal: 'Le corps professoral',
+        } },
+      ] },
+      { numero: 8, titre: 'Procédure pour compléter la fiche prospect', images: [], texte: [
+        { pageWeb: true },
+        { paragraphes: ["« Avant d'aller à un rendez-vous avec un prospect ou un client, il vous faut compléter les deux premières parties de la fiche prospect :"] },
+        { puces: ["Les coordonnées de l'entreprise ;", 'Les coordonnées de la personne décisionnaire.'] },
+        { paragraphes: ["Pour ce faire, je vous demande de vous rendre sur le logiciel de l'entreprise pour le compléter. Vous avez 2 possibilités :"] },
+        { intertitre: 'AMParis — Fiche Prospect (logiciel Quizinière)', paragraphes: ['Documents & Systèmes — AMParis — tél. 01 47 90 71 20', 'FICHE PROSPECT'] },
+        { intertitre: "COORDONNEES DE L'ORGANISATION (Entreprise, école, association…)", puces: ['Dénomination :', 'Adresse :', 'Téléphone :', 'Site internet :'] },
+        { intertitre: 'COORDONNEES DU DECISIONNAIRE', puces: ['Nom :', 'Prénom :', 'Fonction :', 'E-mail :'] },
+        { intertitre: 'LES BESOINS DU CLIENT', paragraphes: ['Votre texte'] },
+        { intertitre: 'LE RESULTAT DE LA PROSPECTION', paragraphes: ['Votre texte'] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4B',
+      intitule: "Participer à la conception d'une opération de prospection",
+      detail: "Choisir les techniques de prospection, rédiger les supports écrits et préparer le contact téléphonique.",
+    },
+    objectifs: [
+      'Comparer les techniques de prospection et choisir les plus adaptées.',
+      "Rédiger un support de prospection écrite (e-mailing, publipostage).",
+      "Préparer un appel téléphonique avec la méthode CROC et réaliser une fiche prospect.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — Les techniques de prospection adaptées',
+        questions: [
+          { numero: 1, consigne: 'Listez les avantages et les inconvénients de chaque technique de prospection.', ressources: "Lire le document 2, compléter l'annexe 1. [C.4B.2]", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Répartissez les techniques de prospection selon qu'elles soient à distance ou de contact direct.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Retrouvez toutes les techniques qu'il est possible d'utiliser chez AMParis. Justifiez votre réponse par rapport aux exigences de votre tutrice.", ressources: "Lire le document 2, compléter l'annexe 3. [C.4B.2]", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Indiquez les 2 techniques que vous retiendrez pour la prospection de votre cible. Justifiez votre réponse en citant le document 2.', ressources: "Compléter l'annexe 4. [C.4B.2]", annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La prospection écrite',
+        questions: [
+          { numero: 5, consigne: 'Rédigez le document de prospection écrite que vous allez envoyer à vos prospects.', ressources: "Lire le document 3, compléter l'annexe 5. [C.4B.2]", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Retournez à la Mission 2, l'annexe 4, puis indiquez quelle coordonnée est manquante.", ressources: "Compléter l'annexe 6. [C.4B.2]", annexeId: 'annexe6' },
+          { numero: 7, consigne: "Donnez le nom de l'organisation dont la coordonnée est manquante.", ressources: "Compléter l'annexe 7. [C.4B.2]", annexeId: 'annexe7' },
+          { numero: 8, consigne: "Quelle autre coordonnée de l'organisation est disponible pour envoyer le document de prospection écrit.", ressources: "Compléter l'annexe 8. [C.4B.2]", annexeId: 'annexe8' },
+          { numero: 9, consigne: "Indiquez quelle autre technique de prospection écrite il est possible d'utiliser.", ressources: "Relire le document 2, compléter l'annexe 9. [C.4B.2]", annexeId: 'annexe9' },
+          { numero: 10, consigne: "Rédigez le document de prospection écrite que vous allez envoyer à vos prospects. N'oubliez pas d'adapter le document 3 au type de document que vous allez rédiger.", ressources: "Relire le document 3, compléter l'annexe 10. [C.4B.2]", annexeId: 'annexe10' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La prospection téléphonique',
+        questions: [
+          { numero: 11, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: "Lire les documents 4 et 5, compléter l'annexe 11. [C.4B.2]", annexeId: 'annexe11' },
+        ],
+      },
+      {
+        titre: "Activité 4 — La réalisation d'une fiche prospect",
+        questions: [
+          { numero: 12, consigne: "Listez tous les éléments que vous devez faire figurer dans chaque partie d'une fiche prospect.", ressources: "Lire le document 6, compléter l'annexe 12. [C.4B.2]", annexeId: 'annexe12' },
+          { numero: 13, consigne: 'Réalisez un modèle de fiche prospect.', ressources: "Compléter l'annexe 13. [C.4B.2]", annexeId: 'annexe13' },
+          { numero: 14, consigne: 'Complétez les deux premières parties de la fiche prospect.', ressources: "Consulter la Mission 2 document 3 puis lire les documents 7 et 8, compléter l'annexe 13. [C.4B.2]", annexeId: 'annexe13' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Avantages et inconvénients', colonnes: ['Techniques de prospection', 'Avantages', 'Inconvénients'], nbLignes: 5 },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Les techniques de prospection à distance ou de contact (direct)', colonnes: ['Prospection à distance', 'Prospection de contact'], nbLignes: 3 },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Les techniques utilisables dans l'entreprise", colonnes: ['Techniques utilisables', 'Justifications'], nbLignes: 2 },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Les techniques retenues', colonnes: ['Techniques', 'Justifications'], nbLignes: 2 },
+      { type: 'mail', id: 'annexe5', titre: 'Annexe 5 — Rédaction de la prospection écrite (e-mailing)' },
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — La coordonnée manquante', lignes: 1 },
+      { type: 'texte', id: 'annexe7', titre: "Annexe 7 — Le nom de l'organisation dont il manque la coordonnée", lignes: 1 },
+      { type: 'texte', id: 'annexe8', titre: "Annexe 8 — L'autre coordonnée disponible", lignes: 1 },
+      { type: 'texte', id: 'annexe9', titre: "Annexe 9 — L'autre technique de prospection écrite", lignes: 1 },
+      { type: 'courrier', id: 'annexe10', titre: 'Annexe 10 — Rédaction de la prospection écrite (publipostage)' },
+      { type: 'croc', id: 'annexe11', titre: "Annexe 11 — Complétez la fiche d'appel CROC" },
+      { type: 'grille', id: 'annexe12', titre: 'Annexe 12 — Liste des éléments sur une fiche prospect', colonnes: ['Partie de la fiche', 'Éléments à faire figurer'], nbLignes: 4 },
+      { type: 'fichecontact', id: 'annexe13', titre: 'Annexe 13 — Création du modèle de fiche contact' },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Avantages et inconvénients (annexe 1).', documents: ['Document 2', 'Annexe 1'], bareme: 10, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Techniques de prospection', 'Avantages', 'Inconvénients'], lignes: [
+          ['Le boîtage', 'Il permet un ciblage extrêmement précis. Moyen efficace de générer de la sympathie.', 'Perçu comme étant assez envahissant. Chronophage.'],
+          ["L'e-mailing", "Très peu coûteuse. Permet de générer des demandes de devis ou de prises de rendez-vous. Mettre des images animées et dynamique qui attirent l'attention.", 'Taux de retour (= réponse) extrêmement faible.'],
+          ['Le publipostage', 'Touche 100 % de vos cibles.', "Long en conception et en délai d'acheminement."],
+          ['La prospection de terrain', "Permet de détecter tous les avantages et inconvénients d'un quartier.", "Très chronophage. Son coût entre 1 et 2 euros l'unité."],
+          ['Le phoning', 'Le téléphone reste le meilleur outil en B to B.', "Appels de masse, démarches proches de l'arnaque, basse qualité de l'échange."],
+        ] },
+      },
+      {
+        intitule: 'Techniques à distance ou de contact (annexe 2).', documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 5, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Prospection à distance', 'Prospection de contact'], lignes: [
+          ['E-mailing', 'Boîtage'],
+          ['Publipostage', 'Prospection de terrain'],
+          ['', 'Phoning'],
+        ] },
+      },
+      {
+        intitule: "Techniques utilisables dans l'entreprise (annexe 3).", documents: ['Document 2', 'Annexe 3'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Techniques utilisables', 'Justifications'], lignes: [
+          ["L'e-mailing", 'Les techniques de prospection choisies doivent être dynamiques.'],
+          ['Le phoning', '« Avoir un contact direct et chaleureux avec les prospects. »'],
+        ] },
+      },
+      {
+        intitule: 'Techniques retenues (annexe 4).', documents: ['Document 2', 'Annexe 4'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Techniques', 'Justifications'], lignes: [
+          ["L'e-mailing", "Document 2 : « …permet également de mettre des liens vers les produits de l'entreprise, de mettre des images animées et dynamique qui attirent l'attention »"],
+          ['Le phoning', "Document 2 : « …les clients veulent aujourd'hui une bonne offre mais aussi et surtout un bon relationnel. »"],
+        ] },
+      },
+      {
+        intitule: 'Rédaction de la prospection écrite — e-mailing (annexe 5).', documents: ['Document 3', 'Annexe 5'], bareme: 6, reponse:
+          "Nouveau message — De : contact@amparis.fr — A : [destinataire] — Objet : Remise sur la location des photocopieurs. Corps : – 20 % pendant 1 an pour la location d'un photocopieur couleur. Offre valable jusqu'au 28.03.202N. https://www.amparis.fr/photocopieur-couleur. Tél : 01.47.90.27.79" },
+      { intitule: 'La coordonnée manquante (annexe 6).', documents: ['Mission 2 annexe 4', 'Annexe 6'], bareme: 1, reponse: 'Il manque un e-mail.' },
+      { intitule: "Le nom de l'organisation (annexe 7).", documents: ['Mission 2 annexe 4', 'Annexe 7'], bareme: 1, reponse: 'Lycée privé Saint Michel des Batignolles.' },
+      { intitule: "L'autre coordonnée disponible (annexe 8).", documents: ['Mission 2 annexe 4', 'Annexe 8'], bareme: 1, reponse: "L'adresse postale (14, avenue de Saint-Ouen)." },
+      { intitule: "L'autre technique de prospection écrite (annexe 9).", documents: ['Document 2', 'Annexe 9'], bareme: 1, reponse: 'Le publipostage.' },
+      {
+        intitule: 'Rédaction de la prospection écrite — publipostage (annexe 10).', documents: ['Document 3', 'Annexe 10'], bareme: 6, reponse:
+          "Lycée Privé Saint Michel Des Batignolles, 14, avenue de Saint-Ouen, 75017 Paris. Paris, le 15 mars 202N. Objet : Remise sur la location des photocopieurs. Notre société AMParis a le plaisir de vous informer de l'offre promotionnelle du mois. Afin de vous aider à faire des économies, nous vous proposons une remise exceptionnelle de - 20 % la première année sur la location de photocopieurs. La remise est valable jusqu'au 28 mars 202N. Ne tardez pas et soyez le premier à réserver votre photocopieur. Nous vous remercions de votre attention et nous vous invitons à vous rendre sur notre site pour découvrir toute notre sélection de photocopieurs : https://www.amparis.fr/photocopieur-couleur. AMParis." },
+      {
+        intitule: "Fiche d'appel CROC (annexe 11).", documents: ['Documents 4 et 5', 'Annexe 11'], bareme: 8, reponse: 'Voir fiche.',
+        tableau: { colonnes: ['Étape', 'Contenu'], lignes: [
+          ['Contact', "Bonjour, Mme/ M…., Je suis Prénom NOM d'AMParis, vous êtes bien le (la) gestionnaire de l'établissement (nom de l'établissement) ?"],
+          ['Raison', "Je vous appelle suite à l'e-mail que je vous ai envoyé il y a une semaine. Il y a -20% sur les locations de photocopieurs couleurs pendant un an."],
+          ['Objectif', 'Je souhaiterais prendre rendez-vous avec vous pour vous présenter notre offre et ses avantages plus en détail. Quand seriez-vous disponible pour que nous puissions nous rencontrer ?'],
+          ['Conclusion', "Nous disons donc rendez-vous le… à… au (adresse). Je vous remercie pour votre accueil et je vous souhaite une bonne journée. Au revoir Mme/ M. …"],
+        ] },
+      },
+      {
+        intitule: "Éléments d'une fiche prospect (annexe 12).", documents: ['Document 6', 'Annexe 12'], bareme: 8, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Partie de la fiche', 'Éléments à faire figurer'], lignes: [
+          ["Coordonnées de l'entreprise", 'Dénomination, Téléphone, Adresse, Site internet'],
+          ['Coordonnées du décisionnaire', 'Nom, Prénom, Fonction, E-mail'],
+          ['Besoins du client', 'Caractéristiques du produit souhaité'],
+          ['Résultat de la prospection', 'Souhaite un 2ème rendez-vous ; Souhaite être rappelé ; A passé commande…'],
+        ] },
+      },
+      {
+        intitule: 'Modèle de fiche contact complété (annexe 13).', documents: ['Mission 2 document 3', 'Documents 7 et 8', 'Annexe 13'], bareme: 8, reponse:
+          "FICHE CONTACT. Coordonnées de l'organisation : Dénomination Maria Deraismes (Lycée Professionnel), Adresse 19, rue Maria Deraismes 75017 Paris, Téléphone 01.46.27.94.37, Site internet [à compléter]. Coordonnées du décisionnaire : Nom Larue, Prénom Barbara, Fonction Gestionnaire, E-mail [à compléter]. Les besoins du client et le résultat de la prospection sont complétés pendant le rendez-vous." },
+    ],
+  },
+  synthese: {
+    titre: "La préparation de l'opération de prospection",
+    proposition: ["L'e-mailing", 'Le phoning', "Phrase d'accroche", 'La méthode C.R.O.C.', 'Conclusion'],
+    racine: {
+      id: 'racine', texte: "La préparation de la prospection",
+      enfants: [
+        { id: 'tech', texte: 'Les techniques de prospection', enfants: [
+          { id: 'mail', texte: null, reponse: "L'e-mailing" },
+          { id: 'phon', texte: null, reponse: 'Le phoning' },
+        ] },
+        { id: 'ecrit', texte: 'La prospection écrite', enfants: [
+          { id: 'acc', texte: "Phrase d'accroche" },
+          { id: 'reg', texte: 'Règles de rédaction' },
+        ] },
+        { id: 'tel', texte: 'La prospection téléphonique', enfants: [
+          { id: 'croc', texte: 'La méthode C.R.O.C.' },
+        ] },
+        { id: 'fiche', texte: 'La fiche prospect', enfants: [
+          { id: 'coord', texte: "Coordonnées de l'entreprise" },
+          { id: 'info', texte: "Informations d'une fiche prospect" },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Choisir les techniques de prospection',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les techniques de prospection.' },
+          { niveau: 'debrouille', description: 'Je cite quelques techniques.' },
+          { niveau: 'averti', description: 'Je compare avantages et inconvénients des techniques.' },
+          { niveau: 'expert', description: 'Je choisis et justifie les techniques adaptées à la cible.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Rédiger un support de prospection écrite',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas rédiger un support de prospection.' },
+          { niveau: 'debrouille', description: 'Je rédige un message incomplet.' },
+          { niveau: 'averti', description: 'Je rédige un e-mailing ou un publipostage complet.' },
+          { niveau: 'expert', description: 'Je respecte toutes les consignes (accroche, offre, lien, contact).' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Préparer le contact téléphonique et la fiche prospect',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas la méthode CROC.' },
+          { niveau: 'debrouille', description: 'Je cite les étapes du CROC.' },
+          { niveau: 'averti', description: "Je prépare une fiche d'appel CROC complète." },
+          { niveau: 'expert', description: 'Je réalise une fiche prospect complète et exploitable.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Boîtage', definition: "Dépôt d'un prospectus dans les boîtes à lettres d'un ensemble de prospects." },
+      { terme: 'E-mailing', definition: "Envoi d'un message commercial par courrier électronique." },
+      { terme: 'Publipostage', definition: 'Courrier adressé à un client ou prospect pour lui proposer une offre.' },
+      { terme: 'Phoning', definition: 'Prospection téléphonique.' },
+      { terme: 'Prospection de terrain', definition: 'Démarchage à domicile.' },
+      { terme: 'Prospection à distance', definition: 'Technique sans contact physique (e-mailing, publipostage).' },
+      { terme: 'Prospection de contact', definition: 'Technique avec contact (boîtage, phoning, terrain).' },
+      { terme: 'Méthode CROC', definition: "Contact, Raison d'appel, Objectif, Conclusion : trame d'un appel de prospection." },
+      { terme: "Phrase d'accroche", definition: "Phrase qui donne envie de lire un support de prospection." },
+      { terme: 'Fiche prospect', definition: "Fiche regroupant les coordonnées et besoins d'un prospect." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce que le boîtage ?", verso: "Le dépôt d'un prospectus dans les boîtes à lettres des prospects." },
+      { recto: "Avantage de l'e-mailing ?", verso: 'Très peu coûteux, liens et images dynamiques.' },
+      { recto: "Inconvénient de l'e-mailing ?", verso: 'Taux de retour très faible (souvent considéré comme spam).' },
+      { recto: 'Coût du publipostage ?', verso: "Entre 1 et 2 euros l'unité." },
+      { recto: 'Que signifie CROC ?', verso: "Contact, Raison d'appel, Objectif, Conclusion." },
+      { recto: 'Budget maximum imposé par Mme Pauret ?', verso: '20 € maximum.' },
+      { recto: 'Les 2 techniques retenues ?', verso: "L'e-mailing et le phoning." },
+      { recto: 'Techniques de prospection à distance ?', verso: 'E-mailing et publipostage.' },
+      { recto: 'Techniques de prospection de contact ?', verso: 'Boîtage, prospection de terrain, phoning.' },
+      { recto: "Les 4 parties d'une fiche prospect ?", verso: "Coordonnées de l'entreprise, du décisionnaire, besoins du client, résultat de la prospection." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Que signifie CROC ?', options: ["Contact, Raison, Objectif, Conclusion", 'Client, Relation, Offre, Contrat', 'Contact, Réponse, Objet, Clôture', 'Cible, Relance, Offre, Conclusion'], bonne: 0 },
+      { type: 'unique', question: 'Budget maximum imposé ?', options: ['20 €', '200 €', '50 €', '100 €'], bonne: 0 },
+      { type: 'unique', question: 'Les 2 techniques retenues sont...', options: ['E-mailing et phoning', 'Boîtage et terrain', 'Publipostage et boîtage', 'Terrain et phoning'], bonne: 0 },
+      { type: 'unique', question: "Inconvénient de l'e-mailing ?", options: ['Taux de retour très faible', 'Très coûteux', 'Long à concevoir', 'Envahissant'], bonne: 0 },
+      { type: 'unique', question: 'Le publipostage est une prospection...', options: ['À distance', 'De contact', 'De terrain', 'Téléphonique'], bonne: 0 },
+      { type: 'unique', question: 'Coût du publipostage ?', options: ["1 à 2 € l'unité", 'Gratuit', "10 € l'unité", "0,10 € l'unité"], bonne: 0 },
+      { type: 'unique', question: 'Le phoning est...', options: ['La prospection téléphonique', 'Le démarchage à domicile', "L'envoi d'e-mails", 'Le boîtage'], bonne: 0 },
+      { type: 'unique', question: "Coordonnée manquante pour Saint Michel des Batignolles ?", options: ["L'e-mail", "L'adresse", 'Le téléphone', 'Le nom'], bonne: 0 },
+      { type: 'unique', question: 'Date limite de l\u2019offre ?', options: ['28 mars 202N', '15 mars 202N', '22 octobre', '1er janvier'], bonne: 0 },
+      { type: 'unique', question: "Combien de parties dans une fiche prospect ?", options: ['4', '2', '3', '5'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque technique selon son type de prospection.',
+      etiquettes: ['Prospection à distance', 'Prospection de contact', 'Étape CROC'],
+      zones: [
+        { libelle: "L'e-mailing", etiquetteIndex: 0 },
+        { libelle: 'Le publipostage', etiquetteIndex: 0 },
+        { libelle: 'Le boîtage', etiquetteIndex: 1 },
+        { libelle: 'Le phoning', etiquetteIndex: 1 },
+        { libelle: 'Contact', etiquetteIndex: 2 },
+        { libelle: 'Conclusion', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -4288,6 +4675,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'citroen-m3': CITROEN_M3,
   'amparis-m1': AMPARIS_M1,
   'amparis-m2': AMPARIS_M2,
+  'amparis-m3': AMPARIS_M3,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

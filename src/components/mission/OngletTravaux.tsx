@@ -493,7 +493,7 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
             </table>
           )}
           {b.crm && <CrmConsultable crm={b.crm} couleur={couleur} />}
-          {b.organigramme && <OrganigrammeVue org={b.organigramme} couleur={couleur} />}
+          {b.organigramme && <OrganigrammeVue org={b.organigramme} />}
         </div>
       ))}
       </div>
@@ -501,25 +501,46 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
   )
 }
 
-// Organigramme hierarchique de consultation : tete + niveaux de cases reliees.
-function OrganigrammeVue({ org, couleur }: { org: NonNullable<BlocDocumentTexte['organigramme']>; couleur: string }) {
-  const carte = (libelle: string, sousTitre?: string, tete?: boolean) => (
-    <div style={{ border: `2px solid ${tete ? couleur : '#C9D6E3'}`, borderRadius: 8, background: tete ? couleur : '#FFFFFF', color: tete ? '#FFFFFF' : '#1F2933', padding: '8px 12px', minWidth: 130, textAlign: 'center' }}>
-      <div style={{ fontSize: 13, fontWeight: 700 }}>{libelle}</div>
-      {sousTitre && <div style={{ fontSize: 11, marginTop: 2, opacity: tete ? 0.9 : 0.7 }}>{sousTitre}</div>}
+// Organigramme hierarchique de consultation : arbre recursif, couleur par
+// branche, plus une bande transversale optionnelle (corps professoral).
+const TEINTES_ORGA: Record<string, { bg: string; bord: string; texte: string }> = {
+  tete: { bg: '#E8C4A0', bord: '#C99A6A', texte: '#5A3A1A' },
+  bleu: { bg: '#AEC6E0', bord: '#7FA3C9', texte: '#1F3A5A' },
+  jaune: { bg: '#F5E08C', bord: '#D9BE55', texte: '#5A4A12' },
+  vert: { bg: '#B9D9A4', bord: '#8FBE72', texte: '#2E4A1E' },
+  rose: { bg: '#F3C4E8', bord: '#D98FC9', texte: '#5A2A50' },
+  gris: { bg: '#E2E8F0', bord: '#C9D6E3', texte: '#1F2933' },
+}
+function NoeudOrgaVue({ noeud }: { noeud: import('../../data/contenus').NoeudOrga }) {
+  const c = TEINTES_ORGA[noeud.teinte ?? 'gris']
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ border: `1.5px solid ${c.bord}`, background: c.bg, color: c.texte, borderRadius: 6, padding: '8px 14px', minWidth: 110, textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700 }}>{noeud.libelle}</div>
+        {noeud.sousTitre && <div style={{ fontSize: 11, marginTop: 2, opacity: 0.85 }}>{noeud.sousTitre}</div>}
+      </div>
+      {noeud.enfants && noeud.enfants.length > 0 && (
+        <>
+          <div style={{ width: 2, height: 14, background: '#B0BAC5' }} />
+          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', borderTop: noeud.enfants.length > 1 ? '2px solid #B0BAC5' : 'none', paddingTop: noeud.enfants.length > 1 ? 14 : 0 }}>
+            {noeud.enfants.map((e, i) => <NoeudOrgaVue key={i} noeud={e} />)}
+          </div>
+        </>
+      )}
     </div>
   )
+}
+function OrganigrammeVue({ org }: { org: NonNullable<BlocDocumentTexte['organigramme']> }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, padding: '8px 0' }}>
-      {carte(org.tete.libelle, org.tete.sousTitre, true)}
-      {org.niveaux.map((niveau, ni) => (
-        <div key={ni} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ width: 2, height: 16, background: '#C9D6E3' }} />
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-            {niveau.map((c, ci) => <div key={ci}>{carte(c.libelle, c.sousTitre)}</div>)}
+    <div style={{ overflowX: 'auto', padding: '10px 0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
+        <NoeudOrgaVue noeud={org.tete} />
+        {org.transversal && (
+          <div style={{ marginTop: 16, width: '100%' }}>
+            <div style={{ border: `1.5px solid ${TEINTES_ORGA.rose.bord}`, background: TEINTES_ORGA.rose.bg, color: TEINTES_ORGA.rose.texte, borderRadius: 6, padding: '10px 14px', textAlign: 'center', fontSize: 13, fontWeight: 700 }}>{org.transversal}</div>
           </div>
-        </div>
-      ))}
+        )}
+      </div>
     </div>
   )
 }
