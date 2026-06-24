@@ -17,6 +17,10 @@ import type {
   AnnexeFormulaire,
   AnnexeSaisieGeo,
   AnnexeCasesServices,
+  AnnexeCritereSeg,
+  AnnexeCourrier,
+  AnnexeCroc,
+  AnnexeFicheContact,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -366,13 +370,93 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
 
 // Vue d'un document entierement redactionnel (sans image) : intertitres,
 // paragraphes, listes a puces et dialogues, dans un cadre de lecture sobre.
-function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; couleur: string }) {
+// CRM consultable facon logiciel professionnel : liste de fiches organisations
+// avec recherche, clic pour voir le detail, et bouton retour a la liste.
+function CrmConsultable({ crm, couleur }: {
+  crm: NonNullable<BlocDocumentTexte['crm']>
+  couleur: string
+}) {
+  const [recherche, setRecherche] = useState('')
+  const [selection, setSelection] = useState<number | null>(null)
+  const champ: React.CSSProperties = {
+    width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14,
+    padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', outline: 'none',
+  }
+  const filtrees = crm.fiches
+    .map((f, i) => ({ f, i }))
+    .filter(({ f }) => {
+      const q = recherche.trim().toLowerCase()
+      if (!q) return true
+      return f.nom.toLowerCase().includes(q) || f.activite.toLowerCase().includes(q) || f.ville.toLowerCase().includes(q)
+    })
+  const detail = selection !== null ? crm.fiches[selection] : null
+  const ligne = (label: string, valeur?: string) => valeur ? (
+    <div style={{ display: 'flex', gap: 10, padding: '7px 0', borderBottom: '1px solid #EEF2F5' }}>
+      <div style={{ minWidth: 130, fontSize: 12, fontWeight: 700, color: '#6B7280' }}>{label}</div>
+      <div style={{ fontSize: 14, color: '#1F2933' }}>{valeur}</div>
+    </div>
+  ) : null
   return (
-    <div style={{ border: '1px solid #E6ECF2', borderRadius: 8, padding: '14px 18px', background: '#FFFFFF', lineHeight: 1.6, fontSize: 14, color: '#1F2933' }}>
-      {blocs.map((b, bi) => (
-        <div key={bi} style={{ marginBottom: bi === blocs.length - 1 ? 0 : 12 }}>
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden', marginTop: 4 }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFFFFF' }} />
+        {crm.entete ?? 'Annuaire'}
+        <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 500, opacity: 0.85 }}>{crm.fiches.length} fiches</span>
+      </div>
+      {detail ? (
+        <div style={{ padding: 14 }}>
+          <button type="button" onClick={() => setSelection(null)} style={{ border: `1px solid ${couleur}`, color: couleur, background: '#FFFFFF', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 12 }}>← Retour à la liste</button>
+          <div style={{ fontSize: 17, fontWeight: 800, color: '#1F2933', marginBottom: 2 }}>{detail.nom}</div>
+          <div style={{ fontSize: 13, color: couleur, fontWeight: 600, marginBottom: 10 }}>{detail.activite}</div>
+          {ligne('Adresse', detail.adresse)}
+          {ligne('Ville', detail.ville)}
+          {ligne('Téléphone', detail.telephone)}
+          {ligne('E-mail', detail.email)}
+          {ligne('Fax', detail.fax)}
+        </div>
+      ) : (
+        <div style={{ padding: 14 }}>
+          <input value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher une organisation, une activité, une ville..." style={{ ...champ, marginBottom: 12 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+            {filtrees.map(({ f, i }) => (
+              <button key={i} type="button" onClick={() => setSelection(i)} style={{ textAlign: 'left', cursor: 'pointer', border: '1px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF', padding: '10px 12px' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2933' }}>{f.nom}</div>
+                <div style={{ fontSize: 12, color: '#6B7280', margin: '2px 0 6px' }}>{f.activite}</div>
+                <div style={{ fontSize: 12, color: couleur, fontWeight: 600 }}>{f.ville} · voir la fiche →</div>
+              </button>
+            ))}
+            {filtrees.length === 0 && <div style={{ fontSize: 13, color: '#9AA5B1' }}>Aucune organisation ne correspond à la recherche.</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; couleur: string }) {
+  const estPageWeb = blocs.some((b) => b.pageWeb)
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme))
+  return (
+    <div style={{ border: '1px solid #E6ECF2', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+      {estPageWeb && (
+        <div style={{ background: '#1F2933', color: '#FFFFFF', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#000000', borderRadius: 6, padding: '6px 12px' }}>
+            <span style={{ display: 'inline-flex', width: 22, height: 22, alignItems: 'center', justifyContent: 'center', background: couleur, borderRadius: 4, fontWeight: 800, fontSize: 13 }}>L</span>
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: 0.5 }}>AMParis</span>
+            <span style={{ display: 'flex', gap: 3, marginLeft: 2 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
+            </span>
+          </div>
+          <span style={{ fontSize: 12, opacity: 0.7 }}>Documents &amp; Systèmes — www.amparis.fr</span>
+        </div>
+      )}
+      <div style={{ padding: '14px 18px', lineHeight: 1.6, fontSize: 14, color: '#1F2933' }}>
+      {contenu.map((b, bi) => (
+        <div key={bi} style={{ marginBottom: bi === contenu.length - 1 ? 0 : 12 }}>
           {b.intertitre && (
-            <div style={{ fontSize: 14, fontWeight: 800, color: couleur, margin: '6px 0 6px' }}>{b.intertitre}</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: couleur, margin: '6px 0 6px', borderLeft: `3px solid ${couleur}`, paddingLeft: 8 }}>{b.intertitre}</div>
           )}
           {b.paragraphes?.map((para, pi) => (
             <p key={pi} style={{ margin: '0 0 8px' }}>{para}</p>
@@ -383,7 +467,7 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
             </ul>
           )}
           {b.dialogue?.map((d, di) => (
-            <p key={di} style={{ margin: '0 0 6px', fontStyle: d.italique ? 'italic' : 'normal', color: d.italique ? '#6B7280' : '#1F2933' }}>
+            <p key={di} style={{ margin: '0 0 6px', fontStyle: d.italique ? 'italic' : 'normal', color: d.italique ? '#4B5563' : '#1F2933' }}>
               {d.locuteur && <span style={{ fontWeight: 700 }}>{d.locuteur} : </span>}
               {d.texte}
             </p>
@@ -393,7 +477,7 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
               <thead>
                 <tr>
                   {b.tableau.colonnes.map((col, ci) => (
-                    <th key={ci} style={{ textAlign: 'left', padding: '8px 10px', fontSize: 13, fontWeight: 700, color: '#374151', background: '#EEF3F8', border: '1px solid #DCE8F4' }}>{col}</th>
+                    <th key={ci} style={{ textAlign: 'left', padding: '8px 10px', fontSize: 13, fontWeight: 700, color: '#FFFFFF', background: couleur, border: '1px solid #DCE8F4' }}>{col}</th>
                   ))}
                 </tr>
               </thead>
@@ -401,13 +485,39 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
                 {b.tableau.lignes.map((ligne, li) => (
                   <tr key={li}>
                     {ligne.map((c, cj) => (
-                      <td key={cj} style={{ padding: '8px 10px', fontSize: 14, color: '#1F2933', border: '1px solid #DCE8F4', fontWeight: cj === 0 ? 700 : 400, verticalAlign: 'top', width: cj === 0 ? '28%' : undefined }}>{c}</td>
+                      <td key={cj} style={{ padding: '8px 10px', fontSize: 14, color: '#1F2933', border: '1px solid #DCE8F4', fontWeight: cj === 0 ? 700 : 400, verticalAlign: 'top', width: cj === 0 ? '22%' : undefined }}>{c}</td>
                     ))}
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
+          {b.crm && <CrmConsultable crm={b.crm} couleur={couleur} />}
+          {b.organigramme && <OrganigrammeVue org={b.organigramme} couleur={couleur} />}
+        </div>
+      ))}
+      </div>
+    </div>
+  )
+}
+
+// Organigramme hierarchique de consultation : tete + niveaux de cases reliees.
+function OrganigrammeVue({ org, couleur }: { org: NonNullable<BlocDocumentTexte['organigramme']>; couleur: string }) {
+  const carte = (libelle: string, sousTitre?: string, tete?: boolean) => (
+    <div style={{ border: `2px solid ${tete ? couleur : '#C9D6E3'}`, borderRadius: 8, background: tete ? couleur : '#FFFFFF', color: tete ? '#FFFFFF' : '#1F2933', padding: '8px 12px', minWidth: 130, textAlign: 'center' }}>
+      <div style={{ fontSize: 13, fontWeight: 700 }}>{libelle}</div>
+      {sousTitre && <div style={{ fontSize: 11, marginTop: 2, opacity: tete ? 0.9 : 0.7 }}>{sousTitre}</div>}
+    </div>
+  )
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, padding: '8px 0' }}>
+      {carte(org.tete.libelle, org.tete.sousTitre, true)}
+      {org.niveaux.map((niveau, ni) => (
+        <div key={ni} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ width: 2, height: 16, background: '#C9D6E3' }} />
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {niveau.map((c, ci) => <div key={ci}>{carte(c.libelle, c.sousTitre)}</div>)}
+          </div>
         </div>
       ))}
     </div>
@@ -551,6 +661,10 @@ function rendreAnnexe(
   if (annexe.type === 'formulaire') return rendreFormulaire(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'saisiegeo') return rendreSaisieGeo(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'casesservices') return rendreCasesServices(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'critereseg') return rendreCritereSeg(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'courrier') return rendreCourrier(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'croc') return rendreCroc(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'fichecontact') return rendreFicheContact(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1387,9 +1501,116 @@ function rendreSaisieGeo(a: AnnexeSaisieGeo, saisies: Saisies, set: (id: string,
   )
 }
 
-// Tableau de services avec cases a cocher Marchand / Non marchand.
-function rendreCasesServices(a: AnnexeCasesServices, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+// Gabarit de courrier postal (publipostage) facon traitement de texte.
+function rendreCourrier(a: AnnexeCourrier, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '6px 8px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', boxSizing: 'border-box', outline: 'none' }
+  const z = (cle: string, ph: string, rows = 1, w = '100%') => rows > 1
+    ? <textarea value={saisies[`${a.id}.${cle}`] ?? ''} onChange={(e) => set(`${a.id}.${cle}`, e.target.value)} disabled={verrouille} placeholder={ph} rows={rows} style={{ ...champ, width: w, resize: 'vertical' }} />
+    : <input value={saisies[`${a.id}.${cle}`] ?? ''} onChange={(e) => set(`${a.id}.${cle}`, e.target.value)} disabled={verrouille} placeholder={ph} style={{ ...champ, width: w }} />
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>Courrier — publipostage</div>
+      <div style={{ padding: 16, background: '#FFFFFF' }}>
+        <div style={{ marginBottom: 10 }}>{z('dest', 'Destinataire (nom, adresse, ville)', 3, '60%')}</div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>{z('lieudate', 'Lieu, le [date]', 1, '40%')}</div>
+        <div style={{ marginBottom: 10 }}>{z('objet', 'Objet : ...', 1, '70%')}</div>
+        <div style={{ marginBottom: 10 }}>{z('corps', 'Corps du courrier...', 8)}</div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>{z('signature', 'Signature', 1, '40%')}</div>
+      </div>
+    </div>
+  )
+}
+
+// Fiche d'appel CROC : 4 zones a rediger.
+function rendreCroc(a: AnnexeCroc, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical' }
+  const etapes: [string, string][] = [['contact', 'Contact'], ['raison', "Raison d'appel"], ['objectif', 'Objectif'], ['conclusion', 'Conclusion']]
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>FICHE D'APPEL — Méthode CROC</div>
+      <div style={{ padding: 14 }}>
+        {etapes.map(([cle, label]) => (
+          <div key={cle} style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: couleur, marginBottom: 4 }}>{label}</div>
+            <textarea value={saisies[`${a.id}.${cle}`] ?? ''} onChange={(e) => set(`${a.id}.${cle}`, e.target.value)} disabled={verrouille} rows={2} style={champ} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Fiche contact / prospect facon CRM : sections a completer.
+function rendreFicheContact(a: AnnexeFicheContact, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '7px 9px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const lab: React.CSSProperties = { display: 'block', fontSize: 11, fontWeight: 700, color: '#6B7280', marginBottom: 3 }
+  const ch = (cle: string, label: string) => (
+    <div><label style={lab}>{label}</label><input value={saisies[`${a.id}.${cle}`] ?? ''} onChange={(e) => set(`${a.id}.${cle}`, e.target.value)} disabled={verrouille} style={champ} /></div>
+  )
+  const section = (titre: string, contenu: React.ReactNode) => (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', background: couleur, padding: '5px 10px', borderRadius: '6px 6px 0 0' }}>{titre}</div>
+      <div style={{ border: '1px solid #DCE8F4', borderTop: 'none', borderRadius: '0 0 6px 6px', padding: 12 }}>{contenu}</div>
+    </div>
+  )
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#1F2933', color: '#FFFFFF', padding: '10px 14px', fontSize: 14, fontWeight: 800, textAlign: 'center' }}>FICHE CONTACT</div>
+      <div style={{ padding: 14 }}>
+        {section("COORDONNEES DE L'ORGANISATION (Entreprise, école, association…)", (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {ch('denom', 'Dénomination')}{ch('tel', 'Téléphone')}
+            <div style={{ gridColumn: '1 / -1' }}>{ch('adresse', 'Adresse')}</div>
+            <div style={{ gridColumn: '1 / -1' }}>{ch('site', 'Site internet')}</div>
+          </div>
+        ))}
+        {section('COORDONNEES DU DECISIONNAIRE', (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {ch('nom', 'Nom')}{ch('prenom', 'Prénom')}
+            {ch('fonction', 'Fonction')}{ch('email', 'E-mail')}
+          </div>
+        ))}
+        {section('LES BESOINS DU CLIENT', (
+          <textarea value={saisies[`${a.id}.besoins`] ?? ''} onChange={(e) => set(`${a.id}.besoins`, e.target.value)} disabled={verrouille} rows={3} style={{ ...champ, resize: 'vertical' }} />
+        ))}
+        {section('LE RESULTAT DE LA PROSPECTION', (
+          <textarea value={saisies[`${a.id}.resultat`] ?? ''} onChange={(e) => set(`${a.id}.resultat`, e.target.value)} disabled={verrouille} rows={3} style={{ ...champ, resize: 'vertical' }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Grille de criteres de segmentation : case a cocher + justification par ligne.
+function rendreCritereSeg(a: AnnexeCritereSeg, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
   const champ: React.CSSProperties = {
+    width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14,
+    padding: '7px 9px', borderRadius: 6, border: '1px solid #C9D6E3',
+    background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none',
+  }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.entete ?? a.titre}</div>
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 2fr', gap: 8, marginBottom: 6, fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+          <div>Critères de segmentation</div><div style={{ textAlign: 'center' }}>Cochez</div><div>Justification</div>
+        </div>
+        {a.criteres.map((crit, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 2fr', gap: 8, marginBottom: 6, alignItems: 'center' }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2933' }}>{crit}</div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <input type="checkbox" checked={(saisies[`${a.id}.c${i}`] ?? '') === '1'} disabled={verrouille} onChange={(e) => set(`${a.id}.c${i}`, e.target.checked ? '1' : '')} style={{ width: 18, height: 18, cursor: verrouille ? 'default' : 'pointer', accentColor: couleur }} />
+            </div>
+            <input value={saisies[`${a.id}.j${i}`] ?? ''} onChange={(e) => set(`${a.id}.j${i}`, e.target.value)} disabled={verrouille} placeholder="Justification..." style={champ} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Tableau de services avec cases a cocher Marchand / Non marchand.
+function rendreCasesServices(a: AnnexeCasesServices, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {  const champ: React.CSSProperties = {
     width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14,
     padding: '7px 9px', borderRadius: 6, border: '1px solid #C9D6E3',
     background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none',

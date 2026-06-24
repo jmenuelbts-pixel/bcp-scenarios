@@ -85,6 +85,16 @@ export interface AnnexeSaisieGeo {
   nbLignesInitiales?: number
 }
 
+// Tableau de criteres de segmentation : case a cocher + justification, facon
+// grille d'analyse d'un logiciel commercial.
+export interface AnnexeCritereSeg {
+  type: 'critereseg'
+  id: string
+  titre: string
+  entete?: string
+  criteres: string[] // libelles des criteres a evaluer
+}
+
 // Tableau de services avec cases a cocher Marchand / Non marchand.
 export interface AnnexeCasesServices {
   type: 'casesservices'
@@ -248,7 +258,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -294,6 +304,9 @@ export interface BlocDocumentTexte {
   puces?: string[]
   dialogue?: { locuteur?: string; texte: string; italique?: boolean }[]
   tableau?: { colonnes: string[]; lignes: string[][] }
+  // CRM consultable facon logiciel professionnel : liste de fiches organisations
+  // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
+  crm?: { entete?: string; fiches: { nom: string; activite: string; adresse: string; ville: string; telephone: string; email?: string; fax?: string }[] }
 }
 export interface DocumentRessource {
   numero: number // numero affiche (Document 1, 2...)
@@ -4036,6 +4049,231 @@ const AMPARIS_M1: ContenuMission = {
   },
 }
 
+const AMPARIS_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Identifiez la cible d'une opération de prospection : critères de segmentation, définition de la cible, puis repérez dans l'annuaire les organisations qui correspondent à cette cible.",
+    contexte:
+      "Votre tutrice Mme Pauret estime que vous êtes désormais prêt(e) à intégrer l'équipe comme un commercial à part entière. En effet, le directeur de l'entreprise souhaite que vous participiez à la mise en place d'une opération de prospection lors de laquelle sera proposé des photocopieurs en location afin d'augmenter le portefeuille clients de l'entreprise. Mais avant de vous mettre au travail, Mme Pauret souhaite procéder par étape.",
+    documents: [
+      { numero: 1, titre: 'Explication de Mme Eva Pauret', images: [], texte: [
+        { dialogue: [
+          { texte: "« Nous avons beaucoup d'organisations qui sont nos clients. Je pense par exemple à des entreprises, des collectivités locales ou encore des associations. En consultant nos fichiers, je me suis rendu compte que nous avions trop peu d'établissements scolaires du 17ème arrondissement qui sont nos clients. Ce sont ces établissements qui doivent en cette période, retenir toute notre attention car c'est vers eux que sera dirigée notre campagne de prospection. »", italique: true },
+        ] },
+      ] },
+      { numero: 2, titre: 'La segmentation en B to B', images: [], texte: [
+        { paragraphes: ["La segmentation, c'est le fait de découper les clients ou prospects pour les répartir en ensemble homogène selon différents critères. Les professionnels peuvent être répartis selon leur :"] },
+        { puces: [
+          "Localisation (ex : tous les clients de Paris ou du 93, ou de l'Île de France...) ;",
+          "Secteur d'activité (ex : banque, immobilier...) ;",
+          "Taille (ex : les clients/ prospects ayant 10, 50, 100... salariés...) ;",
+          "Chiffre d'affaires (ex : les entreprises ayant un chiffre d'affaires de plus de 50 000€...) ;",
+          "Statut juridique (ex : les SARL, les EURL, les SAS...).",
+        ] },
+      ] },
+      { numero: 3, titre: 'Extrait du fichier des établissements scolaires de Paris', images: [], texte: [
+        { crm: { entete: 'Annuaire — Paris / Banlieue', fiches: [
+          { nom: 'ALPHA SERVICES', activite: 'Sanitaire – Chauffage – Plombier', adresse: '71, rue Dulong', ville: '75020 Paris', telephone: '01.42.12.04.75', email: 'alphaservices75@gmail.com' },
+          { nom: 'LEON GAMBETTA', activite: 'Collège public', adresse: '149, Avenue Gambetta', ville: '75017 Paris', telephone: '01.43.61.87.16', email: 'leongambetta@ac-paris.fr' },
+          { nom: 'LAFORET TERNES', activite: 'Immobilier', adresse: '16, rue Saint-Ferdinand', ville: '75017 Paris', telephone: '01.58.05.00.45', email: 'contact@laforet.fr' },
+          { nom: 'COPY TOP', activite: 'Imprimeur', adresse: '88, avenue de Villiers', ville: '75017 Paris', telephone: '01.83.62.09.22', email: 'villiers@copytop.com' },
+          { nom: 'MARIA DERAISMES', activite: 'Lycée Professionnel', adresse: '19, rue Maria Deraismes', ville: '75017 Paris', telephone: '01.46.27.94.37', email: 'ce.0753350j@ac-paris.fr' },
+          { nom: 'LATIN', activite: 'Collège Privé', adresse: '12, rue du Colonel Moll', ville: '75017 Paris', telephone: '01.84.16.37.59', email: 'info@collegelatin.fr' },
+          { nom: 'SOCIETE GENERALE', activite: 'Banque', adresse: '14, rue de la Chapelle', ville: '75017 Paris', telephone: '01.46.07.05.10', email: 'contact@societegenerale.fr' },
+          { nom: 'MOZART', activite: 'Collège', adresse: '7, rue Jomard', ville: '75019 Paris', telephone: '01.40.34.78.83', email: 'collegemozart@ac-paris.fr' },
+          { nom: 'TOURTILLE', activite: 'Ecole primaire', adresse: '38, rue de Toutille', ville: '75020 Paris', telephone: '01.46.36.73.64', email: 'ecoletourtielle@ac-paris.fr' },
+          { nom: 'PIERRE DE RONSARD', activite: 'Collège public', adresse: '140, avenue de Wagram', ville: '75017 Paris', telephone: '01.47.63.16.17', email: 'pierrederonsard@ac-paris.fr' },
+          { nom: 'BALIBARIS', activite: 'Vêtements', adresse: '65, rue Legendre', ville: '75017 Paris', telephone: '01.45.23.07.82', email: 'serviceclient@balibaris.com' },
+          { nom: 'RABELAIS', activite: 'Lycée Polyvalent', adresse: '9, rue Francis de Croisset', ville: '75018 Paris', telephone: '01.53.09.13.00', email: 'contact-rabelais@paris.fr' },
+          { nom: "LES TABLES D'AUGUSTIN", activite: 'Restauration', adresse: '44, rue Guy Môquet', ville: '75017 Paris', telephone: '09.83.43.11.11', email: 'contact@lestablesdaugustin.fr' },
+          { nom: 'LES EPINETTES', activite: 'Ecole maternelle publique', adresse: '44, rue des Epinettes', ville: '75017 Paris', telephone: '01.46.27.50.99', email: 'ce.0751299E@ac-paris.fr' },
+          { nom: 'OR FLANDRES', activite: 'Bijouterie', adresse: '82, avenue de Flandres', ville: '75019 Paris', telephone: '01.44.72.91.86', email: 'contact@orflandres.fr' },
+          { nom: 'SAINT MICHEL DES BATIGNOLLES', activite: 'Lycée Privé', adresse: '14, avenue de Saint-Ouen', ville: '75017 Paris', telephone: '01.58.22.20.70', fax: '01.46.27.27.18' },
+          { nom: 'CORIOLIS TELECOM', activite: 'Téléphonie', adresse: '99, avenue de Clichy', ville: '75017 Paris', telephone: '01.42.12.04.75', email: 'touchstone75017@gmail.com' },
+          { nom: 'CARNOT', activite: 'Lycée polyvalent', adresse: '145, Boulevard Malesherbes', ville: '75017 Paris', telephone: '01.56.21.36.36', email: 'carnot@ac-paris.fr' },
+          { nom: 'BERNARD BUFFET', activite: 'Ecole Polyvalente', adresse: '14, rue Bernard Buffet', ville: '75017 Paris', telephone: '01.53.31.36.30', email: 'bernardbuffet@ac-paris.fr' },
+          { nom: '5àSEC', activite: 'Pressing', adresse: '25, rue des Dames', ville: '75017 Paris', telephone: '01.43.87.36.75', email: 'serviceclient@5asec.com' },
+          { nom: 'AMPERE', activite: 'Ecole maternelle publique', adresse: '18, rue Ampère', ville: '75017 Paris', telephone: '01.47.63.23.72', email: 'collegeampere@ac-paris.fr' },
+          { nom: 'MAISON DIMANCHE', activite: 'Boulangerie', adresse: '1, rue Tarbé', ville: '75017 Paris', telephone: '01.83.89.72.24', email: 'contact@maisondim.com' },
+          { nom: 'VOLTAIRE', activite: 'Collège', adresse: '21, rue Montaigne', ville: '92600 Asnières-sur-Seine', telephone: '01.47.91.33.11', email: '0921547g@ac-versailles.fr' },
+          { nom: 'SBA', activite: 'Comptabilité', adresse: '10, rue de Penthièvre', ville: '75008 Paris', telephone: '01.86.95.38.10', email: 'contact@sba.fr' },
+          { nom: 'ANDRE MALRAUX', activite: 'Collège public', adresse: '5 bis, rue Saint Ferdinand', ville: '75017 Paris', telephone: '01.45.74.49.15', email: 'colandremalraux@ac-paris.fr' },
+          { nom: 'LA ROSE BLANCHE', activite: 'Collège public', adresse: '34, rue Georges Picquart', ville: '75017 Paris', telephone: '01.46.07.05.10', email: 'laroseblanche@ac-paris.fr' },
+          { nom: 'MARTIN NADAUD', activite: 'Lycée Polyvalent', adresse: '23, rue de la Bidassoa', ville: '75020 Paris', telephone: '01.40.33.80.50', email: 'scolarite@lyceenadaud.fr' },
+        ] } },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4B',
+      intitule: 'Rechercher et analyser les informations à des fins d\u2019exploitation',
+      detail: "Identifier la cible d'une opération de prospection et exploiter un fichier d'organisations.",
+    },
+    objectifs: [
+      'Comprendre la segmentation et ses critères en B to B.',
+      'Identifier et définir la cible de prospection.',
+      "Exploiter un annuaire pour repérer les organisations correspondant à la cible.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La segmentation et la cible de prospection',
+        questions: [
+          { numero: 1, consigne: 'Cochez les critères de segmentation retenus par votre tutrice et justifiez votre réponse.', ressources: "Lire les documents 1 et 2, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La cible de la prospection',
+        questions: [
+          { numero: 2, consigne: 'Indiquez quelle est la cible que votre responsable souhaite viser.', ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Selon vous, quelle est la définition de la cible.', ressources: "Lire le document 2, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Retrouvez les organisations qui correspondent à la cible indiquée par votre responsable.', ressources: "Lire le document 3, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'critereseg', id: 'annexe1', titre: 'Annexe 1 — Critères de segmentation retenus', entete: 'Analyse de segmentation', criteres: ['Localisation', "Secteur d'activité", 'Taille', "Chiffre d'affaires", 'Statut juridique'] },
+      { type: 'texte', id: 'annexe2', titre: 'Annexe 2 — La cible', lignes: 2 },
+      { type: 'texte', id: 'annexe3', titre: 'Annexe 3 — Définition de la cible', lignes: 3 },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Les organisations correspondant à la cible', colonnes: ['Nom', 'Activité', 'Adresse', 'Numéro de téléphone', 'E-mail'], nbLignes: 11 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Critères de segmentation retenus (annexe 1).', documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Critères de segmentation', 'Cochez les critères', 'Justification'], lignes: [
+          ['Localisation', 'X', '17ème arrondissement de Paris'],
+          ["Secteur d'activité", 'X', 'Établissements scolaires'],
+          ['Taille', '', ''],
+          ["Chiffre d'affaires", '', ''],
+          ['Statut juridique', '', ''],
+        ] },
+      },
+      { intitule: 'La cible (annexe 2).', documents: ['Document 1', 'Annexe 2'], bareme: 2, reponse: 'Les établissements scolaires du 17ème arrondissement.' },
+      { intitule: 'Définition de la cible (annexe 3).', documents: ['Document 2', 'Annexe 3'], bareme: 2, reponse: "C'est l'ensemble des clients ou prospects que l'entreprise souhaite toucher à travers ses actions commerciales ou de communication afin d'augmenter ses ventes." },
+      {
+        intitule: 'Les organisations correspondant à la cible (annexe 4).', documents: ['Document 3', 'Annexe 4'], bareme: 11, reponse: 'Les établissements scolaires du 17ème arrondissement. Voir tableau.',
+        tableau: { colonnes: ['Nom', 'Activité', 'Adresse', 'Numéro de tél', 'E-mail'], lignes: [
+          ['Léon Gambetta', 'Collège public', '149, avenue Gambetta', '01.43.61.87.16', 'leongambetta@ac-paris.fr'],
+          ['Maria Deraismes', 'Lycée Professionnel', '19, rue Maria Deraismes', '01.46.27.94.37', 'ce.0753350j@ac-paris.fr'],
+          ['Latin', 'Collège Privé', '12, rue du Colonel Moll', '01.84.16.37.59', 'info@collegelatin.fr'],
+          ['Pierre de Ronsard', 'Collège public', '140, avenue de Wagram', '01.47.63.16.17', 'pierrederonsard@ac-paris.fr'],
+          ['Les Épinettes', 'Ecole maternelle publique', '44, rue des Epinettes', '01.46.27.50.99', 'ce.0751299E@ac-paris.fr'],
+          ['Saint Michel des Batignolles', 'Lycée Privé', '14, avenue de Saint-Ouen', '01.58.22.20.70', '(fax : 01.46.27.27.18)'],
+          ['Carnot', 'Lycée polyvalent', '145, Boulevard Malesherbes', '01.56.21.36.36', 'carnot@ac-paris.fr'],
+          ['Bernard Buffet', 'Ecole Polyvalente', '14, rue Bernard Buffet', '01.53.31.36.30', 'bernardbuffet@ac-paris.fr'],
+          ['Ampère', 'Ecole maternelle publique', '18, rue Ampère', '01.47.63.23.72', 'collegeampere@ac-paris.fr'],
+          ['André Malraux', 'Collège public', '5 bis, rue Saint Ferdinand', '01.45.74.49.15', 'colandremalraux@ac-paris.fr'],
+          ['La Rose Blanche', 'Collège public', '34, rue Georges Picquart', '01.46.07.05.10', 'laroseblanche@ac-paris.fr'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "La segmentation et la cible de prospection",
+    proposition: ['Localisation', 'Statut juridique', 'La définition de la cible', 'Les critères de segmentation'],
+    racine: {
+      id: 'racine', texte: 'Les recherches et l\u2019exploitation d\u2019information',
+      enfants: [
+        {
+          id: 'seg', texte: 'La segmentation et la cible de prospection',
+          enfants: [
+            { id: 'loc', texte: null, reponse: 'Localisation' },
+            { id: 'stat', texte: null, reponse: 'Statut juridique' },
+          ],
+        },
+        {
+          id: 'cible', texte: 'La cible',
+          enfants: [
+            { id: 'def', texte: 'Un groupe spécifique de clients potentiels auxquels un produit est destiné' },
+            { id: 'crit', texte: 'Les critères de segmentation' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Comprendre la segmentation',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas ce qu\u2019est la segmentation.' },
+          { niveau: 'debrouille', description: 'Je cite un critère de segmentation.' },
+          { niveau: 'averti', description: 'Je connais les critères de segmentation en B to B.' },
+          { niveau: 'expert', description: 'Je choisis les critères pertinents pour une cible donnée.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Identifier et définir la cible',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas ce qu\u2019est une cible.' },
+          { niveau: 'debrouille', description: 'Je donne une définition approximative de la cible.' },
+          { niveau: 'averti', description: 'Je définis la cible et je l\u2019identifie.' },
+          { niveau: 'expert', description: 'Je relie la cible aux critères de segmentation.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Exploiter un fichier',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas exploiter un annuaire.' },
+          { niveau: 'debrouille', description: 'Je repère quelques organisations.' },
+          { niveau: 'averti', description: 'Je sélectionne les organisations correspondant à la cible.' },
+          { niveau: 'expert', description: 'Je justifie chaque sélection au regard de la cible.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Segmentation', definition: "Découpage des clients ou prospects en ensembles homogènes selon des critères." },
+      { terme: 'Cible', definition: "Ensemble des clients ou prospects que l'entreprise souhaite toucher par ses actions commerciales." },
+      { terme: 'Prospect', definition: "Client potentiel qui n'a pas encore acheté." },
+      { terme: 'Prospection', definition: "Démarche visant à conquérir de nouveaux clients." },
+      { terme: 'B to B', definition: 'Échanges commerciaux entre professionnels (entreprise à entreprise).' },
+      { terme: 'Critère de localisation', definition: 'Découpage selon le lieu (ville, département, région).' },
+      { terme: "Critère de secteur d'activité", definition: 'Découpage selon le domaine (banque, immobilier, enseignement...).' },
+      { terme: 'Statut juridique', definition: "Forme légale de l'organisation (SARL, EURL, SAS...)." },
+      { terme: 'Portefeuille clients', definition: "Ensemble des clients d'une entreprise." },
+      { terme: 'Annuaire', definition: "Fichier répertoriant des organisations avec leurs coordonnées." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce que la segmentation ?", verso: 'Le découpage des clients/prospects en ensembles homogènes selon des critères.' },
+      { recto: 'Citez les 5 critères de segmentation.', verso: "Localisation, secteur d'activité, taille, chiffre d'affaires, statut juridique." },
+      { recto: 'Quelle est la cible visée par Mme Pauret ?', verso: 'Les établissements scolaires du 17ème arrondissement.' },
+      { recto: "Qu'est-ce qu'une cible ?", verso: "L'ensemble des clients ou prospects que l'entreprise souhaite toucher pour augmenter ses ventes." },
+      { recto: 'Quels critères ont été retenus ?', verso: "Localisation (17ème) et secteur d'activité (établissements scolaires)." },
+      { recto: 'Que veut dire B to B ?', verso: 'Échanges commerciaux entre professionnels.' },
+      { recto: "Donnez un exemple de critère de statut juridique.", verso: 'SARL, EURL, SAS.' },
+      { recto: "Qu'est-ce qu'un prospect ?", verso: "Un client potentiel qui n'a pas encore acheté." },
+      { recto: "Quel est le but de la prospection ?", verso: "Augmenter le portefeuille clients de l'entreprise." },
+      { recto: "Quel produit sera proposé lors de la prospection ?", verso: 'Des photocopieurs en location.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Qu'est-ce que la segmentation ?", options: ['Le découpage des prospects en ensembles homogènes', 'La vente directe', 'La livraison', 'La facturation'], bonne: 0 },
+      { type: 'unique', question: "Lequel n'est PAS un critère de segmentation cité ?", options: ['La couleur préférée', 'La localisation', 'La taille', 'Le statut juridique'], bonne: 0 },
+      { type: 'unique', question: 'Quelle est la cible visée ?', options: ['Les établissements scolaires du 17ème', 'Les banques', 'Les particuliers', 'Les boulangeries'], bonne: 0 },
+      { type: 'unique', question: 'Les 2 critères retenus sont...', options: ["Localisation et secteur d'activité", 'Taille et CA', 'CA et statut juridique', 'Taille et localisation'], bonne: 0 },
+      { type: 'unique', question: 'B to B signifie...', options: ['Entre professionnels', 'Entre particuliers', 'Business to Bank', 'Back to Basics'], bonne: 0 },
+      { type: 'unique', question: 'Quel produit sera proposé en prospection ?', options: ['Photocopieurs en location', 'Ordinateurs', 'Logiciels', 'Imprimantes 3D'], bonne: 0 },
+      { type: 'unique', question: "Qu'est-ce qu'un prospect ?", options: ["Un client potentiel non encore acheteur", 'Un fournisseur', 'Un salarié', 'Un concurrent'], bonne: 0 },
+      { type: 'unique', question: 'Exemple de statut juridique ?', options: ['SAS', 'Paris', 'Banque', '50 salariés'], bonne: 0 },
+      { type: 'unique', question: 'Le but de la prospection est de...', options: ['Augmenter le portefeuille clients', 'Réduire les coûts', 'Licencier', 'Fermer des agences'], bonne: 0 },
+      { type: 'unique', question: 'La cible sert à...', options: ['Orienter les actions commerciales', 'Calculer la TVA', 'Recruter', 'Livrer'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Critère de segmentation', 'Organisation cible', 'Organisation hors cible'],
+      zones: [
+        { libelle: 'Localisation', etiquetteIndex: 0 },
+        { libelle: 'Statut juridique', etiquetteIndex: 0 },
+        { libelle: 'Léon Gambetta (collège)', etiquetteIndex: 1 },
+        { libelle: 'Carnot (lycée)', etiquetteIndex: 1 },
+        { libelle: 'Laforet Ternes (immobilier)', etiquetteIndex: 2 },
+        { libelle: 'Société Générale (banque)', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -4049,6 +4287,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'citroen-m2': CITROEN_M2,
   'citroen-m3': CITROEN_M3,
   'amparis-m1': AMPARIS_M1,
+  'amparis-m2': AMPARIS_M2,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
