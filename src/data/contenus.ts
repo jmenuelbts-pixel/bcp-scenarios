@@ -168,6 +168,19 @@ export interface AnnexeCochage {
 
 // Fiche d'appel CERC facon logiciel : sections (Contact, Ecoute, Reponse,
 // Conclusion) avec sous-zones a rediger.
+export interface AnnexeFicheTechnique {
+  type: 'fichetechnique'
+  id: string
+  titre: string
+  sections: { nom: string; lignes: { cle: string; libelle?: string }[] }[]
+}
+export interface AnnexeArgumentaire {
+  type: 'argumentaire'
+  id: string
+  titre: string
+  colonnes: string[]
+  nbLignes: number
+}
 export interface AnnexeReformulation {
   type: 'reformulation'
   id: string
@@ -415,7 +428,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -6627,6 +6640,259 @@ const FREE_M2: ContenuMission = {
   },
 }
 
+const FREE_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez la fiche technique et commerciale de la Freebox Pop, identifiez les mobiles d'achat SONCASE qu'elle suscite, puis construisez les arguments pour convaincre les clients.",
+    contexte:
+      "Maintenant que vous maîtrisez la méthode de la réception d'appel, votre tutrice souhaite que vous proposiez aux clients le dernier né de Free : la nouvelle Freebox Pop. Mais avant d'arriver à cette étape, vous devez réaliser la fiche technique du produit afin de pouvoir répondre aux questions éventuelles.",
+    documents: [
+      { numero: 1, titre: "Définition des caractéristiques techniques d'un produit", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Caractéristiques techniques', paragraphes: ["Ce sont tous les renseignements relatifs au fonctionnement et à l'utilisation d'un produit."] },
+        { tableau: { colonnes: ['Type', 'Exemples'], lignes: [
+          ['Techniques', 'Forme, coupe'],
+          ['', 'Entretien, nettoyage'],
+          ['', 'Coloris'],
+          ['', 'Dimension, taille, poids, performance'],
+          ['', 'Description'],
+          ['', 'Puissance, voltage'],
+          ['', 'Matière, composition'],
+          ['', 'Accessoires'],
+        ] } },
+      ] },
+      { numero: 2, titre: "Définition des caractéristiques commerciales d'un produit", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Caractéristiques commerciales', paragraphes: ["Ce sont tous les renseignements relatifs à la vente et à l'après-vente du produit."] },
+        { tableau: { colonnes: ['Type', 'Exemples'], lignes: [
+          ['Commerciales', 'Prix – Qualité'],
+          ['', 'Lieu de vente - Marque'],
+          ['', 'Conditionnement'],
+          ['', 'S.A.V. – Livraison'],
+          ['', 'Installation – Garantie'],
+        ] } },
+      ] },
+      { numero: 3, titre: "Les mobiles d'achat (SONCASE)", images: [], texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['SONCASE', 'Typologie', 'Exemples'], lignes: [
+          ['S', 'comme Sécurité', 'Produit solide, fiable, robuste, garantie, de qualité'],
+          ['O', 'comme Orgueil', 'Produit prestigieux, de marque, qui permet de se distinguer des autres'],
+          ['N', 'comme Nouveauté', 'Produit récent, à la mode, innovant, moderne'],
+          ['C', 'comme Confort', 'Produit pratique, facile d\u2019utilisation, efficace'],
+          ['A', 'comme Argent', 'Paiement en plusieurs fois, produit économique, en promotion'],
+          ['S', 'comme Sympathie', 'Plaisir procuré par l\u2019achat, attirance pour une couleur, forme particulière'],
+          ['E', 'comme Environnement', 'Produit durable, écologique'],
+        ] } },
+      ] },
+      { numero: 4, titre: 'La Freebox Pop — pages produit', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'La Fibre ultra rapide', paragraphes: ["Regardez un film ou une série, passez vos appels en visio, téléchargez vos fichiers, jouez en réseau. Tous vos usages à toute vitesse, en même temps et sans interruption. La Fibre aussi rapide c'est seulement chez Free !", 'Jusqu\u2019à 5 Gbit/s partagés en débit descendant ; jusqu\u2019à 700 Mbit/s en débit montant ; plus de 100 fois plus rapide que l\u2019ADSL.'] },
+        { intertitre: 'Un Wi-Fi rapide et fiable', paragraphes: ["Avec Freebox Pop, profitez d'une connexion Wi-Fi rapide et fiable même avec un grand nombre d'appareils connectés (fonction MU-MIMO). Pour connecter vos équipements mobiles, scannez le QR Code qui s'affiche sur le Server Freebox Pop. Freebox Pop intègre le nouveau protocole de chiffrement WPA3, pour améliorer la protection de vos connexions."] },
+        { intertitre: 'Répéteur Wi-Fi Pop', paragraphes: ["Le répéteur Wi-Fi Pop vous permet d'étendre la connexion Wi-Fi partout à la maison. Ses fonctions intelligentes vous permettent de profiter dans toutes les pièces de votre logement d'un Wi-Fi de qualité."] },
+        { intertitre: 'Application Freebox Connect', paragraphes: ["Pilotez votre réseau internet en quelques clics. Contrôlez vos équipements en un coup d'œil. Partagez votre connexion Wi-Fi simplement. Planifiez des plages horaires d'accès au Wi-Fi. Définissez des profils familiaux."] },
+        { intertitre: 'Google Play', paragraphes: ["Freebox Pop vous permet d'accéder à des tonnes d'applications sur votre TV (Netflix, Spotify, YouTube, Prime Video, Deezer…). Grâce à l'Assistant Google et la fonction Chromecast intégrés, diffusez votre contenu sur votre TV en utilisant votre voix."] },
+        { intertitre: 'Pilotez votre TV simplement', paragraphes: ["La télécommande Freebox Pop intègre un raccourci vers l'interface TV Free by OQEE et vers vos applis favorites Netflix et Prime Video. Accédez directement à Netflix, Prime Video, l'interface TV Free by OQEE et l'Assistant Google."] },
+        { intertitre: 'Téléphonez sans limite', paragraphes: ["L'offre Freebox Pop inclut les appels vers les mobiles en France métropolitaine, DOM et certaines destinations comme les États-Unis, la Chine, le Canada et le Cambodge ainsi que vers les fixes de plus de 110 destinations."] },
+        { intertitre: 'Caractéristiques techniques (serveur)', paragraphes: [
+          'Connectivité : Compatible FIBRE, ADSL2+ ou VDSL2 selon éligibilité ; Wi-Fi AC2100 MU-MIMO, Bi-band (2.4 GHz et 5 GHz) ; Norme WPA3 (protocole de chiffrement dernière génération) ; Bluetooth 5.0 Low Energy.',
+          'Connectiques : 3 ports Ethernet RJ45 (1Gbits + Power, 1Gbits et 2,5Gbits) ; Connecteur RJ11 DSL ; Port SFP réservé à la fibre optique ; Port d\u2019alimentation USB Type-C, nouveau standard ; Connecteur RJ11 (ligne Fixe Freebox) ; Port USB3.',
+          'Dimensions : 16,1 cm (diamètre) x 4 cm (hauteur) ; Poids : 420g.',
+        ] },
+      ] },
+      { numero: 5, titre: 'Une offre à prix Free', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Une offre à prix Free', paragraphes: ['29,99 €/mois pendant 1 an puis 39,99€/mois. Sans engagement.'] },
+        { intertitre: 'Nous contacter', paragraphes: ['En ligne (identifiez-vous avec vos identifiants Freebox) ; en boutique (proche de chez vous) ; en visio/audio (service d\u2019assistance par webcam, face to free) ; par téléphone au 3244 (7j/7 de 7 heures à minuit, gratuit depuis une ligne Free ou prix d\u2019un appel normal).'] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences',
+      intitule: "Caractériser un produit et construire une argumentation",
+      detail: "Distinguer caractéristiques techniques et commerciales, identifier les mobiles d'achat SONCASE et construire un argumentaire CAP.",
+    },
+    objectifs: [
+      'Réaliser la fiche technique et commerciale d\u2019un produit.',
+      'Identifier les mobiles d\u2019achat SONCASE suscités par un produit.',
+      'Construire des arguments (caractéristique → avantage) pour convaincre.',
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La réalisation de la fiche technique de la Freebox Pop',
+        questions: [
+          { numero: 1, consigne: 'Complétez les caractéristiques techniques en consultant les pages internet Free.', ressources: "Lire le document 1 (et le document 4), compléter l'annexe 1.", annexeId: 'annexe1', boutonLien: 'https://drive.google.com/file/d/1o2WOxZIrinhZKujwzvZn11ZZLfLJ8OnH/view', boutonLibelle: 'Ouvrir la page Freebox Pop' },
+          { numero: 2, consigne: 'Complétez les caractéristiques commerciales en consultant les pages internet Free.', ressources: "Lire le document 2 (et le document 5), compléter l'annexe 2.", annexeId: 'annexe2', boutonLien: 'https://drive.google.com/file/d/1LMqNdUlRYr9jNx1qMSZWfp6YhBQeORyC/view', boutonLibelle: 'Ouvrir la page offre Freebox Pop' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Les mobiles d\u2019achat',
+        questions: [
+          { numero: 3, consigne: "À partir de l'annexe 1 « caractéristiques de base » et de l'annexe 2 « prix », cochez les mobiles SONCASE qui correspondent à la Freebox Pop puis justifiez votre réponse.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — L\u2019argumentation',
+        questions: [
+          { numero: 4, consigne: "Pour chaque mobile d'achat, construisez les arguments que vous présenterez au client pour l'inciter à souscrire à la nouvelle Freebox Pop.", ressources: "Compléter l'annexe 4.", annexeId: 'annexe4' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'fichetechnique', id: 'annexe1', titre: 'Annexe 1 — Caractéristiques techniques de la Freebox Pop', sections: [
+        { nom: 'Caractéristiques de base', lignes: [{ cle: 'b1' }, { cle: 'b2' }, { cle: 'b3' }, { cle: 'b4' }, { cle: 'b5' }, { cle: 'b6' }, { cle: 'b7' }] },
+        { nom: 'Connectivité', lignes: [{ cle: 'cv1' }, { cle: 'cv2' }, { cle: 'cv3' }, { cle: 'cv4' }] },
+        { nom: 'Connectiques', lignes: [{ cle: 'cq1' }, { cle: 'cq2' }, { cle: 'cq3' }, { cle: 'cq4' }, { cle: 'cq5' }, { cle: 'cq6' }] },
+        { nom: 'Dimensions', lignes: [{ cle: 'd1' }, { cle: 'd2' }] },
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Caractéristiques commerciales de la Freebox Pop', colonnes: ['Caractéristique', 'Réponse'], nbLignes: 4, prerempli: [['Contact Free', ''], ['', ''], ['', ''], ['Prix', '']] },
+      { type: 'soncase', id: 'annexe3', titre: 'Annexe 3 — Les mobiles d\u2019achat', colonneCoche: 'Cochez', colonneJustif: 'Justifications', lignes: [
+        { id: 'securite', libelle: 'Sécurité' }, { id: 'orgueil', libelle: 'Orgueil' }, { id: 'nouveaute', libelle: 'Nouveauté' }, { id: 'confort', libelle: 'Confort' }, { id: 'argent', libelle: 'Argent' }, { id: 'sympathie', libelle: 'Sympathie' }, { id: 'environnement', libelle: 'Environnement' },
+      ] },
+      { type: 'argumentaire', id: 'annexe4', titre: 'Annexe 4 — Construction des arguments à présenter au client', colonnes: ['Mobiles d\u2019achat', 'Caractéristiques', 'Avantages'], nbLignes: 5 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Caractéristiques techniques (annexe 1).', documents: ['Documents 1 et 4'], bareme: 19, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Section', 'Caractéristiques'], lignes: [
+          ['Caractéristiques de base', 'La fibre ultra rapide ; un wifi rapide et fiable ; répéteur wifi Pop ; application Freebox Connect ; Google Play ; télécommande ; téléphonez sans limite'],
+          ['Connectivité', 'Compatible fibre, ADSL2… ; Wi-Fi AC2100 MU-MIMO, Bi-band ; Norme WPA3 ; Bluetooth'],
+          ['Connectiques', '3 ports Ethernet ; connecteur RJ11 DSL ; port SFP réservé à la fibre optique ; port d\u2019alimentation USB Type-C ; connecteur RJ11 (ligne Fixe Freebox) ; Port USB3'],
+          ['Dimensions', '16,1 cm (diamètre) x 4 cm (hauteur) ; Poids : 420 g'],
+        ] },
+      },
+      {
+        intitule: 'Caractéristiques commerciales (annexe 2).', documents: ['Documents 2 et 5'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Caractéristique', 'Réponse'], lignes: [
+          ['Contact Free', 'En ligne'],
+          ['', 'En boutique'],
+          ['', 'En visio/audio'],
+          ['Prix', '29,99 € par mois'],
+        ] },
+      },
+      {
+        intitule: 'Mobiles d\u2019achat SONCASE (annexe 3).', documents: ['Document 3'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['SONCASE', 'Coché', 'Justification'], lignes: [
+          ['Sécurité', 'X', 'Wifi fiable, intègre le nouveau protocole de chiffrement WPA3'],
+          ['Orgueil', '', ''],
+          ['Nouveauté', 'X', 'Freebox Connect'],
+          ['Confort', 'X', 'Ultra rapide ; télécommande pour accéder facilement à Netflix, Google Assistant, Prime Video ; téléphoner sans limite'],
+          ['Argent', 'X', '29,99 € pendant 1 an'],
+          ['Sympathie', '', ''],
+          ['Environnement', '', ''],
+        ] },
+      },
+      {
+        intitule: 'Construction des arguments (annexe 4).', documents: ['Annexes 1, 2 et 3'], bareme: 12, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Mobiles d\u2019achat', 'Caractéristiques', 'Avantages'], lignes: [
+          ['Sécurité', 'Nouveau protocole de chiffrement WPA3', 'Protection des connexions'],
+          ['Nouveauté', 'Freebox Connect', "Contrôler ses équipements d'un coup d'œil ; planifier des plages horaires d'accès au wifi"],
+          ['Confort', 'Fibre ultra rapide (5 Gbit/s, 700 Mbit/s, +100 fois plus rapide que l\u2019ADSL) ; répéteur wifi Pop ; téléphoner sans limite ; télécommande', "Regarder un film ou une série, passer ses appels en visio, télécharger, jouer en réseau à toute vitesse ; Wifi de qualité dans toutes les pièces ; appeler dans plus de 110 pays sans surcoût ; Netflix, Google Assistant… plus besoin de plusieurs télécommandes"],
+          ['Argent', '29,99 € pendant 1 an', 'Pendant un an réduction de 10 € soit une économie de 120 €'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "Les caractéristiques du produit et l'argumentation",
+    proposition: ['Caractéristiques techniques', 'Caractéristiques commerciales', 'Le mobile SONCASE', "L'argument"],
+    racine: {
+      id: 'racine', texte: 'Le produit et son argumentation',
+      enfants: [
+        { id: 'carac', texte: 'Les caractéristiques', enfants: [
+          { id: 'tech', texte: null, reponse: 'Caractéristiques techniques' },
+          { id: 'com', texte: null, reponse: 'Caractéristiques commerciales' },
+        ] },
+        { id: 'argu', texte: "L'argumentation", enfants: [
+          { id: 'mobile', texte: null, reponse: 'Le mobile SONCASE' },
+          { id: 'arg', texte: null, reponse: "L'argument" },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Caractériser un produit',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je confonds caractéristiques techniques et commerciales.' },
+          { niveau: 'debrouille', description: 'Je cite une caractéristique technique.' },
+          { niveau: 'averti', description: 'Je complète la fiche technique et commerciale.' },
+          { niveau: 'expert', description: 'Je réalise une fiche produit complète et structurée.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Identifier les mobiles SONCASE',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas la méthode SONCASE.' },
+          { niveau: 'debrouille', description: 'Je cite un mobile d\u2019achat.' },
+          { niveau: 'averti', description: 'Je repère les mobiles SONCASE d\u2019un produit.' },
+          { niveau: 'expert', description: 'Je justifie chaque mobile à partir des caractéristiques.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Construire un argument',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas construire un argument.' },
+          { niveau: 'debrouille', description: 'Je cite une caractéristique.' },
+          { niveau: 'averti', description: 'Je relie une caractéristique à un avantage.' },
+          { niveau: 'expert', description: 'Je construis un argumentaire complet par mobile.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Caractéristique technique', definition: "Renseignement relatif au fonctionnement et à l'utilisation d'un produit." },
+      { terme: 'Caractéristique commerciale', definition: "Renseignement relatif à la vente et à l'après-vente du produit." },
+      { terme: 'SONCASE', definition: 'Mobiles d\u2019achat : Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement.' },
+      { terme: 'Mobile d\u2019achat', definition: 'Motivation profonde qui pousse un client à acheter.' },
+      { terme: 'Argument', definition: 'Caractéristique transformée en avantage pour le client.' },
+      { terme: 'Freebox Pop', definition: 'Box Free : fibre, Wi-Fi, TV, téléphonie, à 29,99 €/mois la 1ère année.' },
+      { terme: 'WPA3', definition: 'Protocole de chiffrement Wi-Fi de dernière génération (sécurité).' },
+      { terme: 'MU-MIMO', definition: 'Technologie Wi-Fi permettant de connecter de nombreux appareils.' },
+      { terme: 'Freebox Connect', definition: 'Application de pilotage du réseau internet et du Wi-Fi.' },
+      { terme: 'OQEE', definition: 'Interface TV de Free accessible via la télécommande Pop.' },
+    ],
+    flashcards: [
+      { recto: 'Prix de la Freebox Pop la 1ère année ?', verso: '29,99 €/mois (puis 39,99 €/mois).' },
+      { recto: 'Débit descendant de la fibre Pop ?', verso: 'Jusqu\u2019à 5 Gbit/s partagés.' },
+      { recto: 'Que signifie SONCASE ?', verso: 'Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement.' },
+      { recto: 'Protocole de sécurité du Wi-Fi Pop ?', verso: 'WPA3.' },
+      { recto: 'Application de pilotage du réseau ?', verso: 'Freebox Connect.' },
+      { recto: 'Combien de destinations pour les fixes ?', verso: 'Plus de 110 destinations.' },
+      { recto: 'Dimensions du serveur Pop ?', verso: '16,1 cm de diamètre x 4 cm, 420 g.' },
+      { recto: 'Mobile lié au prix réduit ?', verso: 'Argent (29,99 € pendant 1 an).' },
+      { recto: 'Mobile lié à WPA3 ?', verso: 'Sécurité (protection des connexions).' },
+      { recto: 'Un argument = ?', verso: 'Une caractéristique + un avantage pour le client.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Prix la 1ère année ?', options: ['29,99 €/mois', '39,99 €/mois', '19,99 €/mois', '9,99 €/mois'], bonne: 0 },
+      { type: 'unique', question: 'Débit descendant fibre Pop ?', options: ['5 Gbit/s', '700 Mbit/s', '100 Mbit/s', '1 Gbit/s'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie le S de SONCASE ?', options: ['Sécurité', 'Service', 'Stock', 'Style'], bonne: 0 },
+      { type: 'unique', question: 'Protocole Wi-Fi de sécurité ?', options: ['WPA3', 'HTTP', 'USB', 'RJ45'], bonne: 0 },
+      { type: 'unique', question: "L'appli de pilotage du réseau ?", options: ['Freebox Connect', 'Netflix', 'Spotify', 'OQEE'], bonne: 0 },
+      { type: 'unique', question: 'Combien de destinations (fixes) ?', options: ['+110', '+10', '+50', '+1000'], bonne: 0 },
+      { type: 'unique', question: 'Le mobile lié au prix ?', options: ['Argent', 'Orgueil', 'Sympathie', 'Environnement'], bonne: 0 },
+      { type: 'unique', question: 'Le mobile lié à WPA3 ?', options: ['Sécurité', 'Nouveauté', 'Confort', 'Argent'], bonne: 0 },
+      { type: 'unique', question: "Une caractéristique commerciale ?", options: ['Le prix', 'Le poids', 'Le Wi-Fi', 'La fibre'], bonne: 0 },
+      { type: 'unique', question: 'Un argument est...', options: ['Une caractéristique + un avantage', 'Un prix', 'Une marque', 'Un défaut'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Caractéristique technique', 'Caractéristique commerciale', 'Mobile SONCASE'],
+      zones: [
+        { libelle: 'Wi-Fi AC2100 MU-MIMO', etiquetteIndex: 0 },
+        { libelle: '3 ports Ethernet RJ45', etiquetteIndex: 0 },
+        { libelle: 'Prix 29,99 €/mois', etiquetteIndex: 1 },
+        { libelle: 'Sans engagement', etiquetteIndex: 1 },
+        { libelle: 'Sécurité (WPA3)', etiquetteIndex: 2 },
+        { libelle: 'Nouveauté (Freebox Connect)', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -6649,6 +6915,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'orpi-m4': ORPI_M4,
   'free-m1': FREE_M1,
   'free-m2': FREE_M2,
+  'free-m3': FREE_M3,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

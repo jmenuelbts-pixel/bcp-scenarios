@@ -33,6 +33,8 @@ import type {
   NoeudOrgaVide,
   AnnexeCochage,
   AnnexeReformulation,
+  AnnexeFicheTechnique,
+  AnnexeArgumentaire,
   AnnexeFicheAppel,
   AnnexeMail,
   AnnexeSms,
@@ -851,6 +853,8 @@ function rendreAnnexe(
   if (annexe.type === 'organigrammearemplir') return rendreOrganigrammeAremplir(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'cochage') return rendreCochage(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'reformulation') return rendreReformulation(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'fichetechnique') return rendreFicheTechnique(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'argumentaire') return rendreArgumentaire(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'ficheappel') return rendreFicheAppel(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
@@ -1817,6 +1821,61 @@ function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id:
             <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Fiche technique produit facon logiciel a onglets : onglets = sections,
+// lignes a completer. L'eleve choisit l'onglet puis remplit les lignes.
+function rendreFicheTechnique(a: AnnexeFicheTechnique, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const actif = saisies[`${a.id}.__onglet`] || a.sections[0]?.nom
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const section = a.sections.find((s) => s.nom === actif) ?? a.sections[0]
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>🛠️ {a.titre}</div>
+      <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', padding: '8px 8px 0', background: '#F7F9FB', borderBottom: '1px solid #E2E8F0' }}>
+        {a.sections.map((s) => {
+          const on = s.nom === actif
+          return <button key={s.nom} onClick={() => set(`${a.id}.__onglet`, s.nom)} style={{ border: 'none', borderRadius: '6px 6px 0 0', padding: '8px 14px', fontSize: 13, fontWeight: on ? 800 : 600, cursor: 'pointer', background: on ? '#FFFFFF' : 'transparent', color: on ? couleur : '#6B7280', borderBottom: on ? `2px solid ${couleur}` : '2px solid transparent' }}>{s.nom}</button>
+        })}
+      </div>
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {section?.lignes.map((l) => (
+          <div key={l.cle} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ minWidth: 26, height: 26, borderRadius: 6, background: '#EEF3F8', color: couleur, fontWeight: 700, fontSize: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>•</span>
+            <input value={saisies[`${a.id}.${section.nom}.${l.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${section.nom}.${l.cle}`, e.target.value)} disabled={verrouille} placeholder={l.libelle ?? 'À compléter…'} style={champ} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Tableau argumentaire (mobile + caracteristiques + avantages) facon logiciel.
+function rendreArgumentaire(a: AnnexeArgumentaire, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13.5, padding: '7px 9px', borderRadius: 4, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical', lineHeight: 1.5 }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>💬 {a.titre}</div>
+      <div style={{ padding: 8, overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
+          <thead>
+            <tr>{a.colonnes.map((h) => <th key={h} style={{ textAlign: 'left', padding: '7px 8px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, border: '1px solid #FFFFFF' }}>{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: a.nbLignes }).map((_, r) => (
+              <tr key={r}>
+                {a.colonnes.map((_, ci) => (
+                  <td key={ci} style={{ border: '1px solid #E2E8F0', padding: 4, verticalAlign: 'top', width: ci === 0 ? 150 : 'auto' }}>
+                    <textarea value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} disabled={verrouille} rows={ci === 0 ? 2 : 3} style={champ} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
