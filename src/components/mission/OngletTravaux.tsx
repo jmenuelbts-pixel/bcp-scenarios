@@ -27,6 +27,10 @@ import type {
   AnnexePowerPoint,
   AnnexeRedactionOral,
   AnnexeModeOperatoire,
+  AnnexeFicheSignaletique,
+  AnnexeGrilleTarifaire,
+  AnnexeOrganigrammeAremplir,
+  NoeudOrgaVide,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -54,6 +58,17 @@ interface Props {
 type Saisies = Record<string, string>
 
 export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props) {
+  // Marque affichee dans l'habillage pageWeb, derivee du prefixe de missionId.
+  const MARQUES: Record<string, { nom: string; url: string }> = {
+    renault: { nom: 'Renault', url: 'www.renault.fr' },
+    citroen: { nom: 'Citroën', url: 'www.citroen.fr' },
+    amparis: { nom: 'AMParis', url: 'www.amparis.fr' },
+    orpi: { nom: 'Orpi', url: 'www.orpi.com' },
+    free: { nom: 'free', url: 'www.free.fr' },
+    peugeot: { nom: 'Peugeot', url: 'www.peugeot.fr' },
+  }
+  const prefixe = (missionId ?? '').split('-')[0]
+  const marque = MARQUES[prefixe] ?? { nom: 'Documentation', url: 'www.exemple.fr' }
   const [saisies, setSaisies] = useState<Saisies>({})
   const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
@@ -184,7 +199,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                         onOuvrir={(v) => setFicheVehicule(v)}
                       />
                     ) : docCourant.texte ? (
-                      <DocumentTexteVue blocs={docCourant.texte} couleur={couleur} />
+                      <DocumentTexteVue blocs={docCourant.texte} couleur={couleur} marque={marque} />
                     ) : (
                       <>
                         <div style={{ fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -447,7 +462,7 @@ function CrmConsultable({ crm, couleur }: {
   )
 }
 
-function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; couleur: string }) {
+function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
   const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme))
   // Premier intertitre = titre de la page (sert au bandeau hero).
@@ -462,14 +477,14 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
             <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#FEBC2E' }} />
             <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#28C840' }} />
             <div style={{ marginLeft: 10, flex: 1, background: '#FFFFFF', borderRadius: 14, padding: '4px 12px', fontSize: 12, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: couleur }}>🔒</span> https://www.amparis.fr
+              <span style={{ color: couleur }}>🔒</span> https://{marque.url}
             </div>
           </div>
           {/* En-tete site : logo + navigation */}
           <div style={{ background: '#1F2933', color: '#FFFFFF', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#000000', borderRadius: 6, padding: '6px 12px' }}>
-              <span style={{ display: 'inline-flex', width: 22, height: 22, alignItems: 'center', justifyContent: 'center', background: couleur, borderRadius: 4, fontWeight: 800, fontSize: 13, color: '#FFFFFF' }}>L</span>
-              <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: 0.5 }}>AMParis</span>
+              <span style={{ display: 'inline-flex', width: 22, height: 22, alignItems: 'center', justifyContent: 'center', background: couleur, borderRadius: 4, fontWeight: 800, fontSize: 13, color: '#FFFFFF' }}>{marque.nom.charAt(0).toUpperCase()}</span>
+              <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: 0.5 }}>{marque.nom}</span>
               <span style={{ display: 'flex', gap: 3, marginLeft: 2 }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#E2241A' }} />
@@ -479,7 +494,7 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
             <nav style={{ display: 'flex', gap: 16, fontSize: 13, fontWeight: 600, opacity: 0.92, flexWrap: 'wrap' }}>
               <span>Accueil</span><span>Produits</span><span>Services</span><span>Secteur</span><span>Contact</span>
             </nav>
-            <span style={{ marginLeft: 'auto', fontSize: 12, opacity: 0.7 }}>Documents &amp; Systèmes — tél. 01 47 90 27 79</span>
+            <span style={{ marginLeft: 'auto', fontSize: 12, opacity: 0.7 }}>{marque.url}</span>
           </div>
           {/* Bandeau hero */}
           <div style={{ background: `linear-gradient(110deg, ${couleur} 0%, #14532b 100%)`, color: '#FFFFFF', padding: '18px 22px' }}>
@@ -766,6 +781,9 @@ function rendreAnnexe(
   if (annexe.type === 'powerpoint') return <EditeurPowerPoint a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
   if (annexe.type === 'redactionoral') return rendreRedactionOral(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'modeoperatoire') return rendreModeOperatoire(annexe, couleur)
+  if (annexe.type === 'fichesignaletique') return rendreFicheSignaletique(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'grilletarifaire') return rendreGrilleTarifaire(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'organigrammearemplir') return rendreOrganigrammeAremplir(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1725,6 +1743,94 @@ function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id:
             <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Fiche signaletique facon logiciel (registre entreprise) : champs etiquetes.
+function rendreFicheSignaletique(a: AnnexeFicheSignaletique, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical' }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>🪪 {a.titre}</div>
+      <div style={{ padding: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+        {a.champs.map((ch) => (
+          <div key={ch.cle}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4B5563', marginBottom: 4 }}>{ch.libelle}</label>
+            {(ch.lignes ?? 1) > 1
+              ? <textarea value={saisies[`${a.id}.${ch.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${ch.cle}`, e.target.value)} disabled={verrouille} rows={ch.lignes} style={champ} />
+              : <input value={saisies[`${a.id}.${ch.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${ch.cle}`, e.target.value)} disabled={verrouille} style={champ} />}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Grille tarifaire facon comparateur de forfaits : colonnes = offres (prix).
+function rendreGrilleTarifaire(a: AnnexeGrilleTarifaire, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '6px 7px', borderRadius: 4, border: '1px solid #E2E8F0', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical' }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>📶 {a.titre}</div>
+      <div style={{ padding: 8, overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
+          <thead>
+            <tr>
+              {a.offres.map((o) => (
+                <th key={o} style={{ background: couleur, color: '#FFFFFF', border: '2px solid #FFFFFF', borderRadius: 4, padding: '8px 6px', fontSize: 15, fontWeight: 800 }}>{o}<span style={{ fontSize: 11, fontWeight: 600 }}>/mois</span></th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: a.nbLignes }).map((_, ri) => (
+              <tr key={ri}>
+                {a.offres.map((_, cj) => (
+                  <td key={cj} style={{ border: '1px solid #E2E8F0', padding: 3, verticalAlign: 'top' }}>
+                    <textarea value={saisies[`${a.id}.l${ri}c${cj}`] ?? ''} onChange={(e) => set(`${a.id}.l${ri}c${cj}`, e.target.value)} disabled={verrouille} rows={2} style={champ} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// Organigramme a completer facon logiciel : cases avec menus deroulants
+// (nom + fonction). Affichage en arbre : tete puis enfants alignes.
+function rendreOrganigrammeAremplir(a: AnnexeOrganigrammeAremplir, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const selStyle: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '5px 6px', borderRadius: 4, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', marginBottom: 4 }
+  const Case = ({ n }: { n: NoeudOrgaVide }) => (
+    <div style={{ border: `1.5px solid ${couleur}`, borderRadius: 6, background: '#FFFFFF', padding: 8, minWidth: 150, maxWidth: 170 }}>
+      <select value={saisies[`${a.id}.${n.cle}.nom`] ?? ''} onChange={(e) => set(`${a.id}.${n.cle}.nom`, e.target.value)} disabled={verrouille} style={selStyle}>
+        <option value="">— Nom —</option>
+        {a.noms.map((nom) => <option key={nom} value={nom}>{nom}</option>)}
+      </select>
+      <select value={saisies[`${a.id}.${n.cle}.fonction`] ?? ''} onChange={(e) => set(`${a.id}.${n.cle}.fonction`, e.target.value)} disabled={verrouille} style={{ ...selStyle, marginBottom: 0 }}>
+        <option value="">— Fonction —</option>
+        {a.fonctions.map((f) => <option key={f} value={f}>{f}</option>)}
+      </select>
+    </div>
+  )
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>🏢 {a.titre}</div>
+      <div style={{ padding: 16, overflowX: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
+          <Case n={a.tete} />
+          {a.tete.enfants && a.tete.enfants.length > 0 && (
+            <>
+              <div style={{ width: 2, height: 14, background: '#B0BAC5' }} />
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', borderTop: '2px solid #B0BAC5', paddingTop: 14 }}>
+                {a.tete.enfants.map((e) => <Case key={e.cle} n={e} />)}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

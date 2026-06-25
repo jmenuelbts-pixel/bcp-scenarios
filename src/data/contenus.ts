@@ -153,6 +153,38 @@ export interface AnnexeCroc {
   titre: string
 }
 
+// Fiche signaletique facon logiciel (registre entreprise) : champs etiquetes.
+export interface AnnexeFicheSignaletique {
+  type: 'fichesignaletique'
+  id: string
+  titre: string
+  champs: { cle: string; libelle: string; lignes?: number }[]
+}
+
+// Grille tarifaire facon comparateur de forfaits : colonnes = offres (prix).
+export interface AnnexeGrilleTarifaire {
+  type: 'grilletarifaire'
+  id: string
+  titre: string
+  offres: string[]
+  nbLignes: number
+}
+
+// Organigramme a completer : cases reliees, deux menus deroulants (nom +
+// fonction) par case que l'eleve choisit.
+export interface NoeudOrgaVide {
+  cle: string
+  enfants?: NoeudOrgaVide[]
+}
+export interface AnnexeOrganigrammeAremplir {
+  type: 'organigrammearemplir'
+  id: string
+  titre: string
+  noms: string[]
+  fonctions: string[]
+  tete: NoeudOrgaVide
+}
+
 // Fiche contact / prospect facon CRM : sections coordonnees organisation,
 // decisionnaire, besoins, resultat, a completer.
 export interface AnnexeFicheContact {
@@ -355,7 +387,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -5789,6 +5821,482 @@ const ORPI_M3: ContenuMission = {
   },
 }
 
+const ORPI_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez l'oral de présentation de la mise en œuvre de l'action de FDRC retenue : rédigez votre présentation orale à partir de la 2ème partie du PowerPoint de Maxime, enregistrez-vous, puis créez une animation de présentation.",
+    contexte:
+      "Afin de vous préparer à votre propre oral qui aura lieu dans quelques semaines dans votre établissement scolaire, votre professeur d'économie-gestion vous demande de vous exercer sur la 2ème partie du PowerPoint de Maxime.",
+    documents: [
+      { numero: 1, titre: "Mode opératoire : Rédaction du 2ème oral pour une présentation devant un jury", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: '1. Introduction : Se présenter et introduire le sujet', paragraphes: ["La première étape consiste à bien commencer l'oral, à la fois pour capter l'attention du jury et poser le cadre de la présentation."] },
+        { intertitre: 'A. Se présenter', paragraphes: ['Exemple de début :', "« Bonjour, je m'appelle [Nom], je suis élève en [classe] au lycée [Nom du lycée]. Aujourd'hui, je vais vous présenter mon travail sur [nom du sujet], dans le cadre de [expliquer le contexte, par exemple : un projet, un exposé, un thème étudié, etc.]. »"] },
+        { puces: ['Ce qu\u2019il faut inclure : Nom et prénom', 'Le contexte de la présentation (classe, projet, matière)', "Le sujet de l'oral"] },
+        { paragraphes: ["Conseils : Parlez lentement, de façon claire et assurez-vous d'établir un contact visuel avec le jury pour paraître confiant."] },
+        { intertitre: 'B. Annonce du plan', paragraphes: ['Exemple :', "« Pour vous exposer mon travail, je vais procéder en trois parties : d'abord, je vous présenterai…, ensuite nous verrons…, et enfin, je conclurai en abordant... »"] },
+        { puces: ['Ce qu\u2019il faut inclure : Annonce claire des grandes lignes de la présentation', 'Structure logique du discours'] },
+        { intertitre: '2. Développement', paragraphes: ["Cette étape constitue le cœur de la présentation, où l'élève explique les différentes diapositives."] },
+        { intertitre: "3. Conclusion : Résumer et clore l'oral", paragraphes: ["La conclusion doit marquer la fin de votre présentation en résumant les points clés et en ouvrant sur une réflexion ou une question.", 'Récapituler brièvement les points principaux :', '« Pour conclure, nous avons vu que [résumer les trois parties principales]. »'] },
+        { intertitre: '4. Répondre aux questions du jury', paragraphes: ["Une fois votre présentation terminée, le jury pourra poser des questions. Vous devez être prêt à y répondre.", "Terminez votre par : « Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions »."] },
+        { intertitre: '5. Quelques conseils supplémentaires pour la rédaction de votre présentation orale', paragraphes: [
+          "Clarté et concision : La présentation orale doit être clair et simple. Rédigez un discours fluide et facilement compréhensible.",
+          "Langage approprié : Évitez les phrases trop longues et les répétitions. Utilisez des phrases courtes et efficaces, adaptées à la parole.",
+          "Pratiquez la lecture à voix haute : Une fois votre présentation rédigée, lisez-la à voix haute plusieurs fois pour vérifier son rythme et son efficacité. Cela vous aidera à le rendre plus naturel et à mieux gérer votre temps.",
+        ] },
+        { intertitre: 'Exemple de présentation', paragraphes: [
+          "Introduction : « Bonjour, je m'appelle [Nom], je suis en [classe] et aujourd'hui je vais vous présenter mon travail sur le sujet suivant : [nom du sujet]. Cette présentation se divise en trois parties : d'abord, nous verrons [point 1], puis nous aborderons [point 2], et enfin, je conclurai sur [point 3]. »",
+          "Développement : « La première diapositive traite de… »",
+          "Conclusion : « En conclusion, nous avons vu... Je vous remercie de votre attention. »",
+        ] },
+      ] },
+      { numero: 2, titre: "Mode opératoire pour la création d'une animation", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Création d\u2019une animation (Adobe Express)', paragraphes: ['Ouvrez une page internet et dans Google tapez : ADOBE EXPRESS ANIMATION.'] },
+        { puces: [
+          'Cliquez sur « CRÉER MAINTENANT ».',
+          'Choisissez un personnage, un arrière-plan uniquement.',
+          'Dans CATEGORIE cliquez sur PROFESSIONNELS puis choisissez un personnage. Vous ne pourrez choisir que des personnages HUMAINS car c\u2019est une vidéo professionnelle. Donc pas de monstres, pas d\u2019animaux, pas de légumes…',
+          'Cliquez ici puis choisissez le fichier audio où vous avez enregistré votre oral.',
+          'Cliquez sur « TELECHARGER ».',
+          'Cliquez sur « S\u2019INSCRIRE ».',
+          'Cliquez sur Google puis saisissez votre compte gmail.',
+          'C\u2019est bon ! Votre personnage se retrouvera dans le dossier « Téléchargement » de votre ordinateur.',
+          'Ensuite, vous mettrez votre capsule vidéo dans votre DIGIPAD à la rubrique « MES VIDEOS ».',
+        ] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Épreuve E33 — Bloc 3',
+      intitule: "Présenter à l'oral la mise en œuvre de l'action de FDRC",
+      detail: "3.3.2 Mesurer et analyser les résultats ; 3.3.4 Proposer des axes d'amélioration : préparer et présenter à l'oral devant un jury la mise en œuvre et le bilan de l'action.",
+    },
+    objectifs: [
+      "Rédiger une présentation orale structurée de la 2ème partie du PowerPoint (mise en œuvre et bilan).",
+      "S'entraîner à l'oral et s'enregistrer (10 minutes maximum).",
+      "Créer une animation vidéo de présentation de la situation 2.",
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Préparer l'oral de la situation 2",
+        questions: [
+          { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint (2ème partie).', ressources: "Lire le document 1, compléter l'annexe 1. [3.3.2]", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio).', annexeId: undefined },
+          { numero: 3, consigne: "Téléchargez votre oral de votre portable à votre session d'ordinateur.", ressources: 'Étape pratique (transfert du fichier).', annexeId: undefined },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Créer une animation de présentation de la situation 2',
+        questions: [
+          { numero: 4, consigne: 'Suivez les instructions pour créer votre animation de présentation.', ressources: "Consulter le document 2, suivre l'annexe 2. [3.3.4]", annexeId: 'annexe2' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'redactionoral', id: 'annexe1', titre: "Annexe 1 — Rédaction de l'oral", boutonLien: 'https://drive.google.com/file/d/1l7d5Up3OaCAiAthhBkriiRFxuNS6AFFB/view', boutonLibelle: 'Ouvrir le document support', sections: [
+        { cle: 'introduction', libelle: 'Introduction — Se présenter et annoncer le plan', aide: 'Nom et prénom, classe, lycée, sujet (la mise en œuvre de l\u2019action de FDRC), puis annonce des parties.', lignes: 4 },
+        { cle: 'developpement', libelle: 'Développement — Présenter les diapositives (2ème partie)', aide: "Reprenez les diapositives de la mise en œuvre et de l'évaluation : nom de l'action, cible et objectifs, outils et contraintes, étapes, ventes au rebond, enrichissement du SIC, indicateurs quantitatifs et qualitatifs, bilan et suggestions.", lignes: 12 },
+        { cle: 'conclusion', libelle: 'Conclusion — Résumer et conclure', aide: 'Récapitulez les points principaux (résultats et axes d\u2019amélioration) et remerciez le jury.', lignes: 3 },
+        { cle: 'remerciements', libelle: 'Remerciements et ouverture aux questions', aide: '« Je vous remercie de m\u2019avoir écouté. Je suis prêt(e) à répondre à vos questions ».', lignes: 2 },
+      ] },
+      { type: 'modeoperatoire', id: 'annexe2', titre: "Annexe 2 — Mode opératoire pour la création d'une animation", entete: 'Adobe Express — Création d\u2019une animation', boutonLien: 'https://drive.google.com/file/d/1qM9Df47ltyoM5J4sHsnvnOq1tSVyY7iE/view', boutonLibelle: 'Ouvrir le mode opératoire complet', etapes: [
+        { titre: 'Étape 1 — Accéder à Adobe Express', description: 'Ouvrez une page internet et dans Google tapez : ADOBE EXPRESS ANIMATION. Cliquez sur « CRÉER MAINTENANT ».' },
+        { titre: 'Étape 2 — Choisir un personnage', description: 'Choisissez un personnage et un arrière-plan uniquement. Dans CATEGORIE cliquez sur PROFESSIONNELS puis choisissez un personnage HUMAIN (pas de monstres, animaux, légumes…).' },
+        { titre: 'Étape 3 — Importer votre oral', description: 'Cliquez pour choisir le fichier audio où vous avez enregistré votre oral.' },
+        { titre: 'Étape 4 — Télécharger', description: 'Cliquez sur « TELECHARGER », puis « S\u2019INSCRIRE », puis Google avec votre compte gmail.' },
+        { titre: 'Étape 5 — Déposer la capsule', description: 'Votre personnage se retrouve dans le dossier « Téléchargement ». Mettez votre capsule vidéo dans votre DIGIPAD à la rubrique « MES VIDEOS ».' },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Rédaction de l'oral (annexe 1).", documents: ['Document 1'], bareme: 10, reponse: "L'oral reprend la trame du document 1 appliquée à la 2ème partie du PowerPoint. Introduction : « Bonjour, je m'appelle [Nom], je suis en terminale Bac Pro MCV B au lycée Maria Deraismes. Aujourd'hui je vais vous présenter la mise en œuvre et le bilan d'une action de FDRC menée chez Orpi Guy Môquet. Ma présentation se divise en deux parties : d'abord la mise en œuvre de l'action, ensuite son évaluation et son bilan. » Développement : présentation des diapositives (nom de l'action : mise à jour du compte Instagram ; cible et objectifs ; outils et contraintes ; étapes et participation ; ventes au rebond ; enrichissement du SIC ; indicateurs quantitatifs +20% de vues et +10% d'abonnés ; indicateurs qualitatifs ; bilan et suggestions : publier 3 à 4 fois par semaine, utiliser les stories, répondre plus vite). Conclusion : « Pour conclure, l'action a augmenté la visibilité et les interactions de l'agence ; des axes d'amélioration restent à mettre en place. Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions. »" },
+      { intitule: 'Enregistrement et transfert (étapes pratiques).', documents: ['Document 1'], bareme: 0, reponse: "Étapes pratiques : enregistrer l'oral (10 minutes maximum) sur le téléphone, puis transférer le fichier audio sur la session de l'ordinateur." },
+      { intitule: "Création de l'animation (annexe 2).", documents: ['Document 2'], bareme: 0, reponse: "Suivre le mode opératoire Adobe Express : créer maintenant, choisir un personnage humain (catégorie Professionnels) et un arrière-plan, importer le fichier audio de l'oral, télécharger la vidéo, s'inscrire avec le compte Google, puis déposer la capsule dans le DIGIPAD à la rubrique « MES VIDEOS »." },
+    ],
+  },
+  synthese: {
+    titre: "La préparation de l'oral",
+    proposition: ['Se présenter et introduire le sujet', 'Clarté et concision', 'Utiliser un logiciel', 'Mode opératoire'],
+    racine: {
+      id: 'racine', texte: "La préparation de l'oral",
+      enfants: [
+        { id: 'redac', texte: "La rédaction de l'oral", enfants: [
+          { id: 'intro', texte: null, reponse: 'Se présenter et introduire le sujet' },
+          { id: 'conseils', texte: null, reponse: 'Clarté et concision' },
+        ] },
+        { id: 'anim', texte: "La création d'une animation", enfants: [
+          { id: 'logiciel', texte: 'Utiliser un logiciel' },
+          { id: 'mode', texte: 'Mode opératoire' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Rédiger une présentation orale",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas structurer un oral." },
+          { niveau: 'debrouille', description: 'Je rédige une introduction.' },
+          { niveau: 'averti', description: 'Je rédige introduction, développement et conclusion.' },
+          { niveau: 'expert', description: "Je rédige un oral clair, concis et structuré (10 min)." },
+        ],
+      },
+      {
+        id: 'c2', intitule: "S'entraîner et s'enregistrer",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne m'enregistre pas." },
+          { niveau: 'debrouille', description: "Je m'enregistre partiellement." },
+          { niveau: 'averti', description: "Je m'enregistre en respectant le temps." },
+          { niveau: 'expert', description: "Je m'enregistre, me réécoute et m'améliore." },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Créer une animation",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas utiliser le logiciel." },
+          { niveau: 'debrouille', description: "Je crée un personnage." },
+          { niveau: 'averti', description: "Je crée une animation avec mon audio." },
+          { niveau: 'expert', description: "Je crée et dépose ma capsule dans le DIGIPAD." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Oral devant un jury', definition: "Présentation structurée évaluée par un jury (introduction, développement, conclusion)." },
+      { terme: 'Introduction', definition: "Début de l'oral : se présenter, annoncer le sujet et le plan." },
+      { terme: 'Annonce du plan', definition: 'Présentation claire des grandes parties du discours.' },
+      { terme: 'Développement', definition: "Cœur de la présentation, où l'on explique les diapositives." },
+      { terme: 'Conclusion', definition: "Fin de l'oral : résumé des points clés et ouverture." },
+      { terme: 'Clarté et concision', definition: 'Discours fluide, phrases courtes et efficaces, adaptées à la parole.' },
+      { terme: 'Lecture à voix haute', definition: "Technique pour vérifier le rythme et l'efficacité d'un oral." },
+      { terme: 'Animation', definition: "Capsule vidéo créée avec un logiciel (Adobe Express) à partir de l'audio." },
+      { terme: 'Adobe Express', definition: "Logiciel en ligne de création de vidéos d'animation." },
+      { terme: 'DIGIPAD', definition: "Mur numérique où l'élève dépose ses productions (rubrique MES VIDEOS)." },
+    ],
+    flashcards: [
+      { recto: "Durée maximale de l'oral ?", verso: '10 minutes maximum.' },
+      { recto: 'Sur quoi porte le 2ème oral ?', verso: 'La 2ème partie du PowerPoint : mise en œuvre et bilan de l\u2019action.' },
+      { recto: "Que contient l'introduction ?", verso: 'Nom et prénom, contexte (classe, projet), sujet, annonce du plan.' },
+      { recto: 'Phrase de fin recommandée ?', verso: "« Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions »." },
+      { recto: 'Conseils de rédaction ?', verso: 'Clarté et concision, langage approprié, lecture à voix haute.' },
+      { recto: 'Quel logiciel pour l\u2019animation ?', verso: 'Adobe Express.' },
+      { recto: 'Type de personnage autorisé ?', verso: 'Uniquement des personnages humains (catégorie Professionnels).' },
+      { recto: 'Où déposer la capsule vidéo ?', verso: 'Dans le DIGIPAD, rubrique « MES VIDEOS ».' },
+      { recto: "Comment vérifier son oral ?", verso: 'Le lire à voix haute plusieurs fois (rythme, efficacité).' },
+      { recto: "Que faire après le développement ?", verso: 'Conclure en résumant les points principaux puis remercier le jury.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Durée maximale de l'oral ?", options: ['10 minutes', '30 minutes', '2 minutes', '1 heure'], bonne: 0 },
+      { type: 'unique', question: 'Sur quoi porte le 2ème oral ?', options: ['La mise en œuvre et le bilan', 'La page de garde', 'Le coût', 'Les concurrents'], bonne: 0 },
+      { type: 'unique', question: 'Combien de parties dans un oral structuré ?', options: ['3', '2', '5', '1'], bonne: 0 },
+      { type: 'unique', question: 'Quel logiciel pour l\u2019animation ?', options: ['Adobe Express', 'Excel', 'Photoshop', 'Word'], bonne: 0 },
+      { type: 'unique', question: 'Type de personnage autorisé ?', options: ['Humain (Professionnels)', 'Animal', 'Monstre', 'Légume'], bonne: 0 },
+      { type: 'unique', question: 'Où déposer la capsule ?', options: ['DIGIPAD (MES VIDEOS)', 'Par mail', 'Sur Instagram', 'Nulle part'], bonne: 0 },
+      { type: 'unique', question: 'Un conseil de rédaction ?', options: ['Clarté et concision', 'Phrases très longues', 'Beaucoup de répétitions', 'Parler vite'], bonne: 0 },
+      { type: 'unique', question: 'Comment vérifier son oral ?', options: ['Lire à voix haute', 'Ne pas relire', "L'écrire une seule fois", 'Demander à un ami'], bonne: 0 },
+      { type: 'unique', question: 'Phrase de fin recommandée ?', options: ["« Je vous remercie de m'avoir écouté… »", '« Au revoir »', '« C\u2019est fini »', '« Bonne journée »'], bonne: 0 },
+      { type: 'unique', question: 'Le développement sert à...', options: ['Expliquer les diapositives', 'Se présenter', 'Conclure', 'Remercier'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Classez chaque élément dans la bonne étape de l'oral.",
+      etiquettes: ['Introduction', 'Développement', 'Conclusion'],
+      zones: [
+        { libelle: 'Se présenter (nom, classe)', etiquetteIndex: 0 },
+        { libelle: 'Annoncer le plan', etiquetteIndex: 0 },
+        { libelle: 'Présenter les indicateurs', etiquetteIndex: 1 },
+        { libelle: 'Expliquer le bilan', etiquetteIndex: 1 },
+        { libelle: 'Résumer les points clés', etiquetteIndex: 2 },
+        { libelle: 'Remercier le jury', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+const FREE_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Présentez l'unité commerciale et sa clientèle : réalisez la fiche signalétique de Free, identifiez la clientèle, listez les services et les biens, les concurrents directs et indirects, puis reproduisez l'organigramme.",
+    contexte:
+      "Vous êtes en stage dans l'entreprise Free, située à Paris et spécialisée dans la téléphonie. Vous êtes là depuis quelques jours et votre tuteur souhaite que vous connaissiez mieux l'entreprise en étudiant ses principales caractéristiques. Votre tuteur vous demande de réaliser la « fiche signalétique » de celle-ci.",
+    documents: [
+      { numero: 1, titre: 'La concurrence', images: [], texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['', 'Concurrents directs', 'Concurrents indirects'], lignes: [
+          ['Définitions', "Un concurrent direct est une entreprise ou une organisation qui propose un produit ou un service similaire ou comparable à celui d'une autre entreprise. Elles ont la même activité principale.", 'Un concurrent indirect est une entreprise ou une organisation qui propose un produit ou un service différent, mais susceptible de répondre au même besoin du consommateur.'],
+          ['Exemples : Un client qui veut aller à Toulouse il peut le faire avec la compagnie Air France', "Ce client peut aussi voyager avec des concurrents directs d'Air France : Easy Jet, Ryan Air", "Ce client peut aussi voyager avec des concurrents indirects d'Air France : Co-voiturage, Train SNCF"],
+        ] } },
+      ] },
+      { numero: 2, titre: "Le site internet de Free — Les offres", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'LES OFFRES FREE SANS ENGAGEMENT', paragraphes: ['Forfait à 2 €/mois (0€/mois pour les abonnés Freebox) : Internet en 4G+ 50Mo ; Appels 2H, SMS, MMS illimités ; à l\u2019étranger : Internet 50Mo, Appels 2H (décomptés du forfait) et SMS, MMS illimités depuis Europe & DOM.'] },
+        { paragraphes: ['SÉRIE FREE 80GO — 12,99 €/mois (pendant 1 an, puis Forfait Free à 19.99€) : Internet en 4G+ 80 Go ; Appels SMS, MMS illimités ; à l\u2019étranger : Internet 10Go, Appels, SMS, MMS illimités depuis Europe & DOM.'] },
+        { paragraphes: ['19,99 €/mois (15,99€/mois pour les abonnés Freebox, 9,99€/mois pour les abonnés Freebox Pop) — Abonnés Freebox : 4G+ illimitée en France : Internet en 4G+ 100 Go ; Appels SMS, MMS illimités ; à l\u2019étranger : Internet 25Go depuis + 65 destinations, Appels, SMS, MMS illimités depuis Europe, DOM, USA, Canada, Australie, Afrique du Sud, Israël, Nouvelle-Zélande. Free Ligue 1 Uber Eats inclus.'] },
+        { intertitre: 'Les offres Freebox', paragraphes: ["Déjà plus de 2 millions d'abonnés à la Fibre Free. Testez votre éligibilité Fibre.", 'Offre à 29,99€/mois (pendant 1 an puis 39,99€/mois, sans engagement) : Internet Fibre jusqu\u2019à 5Gbit/s partagés, 700 Mbit/s ; Wi-Fi : Répéteur Wi-Fi inclus ; TV/Replay inclus, Netflix/Prime Video/CANAL+ disponibles en option ; Free Ligue 1 Uber Eats inclus.', 'Offre à 39,99€/mois (pendant 1 an puis 49,99€/mois, sans engagement) : Internet Fibre Techno 10G EPON ; Wi-Fi : Répéteur Wi-Fi inclus ; TV/Replay inclus, contenus inclus : Netflix, Amazon Prime, TV by CANAL ; Free Ligue 1 Uber Eats inclus. Player Pop inclus ou Player Free Devialet 480€.'] },
+      ] },
+      { numero: 3, titre: "La fiche entreprise de Free", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Nous contacter', paragraphes: ['Par téléphone, appelez-nous au 3244 pour être mis en relation avec un conseiller. 7j/7 de 7 heures à minuit. Gratuit depuis une ligne Free ou prix d\u2019un appel normal.'] },
+        { puces: ['Sur Facebook : FreeFrance', 'Sur Twitter : Free', 'Sur Twitter, pour un compte spécifique à Freebox : @Freebox', 'Sur Twitter, pour ne rien manquer sur le Mobile : @freemobile', 'Sur Youtube, pour suivre des tutoriels conçus par nos équipes : Free', 'Retrouvez également Free sur Instagram, avec les fameux "Easter Eggs" sur la Freebox Delta et notre assistant vocal "Ok Freebox" : ok_freebox'] },
+        { tableau: { colonnes: ['Information', 'Valeur'], lignes: [
+          ['Statut RCS', 'Immatriculée au RCS le 18-02-1999'],
+          ['Statut INSEE', "Enregistrée à l'INSEE le 01-02-1999"],
+          ['Dénomination', 'FREE'],
+          ['Adresse', '8 RUE DE LA VILLE L EVEQUE 75008 PARIS'],
+          ['SIREN', '421 938 861'],
+          ['SIRET (siege)', '42193886100034'],
+          ['Activité (Code NAF ou APE)', 'Télécommunications filaires (6110Z)'],
+          ['Forme juridique', 'Société par actions simplifiée'],
+          ['Date immatriculation RCS', '18-02-1999'],
+          ['Date de dernière mise à jour', '01-10-2020'],
+          ['Effectif moyen', '213'],
+          ['Capital social', '3 441 812,00 €'],
+        ] } },
+      ] },
+      { numero: 4, titre: "Les opérateurs concurrents (guides)", images: [], texte: [
+        { pageWeb: true },
+        { puces: [
+          "B&YOU : à l'origine, B&YOU devait venir concurrencer Free au niveau des offres sans engagement. Bouygues Telecom propose ainsi des forfaits subventionnés Sensation et des offres sans engagement B&YOU.",
+          "Syma Mobile : l'un des nombreux opérateurs de réseau mobile virtuel de France (MVNO).",
+          "NRJ Mobile : marque qui appartient au MVNA Euro-Information Telecom, profite des accords négociés pour proposer ses services (réseaux SFR, Orange ou Bouygues Telecom).",
+          "La Poste Mobile : l'un des premiers opérateurs de réseau mobile virtuel, détenu à 49% par le groupe SFR.",
+          "Prixtel : opérateur de réseau mobile virtuel sans engagement, basé dans le sud de la France (réseaux Orange ou SFR).",
+          "Coriolis Telecom : opérateur de réseau mobile virtuel (réseaux SFR et Orange).",
+          "Auchan Telecom : opérateur de réseau mobile virtuel lancé par le groupe Auchan (propriété d'Euro-Information Telecom ; réseaux Orange, SFR et Bouygues Telecom).",
+          "Cdiscount Mobile : opérateur de réseau mobile virtuel du e-commerce (propriété d'EI Telecom).",
+          "Réglo Mobile : opérateur du groupe Leclerc, sans engagement, tarifs très bas.",
+          "Crédit Mutuel Mobile : opérateur de réseau mobile virtuel appartenant au groupe Euro-Information Telecom.",
+          "CIC Mobile : deuxième opérateur du groupe Crédit Mutuel - CIC (réseaux Orange, SFR et Bouygues Telecom).",
+          "Budget Mobile : MVNO proposant des forfaits basiques.",
+          "Orange mobile : premier opérateur de téléphonie mobile de France (ex-France Télécom).",
+          "SFR : la Société Française du Radiotéléphone, second opérateur de France (opérateur au carré rouge).",
+          "Bouygues Telecom : filiale du groupe Bouygues, spécialisé dans les télécommunications.",
+        ] },
+      ] },
+      { numero: 5, titre: "L'organigramme de l'équipe dirigeante d'Iliad / Free", images: [], texte: [
+        { pageWeb: true },
+        { paragraphes: ["Iliad a procédé à un important réaménagement à sa tête, aussi bien au sein du Conseil d'Administration que de l'équipe dirigeante. On note 5 nouvelles nominations, dont la plus importante, celle de Thomas Reynaud en tant que Directeur Général, en remplacement de Maxime Lombardini, qui prend la tête du Conseil d'Administration. On retrouve notamment Rani Assaf en tant que directeur technique, Angélique Gérard directrice de la relation abonné, ou encore Xavier Niel directeur délégué à la stratégie."] },
+        { tableau: { colonnes: ['Fonction (anglais)', 'Personne', 'Fonction (français)'], lignes: [
+          ['CSO', 'Xavier Niel', 'Directeur délégué à la stratégie'],
+          ['CEO', 'Thomas Reynaud', 'Directeur Général'],
+          ['CTO', 'Rani Assaf', 'Directeur Général délégué (technique)'],
+          ['Head of IT', 'Antoine Levavasseur', 'Directeur Général délégué'],
+          ['Purchasing Director', 'Patrick Fouquerière', 'Directeur des relations fournisseurs'],
+          ['Head of Customer Care', 'Angélique Gérard', 'Directrice de la relation abonnés'],
+          ['CFO', 'Nicolas Jaeger', 'Directeur Financier'],
+          ['Marketing Director', 'Camille Perrin', 'Directrice Marketing'],
+          ['Deputy Corporate Secretary', 'Shahrzad Sharvan', 'Secrétaire Générale'],
+          ['HR Director', 'Aude Mercier', 'Directrice des Ressources Humaines'],
+        ] } },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4B',
+      intitule: "Présenter l'unité commerciale et sa clientèle",
+      detail: "Identifier l'entreprise (fiche signalétique), sa clientèle, ses biens et services, ses concurrents et son organigramme.",
+    },
+    objectifs: [
+      "Réaliser la fiche signalétique de l'entreprise.",
+      'Identifier la clientèle, les biens et les services.',
+      'Distinguer concurrents directs et indirects, et lire un organigramme.',
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Identification de l'entreprise",
+        questions: [
+          { numero: 1, consigne: "Consultez le site internet de l'entreprise puis complétez l'identité de l'entreprise.", ressources: "Consulter le document 3, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez selon vous le type de clientèle visée par Free.', ressources: "Compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Les biens et les services de l'entreprise",
+        questions: [
+          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise.", ressources: "Consulter le document 2, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Énumérez les 2 biens que l'on retrouve chez Free.", ressources: "Consulter le document 2, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Les concurrents',
+        questions: [
+          { numero: 5, consigne: "Listez les différents concurrents de l'entreprise.", ressources: "Lire le document 1 et le document 4, compléter l'annexe 5. [C.4B.1]", annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: "Activité 4 — L'organigramme",
+        questions: [
+          { numero: 6, consigne: "Reproduisez l'organigramme de Free en plaçant chaque personne et sa fonction (en français).", ressources: "Consulter le document 5, compléter l'annexe 6. [C.4B.1]", annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'fichesignaletique', id: 'annexe1', titre: "Annexe 1 — Identité de l'entreprise", champs: [
+        { cle: 'secteur', libelle: "Secteur d'activité" }, { cle: 'creation', libelle: 'Date de création ou immatriculation RCS' }, { cle: 'denomination', libelle: 'Dénomination' }, { cle: 'ca', libelle: "Chiffre d'affaires" }, { cle: 'adresse', libelle: 'Adresse', lignes: 2 }, { cle: 'forme', libelle: 'Forme juridique' }, { cle: 'nationalite', libelle: 'Nationalité' }, { cle: 'reseaux', libelle: 'Réseaux sociaux', lignes: 4 }, { cle: 'serviceclient', libelle: 'Numéro service client' },
+      ] },
+      { type: 'texte', id: 'annexe2', titre: 'Annexe 2 — La clientèle', lignes: 2 },
+      { type: 'grilletarifaire', id: 'annexe3', titre: 'Annexe 3 — Les services', offres: ['2€', '12,99€', '19,99€', '29,99€', '39,99€'], nbLignes: 3 },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Les biens', colonnes: ['Les biens', ''], nbLignes: 2 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Les concurrents directs et indirects', colonnes: ['Les concurrents directs', 'Les concurrents indirects'], nbLignes: 1 },
+      { type: 'organigrammearemplir', id: 'annexe6', titre: 'Annexe 6 — Organigramme de Free', noms: ['Xavier Niel', 'Thomas Reynaud', 'Rani Assaf', 'Antoine Levavasseur', 'Patrick Fouquerière', 'Angélique Gérard', 'Nicolas Jaeger', 'Camille Perrin', 'Shahrzad Sharvan', 'Aude Mercier'], fonctions: ['Directeur délégué à la stratégie', 'Directeur Général', 'Directeur Général délégué', 'Directeur des relations fournisseurs', 'Directrice de la relation abonnés', 'Directeur Financier', 'Directrice Marketing', 'Secrétaire Générale', 'Directrice des Ressources Humaines'], tete: {
+        cle: 'dg', enfants: [
+          { cle: 'cto' }, { cle: 'it' }, { cle: 'achats' }, { cle: 'care' }, { cle: 'cfo' }, { cle: 'mkt' }, { cle: 'secretaire' }, { cle: 'rh' },
+        ],
+      } },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Identité de l'entreprise (annexe 1).", documents: ['Document 3'], bareme: 9, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Champ', 'Réponse'], lignes: [
+          ["Secteur d'activité", 'Télécommunications filaires'],
+          ['Date de création / immatriculation RCS', '18.02.1999'],
+          ['Dénomination', 'FREE'],
+          ["Chiffre d'affaires", '2 907 500 000'],
+          ['Adresse', "8 rue de la Ville l'Évêque, 75008 PARIS"],
+          ['Forme juridique', 'Société par actions simplifiée'],
+          ['Nationalité', 'Française'],
+          ['Réseaux sociaux', 'Facebook : FreeFrance ; Twitter : @freebox ou @freemobile ; Youtube : Free ; Instagram : ok_freebox'],
+          ['Numéro service client', '3244'],
+        ] },
+      },
+      { intitule: 'La clientèle (annexe 2).', documents: ['Annexe 2'], bareme: 1, reponse: 'Ce sont des particuliers car les produits proposés sont faits pour les particuliers (forfait téléphonique et Freebox).' },
+      {
+        intitule: 'Les services (annexe 3).', documents: ['Document 2'], bareme: 15, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['2€', '12,99€', '19,99€', '29,99€', '39,99€'], lignes: [
+          ['Internet en 4G+ 50 Mo', 'Internet en 4G+ 80 Go', 'Internet en 4G+ 100 Go', 'Internet Fibre jusqu\u2019à 5Gbit/s', 'Internet Fibre techno 10G Epon'],
+          ['Appels 2h SMS, MMS illimité', 'Appels 2h SMS, MMS illimité', 'Appels 2h SMS, MMS illimité', 'Wifi Répéteur Wifi inclus', 'Wifi Répéteur Wifi inclus'],
+          ['A l\u2019étranger 50 Mo', 'A l\u2019étranger Internet 10 Go', 'A l\u2019étranger Internet 25 Go', 'TV/Replay inclus, Netflix/Prime Video/Canal+ en option', 'TV/Replay inclus, Netflix/Prime Video/Canal+ en option'],
+        ] },
+      },
+      {
+        intitule: 'Les biens (annexe 4).', documents: ['Document 2'], bareme: 2, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Les biens', ''], lignes: [['Freebox', 'Mobile']] },
+      },
+      {
+        intitule: 'Les concurrents (annexe 5).', documents: ['Documents 1 et 4'], bareme: 15, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Les concurrents directs', 'Les concurrents indirects'], lignes: [
+          ['Orange ; SFR ; Bouygues', 'B&YOU ; Syma Mobile ; NRJ Mobile ; La Poste Mobile ; Prixtel ; Coriolis Telecom ; Auchan Telecom ; Cdiscount Mobile ; Réglo Mobile ; Crédit Mutuel Mobile ; CIC Mobile ; Budget Mobile'],
+        ] },
+      },
+      {
+        intitule: "Organigramme (annexe 6).", documents: ['Document 5'], bareme: 10, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Personne', 'Fonction'], lignes: [
+          ['Xavier Niel', 'Directeur délégué à la stratégie'],
+          ['Thomas Reynaud', 'Directeur Général'],
+          ['Rani Assaf', 'Directeur Général délégué'],
+          ['Antoine Levavasseur', 'Directeur Général délégué'],
+          ['Patrick Fouquerière', 'Directeur des relations fournisseurs'],
+          ['Angélique Gérard', 'Directrice de la relation abonnés'],
+          ['Nicolas Jaeger', 'Directeur Financier'],
+          ['Camille Perrin', 'Directrice Marketing'],
+          ['Shahrzad Sharvan', 'Secrétaire Générale'],
+          ['Aude Mercier', 'Directrice des Ressources Humaines'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "La présentation de l'unité commerciale",
+    proposition: ['La fiche signalétique', 'La clientèle', 'Concurrents directs', 'Concurrents indirects'],
+    racine: {
+      id: 'racine', texte: "L'unité commerciale",
+      enfants: [
+        { id: 'ident', texte: "L'identification", enfants: [
+          { id: 'fiche', texte: null, reponse: 'La fiche signalétique' },
+          { id: 'clients', texte: null, reponse: 'La clientèle' },
+        ] },
+        { id: 'concur', texte: 'Les concurrents', enfants: [
+          { id: 'directs', texte: null, reponse: 'Concurrents directs' },
+          { id: 'indirects', texte: null, reponse: 'Concurrents indirects' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Identifier l'entreprise",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas faire une fiche signalétique." },
+          { niveau: 'debrouille', description: 'Je relève quelques informations.' },
+          { niveau: 'averti', description: "Je complète la fiche signalétique." },
+          { niveau: 'expert', description: "Je complète la fiche et identifie la clientèle." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Distinguer biens et services',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je confonds biens et services.' },
+          { niveau: 'debrouille', description: 'Je cite un service.' },
+          { niveau: 'averti', description: 'Je liste les services et les biens.' },
+          { niveau: 'expert', description: 'Je classe correctement biens et services.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Concurrents et organigramme',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne distingue pas direct et indirect.' },
+          { niveau: 'debrouille', description: 'Je cite un concurrent.' },
+          { niveau: 'averti', description: 'Je classe les concurrents.' },
+          { niveau: 'expert', description: "Je classe les concurrents et complète l'organigramme." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Fiche signalétique', definition: "Document qui résume l'identité d'une entreprise (dénomination, forme juridique, adresse…)." },
+      { terme: 'SIREN', definition: "Numéro à 9 chiffres identifiant une entreprise." },
+      { terme: 'SIRET', definition: "Numéro à 14 chiffres identifiant un établissement." },
+      { terme: 'Code NAF / APE', definition: "Code de l'activité principale exercée par l'entreprise." },
+      { terme: 'Forme juridique', definition: "Statut légal de l'entreprise (SAS, SARL…)." },
+      { terme: 'Bien', definition: 'Produit matériel (ex : Freebox, Mobile).' },
+      { terme: 'Service', definition: 'Prestation immatérielle (ex : forfait internet, TV).' },
+      { terme: 'Concurrent direct', definition: 'Entreprise proposant un produit similaire, même activité principale.' },
+      { terme: 'Concurrent indirect', definition: 'Entreprise proposant un produit différent répondant au même besoin.' },
+      { terme: 'Organigramme', definition: "Schéma représentant la structure hiérarchique d'une entreprise." },
+    ],
+    flashcards: [
+      { recto: 'Forme juridique de Free ?', verso: 'Société par actions simplifiée (SAS).' },
+      { recto: "Date d'immatriculation RCS ?", verso: '18.02.1999.' },
+      { recto: 'Adresse du siège ?', verso: "8 rue de la Ville l'Évêque, 75008 PARIS." },
+      { recto: 'Numéro du service client ?', verso: '3244.' },
+      { recto: "Secteur d'activité ?", verso: 'Télécommunications filaires (6110Z).' },
+      { recto: 'Les 2 biens de Free ?', verso: 'La Freebox et le Mobile.' },
+      { recto: 'Concurrents directs ?', verso: 'Orange, SFR, Bouygues.' },
+      { recto: 'Qui est le Directeur Général ?', verso: 'Thomas Reynaud.' },
+      { recto: 'Type de clientèle visée ?', verso: 'Les particuliers.' },
+      { recto: 'Capital social ?', verso: '3 441 812,00 €.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Forme juridique de Free ?', options: ['SAS', 'SARL', 'SA', 'EURL'], bonne: 0 },
+      { type: 'unique', question: "Date d'immatriculation RCS ?", options: ['18.02.1999', '01.01.2000', '18.02.2009', '08.12.1999'], bonne: 0 },
+      { type: 'unique', question: 'Numéro service client ?', options: ['3244', '3900', '1014', '3000'], bonne: 0 },
+      { type: 'unique', question: "Secteur d'activité ?", options: ['Télécommunications filaires', 'Banque', 'Transport', 'Énergie'], bonne: 0 },
+      { type: 'unique', question: 'Les 2 biens de Free ?', options: ['Freebox et Mobile', 'TV et Radio', 'Internet et Eau', 'Voiture et Vélo'], bonne: 0 },
+      { type: 'unique', question: 'Un concurrent direct ?', options: ['Orange', 'La SNCF', 'Air France', 'EDF'], bonne: 0 },
+      { type: 'unique', question: 'Un concurrent indirect ?', options: ['NRJ Mobile', 'Orange', 'SFR', 'Bouygues'], bonne: 0 },
+      { type: 'unique', question: 'Qui est le Directeur Général ?', options: ['Thomas Reynaud', 'Xavier Niel', 'Rani Assaf', 'Nicolas Jaeger'], bonne: 0 },
+      { type: 'unique', question: 'Type de clientèle visée ?', options: ['Les particuliers', 'Les collectivités', 'Les grandes entreprises', "L'État"], bonne: 0 },
+      { type: 'unique', question: 'Capital social ?', options: ['3 441 812,00 €', '1 000 000 €', '421 938 €', '213 €'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Bien', 'Service', 'Concurrent direct'],
+      zones: [
+        { libelle: 'La Freebox', etiquetteIndex: 0 },
+        { libelle: 'Le Mobile', etiquetteIndex: 0 },
+        { libelle: 'Forfait internet 4G+', etiquetteIndex: 1 },
+        { libelle: 'TV/Replay', etiquetteIndex: 1 },
+        { libelle: 'Orange', etiquetteIndex: 2 },
+        { libelle: 'SFR', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -5808,6 +6316,8 @@ const CONTENUS: Record<string, ContenuMission> = {
   'orpi-m1': ORPI_M1,
   'orpi-m2': ORPI_M2,
   'orpi-m3': ORPI_M3,
+  'orpi-m4': ORPI_M4,
+  'free-m1': FREE_M1,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
