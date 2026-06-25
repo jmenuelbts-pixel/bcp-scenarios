@@ -95,6 +95,24 @@ export interface AnnexeCritereSeg {
   criteres: string[] // libelles des criteres a evaluer
 }
 
+// Editeur de presentation facon PowerPoint : bandeau de miniatures + diapo
+// editable. Page de garde avec champs session/date modifiables. Chaque diapo
+// a un titre, une consigne, une competence affichee, et des champs a remplir.
+export interface DiapoPpt {
+  titre: string
+  intitule?: string
+  competence?: string
+  champs?: { cle: string; libelle?: string; lignes?: number }[]
+  garde?: boolean
+  mentions?: string[]
+}
+export interface AnnexePowerPoint {
+  type: 'powerpoint'
+  id: string
+  titre: string
+  diapos: DiapoPpt[]
+}
+
 // Gabarit de courrier postal (publipostage) facon traitement de texte : zones
 // expediteur, destinataire, date, objet, corps, signature, a remplir.
 export interface AnnexeCourrier {
@@ -313,7 +331,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -4952,6 +4970,271 @@ const AMPARIS_M4: ContenuMission = {
   },
 }
 
+const ORPI_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez la phase préparatoire à la mise en œuvre d'une action de FDRC : identité de l'entreprise, clientèle, SWOT, concurrents, sollicitations clients, outils de fidélisation, constat, problématique et propositions d'actions.",
+    contexte:
+      "L'agence immobilière Orpi Guy Môquet, située dans le 17ème arrondissement de Paris, à proximité du métro Guy Môquet, est une agence familiale spécialisée dans la vente de biens immobiliers, la gestion locative et les services pour investisseurs. L'agence bénéficie d'une solide réputation dans le quartier. Maxime est stagiaire chez Orpi et travaille aux côtés de M. Lefevre, le responsable des ventes. Il souhaite évaluer la situation de l'entreprise et trouver des solutions adaptées à l'amélioration de la relation client. Dans le cadre de son premier stage de terminale bac pro MCVB, Maxime doit réaliser un PowerPoint visant à présenter ses propositions d'amélioration pour la fidélisation et le développement de la relation client (FDRC). Pour cela, il doit d'abord comprendre en détail l'identité de l'entreprise, les besoins de la clientèle, les forces et faiblesses de l'agence, ainsi que les sollicitations des clients. Toutes les questions qu'il pose à son tuteur ont pour objectif de recueillir les informations nécessaires à la rédaction de la phase préparatoire à la mise en œuvre des actions de FDRC qu'il présentera dans un second temps à l'oral face à son professeur et à son tuteur.",
+    videoContexte: 'https://drive.google.com/file/d/184x8o6NNVTXJIaDDyPXHmM6cSmoe7dsM/view',
+    documents: [
+      { numero: 1, titre: "Dialogue entre Maxime et le directeur d'agence, M. Lefevre", images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { locuteur: 'Maxime', texte: "Bonjour M. Lefevre, j'ai quelques questions à vous poser car j'aimerais comprendre un peu plus le fonctionnement de l'agence. Pouvez-vous me parler de son identité ? Cela me permettra ensuite de réaliser sa fiche signalétique ?" },
+          { locuteur: 'M. Lefevre', texte: "Bien sûr, Maxime. Pour commencer, l'agence a été créée en 2012 fait partie du réseau Orpi, ce qui nous apporte une notoriété nationale et une solidité en termes de services. C'est une SARL, et nous sommes une équipe de 10 collaborateurs répartis entre la vente de biens, la gestion locative et l'accompagnement des investisseurs. Le chiffre d'affaires de l'agence tourne autour de 2 millions d'euros par an, mais il est fluctuant, car il dépend surtout des ventes exceptionnelles et des nouveaux biens qui arrivent sur le marché." },
+          { locuteur: 'Maxime', texte: "D'accord, merci. Et concernant la zone de prospection de l'agence, quel est notre périmètre géographique ?" },
+          { locuteur: 'M. Lefevre', texte: "Nous avons une zone de prospection assez ciblée, principalement autour du 17ème arrondissement de Paris. Mais nous touchons aussi les arrondissements voisins, comme le 18ème ou le 9ème. Nos clients proviennent souvent des quartiers environnants, même si nous avons aussi des personnes venant de la région parisienne, principalement des investisseurs intéressés par la rentabilité des biens." },
+          { locuteur: 'Maxime', texte: "Ok, je comprends. Et concernant la clientèle, quel est client-type de l'agence ?" },
+          { locuteur: 'M. Lefevre', texte: "Notre clientèle est assez diverse, mais je dirais que la majorité des personnes qui viennent vers nous sont intéressées par l'achat ou la location de biens pour habiter. Les autres clients, en revanche, sont des investisseurs cherchant des opportunités intéressantes pour acheter des biens à rénover ou à mettre en gestion locative." },
+          { locuteur: 'Maxime', texte: "Ah, je vois. Mais est-ce que vous avez une idée de l'âge moyen des clients ?" },
+          { locuteur: 'M. Lefevre', texte: "Oui, la tranche d'âge principale se situe entre 30 et 45 ans. Ce souvent des jeunes couples ou des professionnels qui cherchent à s'installer dans un quartier calme et accessible financièrement à Paris." },
+          { locuteur: 'Maxime', texte: "D'accord. Maintenant, pourriez-vous m'expliquer quelles sont les principales atouts et points faibles de l'agence ?" },
+          { locuteur: 'M. Lefevre', texte: "Nos atouts sont avant tout notre réputation locale et la fidélité de nos clients, ce qui fait que nous sommes souvent recommandés par le bouche-à-oreille. Notre équipe est compétente, réactive et très attachée à fournir un service de qualité. Cependant, notre faiblesse majeure réside dans l'absence d'une approche numérique de notre relation client. Nos outils sont trop classiques et ne répondent pas encore aux attentes des jeunes générations, qui recherchent un service digitalisé." },
+          { locuteur: 'M. Lefevre', texte: "Cependant, il existe également des perspectives intéressantes à exploiter. Par exemple, il y a un important programme immobilier d'une cinquantaine d'appartements en cours de construction à proximité. Toutefois, il faut également prendre en compte certaines menaces, notamment l'augmentation des taux d'intérêt, qui pourrait freiner les achats immobiliers." },
+          { locuteur: 'Maxime', texte: "Je vois, il y a donc un réel potentiel d'amélioration sur la partie digitale. Mais… qu'en est-il des concurrents ? Qui sont-ils dans notre secteur ?" },
+          { locuteur: 'M. Lefevre', texte: "Nous avons plusieurs concurrents dans le quartier. Century 21, par exemple, est situé à quelques pas de l'agence, juste en face du métro Guy Môquet. Ils sont très présents sur les réseaux sociaux, ce qui leur permet de toucher une clientèle plus large et plus jeune. Il y a aussi L'Adresse, une autre agence à quelques minutes à pied d'ici, qui est particulièrement compétitive en termes de prix. Et bien sûr comme toutes les autres agences nous avons la concurrence des sites internet comme Seloger.com" },
+        ] },
+        { intertitre: 'Partie II : Les sollicitations clients et la gestion des demandes', dialogue: [
+          { locuteur: 'M. Lefevre', texte: "A mon tour de te poser quelques questions. Depuis ton arrivé à l'agence il y a 3 semaines, peux-tu me dire quelles sont les sollicitations des clients que tu as le plus rencontrées ?" },
+          { locuteur: 'Maxime', texte: "Elles varient beaucoup d'un prospect à l'autre, mais de manière générale, j'ai reçu beaucoup de demandes sur les prix des biens et la disponibilité des appartements en vente ou en location." },
+          { locuteur: 'M. Lefevre', texte: "Très bien ! Explique-moi comment les as-tu traitées et ta contribution ?" },
+          { locuteur: 'Maxime', texte: "Eh bien, Virginie, ma tutrice, m'a expliqué que dès qu'une demande arrive, je dois y répondre de manière rapide et personnalisée. Par exemple, quand un client nous contacte par téléphone ou par e-mail pour des informations sur un bien, ma priorité est de lui fournir des détails précis, accompagnés de photos et de visites virtuelles quand c'est possible. Je sais qu'une réponse rapide et un suivi de qualité renforcent la relation client et augmentent sa fidélité." },
+        ] },
+        { intertitre: "Partie III : Les outils de fidélisation et le potentiel d'amélioration du numérique de l'entreprise", dialogue: [
+          { locuteur: 'Maxime', texte: "Sinon, j'avais une autre question. En termes d'outils de fidélisation, est-ce qu'il y a des dispositifs qui sont mis en place ?" },
+          { locuteur: 'M. Lefevre', texte: "Nous disposons de plusieurs outils, comme un compte Instagram mais que nous n'avons pas utilisé depuis plusieurs mois. Nous avons également mis en place un système de parrainage, où nous récompensons les clients, appelés « apporteurs d'affaires », qui nous apportent de nouveaux clients." },
+          { locuteur: 'Maxime', texte: "Donc, il y a un fort potentiel pour améliorer la relation client sur le plan numérique. D'accord, cela me semble clair. Merci pour toutes ces informations." },
+        ] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Épreuve E33 — Bloc 3',
+      intitule: 'Préparer une action de FDRC',
+      detail: "3.1.2 Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes ; 3.1.1 Traiter les messages et/ou les demandes de clients ; 3.1.4 Proposer des actions de fidélisation et/ou de développement de la relation client.",
+    },
+    objectifs: [
+      "Être capable de sélectionner les sources d'information pertinentes de l'entreprise.",
+      'Être capable de traiter les sollicitations des clients de manière efficace et professionnelle.',
+      "Être capable de proposer des actions pertinentes au regard du contexte dans l'entreprise.",
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Les sources d'informations internes et externes de l'entreprise",
+        questions: [
+          { numero: 1, consigne: "Réalisez la fiche d'identité de l'entreprise Orpi Guy Môquet.", ressources: 'Consulter le document 1, compléter la diapositive 1. [3.1.2]', annexeId: 'ppt' },
+          { numero: 2, consigne: "Indiquez quelle est la zone de prospection de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 2. [3.1.2]', annexeId: 'ppt' },
+          { numero: 3, consigne: 'Dressez le profil de la clientèle.', ressources: 'Consulter le document 1, compléter la diapositive 3. [3.1.2]', annexeId: 'ppt' },
+          { numero: 4, consigne: "Listez les forces et les faiblesses de l'agence ainsi que les opportunités et les menaces qui peuvent peser sur elle.", ressources: 'Consulter le document 1, compléter la diapositive 4. [3.1.2]', annexeId: 'ppt' },
+          { numero: 5, consigne: 'Identifiez les deux catégories de concurrents puis listez-les.', ressources: 'Consulter le document 1, compléter la diapositive 5. [3.1.2]', annexeId: 'ppt' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Les sollicitations clients et leur traitement',
+        questions: [
+          { numero: 6, consigne: "Repérez les demandes de clients les plus fréquentes et la façon dont elles sont traitées.", ressources: 'Consulter le document 1, compléter la diapositive 6. [3.1.1]', annexeId: 'ppt' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Les outils de fidélisation et/ou de développement de la relation client',
+        questions: [
+          { numero: 7, consigne: "Précisez les méthodes de fidélisation mises en place au sein de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 7. [3.1.4]', annexeId: 'ppt' },
+          { numero: 8, consigne: "En vous appuyant sur les propos de M. Lefevre, identifiez le problème de fidélisation (= constat) qui existe au sein de l'agence.", ressources: 'Consulter le document 1, compléter la diapositive 8. [3.1.4]', annexeId: 'ppt' },
+          { numero: 9, consigne: 'À partir du constat, formulez la problématique sous forme de question.', ressources: 'Consulter le document 1, compléter la diapositive 9. [3.1.4]', annexeId: 'ppt' },
+          { numero: 10, consigne: "Proposez 2 actions au regard du contexte exposé par M. Lefevre. Justifiez ce choix en indiquant l'avantage et/ou l'objectif de chacune d'elle.", ressources: 'Consulter le document 1, compléter la diapositive 10. [3.1.4]', annexeId: 'ppt' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'powerpoint', id: 'ppt', titre: 'Annexe — Le PowerPoint de Maxime', diapos: [
+        { titre: 'Page de garde', garde: true, mentions: ['BACCALAUREAT PROFESSIONNEL METIERS DU COMMERCE ET DE LA VENTE option B', 'EPREUVE E33', 'Situation d\u2019évaluation n°1', 'Phase préparatoire à la mise en œuvre d\u2019une action de FDRC', 'Lycée Maria Deraismes'] },
+        { titre: 'Diapositive 1', intitule: "Fiche d'identité de l'entreprise", competence: '3.1.2 : Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes', champs: [
+          { cle: 'nom', libelle: "Nom de l'entreprise" }, { cle: 'creation', libelle: 'Date de création' }, { cle: 'forme', libelle: 'Forme juridique' }, { cle: 'effectif', libelle: 'Effectif' }, { cle: 'reseau', libelle: 'Réseau' }, { cle: 'ca', libelle: "Chiffre d'affaires" }, { cle: 'activite', libelle: 'Activités', lignes: 2 },
+        ] },
+        { titre: 'Diapositive 2', intitule: 'La zone de prospection', competence: '3.1.2 : Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes', champs: [{ cle: 'zone', lignes: 3 }] },
+        { titre: 'Diapositive 3', intitule: 'Le profil de la clientèle', competence: '3.1.2 : Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes', champs: [
+          { cle: 'typologie', libelle: 'Typologie', lignes: 2 }, { cle: 'caracteristiques', libelle: 'Caractéristiques', lignes: 2 }, { cle: 'soncase', libelle: "Mobiles d'achat SONCASE", lignes: 2 },
+        ] },
+        { titre: 'Diapositive 4', intitule: 'Le SWOT (FFOM)', competence: '3.1.2 : Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes', champs: [
+          { cle: 'forces', libelle: 'Forces', lignes: 2 }, { cle: 'faiblesses', libelle: 'Faiblesses', lignes: 2 }, { cle: 'opportunites', libelle: 'Opportunités', lignes: 2 }, { cle: 'menaces', libelle: 'Menaces', lignes: 2 },
+        ] },
+        { titre: 'Diapositive 5', intitule: 'Les concurrents', competence: '3.1.2 : Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes', champs: [
+          { cle: 'directs', libelle: 'Concurrents directs', lignes: 2 }, { cle: 'indirects', libelle: 'Concurrents indirects', lignes: 2 },
+        ] },
+        { titre: 'Diapositive 6', intitule: 'Les sollicitations clients et leur traitement', competence: '3.1.1 : Traiter les messages et/ou les demandes de clients', champs: [
+          { cle: 'exemples', libelle: 'Exemples', lignes: 2 }, { cle: 'traitement', libelle: 'Traitement et contribution à la réponse', lignes: 3 },
+        ] },
+        { titre: 'Diapositive 7', intitule: "Les outils de fidélisation actuels de l'entreprise", competence: '3.1.4 : Proposer des actions de fidélisation et/ou de développement de la relation client', champs: [
+          { cle: 'outil1', libelle: "Nom de l'outil actuel" }, { cle: 'outil2', libelle: "Nom de l'outil actuel" }, { cle: 'detail', lignes: 2 },
+        ] },
+        { titre: 'Diapositive 8', intitule: 'Le constat', competence: '3.1.4 : Proposer des actions de fidélisation et/ou de développement de la relation client', champs: [{ cle: 'constat', lignes: 3 }] },
+        { titre: 'Diapositive 9', intitule: 'La problématique', competence: '3.1.4 : Proposer des actions de fidélisation et/ou de développement de la relation client', champs: [{ cle: 'problematique', lignes: 2 }] },
+        { titre: 'Diapositive 10', intitule: "Les 2 propositions d'action de Maxime", competence: '3.1.4 : Proposer des actions de fidélisation et/ou de développement de la relation client', champs: [
+          { cle: 'action1', libelle: "Proposition d'action 1 (avantage / objectif)", lignes: 3 }, { cle: 'action2', libelle: "Proposition d'action 2 (avantage / objectif)", lignes: 3 },
+        ] },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Fiche d'identité (diapositive 1).", documents: ['Document 1'], bareme: 7, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Élément', 'Réponse'], lignes: [
+          ["Nom de l'entreprise", 'Orpi Guy Môquet'],
+          ['Date de création', '2012'],
+          ['Forme juridique', 'SARL'],
+          ['Effectif', '10 collaborateurs'],
+          ['Réseau', 'Orpi (notoriété nationale)'],
+          ["Chiffre d'affaires", "Environ 2 millions d'euros par an (fluctuant)"],
+          ['Activités', 'Vente de biens, gestion locative, accompagnement des investisseurs'],
+        ] },
+      },
+      { intitule: 'La zone de prospection (diapositive 2).', documents: ['Document 1'], bareme: 2, reponse: "Principalement le 17ème arrondissement de Paris, ainsi que les arrondissements voisins (18ème, 9ème) et la région parisienne (investisseurs)." },
+      {
+        intitule: 'Le profil de la clientèle (diapositive 3).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Critère', 'Réponse'], lignes: [
+          ['Typologie', "Particuliers (acheteurs/locataires pour habiter) et investisseurs"],
+          ['Caractéristiques', "Tranche d'âge 30-45 ans, jeunes couples ou professionnels cherchant un quartier calme et accessible"],
+          ['Mobiles SONCASE', "Sécurité (quartier calme), Argent (accessible financièrement, rentabilité pour investisseurs), Confort"],
+        ] },
+      },
+      {
+        intitule: 'Le SWOT (diapositive 4).', documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['', ''], lignes: [
+          ['Forces', 'Réputation locale, fidélité des clients, bouche-à-oreille, équipe compétente et réactive'],
+          ['Faiblesses', "Absence d'approche numérique, outils trop classiques inadaptés aux jeunes générations"],
+          ['Opportunités', "Programme immobilier d'une cinquantaine d'appartements en construction à proximité"],
+          ['Menaces', "Augmentation des taux d'intérêt freinant les achats immobiliers, concurrence"],
+        ] },
+      },
+      {
+        intitule: 'Les concurrents (diapositive 5).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Catégorie', 'Concurrents'], lignes: [
+          ['Concurrents directs', 'Century 21 (face au métro Guy Môquet), L\u2019Adresse'],
+          ['Concurrents indirects', 'Les sites internet comme Seloger.com'],
+        ] },
+      },
+      {
+        intitule: 'Sollicitations clients et traitement (diapositive 6).', documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['', ''], lignes: [
+          ['Exemples', "Demandes sur les prix des biens et la disponibilité des appartements en vente ou en location"],
+          ['Traitement', "Réponse rapide et personnalisée, détails précis avec photos et visites virtuelles ; un suivi de qualité renforce la relation client et la fidélité"],
+        ] },
+      },
+      {
+        intitule: 'Outils de fidélisation actuels (diapositive 7).', documents: ['Document 1'], bareme: 2, reponse: 'Compte Instagram (non utilisé depuis plusieurs mois) ; système de parrainage récompensant les apporteurs d\u2019affaires.',
+      },
+      { intitule: 'Le constat (diapositive 8).', documents: ['Document 1'], bareme: 3, reponse: "L'agence dispose d'outils numériques (Instagram) mais ne les exploite pas. La relation client n'est pas digitalisée, ce qui ne répond pas aux attentes des jeunes générations." },
+      { intitule: 'La problématique (diapositive 9).', documents: ['Document 1'], bareme: 2, reponse: "Comment l'agence Orpi Guy Môquet peut-elle améliorer la fidélisation et la relation client grâce au numérique ?" },
+      {
+        intitule: "Propositions d'action (diapositive 10).", documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Action', 'Avantage / Objectif'], lignes: [
+          ['Action 1 : réactiver et animer le compte Instagram', "Toucher une clientèle plus large et plus jeune, améliorer la visibilité (comme Century 21)"],
+          ['Action 2 : développer le système de parrainage / un dispositif numérique de fidélisation', "Récompenser les apporteurs d'affaires et fidéliser les clients existants"],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "La phase préparatoire à l'action de FDRC",
+    proposition: ['Sources internes', 'Sources externes', 'Le SWOT', 'La zone de prospection'],
+    racine: {
+      id: 'racine', texte: "Les sources d'informations de l'entreprise",
+      enfants: [
+        { id: 'sources', texte: 'Les sources d\u2019informations', enfants: [
+          { id: 'int', texte: null, reponse: 'Sources internes' },
+          { id: 'ext', texte: null, reponse: 'Sources externes' },
+        ] },
+        { id: 'analyse', texte: "L'analyse de l'entreprise", enfants: [
+          { id: 'swot', texte: 'Le SWOT (FFOM)' },
+          { id: 'zone', texte: 'La zone de prospection' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Recueillir et exploiter les sources (3.1.2)',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas distinguer les sources internes et externes.' },
+          { niveau: 'debrouille', description: "Je relève quelques informations sur l'entreprise." },
+          { niveau: 'averti', description: "Je réalise la fiche d'identité et le SWOT." },
+          { niveau: 'expert', description: "Je synthétise toutes les données pour préparer l'action de FDRC." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Traiter les demandes clients (3.1.1)',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas identifier les sollicitations clients.' },
+          { niveau: 'debrouille', description: 'Je cite une demande fréquente.' },
+          { niveau: 'averti', description: 'Je repère les demandes et leur traitement.' },
+          { niveau: 'expert', description: 'Je propose un traitement personnalisé et rapide.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Proposer des actions de FDRC (3.1.4)',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas formuler un constat.' },
+          { niveau: 'debrouille', description: 'Je formule un constat simple.' },
+          { niveau: 'averti', description: 'Je formule une problématique et une action.' },
+          { niveau: 'expert', description: "Je propose 2 actions justifiées au regard du contexte." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'FDRC', definition: 'Fidélisation et Développement de la Relation Client.' },
+      { terme: 'SWOT (FFOM)', definition: "Analyse des Forces, Faiblesses, Opportunités et Menaces d'une entreprise." },
+      { terme: 'Zone de prospection', definition: "Zone géographique où l'entreprise recherche de nouveaux clients." },
+      { terme: 'Sources internes', definition: "Informations issues de l'entreprise elle-même (fichiers, équipe, CA)." },
+      { terme: 'Sources externes', definition: "Informations issues de l'environnement (concurrents, marché)." },
+      { terme: 'SONCASE', definition: "Mobiles d'achat : Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement." },
+      { terme: 'Concurrent direct', definition: 'Entreprise proposant le même service (autre agence immobilière).' },
+      { terme: 'Concurrent indirect', definition: 'Solution différente répondant au même besoin (sites internet).' },
+      { terme: 'Parrainage', definition: "Dispositif récompensant les clients qui apportent de nouveaux clients (apporteurs d'affaires)." },
+      { terme: 'Problématique', definition: "Question centrale à laquelle l'action de FDRC doit répondre." },
+    ],
+    flashcards: [
+      { recto: "Date de création de l'agence ?", verso: '2012.' },
+      { recto: 'Forme juridique ?', verso: 'SARL.' },
+      { recto: "Effectif de l'agence ?", verso: '10 collaborateurs.' },
+      { recto: "Chiffre d'affaires annuel ?", verso: "Environ 2 millions d'euros (fluctuant)." },
+      { recto: 'Zone de prospection principale ?', verso: '17ème arrondissement de Paris (+ 18ème, 9ème).' },
+      { recto: "Tranche d'âge de la clientèle ?", verso: '30 à 45 ans.' },
+      { recto: 'Faiblesse majeure ?', verso: "L'absence d'approche numérique de la relation client." },
+      { recto: 'Concurrents directs ?', verso: 'Century 21 et L\u2019Adresse.' },
+      { recto: 'Concurrent indirect ?', verso: 'Les sites internet comme Seloger.com.' },
+      { recto: 'Outils de fidélisation actuels ?', verso: 'Instagram (inutilisé) et le parrainage.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Date de création de l'agence ?", options: ['2012', '2002', '2020', '2015'], bonne: 0 },
+      { type: 'unique', question: 'Forme juridique ?', options: ['SARL', 'SAS', 'SA', 'EURL'], bonne: 0 },
+      { type: 'unique', question: 'Effectif ?', options: ['10 collaborateurs', '5 collaborateurs', '20 collaborateurs', '2 collaborateurs'], bonne: 0 },
+      { type: 'unique', question: 'Zone de prospection principale ?', options: ['17ème arrondissement', '1er arrondissement', 'Lyon', 'Marseille'], bonne: 0 },
+      { type: 'unique', question: 'Faiblesse majeure ?', options: ["Absence d'approche numérique", 'Mauvaise réputation', 'Équipe incompétente', 'Prix trop élevés'], bonne: 0 },
+      { type: 'unique', question: 'Quel est un concurrent direct ?', options: ['Century 21', 'Seloger.com', 'Le Bon Coin', 'Google'], bonne: 0 },
+      { type: 'unique', question: 'Quel est un concurrent indirect ?', options: ['Seloger.com', 'Century 21', "L'Adresse", 'Orpi'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie FDRC ?', options: ['Fidélisation et Développement de la Relation Client', 'Fichier Des Relations Commerciales', 'Force De Réaction Commerciale', 'Fonds De Roulement Client'], bonne: 0 },
+      { type: 'unique', question: "Outil de fidélisation inutilisé ?", options: ['Instagram', 'Le parrainage', 'Le téléphone', 'Les visites'], bonne: 0 },
+      { type: 'unique', question: 'Une menace pour l\u2019agence ?', options: ["L'augmentation des taux d'intérêt", 'La baisse des prix', 'Le programme immobilier', 'La réputation'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie SWOT.',
+      etiquettes: ['Force', 'Faiblesse', 'Opportunité / Menace'],
+      zones: [
+        { libelle: 'Réputation locale', etiquetteIndex: 0 },
+        { libelle: 'Fidélité des clients', etiquetteIndex: 0 },
+        { libelle: "Absence d'approche numérique", etiquetteIndex: 1 },
+        { libelle: 'Outils trop classiques', etiquetteIndex: 1 },
+        { libelle: 'Programme immobilier voisin', etiquetteIndex: 2 },
+        { libelle: "Hausse des taux d'intérêt", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -4968,6 +5251,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'amparis-m2': AMPARIS_M2,
   'amparis-m3': AMPARIS_M3,
   'amparis-m4': AMPARIS_M4,
+  'orpi-m1': ORPI_M1,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

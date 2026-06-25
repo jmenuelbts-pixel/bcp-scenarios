@@ -24,6 +24,7 @@ import type {
   AnnexeTableauAppels,
   AnnexeAgenda,
   AnnexeFichierClients,
+  AnnexePowerPoint,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -271,7 +272,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                     </a>
                   </div>
                 )}
-                {annexe && (
+                {annexe && annexe.type !== 'powerpoint' && (
                   <div style={{ marginLeft: 18 }}>
                     {rendreAnnexe(annexe, saisies, set, champStyle, verrouille, couleur)}
                   </div>
@@ -279,6 +280,14 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
               </div>
             )
           })}
+        </div>
+      ))}
+
+      {/* Annexes partagees affichees une seule fois (ex : PowerPoint) */}
+      {contenu.annexes?.filter((a) => a.type === 'powerpoint').map((a) => (
+        <div key={a.id} style={{ marginBottom: 18 }}>
+          <h3 style={{ margin: '0 0 10px 0', fontSize: 15, color: '#FFFFFF', background: couleur, borderRadius: 8, padding: '8px 14px' }}>{a.titre}</h3>
+          {rendreAnnexe(a, saisies, set, champStyle, verrouille, couleur)}
         </div>
       ))}
 
@@ -749,6 +758,7 @@ function rendreAnnexe(
   if (annexe.type === 'tableauappels') return rendreTableauAppels(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'agenda') return rendreAgenda(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'fichierclients') return rendreFichierClients(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'powerpoint') return <EditeurPowerPoint a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1686,6 +1696,82 @@ function rendreAgenda(a: AnnexeAgenda, saisies: Saisies, set: (id: string, v: st
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  )
+}
+
+// Editeur de presentation facon PowerPoint : bandeau de miniatures cliquables
+// + zone d'edition de la diapo selectionnee. Page de garde avec session/date
+// et candidat modifiables.
+function EditeurPowerPoint({ a, saisies, set, verrouille, couleur }: {
+  a: AnnexePowerPoint; saisies: Saisies; set: (id: string, v: string) => void; verrouille: boolean; couleur: string
+}) {
+  const [sel, setSel] = useState(0)
+  const d = a.diapos[sel]
+  const champStyle: React.CSSProperties = {
+    width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14,
+    padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3',
+    background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical',
+  }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+      {/* Barre d'application */}
+      <div style={{ background: '#2B2B2B', color: '#FFFFFF', padding: '8px 14px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ display: 'inline-flex', width: 18, height: 18, background: '#D24726', borderRadius: 3, alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800 }}>P</span>
+        Présentation — {a.titre}
+        <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.6 }}>Diapositive {sel + 1} / {a.diapos.length}</span>
+      </div>
+      <div style={{ display: 'flex', minHeight: 360 }}>
+        {/* Bandeau miniatures */}
+        <div style={{ width: 130, flexShrink: 0, background: '#F0F2F5', borderRight: '1px solid #DCE8F4', padding: 8, overflowY: 'auto', maxHeight: 460 }}>
+          {a.diapos.map((dp, i) => {
+            const actif = i === sel
+            return (
+              <button key={i} type="button" onClick={() => setSel(i)} style={{ display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer', marginBottom: 8, border: actif ? `2px solid ${couleur}` : '1px solid #D2D9E0', borderRadius: 5, background: '#FFFFFF', padding: 0, overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                  <div style={{ background: actif ? couleur : '#B6BFC9', color: '#FFFFFF', fontSize: 11, fontWeight: 800, padding: '4px 6px', display: 'flex', alignItems: 'center' }}>{i + 1}</div>
+                  <div style={{ padding: '6px 6px', fontSize: 10, color: '#374151', lineHeight: 1.3 }}>{dp.garde ? 'Page de garde' : (dp.intitule ?? dp.titre)}</div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        {/* Zone d'edition de la diapo */}
+        <div style={{ flex: 1, padding: 18, background: '#E9ECF0', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+          <div style={{ width: '100%', maxWidth: 560, background: '#FFFFFF', borderRadius: 6, boxShadow: '0 2px 10px rgba(0,0,0,0.12)', padding: 22, minHeight: 320, boxSizing: 'border-box' }}>
+            {d.garde ? (
+              <div style={{ textAlign: 'center' }}>
+                {d.mentions?.slice(0, 2).map((m, i) => <div key={i} style={{ fontSize: i === 0 ? 15 : 14, fontWeight: 800, color: couleur, marginBottom: 6 }}>{m}</div>)}
+                <div style={{ height: 1, background: '#E2E8F0', margin: '12px 0' }} />
+                {d.mentions?.slice(2).map((m, i) => <div key={i} style={{ fontSize: 13, color: '#374151', marginBottom: 6 }}>{m}</div>)}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 16, textAlign: 'left' }}>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280' }}>Candidat (Nom Prénom)</label>
+                    <input value={saisies[`${a.id}.candidat`] ?? ''} onChange={(e) => set(`${a.id}.candidat`, e.target.value)} disabled={verrouille} style={champStyle} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280' }}>Session</label>
+                    <input value={saisies[`${a.id}.session`] ?? ''} onChange={(e) => set(`${a.id}.session`, e.target.value)} disabled={verrouille} placeholder="2025" style={champStyle} />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ fontSize: 16, fontWeight: 800, color: couleur, borderBottom: `2px solid ${couleur}`, paddingBottom: 6, marginBottom: 14 }}>{d.intitule ?? d.titre}</div>
+                {d.champs?.map((ch) => (
+                  <div key={ch.cle} style={{ marginBottom: 12 }}>
+                    {ch.libelle && <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4B5563', marginBottom: 4 }}>{ch.libelle}</label>}
+                    {(ch.lignes ?? 1) > 1
+                      ? <textarea value={saisies[`${a.id}.${ch.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${ch.cle}`, e.target.value)} disabled={verrouille} rows={ch.lignes} style={champStyle} />
+                      : <input value={saisies[`${a.id}.${ch.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${ch.cle}`, e.target.value)} disabled={verrouille} style={champStyle} />}
+                  </div>
+                ))}
+                {d.competence && <div style={{ marginTop: 14, paddingTop: 10, borderTop: '1px solid #E2E8F0', fontSize: 11, color: '#9AA5B1', fontStyle: 'italic' }}>Compétence travaillée : {d.competence}</div>}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
