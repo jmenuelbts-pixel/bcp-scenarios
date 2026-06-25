@@ -499,7 +499,7 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {/* Bandeau hero */}
           <div style={{ background: `linear-gradient(110deg, ${couleur} 0%, #14532b 100%)`, color: '#FFFFFF', padding: '18px 22px' }}>
             <div style={{ fontSize: 12, opacity: 0.85, marginBottom: 4 }}>Accueil › Documentation</div>
-            <div style={{ fontSize: 20, fontWeight: 800 }}>{titrePage ?? 'AMParis — Documents & Systèmes'}</div>
+            <div style={{ fontSize: 20, fontWeight: 800 }}>{titrePage ?? `${marque.nom} — Documentation`}</div>
           </div>
         </>
       )}
