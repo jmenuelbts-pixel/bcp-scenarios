@@ -113,6 +113,30 @@ export interface AnnexePowerPoint {
   diapos: DiapoPpt[]
 }
 
+// Editeur de redaction d'oral facon traitement de texte : sections guidees
+// (introduction, plan, developpement, conclusion, remerciements) a rediger,
+// avec compteur et trame d'aide. Bouton optionnel vers une ressource.
+export interface AnnexeRedactionOral {
+  type: 'redactionoral'
+  id: string
+  titre: string
+  sections: { cle: string; libelle: string; aide?: string; lignes?: number }[]
+  boutonLien?: string
+  boutonLibelle?: string
+}
+
+// Procedure / mode operatoire illustre facon page web : etapes numerotees
+// avec titre et description, facon tutoriel d'application.
+export interface AnnexeModeOperatoire {
+  type: 'modeoperatoire'
+  id: string
+  titre: string
+  entete?: string
+  etapes: { titre: string; description: string }[]
+  boutonLien?: string
+  boutonLibelle?: string
+}
+
 // Gabarit de courrier postal (publipostage) facon traitement de texte : zones
 // expediteur, destinataire, date, objet, corps, signature, a remplir.
 export interface AnnexeCourrier {
@@ -331,7 +355,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -5235,6 +5259,200 @@ const ORPI_M1: ContenuMission = {
   },
 }
 
+const ORPI_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez l'oral de la phase préparatoire à la mise en œuvre de l'action de FDRC : rédigez votre présentation orale à partir du PowerPoint de Maxime, enregistrez-vous, puis créez une animation de présentation.",
+    contexte:
+      "Afin de vous préparer à votre propre oral en entreprise qui aura lieu dans quelques semaines, votre professeur d'économie-gestion vous demande de vous exercer sur le PowerPoint de Maxime. Votre entraînement devra durer 10 minutes maximum.",
+    documents: [
+      { numero: 1, titre: "Mode opératoire : Rédaction de l'oral pour une présentation devant un jury", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: '1. Introduction : Se présenter et introduire le sujet', paragraphes: ["La première étape consiste à bien commencer l'oral, à la fois pour capter l'attention du jury et poser le cadre de la présentation."] },
+        { intertitre: 'A. Se présenter', paragraphes: ['Exemple de début :', "« Bonjour, je m'appelle [Nom], je suis élève en [classe] au lycée [Nom du lycée]. Aujourd'hui, je vais vous présenter mon travail sur [nom du sujet], dans le cadre de [expliquer le contexte, par exemple : un projet, un exposé, un thème étudié, etc.]. »"] },
+        { puces: ['Ce qu\u2019il faut inclure : Nom et prénom', 'Le contexte de la présentation (classe, projet, matière)', "Le sujet de l'oral"] },
+        { paragraphes: ["Conseils : Parlez lentement, de façon claire et assurez-vous d'établir un contact visuel avec le jury pour paraître confiant."] },
+        { intertitre: 'B. Annonce du plan', paragraphes: ['Exemple :', "« Pour vous exposer mon travail, je vais procéder en trois parties : d'abord, je vous présenterai…, ensuite nous verrons…, et enfin, je conclurai en abordant... »"] },
+        { puces: ['Ce qu\u2019il faut inclure : Annonce claire des grandes lignes de la présentation', 'Structure logique du discours'] },
+        { intertitre: '2. Développement', paragraphes: ["Cette étape constitue le cœur de la présentation, où l'élève explique les différentes diapositives."] },
+        { intertitre: "3. Conclusion : Résumer et clore l'oral", paragraphes: ["La conclusion doit marquer la fin de votre présentation en résumant les points clés et en ouvrant sur une réflexion ou une question.", 'Récapituler brièvement les points principaux :', '« Pour conclure, nous avons vu que [résumer les trois parties principales]. »'] },
+        { intertitre: '4. Répondre aux questions du jury', paragraphes: ["Une fois votre présentation terminée, le jury pourra poser des questions. Vous devez être prêt à y répondre.", "Terminez votre par : « Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions »."] },
+        { intertitre: '5. Quelques conseils supplémentaires pour la rédaction de votre présentation orale', paragraphes: [
+          "Clarté et concision : La présentation orale doit être clair et simple. Rédigez un discours fluide et facilement compréhensible.",
+          "Langage approprié : Évitez les phrases trop longues et les répétitions. Utilisez des phrases courtes et efficaces, adaptées à la parole.",
+          "Pratiquez la lecture à voix haute : Une fois votre présentation rédigée, lisez-la à voix haute plusieurs fois pour vérifier son rythme et son efficacité. Cela vous aidera à le rendre plus naturel et à mieux gérer votre temps.",
+        ] },
+        { intertitre: 'Exemple de présentation', paragraphes: [
+          "Introduction : « Bonjour, je m'appelle [Nom], je suis en [classe] et aujourd'hui je vais vous présenter mon travail sur le sujet suivant : [nom du sujet]. Cette présentation se divise en trois parties : d'abord, nous verrons [point 1], puis nous aborderons [point 2], et enfin, je conclurai sur [point 3]. »",
+          "Développement : « La première diapositive traite de… »",
+          "Conclusion : « En conclusion, nous avons vu... Je vous remercie de votre attention. »",
+        ] },
+      ] },
+      { numero: 2, titre: "Mode opératoire pour la création d'une animation", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Création d\u2019une animation (Adobe Express)', paragraphes: ['Ouvrez une page internet et dans Google tapez : ADOBE EXPRESS ANIMATION.'] },
+        { puces: [
+          'Cliquez sur « CRÉER MAINTENANT ».',
+          'Choisissez un personnage, un arrière-plan uniquement.',
+          'Dans CATEGORIE cliquez sur PROFESSIONNELS puis choisissez un personnage. Vous ne pourrez choisir que des personnages HUMAINS car c\u2019est une vidéo professionnelle. Donc pas de monstres, pas d\u2019animaux, pas de légumes…',
+          'Cliquez ici puis choisissez le fichier audio où vous avez enregistré votre oral.',
+          'Cliquez sur « TELECHARGER ».',
+          'Cliquez sur « S\u2019INSCRIRE ».',
+          'Cliquez sur Google puis saisissez votre compte gmail.',
+          'C\u2019est bon ! Votre personnage se retrouvera dans le dossier « Téléchargement » de votre ordinateur.',
+          'Ensuite, vous mettrez votre capsule vidéo dans votre DIGIPAD à la rubrique « MES VIDEOS ».',
+        ] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Épreuve E33 — Bloc 3',
+      intitule: "Présenter à l'oral la phase préparatoire de l'action de FDRC",
+      detail: "3.1.4 Proposer des actions de fidélisation et/ou de développement de la relation client : préparer et présenter à l'oral devant un jury.",
+    },
+    objectifs: [
+      "Rédiger une présentation orale structurée (introduction, développement, conclusion).",
+      "S'entraîner à l'oral et s'enregistrer (10 minutes maximum).",
+      "Créer une animation vidéo de présentation de la situation.",
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — Préparer l'oral de la situation 1",
+        questions: [
+          { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint.', ressources: "Lire le document 1, compléter l'annexe 1. [3.1.4]", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio).', annexeId: undefined },
+          { numero: 3, consigne: "Téléchargez votre oral de votre portable à votre session d'ordinateur.", ressources: 'Étape pratique (transfert du fichier).', annexeId: undefined },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Créer une animation de présentation de la situation 1',
+        questions: [
+          { numero: 4, consigne: 'Suivez les instructions pour créer votre animation de présentation.', ressources: "Consulter le document 2, suivre l'annexe 2. [3.1.4]", annexeId: 'annexe2' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'redactionoral', id: 'annexe1', titre: "Annexe 1 — Rédaction de l'oral", boutonLien: 'https://drive.google.com/file/d/1l7d5Up3OaCAiAthhBkriiRFxuNS6AFFB/view', boutonLibelle: 'Ouvrir le document support', sections: [
+        { cle: 'introduction', libelle: 'Introduction — Se présenter et annoncer le plan', aide: 'Nom et prénom, classe, lycée, sujet, contexte, puis annonce des 3 parties.', lignes: 4 },
+        { cle: 'developpement', libelle: 'Développement — Présenter les diapositives', aide: 'Reprenez chaque diapositive du PowerPoint (identité, zone, clientèle, SWOT, concurrents, sollicitations, fidélisation, constat, problématique, propositions).', lignes: 10 },
+        { cle: 'conclusion', libelle: 'Conclusion — Résumer et conclure', aide: 'Récapitulez les points principaux et remerciez le jury.', lignes: 3 },
+        { cle: 'remerciements', libelle: 'Remerciements et ouverture aux questions', aide: '« Je vous remercie de m\u2019avoir écouté. Je suis prêt(e) à répondre à vos questions ».', lignes: 2 },
+      ] },
+      { type: 'modeoperatoire', id: 'annexe2', titre: "Annexe 2 — Mode opératoire pour la création d'une animation", entete: 'Adobe Express — Création d\u2019une animation', boutonLien: 'https://drive.google.com/file/d/1qM9Df47ltyoM5J4sHsnvnOq1tSVyY7iE/view', boutonLibelle: 'Ouvrir le mode opératoire complet', etapes: [
+        { titre: 'Étape 1 — Accéder à Adobe Express', description: 'Ouvrez une page internet et dans Google tapez : ADOBE EXPRESS ANIMATION. Cliquez sur « CRÉER MAINTENANT ».' },
+        { titre: 'Étape 2 — Choisir un personnage', description: 'Choisissez un personnage et un arrière-plan uniquement. Dans CATEGORIE cliquez sur PROFESSIONNELS puis choisissez un personnage HUMAIN (pas de monstres, animaux, légumes…).' },
+        { titre: 'Étape 3 — Importer votre oral', description: 'Cliquez pour choisir le fichier audio où vous avez enregistré votre oral.' },
+        { titre: 'Étape 4 — Télécharger', description: 'Cliquez sur « TELECHARGER », puis « S\u2019INSCRIRE », puis Google avec votre compte gmail.' },
+        { titre: 'Étape 5 — Déposer la capsule', description: 'Votre personnage se retrouve dans le dossier « Téléchargement ». Mettez votre capsule vidéo dans votre DIGIPAD à la rubrique « MES VIDEOS ».' },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Rédaction de l'oral (annexe 1).", documents: ['Document 1'], bareme: 10, reponse: "L'oral reprend la trame du document 1. Introduction : « Bonjour, je m'appelle [Nom], je suis en terminale Bac Pro MCV B au lycée Maria Deraismes. Aujourd'hui je vais vous présenter la phase préparatoire d'une action de FDRC menée chez Orpi Guy Môquet. Ma présentation se divise en trois parties : d'abord l'analyse de l'entreprise, ensuite les sollicitations clients, et enfin mes propositions d'actions. » Développement : présentation des 10 diapositives (identité, zone de prospection, clientèle, SWOT, concurrents, sollicitations clients, outils de fidélisation, constat, problématique, deux propositions d'action). Conclusion : « Pour conclure, nous avons vu l'identité et la situation de l'agence, les demandes des clients et deux actions pour améliorer la fidélisation grâce au numérique. Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions. »" },
+      { intitule: 'Enregistrement et transfert (étapes pratiques).', documents: ['Document 1'], bareme: 0, reponse: "Étapes pratiques : enregistrer l'oral (10 minutes maximum) sur le téléphone, puis transférer le fichier audio sur la session de l'ordinateur." },
+      { intitule: "Création de l'animation (annexe 2).", documents: ['Document 2'], bareme: 0, reponse: "Suivre le mode opératoire Adobe Express : créer maintenant, choisir un personnage humain (catégorie Professionnels) et un arrière-plan, importer le fichier audio de l'oral, télécharger la vidéo, s'inscrire avec le compte Google, puis déposer la capsule dans le DIGIPAD à la rubrique « MES VIDEOS »." },
+    ],
+  },
+  synthese: {
+    titre: "La préparation de l'oral",
+    proposition: ['Se présenter et introduire le sujet', 'Clarté et concision', 'Utiliser un logiciel', 'Mode opératoire'],
+    racine: {
+      id: 'racine', texte: "La préparation de l'oral",
+      enfants: [
+        { id: 'redac', texte: "La rédaction de l'oral", enfants: [
+          { id: 'intro', texte: null, reponse: 'Se présenter et introduire le sujet' },
+          { id: 'conseils', texte: null, reponse: 'Clarté et concision' },
+        ] },
+        { id: 'anim', texte: "La création d'une animation", enfants: [
+          { id: 'logiciel', texte: 'Utiliser un logiciel' },
+          { id: 'mode', texte: 'Mode opératoire' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Rédiger une présentation orale",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas structurer un oral." },
+          { niveau: 'debrouille', description: 'Je rédige une introduction.' },
+          { niveau: 'averti', description: 'Je rédige introduction, développement et conclusion.' },
+          { niveau: 'expert', description: "Je rédige un oral clair, concis et structuré (10 min)." },
+        ],
+      },
+      {
+        id: 'c2', intitule: "S'entraîner et s'enregistrer",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne m'enregistre pas." },
+          { niveau: 'debrouille', description: "Je m'enregistre partiellement." },
+          { niveau: 'averti', description: "Je m'enregistre en respectant le temps." },
+          { niveau: 'expert', description: "Je m'enregistre, me réécoute et m'améliore." },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Créer une animation",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas utiliser le logiciel." },
+          { niveau: 'debrouille', description: "Je crée un personnage." },
+          { niveau: 'averti', description: "Je crée une animation avec mon audio." },
+          { niveau: 'expert', description: "Je crée et dépose ma capsule dans le DIGIPAD." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Oral devant un jury', definition: "Présentation structurée évaluée par un jury (introduction, développement, conclusion)." },
+      { terme: 'Introduction', definition: "Début de l'oral : se présenter, annoncer le sujet et le plan." },
+      { terme: 'Annonce du plan', definition: 'Présentation claire des grandes parties du discours.' },
+      { terme: 'Développement', definition: "Cœur de la présentation, où l'on explique les diapositives." },
+      { terme: 'Conclusion', definition: "Fin de l'oral : résumé des points clés et ouverture." },
+      { terme: 'Clarté et concision', definition: 'Discours fluide, phrases courtes et efficaces, adaptées à la parole.' },
+      { terme: 'Lecture à voix haute', definition: "Technique pour vérifier le rythme et l'efficacité d'un oral." },
+      { terme: 'Animation', definition: "Capsule vidéo créée avec un logiciel (Adobe Express) à partir de l'audio." },
+      { terme: 'Adobe Express', definition: "Logiciel en ligne de création de vidéos d'animation." },
+      { terme: 'DIGIPAD', definition: "Mur numérique où l'élève dépose ses productions (rubrique MES VIDEOS)." },
+    ],
+    flashcards: [
+      { recto: "Durée maximale de l'oral ?", verso: '10 minutes maximum.' },
+      { recto: 'Les 3 grandes parties d\u2019un oral ?', verso: 'Introduction, développement, conclusion.' },
+      { recto: "Que contient l'introduction ?", verso: 'Nom et prénom, contexte (classe, projet), sujet, annonce du plan.' },
+      { recto: 'Phrase de fin recommandée ?', verso: "« Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions »." },
+      { recto: 'Conseils de rédaction ?', verso: 'Clarté et concision, langage approprié, lecture à voix haute.' },
+      { recto: 'Quel logiciel pour l\u2019animation ?', verso: 'Adobe Express.' },
+      { recto: 'Type de personnage autorisé ?', verso: 'Uniquement des personnages humains (catégorie Professionnels).' },
+      { recto: 'Où déposer la capsule vidéo ?', verso: 'Dans le DIGIPAD, rubrique « MES VIDEOS ».' },
+      { recto: "Comment vérifier son oral ?", verso: 'Le lire à voix haute plusieurs fois (rythme, efficacité).' },
+      { recto: "Que faire après le développement ?", verso: 'Conclure en résumant les points principaux puis remercier le jury.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Durée maximale de l'oral ?", options: ['10 minutes', '30 minutes', '2 minutes', '1 heure'], bonne: 0 },
+      { type: 'unique', question: "Que contient l'introduction ?", options: ['Nom, contexte, sujet, plan', 'La conclusion', 'Les questions du jury', 'Le coût'], bonne: 0 },
+      { type: 'unique', question: 'Combien de parties dans un oral structuré ?', options: ['3', '2', '5', '1'], bonne: 0 },
+      { type: 'unique', question: 'Quel logiciel pour l\u2019animation ?', options: ['Adobe Express', 'Excel', 'Photoshop', 'Word'], bonne: 0 },
+      { type: 'unique', question: 'Type de personnage autorisé ?', options: ['Humain (Professionnels)', 'Animal', 'Monstre', 'Légume'], bonne: 0 },
+      { type: 'unique', question: 'Où déposer la capsule ?', options: ['DIGIPAD (MES VIDEOS)', 'Par mail', 'Sur Instagram', 'Nulle part'], bonne: 0 },
+      { type: 'unique', question: 'Un conseil de rédaction ?', options: ['Clarté et concision', 'Phrases très longues', 'Beaucoup de répétitions', 'Parler vite'], bonne: 0 },
+      { type: 'unique', question: 'Comment vérifier son oral ?', options: ['Lire à voix haute', 'Ne pas relire', "L'écrire une seule fois", 'Demander à un ami de le faire'], bonne: 0 },
+      { type: 'unique', question: 'Phrase de fin recommandée ?', options: ["« Je vous remercie de m'avoir écouté… »", '« Au revoir »', '« C\u2019est fini »', '« Bonne journée »'], bonne: 0 },
+      { type: 'unique', question: 'Le développement sert à...', options: ['Expliquer les diapositives', 'Se présenter', 'Conclure', 'Remercier'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Classez chaque élément dans la bonne étape de l'oral.",
+      etiquettes: ['Introduction', 'Développement', 'Conclusion'],
+      zones: [
+        { libelle: 'Se présenter (nom, classe)', etiquetteIndex: 0 },
+        { libelle: 'Annoncer le plan', etiquetteIndex: 0 },
+        { libelle: 'Expliquer les diapositives', etiquetteIndex: 1 },
+        { libelle: 'Présenter le SWOT', etiquetteIndex: 1 },
+        { libelle: 'Résumer les points clés', etiquetteIndex: 2 },
+        { libelle: 'Remercier le jury', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -5252,6 +5470,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'amparis-m3': AMPARIS_M3,
   'amparis-m4': AMPARIS_M4,
   'orpi-m1': ORPI_M1,
+  'orpi-m2': ORPI_M2,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

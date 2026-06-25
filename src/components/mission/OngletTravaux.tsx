@@ -25,6 +25,8 @@ import type {
   AnnexeAgenda,
   AnnexeFichierClients,
   AnnexePowerPoint,
+  AnnexeRedactionOral,
+  AnnexeModeOperatoire,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -759,6 +761,8 @@ function rendreAnnexe(
   if (annexe.type === 'agenda') return rendreAgenda(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'fichierclients') return rendreFichierClients(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'powerpoint') return <EditeurPowerPoint a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
+  if (annexe.type === 'redactionoral') return rendreRedactionOral(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'modeoperatoire') return rendreModeOperatoire(annexe, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1696,6 +1700,53 @@ function rendreAgenda(a: AnnexeAgenda, saisies: Saisies, set: (id: string, v: st
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  )
+}
+
+// Editeur de redaction d'oral facon traitement de texte : sections guidees.
+function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical', lineHeight: 1.5 }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>📝 {a.titre}</div>
+      <div style={{ padding: 14 }}>
+        {a.boutonLien && (
+          <a href={a.boutonLien} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', background: '#FFFFFF', color: couleur, border: `1px solid ${couleur}`, borderRadius: 8, padding: '7px 12px', fontSize: 13, fontWeight: 700, marginBottom: 14 }}>↗ {a.boutonLibelle ?? 'Ouvrir la ressource'}</a>
+        )}
+        {a.sections.map((s) => (
+          <div key={s.cle} style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#1F2933', marginBottom: 2 }}>{s.libelle}</div>
+            {s.aide && <div style={{ fontSize: 12, color: '#9AA5B1', fontStyle: 'italic', marginBottom: 5 }}>{s.aide}</div>}
+            <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Mode operatoire illustre facon page web : etapes numerotees (lecture seule).
+function rendreModeOperatoire(a: AnnexeModeOperatoire, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>⚙ {a.entete ?? a.titre}</div>
+      <div style={{ padding: 14 }}>
+        {a.boutonLien && (
+          <a href={a.boutonLien} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', background: '#FFFFFF', color: couleur, border: `1px solid ${couleur}`, borderRadius: 8, padding: '7px 12px', fontSize: 13, fontWeight: 700, marginBottom: 14 }}>↗ {a.boutonLibelle ?? 'Ouvrir le mode opératoire'}</a>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {a.etapes.map((e, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <div style={{ flexShrink: 0, width: 28, height: 28, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800 }}>{i + 1}</div>
+              <div style={{ flex: 1, background: '#F7F9FB', border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 12px' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933', marginBottom: 2 }}>{e.titre}</div>
+                <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.5 }}>{e.description}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
