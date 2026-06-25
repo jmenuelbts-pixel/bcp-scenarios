@@ -31,6 +31,8 @@ import type {
   AnnexeGrilleTarifaire,
   AnnexeOrganigrammeAremplir,
   NoeudOrgaVide,
+  AnnexeCochage,
+  AnnexeFicheAppel,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -549,8 +551,32 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.crm && <CrmConsultable crm={b.crm} couleur={couleur} />}
           {b.organigramme && <OrganigrammeVue org={b.organigramme} />}
           {b.journalAppels && <JournalAppelsVue journal={b.journalAppels} couleur={couleur} />}
+          {b.transcription && <TranscriptionVue transcription={b.transcription} couleur={couleur} />}
         </div>
       ))}
+      </div>
+    </div>
+  )
+}
+
+// Transcription en temps reel facon logiciel de centre d'appel : echanges
+// numerotes en bulles entrant (gauche) / sortant (droite, conseiller).
+function TranscriptionVue({ transcription, couleur }: { transcription: NonNullable<BlocDocumentTexte['transcription']>; couleur: string }) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 10, overflow: 'hidden', marginTop: 4 }}>
+      <div style={{ background: '#1F2933', color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#28C840', display: 'inline-block' }} /> {transcription.entete ?? 'Transcription en temps réel'}
+        <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.7 }}>{transcription.echanges.length} échanges</span>
+      </div>
+      <div style={{ padding: 14, background: '#F2F5F8', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {transcription.echanges.map((e, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: e.entrant ? 'flex-start' : 'flex-end' }}>
+            <div style={{ maxWidth: '78%', background: e.entrant ? '#FFFFFF' : couleur, color: e.entrant ? '#1F2933' : '#FFFFFF', border: e.entrant ? '1px solid #E2E8F0' : 'none', borderRadius: 12, padding: '8px 12px', boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.75, marginBottom: 2 }}>{e.numero}. {e.locuteur}</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>{e.texte}</div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -784,6 +810,8 @@ function rendreAnnexe(
   if (annexe.type === 'fichesignaletique') return rendreFicheSignaletique(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'grilletarifaire') return rendreGrilleTarifaire(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'organigrammearemplir') return rendreOrganigrammeAremplir(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'cochage') return rendreCochage(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'ficheappel') return rendreFicheAppel(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1516,11 +1544,17 @@ function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: st
           <tbody>
             {lignes.map((r) => (
               <tr key={r} style={{ borderTop: '1px solid #F1F3F5' }}>
-                {a.colonnes.map((_, ci) => (
-                  <td key={ci} style={{ padding: '4px 6px' }}>
-                    <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />
-                  </td>
-                ))}
+                {a.colonnes.map((_, ci) => {
+                  const fixe = a.prerempli?.[r]?.[ci]
+                  if (fixe) {
+                    return <td key={ci} style={{ padding: '8px 8px', fontSize: 13, fontWeight: 700, color: '#1F2933', background: '#F7F9FB' }}>{fixe}</td>
+                  }
+                  return (
+                    <td key={ci} style={{ padding: '4px 6px' }}>
+                      <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />
+                    </td>
+                  )
+                })}
               </tr>
             ))}
           </tbody>
@@ -1739,6 +1773,58 @@ function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id:
         {a.sections.map((s) => (
           <div key={s.cle} style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#1F2933', marginBottom: 2 }}>{s.libelle}</div>
+            {s.aide && <div style={{ fontSize: 12, color: '#9AA5B1', fontStyle: 'italic', marginBottom: 5 }}>{s.aide}</div>}
+            <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Tableau de cochage facon logiciel : lignes de dialogue + case a cocher.
+function rendreCochage(a: AnnexeCochage, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>☑ {a.titre}</div>
+      <div style={{ padding: 8 }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr>
+              {['N°', 'Protagoniste', 'Dialogue', a.entete].map((h) => <th key={h} style={{ textAlign: 'left', padding: '7px 8px', fontSize: 11, fontWeight: 700, color: '#FFFFFF', background: couleur, border: '1px solid #FFFFFF' }}>{h}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {a.lignes.map((l) => {
+              const coche = saisies[`${a.id}.${l.numero}`] === 'X'
+              return (
+                <tr key={l.numero}>
+                  <td style={{ border: '1px solid #E2E8F0', padding: '6px 8px', fontSize: 12, fontWeight: 700, color: couleur }}>{l.numero}</td>
+                  <td style={{ border: '1px solid #E2E8F0', padding: '6px 8px', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>{l.protagoniste}</td>
+                  <td style={{ border: '1px solid #E2E8F0', padding: '6px 8px', fontSize: 12.5, color: '#374151' }}>{l.texte}</td>
+                  <td style={{ border: '1px solid #E2E8F0', padding: '6px 8px', textAlign: 'center' }}>
+                    <input type="checkbox" checked={coche} disabled={verrouille} onChange={(e) => set(`${a.id}.${l.numero}`, e.target.checked ? 'X' : '')} style={{ width: 18, height: 18, accentColor: couleur, cursor: verrouille ? 'default' : 'pointer' }} />
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// Fiche d'appel CERC facon logiciel : sections a rediger.
+function rendreFicheAppel(a: AnnexeFicheAppel, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical', lineHeight: 1.5 }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>📞 {a.titre}</div>
+      <div style={{ padding: 14 }}>
+        {a.sections.map((s) => (
+          <div key={s.cle} style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: couleur, marginBottom: 2 }}>{s.libelle}</div>
             {s.aide && <div style={{ fontSize: 12, color: '#9AA5B1', fontStyle: 'italic', marginBottom: 5 }}>{s.aide}</div>}
             <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
           </div>

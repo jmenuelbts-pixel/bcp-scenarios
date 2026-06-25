@@ -52,6 +52,9 @@ export interface AnnexeGrille {
   titre: string
   colonnes: string[] // en-tetes de colonnes
   nbLignes: number // nombre de lignes a saisir
+  // Pre-remplissage optionnel de certaines cellules (libelles fixes a gauche,
+  // le reste a completer). Tableau de lignes ; '' = cellule a saisir.
+  prerempli?: string[][]
 }
 
 export interface AnnexeTexte {
@@ -151,6 +154,25 @@ export interface AnnexeCroc {
   type: 'croc'
   id: string
   titre: string
+}
+
+// Tableau de cochage facon logiciel : lignes de dialogue avec case a cocher
+// (ex : intervention "a ameliorer"). L'eleve coche les lignes concernees.
+export interface AnnexeCochage {
+  type: 'cochage'
+  id: string
+  titre: string
+  entete: string // libelle de la colonne a cocher
+  lignes: { numero: string; protagoniste: string; texte: string }[]
+}
+
+// Fiche d'appel CERC facon logiciel : sections (Contact, Ecoute, Reponse,
+// Conclusion) avec sous-zones a rediger.
+export interface AnnexeFicheAppel {
+  type: 'ficheappel'
+  id: string
+  titre: string
+  sections: { cle: string; libelle: string; aide?: string; lignes?: number }[]
 }
 
 // Fiche signaletique facon logiciel (registre entreprise) : champs etiquetes.
@@ -387,7 +409,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeFicheAppel | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -443,6 +465,9 @@ export interface BlocDocumentTexte {
   dialogue?: { locuteur?: string; texte: string; italique?: boolean }[]
   // Lien audio optionnel pour ecouter une partie de dialogue (bouton discret).
   audioLien?: string
+  // Transcription en temps reel facon logiciel (centre d'appel) : echanges
+  // numerotes, bulles entrant/sortant facon messagerie.
+  transcription?: { entete?: string; echanges: { numero: string; locuteur: string; texte: string; entrant?: boolean }[] }
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -6297,6 +6322,284 @@ const FREE_M1: ContenuMission = {
   },
 }
 
+const DIALOGUE_M2 = [
+  { numero: '1', protagoniste: 'Free Helper', texte: 'Bonjour madame !' },
+  { numero: '2', protagoniste: 'Cliente', texte: "Bonjour, monsieur c'est bien le service client Free ?" },
+  { numero: '3', protagoniste: 'Free Helper', texte: 'Oui, oui !' },
+  { numero: '4', protagoniste: 'Cliente', texte: "Je suis Madame Bréssou. Je vous appelle parce que j'ai un souci en ce moment avec internet…" },
+  { numero: '5', protagoniste: 'Free Helper', texte: '… C\u2019est quoi le problème ?' },
+  { numero: '6', protagoniste: 'Cliente', texte: "Justement j'y viens… J'ai l'impression qu'internet chez moi n'est pas du stable, quand…" },
+  { numero: '7', protagoniste: 'Free Helper', texte: 'Ca veut dire quoi « n\u2019est pas stable » ?' },
+  { numero: '8', protagoniste: 'Cliente', texte: "J'y viens aussi… Comme je vous le disais, je suis obligée de choisir entre avoir du Wifi et regarder la télé. Si j'active internet, alors la télévision ne marche plus et vice versa." },
+  { numero: '9', protagoniste: 'Free Helper', texte: 'Ah bon ? C\u2019est bizarre ça !' },
+  { numero: '10', protagoniste: 'Cliente', texte: "Ben oui… Du coup j'ai besoin d'internet parce que je travaille quelques fois à domicile. Mais lorsque mes enfants veulent regarder la télévision je suis obligé de faire un partage de connexion avec mon ordinateur." },
+  { numero: '11', protagoniste: 'Free Helper', texte: 'En gros, on peut dire qu\u2019internet fonctionne mal ! C\u2019est ça !' },
+  { numero: '12', protagoniste: 'Cliente', texte: 'Oui, on peut le reformuler comme ça.' },
+  { numero: '13', protagoniste: 'Free Helper', texte: "En fait, Je n'peux rien faire à distance, donc je vais ouvrir un ticket ; c'est-à-dire que je vais demander à un technicien Free de passer chez vous. Il viendra diagnostiquer sur place les causes de la rupture et à partir de là s'il peut la réparer tout de suite il le fera." },
+  { numero: '14', protagoniste: 'Cliente', texte: 'Ah bon ? Mais moi je travaille. Comment ça va se passer ?' },
+  { numero: '15', protagoniste: 'Free Helper', texte: 'Et ben justement j\u2019allais vous en parler. Vous est dispo quand ?' },
+  { numero: '16', protagoniste: 'Cliente', texte: 'Je ne sais pas… je dirais mercredi après-midi.' },
+  { numero: '17', protagoniste: 'Free Helper', texte: 'A quelle heure ?' },
+  { numero: '18', protagoniste: 'Cliente', texte: 'Peu m\u2019importe… 14h c\u2019est bien !' },
+  { numero: '19', protagoniste: 'Free Helper', texte: 'Il faut bloquer un créneau de 2 heures, donc je mets 14h- 16h.' },
+  { numero: '20', protagoniste: 'Cliente', texte: 'D\u2019accord c\u2019est bon pour moi.' },
+  { numero: '21', protagoniste: 'Free Helper', texte: 'Pas de souci, bonne journée.' },
+  { numero: '22', protagoniste: 'Cliente', texte: 'Merci M. merci à vous, bonne journée également.' },
+]
+const FREE_HELPER_LIGNES = DIALOGUE_M2.filter((d) => d.protagoniste === 'Free Helper')
+
+const FREE_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Traitez une réclamation en réception d'appel : appliquez la méthode C.E.R.C., repérez et reformulez les interventions à améliorer, puis rédigez votre propre plan de réception d'appel.",
+    contexte:
+      "Cela fait une semaine que vous êtes chez Free et votre tutrice souhaite vous confronter pendant une demi-journée aux appels du service clients de l'entreprise. Elle vous rappelle que c'est un service très stratégique car vous contribuez à véhiculer une image positive de l'entreprise. Après la formation qui a eu lieu hier, votre tutrice vous demande d'analyser un appel entrant.",
+    documents: [
+      { numero: 1, titre: 'Les conseils de votre tutrice', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'L\u2019accueil téléphonique', paragraphes: [
+          "C'est une évidence, l'accueil téléphonique professionnel peut relever de l'anecdote comme de la mission la plus délicate. Qui plus est, lors de la réception d'un appel externe, l'enjeu est souvent inconnu au moment de saisir le combiné. C'est pourquoi les techniques permettant d'améliorer la qualité des appels entrants ou sortants font partie de la formation de base de certaines professions (assistant, vendeur…). L'exercice est parfois ardu, mais fort heureusement les signes non verbaux (sourire, intonation, débit…) peuvent appuyer et nuancer les propos.",
+          "Comme l'accueil physique, l'accueil téléphonique en entreprise nécessite une certaine empathie. Lorsque vous appelez un correspondant, par exemple votre banquier, vous estimez qu'il est normal d'être convenablement reçu et de recevoir un message clair, professionnel et qui réponde à votre attente. Eh bien il suffit d'en faire de même lorsque c'est vous qui recevez l'appel ! »",
+        ] },
+      ] },
+      { numero: 2, titre: 'Conversation téléphonique', images: [], texte: [
+        { pageWeb: true },
+        { transcription: { entete: 'Transcription en temps réel — Appel entrant 3244', echanges: DIALOGUE_M2.map((d) => ({ numero: d.numero, locuteur: d.protagoniste, texte: d.texte, entrant: d.protagoniste === 'Cliente' })) } },
+      ] },
+      { numero: 3, titre: 'La méthode C.E.R.C', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'En réception d\u2019appel, utilisez le CERC', paragraphes: ["Lorsque vous recevez l'appel d'un client ou d'un prospect, vous appliquerez pendant l'appel, la méthode CERC."] },
+        { tableau: { colonnes: ['Étape', 'Phase', 'Contenu'], lignes: [
+          ['Étape 1', 'Contact', "Saluer, indiquer le nom de l'entreprise, se présenter, montrer sa disponibilité ou demander l'objet de l'appel."],
+          ['Étape 2', 'Écoute', "Écouter attentivement la demande de l'interlocuteur, le questionner, reformuler si nécessaire."],
+          ['Étape 3', 'Réponse', "Traiter ou répondre à la demande, proposer de rappeler ou prendre le message. S'assurer que le client est satisfait de la réponse apportée."],
+          ['Étape 4', 'Conclusion', "Remercier, prendre congé et raccrocher après l'interlocuteur."],
+        ] } },
+      ] },
+      { numero: 4, titre: "Procédure d'entretien du Free Helper", images: [], texte: [
+        { pageWeb: true },
+        { organigramme: { tete: {
+          libelle: '1 - Je reçois un appel : j\u2019applique le contact', teinte: 'tete', enfants: [
+            { libelle: '2 - Je pratique l\u2019écoute', teinte: 'bleu', enfants: [
+              { libelle: '3 - Je prends en charge le problème', teinte: 'jaune', enfants: [
+                { libelle: '4A - Le problème n\u2019a pas pu être traité', teinte: 'rose', enfants: [ { libelle: '5A - Je propose au client de le rappeler', teinte: 'gris' } ] },
+                { libelle: '4B - Une solution a été trouvée', teinte: 'vert', enfants: [ { libelle: '7 - Je conclue', teinte: 'gris' } ] },
+              ] },
+            ] },
+          ],
+        } } },
+      ] },
+      { numero: 5, titre: 'La réclamation du client', images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { locuteur: 'M. Axel Haire', texte: "Bonjour, je suis Monsieur Axel Haire et je vous appelle car je souhaite résilier mon abonnement Free car je déménage à l'étranger. Je ne sais pas comment faire." },
+        ] },
+      ] },
+      { numero: 6, titre: 'Procédure de résiliation Freebox du Free Helper', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Procédure de résiliation', paragraphes: ['Pour résilier votre abonnement, vous devez :'] },
+        { puces: [
+          'Envoyer votre courrier à l\u2019adresse suivante : Publidispatch – Free résiliation, Service résiliation, 6 rue Désir Prévost – La Grande Brèche, 91 070 Bondoufle.',
+          'Puis, votre résiliation sera effective 10 jours après la réception de votre courrier.',
+          'Enfin, au plus tard 15 jours après la résiliation, vous devrez nous retourner les équipements et accessoires des box qui ont été mis à votre disposition.',
+        ] },
+      ] },
+      { numero: 7, titre: 'Coordonnées Free', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Nous contacter', paragraphes: ['Par téléphone : 3244 (service client, 7j/7 de 7 heures à minuit).'] },
+        { puces: ['Adresse résiliation : Publidispatch – Free résiliation, Service résiliation, 6 rue Désir Prévost – La Grande Brèche, 91 070 Bondoufle.', 'Siège : 8 rue de la Ville l\u2019Évêque, 75008 PARIS.'] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences',
+      intitule: "Traiter une réclamation en réception d'appel",
+      detail: "Appliquer la méthode C.E.R.C., adopter une posture professionnelle au téléphone, reformuler et rédiger un plan de réception d'appel.",
+    },
+    objectifs: [
+      'Identifier les éléments d\u2019une bonne prise de contact.',
+      'Repérer les étapes de la méthode C.E.R.C. dans un dialogue.',
+      'Reformuler les interventions à améliorer et rédiger une fiche d\u2019appel.',
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La méthode C.E.R.C. en réception d\u2019appel',
+        questions: [
+          { numero: 1, consigne: "Pour chacun des éléments d'une bonne prise de contact, retrouvez les contenus qui les constituent.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez les numéros dans le dialogue qui correspondent aux différentes étapes de la méthode C.E.R.C.', ressources: "Lire les documents 2 et 3, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Cochez les interventions du Free Helper (conseiller relation client à distance Free) qui selon vous méritent d'être améliorées.", ressources: "Compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Reformulez et corrigez toutes les interventions que vous avez cochées et qui selon vous sont à améliorer.', ressources: "Observer l'annexe 3 puis compléter l'annexe 4.", annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — L\u2019accueil téléphonique',
+        questions: [
+          { numero: 5, consigne: "Utilisez la méthode C.E.R.C. pour rédiger votre plan de réception d'appel en fonction de la réclamation du client.", ressources: "Lire les documents 3 à 6, compléter l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les éléments de la prise de contact', colonnes: ["Les éléments d'une bonne prise de contact", 'Contenus'], nbLignes: 3, prerempli: [['Les signes non verbaux', ''], ["L'attitude en face-à-face ou au téléphone", ''], ['Les caractéristiques du message verbal', '']] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Les étapes correspondant à la méthode C.E.R.C.', colonnes: ['Étapes', 'La méthode C.E.R.C.'], nbLignes: 4, prerempli: [['1', ''], ['2', ''], ['3', ''], ['4', '']] },
+      { type: 'cochage', id: 'annexe3', titre: 'Annexe 3 — Les interventions à améliorer', entete: 'À améliorer', lignes: FREE_HELPER_LIGNES },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 — Proposition de correction de l'intervention du Free Helper", colonnes: ["Numéro d'intervention à améliorer", 'Proposition de reformulation'], nbLignes: 8 },
+      { type: 'ficheappel', id: 'annexe5', titre: 'Annexe 5 — La fiche d\u2019appel C.E.R.C.', sections: [
+        { cle: 'contact', libelle: 'CONTACT', aide: 'Saluer, se présenter, montrer sa disponibilité.', lignes: 2 },
+        { cle: 'ecoute', libelle: 'ÉCOUTE (questionnement + reformulation)', aide: 'Questionner puis reformuler le besoin du client.', lignes: 4 },
+        { cle: 'reponse', libelle: 'RÉPONSE', aide: 'Traiter la demande (ici : procédure de résiliation).', lignes: 5 },
+        { cle: 'conclusion', libelle: 'CONCLUSION', aide: 'Remercier, prendre congé.', lignes: 2 },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Éléments de la prise de contact (annexe 1).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
+        tableau: { colonnes: ["Les éléments d'une bonne prise de contact", 'Contenus'], lignes: [
+          ['Les signes non verbaux', 'Sourire, intonation, débit…'],
+          ["L'attitude en face-à-face ou au téléphone", 'Empathie'],
+          ['Les caractéristiques du message verbal', 'Message clair et professionnel'],
+        ] },
+      },
+      {
+        intitule: 'Étapes de la méthode C.E.R.C. (annexe 2).', documents: ['Documents 2 et 3'], bareme: 10, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Étapes', 'Numéros dans le dialogue'], lignes: [
+          ['1 — Contact', '1'],
+          ['2 — Écoute', '5 – 7 – 9 – 11'],
+          ['3 — Réponse', '13 – 15 – 17 – 19'],
+          ['4 — Conclusion', '21'],
+        ] },
+      },
+      {
+        intitule: 'Interventions à améliorer (annexe 3).', documents: ['Document 2'], bareme: 8, reponse: 'Interventions à améliorer : 1, 5, 7, 9, 11, 15, 19, 21.',
+        tableau: { colonnes: ['Numéro', 'À améliorer'], lignes: [
+          ['1', 'X'], ['3', ''], ['5', 'X'], ['7', 'X'], ['9', 'X'], ['11', 'X'], ['13', ''], ['15', 'X'], ['17', ''], ['19', 'X'], ['21', 'X'],
+        ] },
+      },
+      {
+        intitule: 'Reformulations (annexe 4).', documents: ['Annexe 3'], bareme: 8, reponse: 'Voir tableau.',
+        tableau: { colonnes: ["N°", 'Proposition de reformulation'], lignes: [
+          ['1', '« Bonjour, [prénom] de chez Free, à votre écoute. »'],
+          ['5', '« En quoi puis-je vous aider ? »'],
+          ['7', '« Pourriez-vous me préciser ce que vous entendez par « n\u2019est pas stable » ? »'],
+          ['9', '« Je comprends… »'],
+          ['11', '« Si j\u2019ai bien compris, le wifi et la télévision fonctionnent alternativement et pas en même temps. » OU « Si j\u2019ai bien compris, vous avez un problème avec votre Wifi qui empêche un fonctionnement normal de la télévision lorsqu\u2019il est activé. C\u2019est bien cela ? »'],
+          ['15', '« C\u2019est justement ce que j\u2019allais vous demander. Quelles sont vos disponibilités ? » OU « Quand seriez-vous disponible pour qu\u2019un technicien passe chez vous ? »'],
+          ['19', '« Il faut bloquer un créneau de 2 heures, donc je mets 14h – 16h. Ça vous convient ? »'],
+          ['21', '« Très bien ! Le technicien passera donc chez vous mercredi entre 14h et 16h. Je vous remercie et je vous souhaite une excellente journée, à bientôt. » OU « Je vous souhaite une très bonne journée. Au revoir ! »'],
+        ] },
+      },
+      {
+        intitule: 'Fiche d\u2019appel C.E.R.C. (annexe 5).', documents: ['Documents 3 à 6'], bareme: 6, reponse: 'Voir fiche.',
+        tableau: { colonnes: ['Étape', 'Contenu'], lignes: [
+          ['CONTACT', '« Bonjour, [Prénom] de chez Free, à votre écoute. »'],
+          ['ÉCOUTE — Questionnement', '« En quoi puis-je vous aider ? » / « Dans combien de temps déménagez-vous ? »'],
+          ['ÉCOUTE — Reformulation', '« Si j\u2019ai bien compris… c\u2019est bien cela ? »'],
+          ['RÉPONSE', "« Pour résilier votre abonnement, vous devez : envoyer votre courrier à Publidispatch – Free résiliation, Service résiliation, 6 rue Désir Prévost – La Grande Brèche, 91 070 Bondoufle ; votre résiliation sera effective 10 jours après réception ; au plus tard 15 jours après, retourner les équipements et accessoires des box. »"],
+          ['CONCLUSION', '« Je vous remercie et je vous souhaite une excellente journée, à bientôt. »'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "Le traitement de la réclamation en réception d'appel",
+    proposition: ['Contact', 'Écoute', 'Réponse', 'Conclusion'],
+    racine: {
+      id: 'racine', texte: 'La méthode C.E.R.C.',
+      enfants: [
+        { id: 'debut', texte: "Le début de l'appel", enfants: [
+          { id: 'c', texte: null, reponse: 'Contact' },
+          { id: 'e', texte: null, reponse: 'Écoute' },
+        ] },
+        { id: 'fin', texte: "La fin de l'appel", enfants: [
+          { id: 'r', texte: null, reponse: 'Réponse' },
+          { id: 'concl', texte: null, reponse: 'Conclusion' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Adopter une posture professionnelle',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas les règles de l'accueil téléphonique." },
+          { niveau: 'debrouille', description: 'Je cite un élément de la prise de contact.' },
+          { niveau: 'averti', description: 'Je connais les signes non verbaux et l\u2019empathie.' },
+          { niveau: 'expert', description: "Je sais appliquer une posture professionnelle complète." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Appliquer la méthode C.E.R.C.',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas la méthode C.E.R.C.' },
+          { niveau: 'debrouille', description: 'Je cite les 4 étapes.' },
+          { niveau: 'averti', description: 'Je repère les étapes dans un dialogue.' },
+          { niveau: 'expert', description: 'Je rédige une fiche d\u2019appel structurée.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Reformuler une intervention',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne repère pas les interventions à améliorer.' },
+          { niveau: 'debrouille', description: 'Je repère une intervention à améliorer.' },
+          { niveau: 'averti', description: 'Je reformule quelques interventions.' },
+          { niveau: 'expert', description: 'Je reformule professionnellement toutes les interventions.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'C.E.R.C.', definition: 'Méthode de réception d\u2019appel : Contact, Écoute, Réponse, Conclusion.' },
+      { terme: 'Réception d\u2019appel', definition: 'Traitement d\u2019un appel entrant (appel reçu par le conseiller).' },
+      { terme: 'Free Helper', definition: 'Conseiller relation client à distance de Free.' },
+      { terme: 'Signes non verbaux', definition: 'Sourire, intonation, débit qui accompagnent la parole.' },
+      { terme: 'Empathie', definition: 'Capacité à se mettre à la place du client pour mieux le comprendre.' },
+      { terme: 'Reformulation', definition: 'Redire avec ses mots ce que le client a exprimé pour vérifier la compréhension.' },
+      { terme: 'Questionnement', definition: 'Poser des questions pour clarifier la demande du client.' },
+      { terme: 'Ticket', definition: 'Demande d\u2019intervention enregistrée (ex : passage d\u2019un technicien).' },
+      { terme: 'Résiliation', definition: 'Fin d\u2019un abonnement à la demande du client.' },
+      { terme: 'Plan de réception d\u2019appel', definition: 'Trame structurée (fiche d\u2019appel) pour mener l\u2019entretien.' },
+    ],
+    flashcards: [
+      { recto: 'Que signifie C.E.R.C. ?', verso: 'Contact, Écoute, Réponse, Conclusion.' },
+      { recto: 'Étape 1 de la méthode ?', verso: 'Contact : saluer, nommer l\u2019entreprise, se présenter.' },
+      { recto: 'Étape 4 de la méthode ?', verso: 'Conclusion : remercier, prendre congé, raccrocher après l\u2019interlocuteur.' },
+      { recto: 'Qui est le Free Helper ?', verso: 'Le conseiller relation client à distance de Free.' },
+      { recto: 'Les signes non verbaux ?', verso: 'Sourire, intonation, débit…' },
+      { recto: 'Numéro du service client ?', verso: '3244.' },
+      { recto: 'Quand la résiliation est-elle effective ?', verso: '10 jours après la réception du courrier.' },
+      { recto: 'Délai de retour des équipements ?', verso: '15 jours au plus tard après la résiliation.' },
+      { recto: 'Adresse de résiliation ?', verso: 'Publidispatch – Free résiliation, 6 rue Désir Prévost, 91 070 Bondoufle.' },
+      { recto: 'Que faire après l\u2019écoute ?', verso: 'Reformuler pour vérifier la bonne compréhension.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Que signifie C.E.R.C. ?', options: ['Contact, Écoute, Réponse, Conclusion', 'Client, Échange, Réclamation, Contrat', 'Contact, Échange, Rappel, Clôture', 'Compte, Espace, Réseau, Client'], bonne: 0 },
+      { type: 'unique', question: 'Étape 1 de la méthode ?', options: ['Contact', 'Écoute', 'Réponse', 'Conclusion'], bonne: 0 },
+      { type: 'unique', question: 'Dernière étape de la méthode ?', options: ['Conclusion', 'Contact', 'Écoute', 'Réponse'], bonne: 0 },
+      { type: 'unique', question: 'Un signe non verbal ?', options: ['Le sourire', 'Le contrat', 'Le prix', 'La facture'], bonne: 0 },
+      { type: 'unique', question: 'Numéro du service client ?', options: ['3244', '3900', '1014', '3000'], bonne: 0 },
+      { type: 'unique', question: 'Résiliation effective après...', options: ['10 jours', '2 jours', '30 jours', '1 an'], bonne: 0 },
+      { type: 'unique', question: 'Retour des équipements sous...', options: ['15 jours', '2 jours', '6 mois', '1 an'], bonne: 0 },
+      { type: 'unique', question: 'Que faut-il faire après avoir écouté ?', options: ['Reformuler', 'Raccrocher', 'Crier', 'Ignorer'], bonne: 0 },
+      { type: 'unique', question: 'Qui reçoit l\u2019appel ?', options: ['Le Free Helper', 'Le client', 'Le technicien', 'Le directeur'], bonne: 0 },
+      { type: 'unique', question: 'Une qualité essentielle au téléphone ?', options: ["L'empathie", "L'agressivité", "L'impatience", 'Le silence total'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque intervention dans la bonne étape de la méthode C.E.R.C.',
+      etiquettes: ['Contact', 'Écoute', 'Conclusion'],
+      zones: [
+        { libelle: '« Bonjour, [prénom] de chez Free »', etiquetteIndex: 0 },
+        { libelle: 'Se présenter et nommer l\u2019entreprise', etiquetteIndex: 0 },
+        { libelle: '« En quoi puis-je vous aider ? »', etiquetteIndex: 1 },
+        { libelle: 'Reformuler le besoin du client', etiquetteIndex: 1 },
+        { libelle: 'Remercier le client', etiquetteIndex: 2 },
+        { libelle: 'Raccrocher après l\u2019interlocuteur', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -6318,6 +6621,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'orpi-m3': ORPI_M3,
   'orpi-m4': ORPI_M4,
   'free-m1': FREE_M1,
+  'free-m2': FREE_M2,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
