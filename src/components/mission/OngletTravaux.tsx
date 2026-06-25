@@ -469,7 +469,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -557,9 +557,75 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.transcription && <TranscriptionVue transcription={b.transcription} couleur={couleur} />}
           {b.procedure && <ProcedureVue procedure={b.procedure} couleur={couleur} />}
           {b.mailLecture && <MailLectureVue mail={b.mailLecture} couleur={couleur} />}
+          {b.offrePrix && <OffrePrixVue offre={b.offrePrix} couleur={couleur} />}
+          {b.cartesTechniques && <CartesTechniquesVue data={b.cartesTechniques} couleur={couleur} />}
+          {b.offreFlash && <OffreFlashVue offre={b.offreFlash} couleur={couleur} />}
         </div>
       ))}
       </div>
+    </div>
+  )
+}
+
+// Bloc prix facon page Free : grand prix mis en avant, cercles rouges decoratifs.
+function OffrePrixVue({ offre, couleur }: { offre: NonNullable<BlocDocumentTexte['offrePrix']>; couleur: string }) {
+  return (
+    <div style={{ position: 'relative', overflow: 'hidden', border: '1px solid #EEF1F4', borderRadius: 12, background: '#FFFFFF', padding: '34px 20px', textAlign: 'center' }}>
+      <div style={{ position: 'absolute', left: -70, top: '38%', width: 150, height: 150, borderRadius: '50%', background: couleur, opacity: 0.92 }} />
+      <div style={{ position: 'absolute', right: -50, bottom: -50, width: 110, height: 110, borderRadius: '50%', background: '#FF6B5E', opacity: 0.85 }} />
+      <div style={{ position: 'relative' }}>
+        <div style={{ fontSize: 26, fontWeight: 800, color: '#1F2933', marginBottom: 18 }}>Une offre à <span style={{ color: '#000' }}>prix Free</span><span style={{ color: couleur }}>.</span></div>
+        <div style={{ display: 'inline-flex', alignItems: 'flex-start', justifyContent: 'center', color: couleur, lineHeight: 1 }}>
+          <span style={{ fontSize: 76, fontWeight: 800, letterSpacing: -2 }}>{offre.prix}</span>
+          <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginTop: 6 }}>
+            <span style={{ fontSize: 30, fontWeight: 800 }}>{offre.cents}</span>
+            <span style={{ fontSize: 26, fontWeight: 600 }}>{offre.periode}</span>
+          </span>
+        </div>
+        {offre.soustexte && <div style={{ marginTop: 18 }}>{offre.soustexte.map((s, i) => <div key={i} style={{ fontSize: 15, fontWeight: i === offre.soustexte!.length - 1 ? 800 : 500, color: '#1F2933' }}>{s}</div>)}</div>}
+      </div>
+    </div>
+  )
+}
+
+// Deux cartes techniques opposees (addition / soustraction) avec gros symbole.
+function CartesTechniquesVue({ data, couleur }: { data: NonNullable<BlocDocumentTexte['cartesTechniques']>; couleur: string }) {
+  return (
+    <div>
+      {data.rappel && (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#FBE3E4', borderRadius: 8, padding: '10px 14px', marginBottom: 14 }}>
+          <span style={{ fontWeight: 800, fontSize: 13, color: couleur, textTransform: 'uppercase', letterSpacing: 0.5 }}>Rappel</span>
+          <span style={{ fontSize: 13.5, color: '#8A1C24' }}>{data.rappel}</span>
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
+        {data.cartes.map((c, i) => (
+          <div key={i} style={{ border: `2px solid ${couleur}`, borderRadius: 12, overflow: 'hidden', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 70, background: couleur }}>
+              <span style={{ width: 46, height: 46, borderRadius: '50%', background: '#FFFFFF', color: couleur, fontSize: 32, fontWeight: 800, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>{c.icone === 'plus' ? '+' : '\u2212'}</span>
+            </div>
+            <div style={{ padding: 16 }}>
+              <div style={{ fontSize: 15, fontWeight: 800, color: couleur, marginBottom: 6 }}>{c.titre}</div>
+              <div style={{ fontSize: 13.5, color: '#374151', lineHeight: 1.55 }}>{c.texte}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Offre flash facon encart promo : badge + lignes barrees mises en avant.
+function OffreFlashVue({ offre, couleur }: { offre: NonNullable<BlocDocumentTexte['offreFlash']>; couleur: string }) {
+  return (
+    <div style={{ border: `2px dashed ${couleur}`, borderRadius: 12, background: 'linear-gradient(135deg, #FFF 60%, #FBE3E4)', padding: 18, textAlign: 'center' }}>
+      <div style={{ display: 'inline-block', background: couleur, color: '#FFFFFF', fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, padding: '5px 14px', borderRadius: 20, marginBottom: 14 }}>⚡ {offre.badge}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+        {offre.lignes.map((l, i) => (
+          <div key={i} style={{ fontSize: 17, fontWeight: 700, color: '#1F2933' }}>✔ {l}</div>
+        ))}
+      </div>
+      {offre.mention && <div style={{ marginTop: 12, fontSize: 18, fontWeight: 800, color: couleur }}>{offre.mention}</div>}
     </div>
   )
 }

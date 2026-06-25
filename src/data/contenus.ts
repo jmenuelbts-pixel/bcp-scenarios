@@ -499,6 +499,12 @@ export interface BlocDocumentTexte {
   }
   // Mail en lecture seule facon client de messagerie (entete De/A/Objet + corps).
   mailLecture?: { de: string; a: string; objet: string; corps: string[] }
+  // Bloc prix facon page Free : grand prix mis en avant + sous-texte, cercles.
+  offrePrix?: { titre: string; prix: string; cents?: string; periode?: string; soustexte?: string[] }
+  // Deux cartes techniques opposees (ex : addition / soustraction) avec icone.
+  cartesTechniques?: { rappel?: string; cartes: { icone: 'plus' | 'moins'; titre: string; texte: string }[] }
+  // Offre flash facon encart promo : badge + lignes mises en avant.
+  offreFlash?: { badge: string; lignes: string[]; mention?: string }
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -6960,7 +6966,7 @@ const FREE_M4: ContenuMission = {
       ] },
       { numero: 7, titre: 'Le prix de la Freebox Pop', images: [], texte: [
         { pageWeb: true },
-        { intertitre: 'Une offre à prix Free', paragraphes: ['29,99 €/mois pendant 1 an puis 39,99€/mois. Sans engagement.'] },
+        { offrePrix: { titre: 'Une offre à prix Free.', prix: '29', cents: '€99', periode: '/mois', soustexte: ['pendant 1 an puis 39,99€/mois.', 'Sans engagement'] } },
       ] },
       { numero: 8, titre: "L'objection sur le prix de M. Seption", images: [], texte: [
         { pageWeb: true },
@@ -6970,15 +6976,14 @@ const FREE_M4: ContenuMission = {
       ] },
       { numero: 9, titre: 'Les techniques de réfutation du prix', images: [], texte: [
         { pageWeb: true },
-        { intertitre: 'Rappel', paragraphes: ["Vous utiliserez l'une de ces deux techniques pour réfuter l'objection du client par rapport au prix."] },
-        { puces: [
-          "La technique de l'addition : le commercial énumère au client l'ensemble des avantages du produit, ce qui justifie son prix.",
-          "La technique de la soustraction : le commercial montre au client ce qu'il perd s'il ne prend pas le produit.",
-        ] },
+        { cartesTechniques: { rappel: "Vous utiliserez l'une de ces deux techniques pour réfuter l'objection du client par rapport au prix.", cartes: [
+          { icone: 'plus', titre: "La technique de l'addition", texte: "Le commercial énumère au client l'ensemble des avantages du produit, ce qui justifie son prix." },
+          { icone: 'moins', titre: 'La technique de la soustraction', texte: "Le commercial montre au client ce qu'il perd s'il ne prend pas le produit." },
+        ] } },
       ] },
       { numero: 10, titre: "L'offre Freebox", images: [], texte: [
         { pageWeb: true },
-        { intertitre: 'Offre valable aujourd\u2019hui uniquement', paragraphes: ['Frais de migration (49€) et d\u2019envoi (20€) offerts.'] },
+        { offreFlash: { badge: 'Offre valable aujourd\u2019hui uniquement', lignes: ['Frais de migration (49€) offerts', 'Frais d\u2019envoi (20€) offerts'], mention: 'soit 69€ d\u2019économie' } },
       ] },
       { numero: 11, titre: 'Les délais de livraison', images: [], texte: [
         { pageWeb: true },
