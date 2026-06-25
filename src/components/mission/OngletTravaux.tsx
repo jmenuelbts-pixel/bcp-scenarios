@@ -469,7 +469,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -556,8 +556,29 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.journalAppels && <JournalAppelsVue journal={b.journalAppels} couleur={couleur} />}
           {b.transcription && <TranscriptionVue transcription={b.transcription} couleur={couleur} />}
           {b.procedure && <ProcedureVue procedure={b.procedure} couleur={couleur} />}
+          {b.mailLecture && <MailLectureVue mail={b.mailLecture} couleur={couleur} />}
         </div>
       ))}
+      </div>
+    </div>
+  )
+}
+
+// Mail en lecture seule facon client de messagerie : entete De/A/Objet + corps.
+function MailLectureVue({ mail, couleur }: { mail: NonNullable<BlocDocumentTexte['mailLecture']>; couleur: string }) {
+  return (
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+      <div style={{ background: '#F4F5F7', padding: '8px 12px', fontSize: 13, fontWeight: 700, color: '#1F2933', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #E2E8F0' }}>
+        <span style={{ display: 'inline-flex', gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57' }} /><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FEBC2E' }} /><span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840' }} /></span>
+        Nouveau message
+      </div>
+      <div style={{ padding: '10px 14px', fontSize: 13, color: '#374151', borderBottom: '1px solid #EEF1F4' }}>
+        <div style={{ marginBottom: 3 }}><strong style={{ color: '#6B7280' }}>De : </strong>{mail.de}</div>
+        <div style={{ marginBottom: 3 }}><strong style={{ color: '#6B7280' }}>À : </strong>{mail.a}</div>
+        <div><strong style={{ color: '#6B7280' }}>Objet : </strong><span style={{ fontWeight: 700, color: couleur }}>{mail.objet}</span></div>
+      </div>
+      <div style={{ padding: 14, fontSize: 14, color: '#1F2933', lineHeight: 1.6 }}>
+        {mail.corps.map((l, i) => <p key={i} style={{ margin: '0 0 8px' }}>{l}</p>)}
       </div>
     </div>
   )

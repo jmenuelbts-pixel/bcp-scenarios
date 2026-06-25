@@ -497,6 +497,8 @@ export interface BlocDocumentTexte {
     titre2?: string
     section2?: string[]
   }
+  // Mail en lecture seule facon client de messagerie (entete De/A/Objet + corps).
+  mailLecture?: { de: string; a: string; objet: string; corps: string[] }
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -6893,6 +6895,374 @@ const FREE_M3: ContenuMission = {
   },
 }
 
+const FREE_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Traitez une réclamation en réception d'appel puis réalisez une vente au rebond : définissez la vente au rebond, préparez votre fiche d'appel C.E.R.C., traitez la demande, proposez la Freebox Pop, annoncez le prix, réfutez l'objection et expliquez la livraison.",
+    contexte:
+      "Désormais, vous maîtrisez parfaitement toutes les caractéristiques et l'argumentation de la nouvelle Freebox Pop et c'est pour cela que votre tutrice vous propose d'être jusqu'à la fin de votre stage au service clients de l'entreprise. Elle souhaite non seulement que vous soyez prêt à recevoir un appel selon les règles que vous avez apprises, mais surtout que vous sachiez repérer les opportunités de faire des ventes au rebond.",
+    documents: [
+      { numero: 1, titre: 'Les explications de Mme Marie Vière', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Le rebond commercial (vente au rebond)', paragraphes: [
+          "« Le rebond commercial ou vente au rebond consiste à profiter d'un contact généralement pris à l'initiative du client pour évoquer ou formuler une offre commerciale distincte après avoir traité sa demande initiale. Le rebond commercial peut se pratiquer en face à face ou par téléphone.",
+          "La pratique du rebond commercial est notamment utilisée dans le domaine de la banque et de l'assurance. Un chargé d'accueil en agence peut par exemple pratiquer le rebond commercial auprès d'un client venu effectuer une opération courante au guichet d'accueil et proposer ainsi une solution d'épargne s'il constate un excédent de liquidités sur un compte courant.",
+          "De même, un responsable d'Orange évoque que, malgré ses pertes initiales, le développement d'Orange Bank permettait de générer des externalités positives en donnant la possibilité d'effectuer des rebonds commerciaux relatifs à la téléphonie auprès des prospects venant en agences se renseigner sur l'offre bancaire. »",
+        ] },
+      ] },
+      { numero: 2, titre: 'La vente additionnelle', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'La vente additionnelle', paragraphes: [
+          "« La vente additionnelle est mise en œuvre par un commercial lorsque le client qui vient acheter un produit se voit en proposer un autre pour compléter le produit principal. Il existe deux formes de vente additionnelle.",
+          "La première correspond à la vente complémentaire. C'est le cas lorsque le produit proposé en plus est directement lié au produit principal acheté. Il s'agit par exemple de la vente de protéine proposée avec la vente d'un abonnement à une salle de sport, ou encore des extensions de garanties proposées par le commercial pendant la vente d'un photocopieur.",
+          "La deuxième forme de vente additionnelle est la vente supplémentaire. Elle consiste simplement à profiter de la présence du client pour lui proposer un autre produit qui n'a rien à voir avec le produit principal. Un conseiller bancaire peut par exemple vendre une carte bleue Visa Premier à un client venu souscrire un livret d'épargne. »",
+        ] },
+      ] },
+      { numero: 3, titre: "Procédure de l'entretien téléphonique", images: [], texte: [
+        { pageWeb: true },
+        { organigramme: { tete: {
+          libelle: '1 - Je reçois un appel : j\u2019applique le contact', teinte: 'tete', enfants: [
+            { libelle: '2 - Je pratique l\u2019écoute et je questionne', teinte: 'bleu', enfants: [
+              { libelle: '3 - Je prends en charge le problème', teinte: 'jaune', enfants: [
+                { libelle: '4A - Le problème n\u2019a pas pu être traité', teinte: 'rose', enfants: [ { libelle: '5A - Je propose au client de le rappeler', teinte: 'gris', enfants: [ { libelle: '7 - Je conclue', teinte: 'vert' } ] } ] },
+                { libelle: '4B - Une solution a été trouvée', teinte: 'rose', enfants: [ { libelle: '5B - Je tente de faire une vente de rebond', teinte: 'gris', enfants: [ { libelle: '6B - J\u2019annonce le prix', teinte: 'bleu', enfants: [ { libelle: '6B - J\u2019annonce les délais de livraison', teinte: 'jaune', enfants: [ { libelle: '7 - Je conclue', teinte: 'vert' } ] } ] } ] } ] },
+              ] },
+            ] },
+          ],
+        } } },
+      ] },
+      { numero: 4, titre: 'La réclamation du client', images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { locuteur: 'Client', texte: "Bonjour, je vous appelle car j'ai depuis 6 ans la Freebox Révolution. J'ai eu des soucis qui ont été réglés. Je vous rappelle parce qu'aujourd'hui c'est la télécommande qui ne fonctionne pas. La veille tout marchait bien. Et là plus rien." },
+        ] },
+      ] },
+      { numero: 5, titre: 'Les réponses du client à vos questions', images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { locuteur: 'Client', texte: '« Oui, c\u2019est la télécommande qui ne marche plus. »' },
+          { locuteur: 'Client', texte: '« Je suis M. Alex Seption. »' },
+          { locuteur: 'Client', texte: '« Non, non ! Dans le salon il n\u2019y a que la télévision. Rien d\u2019autre ! »' },
+          { locuteur: 'Client', texte: '« Je suis au 179 rue Camille Godard – 33000 Bordeaux. »' },
+          { locuteur: 'Client', texte: '« C\u2019est la première chose que j\u2019ai fait, changer les piles. »' },
+          { locuteur: 'Client', texte: '« Non, je n\u2019ai pas réessayé d\u2019associer la télécommande à la Freebox Player. »' },
+        ] },
+      ] },
+      { numero: 6, titre: 'Le traitement de la demande du client', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'La procédure d\u2019échange de la télécommande Freebox', paragraphes: [
+          "Lorsque malgré toutes les manipulations qu'a fait faire le Free Helper au client par téléphone, l'appareil défectueux ne fonctionne toujours pas, le Free Helper doit, sans lui poser davantage de questions, lui proposer le remplacement par l'envoi d'une télécommande neuve et sans frais.",
+          "Lorsque le Free Helper aura validé le remplacement de la télécommande, il précisera au client qu'UPS s'occupera d'effectuer l'échange le plus rapidement possible. Pour cela, un e-mail de confirmation lui sera envoyé.",
+          "Ensuite, il recevra un second e-mail, ainsi qu'un message sur son téléphone portable afin de l'informer de la livraison du colis. Cette livraison a lieu en général dans les 48 heures qui suivent l'e-mail. Une fois qu'il est envoyé, il pourra suivre son colis sur son Espace Client dans la rubrique « Mon abonnement ».",
+          "Pour la dernière étape, un agent d'UPS viendra à son domicile pour effectuer l'échange et lui fera signer un justificatif précisant qu'il a bien reçu sa nouvelle télécommande et qu'il a bien remis celle qui est défectueuse.",
+          "L'équipe Free",
+        ] },
+      ] },
+      { numero: 7, titre: 'Le prix de la Freebox Pop', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Une offre à prix Free', paragraphes: ['29,99 €/mois pendant 1 an puis 39,99€/mois. Sans engagement.'] },
+      ] },
+      { numero: 8, titre: "L'objection sur le prix de M. Seption", images: [], texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { locuteur: 'M. Seption', texte: "« Ah oui ! C'est intéressant comme offre. Effectivement, je pense à changer mais bon pour l'instant je ne suis pas pressé. Je pense que je vais réfléchir et je verrai plus tard. »" },
+        ] },
+      ] },
+      { numero: 9, titre: 'Les techniques de réfutation du prix', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Rappel', paragraphes: ["Vous utiliserez l'une de ces deux techniques pour réfuter l'objection du client par rapport au prix."] },
+        { puces: [
+          "La technique de l'addition : le commercial énumère au client l'ensemble des avantages du produit, ce qui justifie son prix.",
+          "La technique de la soustraction : le commercial montre au client ce qu'il perd s'il ne prend pas le produit.",
+        ] },
+      ] },
+      { numero: 10, titre: "L'offre Freebox", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Offre valable aujourd\u2019hui uniquement', paragraphes: ['Frais de migration (49€) et d\u2019envoi (20€) offerts.'] },
+      ] },
+      { numero: 11, titre: 'Les délais de livraison', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Free livre en priorité les nouveaux abonnés', paragraphes: [
+          "Free indique que les nouveaux abonnés sont livrés dans les délais, mais il y a au moins 3 mois d'attente pour les migrations.",
+          "Les raisons de ces délais à rallonge ? Free a indiqué que c'est le succès de cette offre qui en est la cause et assure qu'il « livre en priorité les nouveaux abonnés ». Il n'y a pas de retard pour les nouveaux abonnés Freebox Delta + Pop, mais il y en a toujours pour les Freenautes ayant demandé une migration. Pour ceux qui sont dans cette situation, il faudra donc attendre environ 3 mois selon Free avant de recevoir sa nouvelle Freebox. Tant que la migration n'est pas effective, l'ancienne Freebox fonctionne toujours.",
+          "Les raisons de ces retards ne sont pas dues à un problème de stock de Player Pop puisque les envois de Freebox Pop se font dans les délais. Il s'agit visiblement d'un problème de stock de Server Freebox Delta. Free n'avait visiblement pas anticipé le succès de l'offre Freebox Delta Pop.",
+        ] },
+      ] },
+      { numero: 12, titre: 'La procédure pour bénéficier de la Freebox Pop', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Échanger une ancienne Freebox pour la nouvelle Freebox Pop', paragraphes: [
+          "Lorsqu'un client valide avec vous l'échange de sa Freebox actuelle pour la Freebox Pop, le Free Helper lui rappellera la procédure à suivre.",
+          "Lorsqu'il sera informé par mail et par SMS de l'arrivée de son nouveau matériel, afin de pouvoir faire l'échange, il devra mettre dans un carton rigide les équipements qu'il a reçus :",
+        ] },
+        { puces: [
+          'deux FreePlugs (si fournis avec la Freebox),',
+          'une télécommande,',
+          'un cordon d\u2019alimentation électrique (sur la FreePlug),',
+          'un cordon Ethernet (jaune bien souvent),',
+          'un cordon Péritel (Péritel d\u2019un côté seulement),',
+          'un adaptateur téléphonique,',
+          'la Freebox.',
+        ] },
+        { paragraphes: [
+          "Il emballera le tout soigneusement dans la boîte puis il écrira en gros : « Retour Free - Upgrade ».",
+          "Il déposera son carton dans le point relais où il recevra en échange son nouvel équipement.",
+          "Enfin, après vérification, s'il manque un de ces équipements dans le carton, des frais pourront être facturés (Freebox : 190€ ; Sagem : 49€ ; Boîtier Freebox : 150€ ; Boîtier HD : 290€ ; 20€/accessoire).",
+          "L'équipe Free",
+        ] },
+      ] },
+      { numero: 13, titre: "Conclusion d'appel spécifique à Free", images: [], texte: [
+        { pageWeb: true },
+        { mailLecture: { de: 'chefserviceclient.free.fr', a: 'listing.relationclient@free.fr', objet: 'Conclure un appel', corps: [
+          "À tous les Free Helper,",
+          "Je vous rappelle, comme il a été dit en formation la semaine dernière, que la conclusion de l'appel est un moment important car, comme la prise de contact, elle reflète l'image de Free. Il faut donc la soigner en respectant la procédure établie. Vous êtes donc invité à :",
+          "- Confirmer avec le client que vous avez bien répondu à toutes ses interrogations ;",
+          "- L'informer que juste après l'appel, il recevra un questionnaire et que vous lui demandez de bien vouloir le remplir ;",
+          "- Le remercier au nom de Free ;",
+          "- Le saluer chaleureusement ;",
+          "- Raccrocher après lui.",
+          "Je compte sur toute l'équipe pour appliquer cette procédure.",
+          "Cordialement, Chef service client",
+        ] } },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences',
+      intitule: "Traiter une réclamation et réaliser une vente au rebond",
+      detail: "Distinguer vente au rebond et vente additionnelle, traiter une demande, proposer un produit (vente au rebond), annoncer et défendre le prix, expliquer la livraison.",
+    },
+    objectifs: [
+      'Définir et distinguer vente au rebond et vente additionnelle.',
+      'Construire une fiche d\u2019appel C.E.R.C. complète.',
+      'Réaliser une vente au rebond : argumenter, annoncer le prix, réfuter l\u2019objection, expliquer la livraison.',
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La définition de la vente au rebond',
+        questions: [
+          { numero: 1, consigne: 'Analysez la vente au rebond.', ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Analysez la vente additionnelle.', ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Expliquez la différence entre la vente au rebond et la vente additionnelle.', ressources: "Lire les documents 1 et 2, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Se préparer à recevoir l\u2019appel',
+        questions: [
+          { numero: 4, consigne: "Indiquez les étapes à respecter pour faire une vente au rebond lors d'une réception d'appel.", ressources: "Consulter le document 3, compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Rédigez la première partie (Contact) de votre plan de réception d\u2019appel.', ressources: "Consulter le document 3, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Rédigez la deuxième partie (Écoute) de votre plan de réception d\u2019appel puis questionnez le client.', ressources: "Lire les documents 3 et 4, compléter l'annexe 5 ; lire le document 5, compléter l'annexe 6.", annexeId: 'annexe5' },
+          { numero: 7, consigne: 'Indiquez les différentes étapes de la procédure de traitement de la demande du client.', ressources: "Lire le document 6, compléter l'annexe 7.", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Rédigez la troisième partie (Réponse) de votre plan de réception d\u2019appel.', ressources: "Lire le document 6, compléter l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La pratique de la vente au rebond',
+        questions: [
+          { numero: 9, consigne: 'Rédigez la manière dont vous allez présenter au téléphone à M. Seption la nouvelle Freebox en choisissant 3 arguments par rapport aux caractéristiques de base.', ressources: "Consulter la Mission 3 (annexe 4), compléter l'annexe 8.", annexeId: 'annexe8' },
+        ],
+      },
+      {
+        titre: 'Activité 4 — L\u2019annonce du prix et la livraison',
+        questions: [
+          { numero: 10, consigne: "Annoncez le prix au client ainsi que sa subtilité, puis utilisez la technique de la « soustraction » pour réfuter son objection sur le prix.", ressources: "Lire le document 7 ; lire les documents 8, 9 et 10, compléter l'annexe 9.", annexeId: 'annexe9' },
+          { numero: 11, consigne: 'Annoncez au client les délais de livraison de sa nouvelle Freebox en le rassurant.', ressources: "Lire le document 11, compléter l'annexe 10.", annexeId: 'annexe10' },
+          { numero: 12, consigne: 'Expliquez au client la procédure pour bénéficier de la Freebox Pop.', ressources: "Consulter le document 12, compléter l'annexe 11.", annexeId: 'annexe11' },
+          { numero: 13, consigne: 'Rédigez la quatrième partie (Conclusion) de votre plan de réception d\u2019appel.', ressources: "Lire le document 13, compléter l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — L\u2019analyse des explications de Mme Vière', colonnes: ['Questions', 'Réponses'], nbLignes: 4, prerempli: [["Qui prend l'initiative du contact ?", ''], ['Donnez la définition de la vente au rebond.', ''], ['Quels sont les deux cas dans lesquels la vente au rebond peut-elle se pratiquer ?', ''], ['Donnez un exemple de vente au rebond.', '']] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — La vente additionnelle', colonnes: ['Questions', 'Réponses'], nbLignes: 6, prerempli: [['Définissez la vente additionnelle.', ''], ['Citez les deux types de vente additionnelle.', ''], ["Expliquez ce qu'est la vente complémentaire.", ''], ['Donnez un exemple de produit et de vente complémentaire.', ''], ["Expliquez ce qu'est la vente supplémentaire.", ''], ['Donnez un exemple de produit et de vente supplémentaire.', '']] },
+      { type: 'texte', id: 'annexe3', titre: 'Annexe 3 — La différence entre la vente au rebond et la vente additionnelle', lignes: 4 },
+      { type: 'organigrammearemplir', id: 'annexe4', titre: 'Annexe 4 — Le cheminement permettant de faire une vente au rebond', noms: ['1 - Je reçois un appel', '2 - Je pratique l\u2019écoute et je questionne', '3 - Je prends en charge le problème', '4B - Une solution a été trouvée', '5B - Je tente de faire une vente de rebond', '6B - J\u2019annonce le prix', '6B - J\u2019annonce les délais de livraison', '7 - Je conclue'], fonctions: ['Étape'], tete: { cle: 'e1', enfants: [{ cle: 'e2', enfants: [{ cle: 'e3', enfants: [{ cle: 'e4', enfants: [{ cle: 'e5', enfants: [{ cle: 'e6', enfants: [{ cle: 'e7', enfants: [{ cle: 'e8' }] }] }] }] }] }] }] } },
+      { type: 'ficheappel', id: 'annexe5', titre: 'Annexe 5 — Complétez la fiche d\u2019appel C.E.R.C.', sections: [
+        { cle: 'contact', libelle: 'CONTACT', aide: 'Saluer, se présenter, montrer sa disponibilité.', lignes: 2 },
+        { cle: 'ecoute', libelle: 'ÉCOUTE', aide: 'Reformuler la demande puis commencer le questionnaire (voir annexe 6).', lignes: 3 },
+        { cle: 'reponse', libelle: 'RÉPONSE', aide: 'Annoncer la procédure d\u2019échange de la télécommande (étapes 1, 2, 3).', lignes: 6 },
+        { cle: 'conclusion', libelle: 'CONCLUSION', aide: 'Confirmer, annoncer le questionnaire, remercier, saluer.', lignes: 3 },
+      ] },
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — Le questionnaire (lien / QR Code)', lignes: 1, boutonLien: 'https://forms.gle/DxZffUh4kzLWTuGZ8', boutonLibelle: 'Ouvrir le questionnaire de traitement de la réclamation' },
+      { type: 'grille', id: 'annexe7', titre: 'Annexe 7 — Les étapes de l\u2019échange de la télécommande', colonnes: ['Numéro de l\u2019étape', 'Contenu de l\u2019étape'], nbLignes: 3, prerempli: [['1', ''], ['2', ''], ['3', '']] },
+      { type: 'texte', id: 'annexe8', titre: 'Annexe 8 — La présentation des caractéristiques de la nouvelle Freebox', lignes: 6 },
+      { type: 'grille', id: 'annexe9', titre: 'Annexe 9 — L\u2019annonce du prix', colonnes: ['Consigne', 'Réponse'], nbLignes: 2, prerempli: [["Indiquez le prix de l'abonnement ainsi que sa subtilité", ''], ["Rédigez la phrase qui vous servira à réfuter l'objection de M. Seption", '']] },
+      { type: 'texte', id: 'annexe10', titre: 'Annexe 10 — Les délais de livraison', lignes: 4 },
+      { type: 'grille', id: 'annexe11', titre: 'Annexe 11 — Les étapes de l\u2019échange de la Freebox', colonnes: ['Numéro de l\u2019étape', 'Contenu de l\u2019étape'], nbLignes: 4, prerempli: [['1', ''], ['2', ''], ['3', ''], ['4', '']] },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Analyse de la vente au rebond (annexe 1).', documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Questions', 'Réponses'], lignes: [
+          ["Qui prend l'initiative du contact ?", "Le client (« … à l'initiative du client… »)."],
+          ['Définition de la vente au rebond', "Profiter d'un contact généralement pris à l'initiative du client pour évoquer ou formuler une offre commerciale distincte après avoir traité sa demande initiale."],
+          ['Les deux cas où elle se pratique', 'En face à face ou par téléphone.'],
+          ['Exemple', "Un chargé d'accueil en agence propose une solution d'épargne à un client venu effectuer une opération courante ; ou Orange Bank permettant des rebonds vers la téléphonie."],
+        ] },
+      },
+      {
+        intitule: 'La vente additionnelle (annexe 2).', documents: ['Document 2'], bareme: 6, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Questions', 'Réponses'], lignes: [
+          ['Définition', "La vente additionnelle est mise en œuvre par un commercial lorsque le client qui vient acheter un produit se voit en proposer un autre pour compléter le produit principal."],
+          ['Les deux types', 'La vente complémentaire ; la vente supplémentaire.'],
+          ['Vente complémentaire', "C'est le cas lorsque le produit proposé en plus est directement lié au produit principal acheté."],
+          ['Exemple (complémentaire)', 'Accepter toute réponse cohérente (ex : housse vendue avec un téléphone).'],
+          ['Vente supplémentaire', "Profiter de la présence du client pour lui proposer un autre produit qui n'a rien à voir avec le produit principal."],
+          ['Exemple (supplémentaire)', 'Accepter toute réponse cohérente (ex : carte bleue proposée avec un livret d\u2019épargne).'],
+        ] },
+      },
+      { intitule: 'La différence (annexe 3).', documents: ['Documents 1 et 2'], bareme: 2, reponse: "Dans la vente au rebond, le commercial propose un produit lors d'un contact pris par le client pour un autre sujet. Dans la vente additionnelle, le commercial profite de l'achat d'un produit par le client pour lui en proposer un deuxième qui lui est directement lié." },
+      {
+        intitule: 'Le cheminement de la vente au rebond (annexe 4).', documents: ['Document 3'], bareme: 6, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Ordre', 'Étape'], lignes: [
+          ['1', "Je reçois un appel et j'applique le contact"],
+          ['2', 'Je pratique l\u2019écoute et je questionne'],
+          ['3', 'Je prends en charge le problème'],
+          ['4B', 'Une solution a été trouvée'],
+          ['5B', 'Je tente de faire une vente de rebond'],
+          ['6B', 'J\u2019annonce le prix'],
+          ['6B', 'J\u2019annonce les délais de livraison'],
+          ['7', 'Je conclue'],
+        ] },
+      },
+      {
+        intitule: 'Fiche d\u2019appel C.E.R.C. (annexe 5).', documents: ['Documents 3, 4, 6 et 13'], bareme: 8, reponse: 'Voir fiche.',
+        tableau: { colonnes: ['Étape', 'Contenu'], lignes: [
+          ['CONTACT', '« Bonjour, Freemobile, [Prénom], à votre écoute (ou : en quoi puis-je vous aider ?) »'],
+          ['ÉCOUTE', '« Très bien, alors nous allons voir tout ça ensemble. » (commencer le questionnaire, voir QR Code annexe 6)'],
+          ['RÉPONSE', '« Nous avons fait toutes les manipulations nécessaires et votre télécommande ne fonctionne toujours pas, dans ce cas je vais procéder à l\u2019envoi d\u2019une télécommande neuve et sans frais. » 1 – Un mail de confirmation vous sera envoyé ; 2 – 48h après, un second mail et un SMS vous informeront de la livraison ; 3 – Un agent UPS viendra à votre domicile effectuer l\u2019échange et vous fera signer un justificatif. « C\u2019est bon pour vous ? »'],
+          ['CONCLUSION', "« J'espère avoir répondu à toutes vos questions. Juste après cet appel, vous recevrez un questionnaire de satisfaction, je vous prie de bien vouloir y répondre. Je vous remercie et je vous souhaite une excellente journée au nom de Free. »"],
+        ] },
+      },
+      { intitule: 'Le questionnaire (annexe 6).', documents: ['Document 5'], bareme: 0, reponse: "Lien du questionnaire : https://forms.gle/DxZffUh4kzLWTuGZ8 (à flasher ou cliquer)." },
+      {
+        intitule: 'Étapes de l\u2019échange de la télécommande (annexe 7).', documents: ['Document 6'], bareme: 3, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['N°', 'Contenu de l\u2019étape'], lignes: [
+          ['1', 'Envoi par Free d\u2019un mail de confirmation au client.'],
+          ['2', 'Envoi, 48h après, d\u2019un deuxième mail et d\u2019un SMS sur le téléphone portable du client pour l\u2019informer de la livraison du produit.'],
+          ['3', "Un agent d'UPS viendra à son domicile pour effectuer l'échange et lui fera signer un justificatif."],
+        ] },
+      },
+      { intitule: 'Présentation des caractéristiques (annexe 8).', documents: ['Mission 3'], bareme: 6, reponse: "« Je profite de votre appel M. Seption pour vous dire qu'en ce moment, il y a la nouvelle Freebox Pop qui est sortie. - Elle possède la fibre ultra rapide : vous pourrez regarder un film, télécharger des fichiers à toute vitesse et sans interruption ; - Elle intègre le nouveau protocole de chiffrement WPA3 qui permet de protéger vos connexions ; - Avec sa ligne fixe, vous pourrez appeler dans plus de 110 pays sans surcoût ; - Elle dispose d'un répéteur wifi Pop qui vous permettra d'avoir un wifi de qualité dans toutes les pièces. Est-ce que vous seriez intéressé par cette offre ? »" },
+      {
+        intitule: 'L\u2019annonce du prix et la réfutation (annexe 9).', documents: ['Documents 7, 8, 9 et 10'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Consigne', 'Réponse'], lignes: [
+          ['Prix et subtilité', '29,99 € pendant 1 an puis 39,99 €, sans engagement.'],
+          ['Phrase de réfutation (soustraction)', "« Je vous comprends M. Seption, mais pour toute souscription valable aujourd'hui uniquement, Free vous offre les frais de migration de 49€ et les frais d'envoi de 20€. »"],
+        ] },
+      },
+      { intitule: 'Les délais de livraison (annexe 10).', documents: ['Document 11'], bareme: 4, reponse: "« Votre Freebox Pop vous sera livrée d'ici 3 mois. Nous sommes désolés pour ce délai mais c'est dû à un problème de stock de Server Free Delta car l'offre a beaucoup de succès. Mais soyez rassuré, votre commande a bien été enregistrée et tant que la migration ne sera pas effective, votre Freebox actuelle fonctionnera normalement. »" },
+      {
+        intitule: 'Étapes de l\u2019échange de la Freebox (annexe 11).', documents: ['Document 12'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['N°', 'Contenu de l\u2019étape'], lignes: [
+          ['1', "Le client sera informé par mail ou par SMS de l'arrivée de sa Freebox pour faire l'échange."],
+          ['2', "Le client doit emballer dans un carton tous les équipements qu'il a reçus."],
+          ['3', 'Le client doit écrire en gros sur le carton : « Retour Free – Upgrade ».'],
+          ['4', 'Tout équipement manquant sera facturé (Freebox : 190€ ; Sagem : 49€ ; Boîtier Freebox : 150€ ; Boîtier HD : 290€ ; 20€/accessoire).'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "La vente au rebond",
+    proposition: ['Contact', 'La vente au rebond', 'La vente additionnelle', 'Conclusion'],
+    racine: {
+      id: 'racine', texte: "Le traitement de l'appel et la vente",
+      enfants: [
+        { id: 'appel', texte: "La réception d'appel", enfants: [
+          { id: 'c', texte: null, reponse: 'Contact' },
+          { id: 'concl', texte: null, reponse: 'Conclusion' },
+        ] },
+        { id: 'vente', texte: 'Les ventes', enfants: [
+          { id: 'rebond', texte: null, reponse: 'La vente au rebond' },
+          { id: 'add', texte: null, reponse: 'La vente additionnelle' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Distinguer les types de vente',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je confonds vente au rebond et vente additionnelle.' },
+          { niveau: 'debrouille', description: 'Je définis la vente au rebond.' },
+          { niveau: 'averti', description: 'Je distingue rebond, complémentaire et supplémentaire.' },
+          { niveau: 'expert', description: 'Je donne des exemples pertinents de chaque type.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Traiter une réclamation (C.E.R.C.)',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas structurer un appel.' },
+          { niveau: 'debrouille', description: 'Je rédige le contact.' },
+          { niveau: 'averti', description: 'Je rédige une fiche C.E.R.C. complète.' },
+          { niveau: 'expert', description: 'Je traite la demande et propose la procédure d\u2019échange.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Réaliser une vente au rebond',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne propose pas de produit additionnel.' },
+          { niveau: 'debrouille', description: 'Je propose la Freebox Pop.' },
+          { niveau: 'averti', description: 'J\u2019argumente, annonce le prix et la livraison.' },
+          { niveau: 'expert', description: 'Je réfute l\u2019objection prix avec une technique adaptée.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Vente au rebond', definition: "Profiter d'un contact pris à l'initiative du client pour proposer une offre commerciale distincte après avoir traité sa demande." },
+      { terme: 'Vente additionnelle', definition: 'Proposer un produit supplémentaire à un client venu acheter un produit principal.' },
+      { terme: 'Vente complémentaire', definition: 'Produit proposé en plus, directement lié au produit principal.' },
+      { terme: 'Vente supplémentaire', definition: 'Produit proposé en plus, sans lien avec le produit principal.' },
+      { terme: 'Technique de l\u2019addition', definition: 'Énumérer tous les avantages du produit pour justifier son prix.' },
+      { terme: 'Technique de la soustraction', definition: "Montrer au client ce qu'il perd s'il ne prend pas le produit." },
+      { terme: 'Objection', definition: 'Frein ou réserve exprimé par le client (ex : sur le prix).' },
+      { terme: 'Migration', definition: "Passage d'une ancienne Freebox à une nouvelle (échange de matériel)." },
+      { terme: 'C.E.R.C.', definition: 'Contact, Écoute, Réponse, Conclusion : méthode de réception d\u2019appel.' },
+      { terme: 'Free Helper', definition: 'Conseiller relation client à distance de Free.' },
+    ],
+    flashcards: [
+      { recto: 'Qui prend l\u2019initiative dans la vente au rebond ?', verso: 'Le client.' },
+      { recto: 'Vente complémentaire ?', verso: 'Produit lié au produit principal (ex : housse + téléphone).' },
+      { recto: 'Vente supplémentaire ?', verso: 'Produit sans lien avec le produit principal.' },
+      { recto: 'Technique de la soustraction ?', verso: "Montrer ce que le client perd s'il n'achète pas." },
+      { recto: 'Prix de la Freebox Pop ?', verso: '29,99 € pendant 1 an puis 39,99 €, sans engagement.' },
+      { recto: 'Frais offerts aujourd\u2019hui ?', verso: 'Migration (49€) et envoi (20€) offerts.' },
+      { recto: 'Délai de livraison en migration ?', verso: 'Environ 3 mois.' },
+      { recto: 'Qui livre la télécommande ?', verso: 'UPS (échange à domicile, sous 48h après le mail).' },
+      { recto: 'Que doit écrire le client sur le carton ?', verso: '« Retour Free - Upgrade ».' },
+      { recto: 'Pénalité si Freebox manquante ?', verso: '190 €.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Qui prend l\u2019initiative dans la vente au rebond ?', options: ['Le client', 'Le commercial', 'Le livreur', 'Le directeur'], bonne: 0 },
+      { type: 'unique', question: 'La vente complémentaire propose un produit...', options: ['Lié au produit principal', 'Sans lien', 'Moins cher', 'Gratuit'], bonne: 0 },
+      { type: 'unique', question: 'La technique de la soustraction montre...', options: ["Ce que le client perd", 'Tous les avantages', 'Le prix barré', 'La marque'], bonne: 0 },
+      { type: 'unique', question: 'Prix Freebox Pop la 1ère année ?', options: ['29,99 €/mois', '39,99 €/mois', '19,99 €/mois', '9,99 €/mois'], bonne: 0 },
+      { type: 'unique', question: 'Frais offerts aujourd\u2019hui ?', options: ['Migration + envoi', 'TV + Netflix', 'Aucun', 'Téléphone'], bonne: 0 },
+      { type: 'unique', question: 'Délai en migration ?', options: ['Environ 3 mois', '48h', '1 an', '1 semaine'], bonne: 0 },
+      { type: 'unique', question: 'Qui effectue l\u2019échange à domicile ?', options: ['UPS', 'Free', 'La Poste', 'Le client'], bonne: 0 },
+      { type: 'unique', question: 'Mention à écrire sur le carton ?', options: ['Retour Free - Upgrade', 'Fragile', 'Urgent', 'Cadeau'], bonne: 0 },
+      { type: 'unique', question: 'Pénalité si Freebox manquante ?', options: ['190 €', '49 €', '20 €', '290 €'], bonne: 0 },
+      { type: 'unique', question: 'Première étape de la méthode C.E.R.C. ?', options: ['Contact', 'Écoute', 'Réponse', 'Conclusion'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Vente au rebond', 'Vente complémentaire', 'Vente supplémentaire'],
+      zones: [
+        { libelle: 'Épargne proposée au guichet', etiquetteIndex: 0 },
+        { libelle: 'Freebox Pop proposée après dépannage', etiquetteIndex: 0 },
+        { libelle: 'Housse avec un téléphone', etiquetteIndex: 1 },
+        { libelle: 'Extension de garantie avec un photocopieur', etiquetteIndex: 1 },
+        { libelle: 'Carte bleue avec un livret d\u2019épargne', etiquetteIndex: 2 },
+        { libelle: 'Produit sans lien avec l\u2019achat', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -6916,6 +7286,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'free-m1': FREE_M1,
   'free-m2': FREE_M2,
   'free-m3': FREE_M3,
+  'free-m4': FREE_M4,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
