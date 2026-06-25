@@ -119,6 +119,37 @@ export interface AnnexeFicheContact {
   titre: string
 }
 
+// Tableau de gestion des appels facon logiciel : en-tetes groupes
+// (Rappel > 1er/2eme appel, Envoi > Oui/Non, Rappeler > Plus tard/Raisons),
+// lignes a saisir. colonnes = structure d'en-tete sur deux niveaux.
+export interface AnnexeTableauAppels {
+  type: 'tableauappels'
+  id: string
+  titre: string
+  entete?: string
+  organisations: string[] // colonne de gauche pre-remplie (organisations a appeler)
+}
+
+// Agenda hebdomadaire facon logiciel de prise de rendez-vous : jours + creneaux.
+export interface AnnexeAgenda {
+  type: 'agenda'
+  id: string
+  titre: string
+  entete?: string
+  jours: string[] // ex : Lundi 13, Mardi 14...
+  creneaux: string[] // ex : 8h, 9h, ... 18h
+}
+
+// Fichier clients facon tableur : colonnes + lignes a completer (saisie libre).
+export interface AnnexeFichierClients {
+  type: 'fichierclients'
+  id: string
+  titre: string
+  entete?: string
+  colonnes: string[]
+  nbLignes: number
+}
+
 // Tableau de services avec cases a cocher Marchand / Non marchand.
 export interface AnnexeCasesServices {
   type: 'casesservices'
@@ -282,7 +313,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -350,6 +381,9 @@ export interface BlocDocumentTexte {
   // Habillage facon page web riche : quand true, le bloc est encadre avec un
   // bandeau de marque (logo AMParis) et une mise en page de site.
   pageWeb?: boolean
+  // Journal d'appels facon logiciel de compte rendu : liste de fiches d'appel
+  // (numero appele + reponse + interlocuteur), cliquables avec detail.
+  journalAppels?: { entete?: string; appels: { numero: string; reponse: string; interlocuteur?: string }[] }
 }
 export interface DocumentRessource {
   numero: number // numero affiche (Document 1, 2...)
@@ -4661,6 +4695,263 @@ const AMPARIS_M3: ContenuMission = {
   },
 }
 
+const AMPARIS_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez l'opération de prospection téléphonique et analysez ses résultats : listez les prospects, gérez les appels, mesurez le taux de réalisation, calculez le coût et mettez à jour le fichier clients.",
+    contexte:
+      "C'est le jour « J » et vous allez commencer votre campagne de téléprospection qui s'étendra du 13 au 17 mars. Afin d'être sûr de ce que vous avez à faire aujourd'hui vous faites une liste par ordre chronologique.",
+    documents: [
+      { numero: 1, titre: 'Les réponses à vos appels', images: [], texte: [
+        { pageWeb: true },
+        { journalAppels: { entete: "Journal des appels — Téléprospection", appels: [
+          { numero: '01.45.74.49.15', reponse: "« J'ai bien reçu votre document. Justement nous souhaitons changer notre photocopieur. Je vous propose de nous rencontrer le 17 mars à 14h.", interlocuteur: 'Mme Fanta Diagoura - Gestionnaire' },
+          { numero: '01.47.63.23.72', reponse: "« Merci, mais je ne suis pas intéressée car notre école Ampère s'est équipé en début d'année scolaire d'un nouveau photocopieur. »", interlocuteur: "M. Julien Tabua - Directeur d'Ecole" },
+          { numero: '01.46.07.05.10', reponse: "« Je suis intéressé, mais je vous avoue que je n'ai pas vu votre mail. Pourriez-vous le renvoyer à l'adresse suivante : gestionnaire.laroseblanche@ac-paris.fr", interlocuteur: 'Mme Odile Gomez' },
+          { numero: '01.84.16.37.59', reponse: "« Bonjour, La personne décisionnaire est en réunion veuillez la rappeler en début d'après-midi. »", interlocuteur: "L'agent d'accueil" },
+          { numero: '01.43.61.87.16', reponse: "« Je suis personnel d'accueil. Nous ne répondons jamais au démarchage par téléphone. Donc je ne peux pas donner suite à votre appel. Bonne journée à vous, au revoir. »", interlocuteur: '' },
+          { numero: '01.56.21.36.36', reponse: "« Quand pourrions-nous nous rencontrer ? Le mercredi après-midi il n'y a pas d'élève, je peux vous recevoir le 14 mars à 14h30.", interlocuteur: 'Mme Corinne Forest - Gestionnaire' },
+          { numero: '01.46.27.50.99', reponse: "« Bonjour, je suis la gestionnaire. Nous avons le projet de remplacer notre photocopieur mais plus l'an prochain car nous n'avons pas assez de budget. Rappelez-moi en janvier. Voilà mon numéro direct : 01.46.27.50.97 »", interlocuteur: 'Mme Sarah Picard' },
+          { numero: '01.58.22.20.70', reponse: "« C'est vous qui avez appelé ce matin ? Je suis, sa secrétaire. Il ne sera pas disponible pour vous parler. Je suis désolée.", interlocuteur: 'Le secrétariat' },
+          { numero: '01.46.27.94.37', reponse: "« Je suis la gestionnaire. J'ai consulté votre site internet avec beaucoup d'intérêt et il y a des équipements qui m'intéresse. Nous pouvons nous rencontrer le 16 mars à 16h30 ».", interlocuteur: 'Mme Barbara Larue' },
+          { numero: '01.53.31.36.30', reponse: "« Bonjour, Le directeur est en congé maladie. Je ne suis que sa remplaçante. Rappelez d'ici 15 jours environ.", interlocuteur: 'Mme Laure Trompe' },
+          { numero: '01.47.63.16.17', reponse: "« J'ai un problème avec ma boîte mail. Pourriez-vous me renvoyer le tout s'il vous plait ? »", interlocuteur: 'M. Pierre Goulet - Le gestionnaire' },
+        ] } },
+      ] },
+      { numero: 2, titre: 'Taux de réalisation', images: [], texte: [
+        { pageWeb: true },
+        { paragraphes: ["Pour évaluer la rentabilité du commercial, l'entreprise compare ce qui a été réalisé par ce dernier par rapport aux objectifs qui lui avaient été fixés."] },
+        { paragraphes: ['Ces calculs permettent de savoir si le commercial :'] },
+        { puces: ["N'a pas atteint ses objectifs (<100 %) ;", 'A atteint ses objectifs (= 100 %) ;', 'A dépassé ses objectifs (> 100 %).'] },
+        { intertitre: 'La formule permettant de calculer la réalisation des objectifs', paragraphes: ['(Objectifs réalisés / Objectifs à atteindre) x 100'] },
+      ] },
+      { numero: 3, titre: "Données de l'opération de prospection", images: [], texte: [
+        { pageWeb: true },
+        { paragraphes: ['Pour calculer le coût de l\u2019opération vous devez prendre compte :'] },
+        { puces: ["Le nombre d'appels passés", 'Le nombre publipostages créés et envoyé :'] },
+        { intertitre: 'Détail des coûts', puces: ['Enveloppe : 0,15 cts', 'Timbre : 1,05 €', 'Encre, papier, temps de rédaction : 0,30 cts', 'Un appel est facturé 0,08 € (tarif entreprise)'] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4B',
+      intitule: "Réaliser une opération de prospection et analyser ses résultats",
+      detail: "Gérer les appels, mesurer la performance (taux de réalisation), calculer le coût et mettre à jour le fichier clients.",
+    },
+    objectifs: [
+      "Organiser et réaliser une campagne d'appels de prospection.",
+      'Mesurer la performance : nombre de rendez-vous et taux de réalisation.',
+      "Calculer le coût de l'opération et mettre à jour le fichier clients.",
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — Les tâches à effectuer',
+        questions: [
+          { numero: 1, consigne: "Listez les prospects que vous allez appeler aujourd'hui.", ressources: "Consulter la Mission 2 annexe 4, compléter l'annexe 1. [C.4B.2]", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Complétez le fichier contacts à l'aide des numéros que vous avez eu en appelant.", ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Les objectifs de rendez-vous',
+        questions: [
+          { numero: 3, consigne: 'Combien de rendez-vous avez-vous réussi à avoir suite à votre campagne de téléprospection ?', ressources: "Consulter l'annexe 2, compléter l'annexe 3. [C.4B.2]", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Complétez votre agenda en y inscrivant les rendez-vous que vous avez réussi à obtenir.", ressources: "Consulter l'annexe 2, compléter l'annexe 4. [C.4B.2]", annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Calculez votre taux de réalisation.', ressources: "Lire le document 2, compléter l'annexe 5. [C.4B.2]", annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Quel commentaire pouvez-vous faire lorsque vous comparez les objectifs qui vous ont été fixés et ce que vous avez réalisé ?', ressources: "Consulter l'annexe 5, compléter l'annexe 6. [C.4B.2]", annexeId: 'annexe6' },
+        ],
+      },
+      {
+        titre: "Activité 3 — Calcul du coût de l'opération",
+        questions: [
+          { numero: 7, consigne: "Calculez le coût de l'opération.", ressources: "Consulter la Mission 2 annexe 4 puis lire le document 3, compléter l'annexe 7. [C.4B.2]", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Commentez ces résultats au regard du budget que vous a accordé Mme Pauret pour la mise en place de l\u2019opération.', ressources: "Consulter l'annexe 7, compléter l'annexe 8. [C.4B.2]", annexeId: 'annexe8' },
+        ],
+      },
+      {
+        titre: 'Activité 4 — Mettre à jour le fichier client',
+        questions: [
+          { numero: 9, consigne: 'Mettez à jour le fichier clients en rentrant les informations qui vous ont été données au cours de vos appels.', ressources: "Relire le document 1 (Mission 4) et le document 2 (Mission 2), compléter l'annexe 9. [C.4B.2]", annexeId: 'annexe9' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Prospects à contacter', colonnes: ['Organisations', 'Numéro de téléphone'], nbLignes: 11 },
+      { type: 'tableauappels', id: 'annexe2', titre: 'Annexe 2 — Tableau de gestion des appels', entete: "Gestion des appels — Téléprospection", organisations: ['Léon Gambetta', 'Maria Deraismes', 'Latin', 'Pierre de Ronsard', 'Les Épinettes', 'Saint Michel des Batignolles', 'Carnot', 'Bernard Buffet', 'Ampère', 'André Malraux', 'La Rose Blanche'] },
+      { type: 'texte', id: 'annexe3', titre: 'Annexe 3 — Nombre de rendez-vous obtenus', lignes: 1 },
+      { type: 'agenda', id: 'annexe4', titre: 'Annexe 4 — Votre agenda', entete: 'Agenda — Mars 202N', jours: ['Lundi 13', 'Mardi 14', 'Mercredi 15', 'Jeudi 16', 'Vendredi 17'], creneaux: ['8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h'] },
+      { type: 'texte', id: 'annexe5', titre: 'Annexe 5 — Calcul du taux de réalisation', lignes: 2 },
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — Commentaire', lignes: 2 },
+      { type: 'grille', id: 'annexe7', titre: "Annexe 7 — Coût de l'opération", colonnes: ['Éléments', 'Quantité', 'Calculs', 'Résultats'], nbLignes: 3 },
+      { type: 'texte', id: 'annexe8', titre: 'Annexe 8 — Commentaire', lignes: 2 },
+      { type: 'fichierclients', id: 'annexe9', titre: 'Annexe 9 — Fichier clients', entete: 'Fichier clients — AMParis', colonnes: ["Type d'organisation", "Nom de l'organisation", 'Adresse', 'Personne décisionnaire', 'Téléphone du décisionnaire ou de l\u2019organisation', 'E-mail du décisionnaire ou de l\u2019organisation', 'Refus (cause)'], nbLignes: 11 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Prospects à contacter (annexe 1).', documents: ['Mission 2 annexe 4', 'Annexe 1'], bareme: 11, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Organisations', 'Numéro de téléphone'], lignes: [
+          ['École maternelle publique Ampère', '01.47.63.23.72'],
+          ['Collège public André Malraux', '01.45.74.49.15'],
+          ['Collège privé Latin', '01.84.16.37.59'],
+          ['Collège public La Rose Blanche', '01.46.07.05.10'],
+          ['Lycée polyvalent Carnot', '01.56.21.36.36'],
+          ['Collège Léon Gambetta', '01 43 61 87 16'],
+          ['École maternelle publique Les Épinettes', '01.46.27.50.99'],
+          ['Lycée privée Saint Michel des Batignolles', '01.58.22.20.70'],
+          ['École polyvalente Bernard Buffet', '01.53.31.36.30'],
+          ['Lycée professionnel Maria Deraismes', '01.46.27.94.37'],
+          ['Collège public Pierre de Ronsard', '01.47.63.16.17'],
+        ] },
+      },
+      {
+        intitule: 'Tableau de gestion des appels (annexe 2).', documents: ['Document 1', 'Annexe 2'], bareme: 11, reponse: "Voir tableau. Chaque ligne reprend l'organisation, l'interlocuteur, le téléphone, le rappel, la date de RDV éventuelle, l'envoi de documents, le rappel à prévoir et le motif de refus.",
+        tableau: { colonnes: ['Organisation', 'Interlocuteur / fonction', 'Téléphone', 'Rdv (date)', 'Refus (cause)'], lignes: [
+          ['Léon Gambetta', "Personnel d'accueil", '01 43 61 87 16', 'Non', 'Pas de démarchage'],
+          ['Maria Deraismes', 'Barbara Larue - Gestionnaire', '01.46.27.94.37', '16.03 à 16H30', ''],
+          ['Latin', "Agent d'accueil", '01.84.16.37.59', 'NON (rappeler)', 'Décisionnaire en réunion'],
+          ['Pierre de Ronsard', 'M. Pierre Goulet - Gestionnaire', '01.47.63.16.17', 'NON (rappeler)', 'Pb boîte mail'],
+          ['Les Épinettes', 'Sarah Picard - Gestionnaire', '01.46.27.50.99', 'NON (rappeler en janvier)', 'Plus de budget'],
+          ['Saint Michel des Batignolles', 'La secrétaire', '01.58.22.20.70', 'NON', 'Pas disponible'],
+          ['Carnot', 'Corine Forest - Gestionnaire', '01.56.21.36.36', '14.03 à 14H', ''],
+          ['Bernard Buffet', 'Laure Trompe - Remplaçante', '01.53.31.36.30', 'NON (rappeler)', 'Congé maladie'],
+          ['Ampère', 'Julien Tabua - Directeur Ecole', '01.47.63.23.72', 'NON', 'Nouveau photocopieur'],
+          ['André Malraux', 'Fanta Diagoura - Gestionnaire', '01.45.74.49.15', '17.03 à 14H', ''],
+          ['La Rose Blanche', 'Odile Gomez - Gestionnaire', '01.46.07.05.10', 'NON (envoi documents)', ''],
+        ] },
+      },
+      { intitule: 'Nombre de rendez-vous obtenus (annexe 3).', documents: ['Annexe 2', 'Annexe 3'], bareme: 1, reponse: '3 rendez-vous (Maria Deraismes - Carnot - André Malraux).' },
+      {
+        intitule: 'Agenda (annexe 4).', documents: ['Annexe 2', 'Annexe 4'], bareme: 3, reponse: 'Mars 202N : Carnot le 14 mars à 14h, André Malraux le 17 mars à 14h, Maria Deraismes le 16 mars à 16h30.',
+      },
+      { intitule: 'Calcul du taux de réalisation (annexe 5).', documents: ['Document 2', 'Annexe 5'], bareme: 2, reponse: 'Objectifs réalisés / objectifs à atteindre x 100 = 3 / 2 x 100 = 150 %.' },
+      { intitule: 'Commentaire (annexe 6).', documents: ['Annexe 5', 'Annexe 6'], bareme: 2, reponse: "Les objectifs fixés par l'entreprise ont été dépassés (150 %, soit 3 rendez-vous obtenus pour 2 demandés)." },
+      {
+        intitule: "Coût de l'opération (annexe 7).", documents: ['Mission 2 annexe 4', 'Document 3', 'Annexe 7'], bareme: 4, reponse: 'Voir tableau. Total = 2,46 €.',
+        tableau: { colonnes: ['Éléments', 'Quantité', 'Calculs', 'Résultats'], lignes: [
+          ['Coût appels passés', '12', '12 x 0,08', '0,96 €'],
+          ['Coût publipostage', '1', '1 x (0,15 + 1,05 + 0,30)', '1,50 €'],
+          ['Total', '', '', '2,46 €'],
+        ] },
+      },
+      { intitule: 'Commentaire (annexe 8).', documents: ['Annexe 7', 'Annexe 8'], bareme: 2, reponse: "Le budget donné par Mme Pauret qui était de 20 € maximum n'a pas été dépassé (coût réel : 2,46 €)." },
+      {
+        intitule: 'Fichier clients mis à jour (annexe 9).', documents: ['Mission 4 doc 1', 'Mission 2 doc 2', 'Annexe 9'], bareme: 11, reponse: 'Voir tableau.',
+        tableau: { colonnes: ["Type d'organisation", "Nom", 'Personne décisionnaire', 'Téléphone'], lignes: [
+          ['École maternelle publique', 'Ampère', 'Julien Tabua', '01.47.63.23.72'],
+          ['Collège public', 'André Malraux', 'Fanta Diagoura', '01.45.74.49.15'],
+          ['Collège privé', 'Latin', 'Non communiqué', '01.84.16.37.59'],
+          ['Collège public', 'La Rose Blanche', 'Odile Gomez', '01.46.07.05.10'],
+          ['Lycée polyvalent', 'Carnot', 'Corinne Forest', '01.56.21.36.36'],
+          ['Collège', 'Léon Gambetta', 'Non communiqué', '01 43 61 87 16'],
+          ['École maternelle publique', 'Les Épinettes', 'Sarah Picard', '01.46.27.50.99'],
+          ['Lycée privée', 'Saint Michel des Batignolles', 'Non communiqué', '01.58.22.20.70'],
+          ['École polyvalente', 'Bernard Buffet', 'Non communiqué', '01.53.31.36.30'],
+          ['Lycée professionnel', 'Maria Deraismes', 'Barbara Larue', '01.46.27.94.37'],
+          ['Collège public', 'Pierre de Ronsard', 'Pierre Goulet', '01.47.63.16.17'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "La réalisation de l'opération de prospection",
+    proposition: ['Le taux de réalisation', "Le coût de l'opération", 'Le nombre de rendez-vous', 'La mise à jour du fichier'],
+    racine: {
+      id: 'racine', texte: "La réalisation de la prospection",
+      enfants: [
+        { id: 'perf', texte: 'La performance', enfants: [
+          { id: 'rdv', texte: null, reponse: 'Le nombre de rendez-vous' },
+          { id: 'taux', texte: null, reponse: 'Le taux de réalisation' },
+        ] },
+        { id: 'cout', texte: "Le coût de l'opération", enfants: [
+          { id: 'appels', texte: 'Le coût des appels' },
+          { id: 'publi', texte: 'Le coût du publipostage' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Réaliser et gérer les appels",
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas organiser mes appels.' },
+          { niveau: 'debrouille', description: 'Je liste les prospects à appeler.' },
+          { niveau: 'averti', description: "Je gère les appels et complète le tableau de suivi." },
+          { niveau: 'expert', description: "Je tiens à jour l'ensemble du suivi et obtiens des rendez-vous." },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Mesurer la performance',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas calculer un taux de réalisation.' },
+          { niveau: 'debrouille', description: 'Je compte les rendez-vous obtenus.' },
+          { niveau: 'averti', description: 'Je calcule le taux de réalisation.' },
+          { niveau: 'expert', description: "Je commente la performance au regard des objectifs." },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Calculer le coût et mettre à jour le fichier",
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas calculer un coût.' },
+          { niveau: 'debrouille', description: 'Je calcule un coût partiel.' },
+          { niveau: 'averti', description: "Je calcule le coût total de l'opération." },
+          { niveau: 'expert', description: 'Je commente le coût et mets à jour le fichier clients.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Téléprospection', definition: 'Prospection commerciale réalisée par téléphone.' },
+      { terme: 'Taux de réalisation', definition: '(Objectifs réalisés / objectifs à atteindre) x 100.' },
+      { terme: 'Objectif', definition: "But chiffré fixé au commercial (ici : 2 rendez-vous)." },
+      { terme: 'Fichier contacts', definition: 'Tableau de suivi des appels et de leurs résultats.' },
+      { terme: 'Fichier clients', definition: "Base de données des clients et de leurs coordonnées." },
+      { terme: 'Publipostage', definition: 'Courrier adressé à un prospect pour lui proposer une offre.' },
+      { terme: 'Décisionnaire', definition: "Personne habilitée à décider d'un achat dans l'organisation." },
+      { terme: 'Relance', definition: "Nouveau contact pour faire avancer un prospect (rappel)." },
+      { terme: "Coût de l'opération", definition: "Somme des dépenses engagées (appels + publipostage)." },
+      { terme: 'Rentabilité', definition: "Rapport entre les résultats obtenus et les moyens engagés." },
+    ],
+    flashcards: [
+      { recto: 'Objectif de rendez-vous fixé ?', verso: '2 rendez-vous.' },
+      { recto: 'Nombre de rendez-vous obtenus ?', verso: '3 rendez-vous (Maria Deraismes, Carnot, André Malraux).' },
+      { recto: 'Formule du taux de réalisation ?', verso: '(Objectifs réalisés / objectifs à atteindre) x 100.' },
+      { recto: 'Taux de réalisation obtenu ?', verso: '3 / 2 x 100 = 150 %.' },
+      { recto: "Coût d'un appel ?", verso: '0,08 € (tarif entreprise).' },
+      { recto: "Coût total de l'opération ?", verso: '2,46 €.' },
+      { recto: 'Budget maximum accordé ?', verso: '20 € maximum.' },
+      { recto: "Coût d'un timbre ?", verso: '1,05 €.' },
+      { recto: 'Période de la campagne ?', verso: 'Du 13 au 17 mars.' },
+      { recto: "Combien d'appels passés ?", verso: '12 appels.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Objectif de rendez-vous fixé ?', options: ['2 rendez-vous', '5 rendez-vous', '10 rendez-vous', '1 rendez-vous'], bonne: 0 },
+      { type: 'unique', question: 'Rendez-vous obtenus ?', options: ['3', '2', '1', '5'], bonne: 0 },
+      { type: 'unique', question: 'Formule du taux de réalisation ?', options: ['(Réalisés / à atteindre) x 100', '(À atteindre / réalisés) x 100', 'Réalisés x à atteindre', 'Réalisés + à atteindre'], bonne: 0 },
+      { type: 'unique', question: 'Taux de réalisation obtenu ?', options: ['150 %', '100 %', '50 %', '25 %'], bonne: 0 },
+      { type: 'unique', question: "Coût total de l'opération ?", options: ['2,46 €', '20 €', '0,96 €', '5 €'], bonne: 0 },
+      { type: 'unique', question: 'Budget maximum accordé ?', options: ['20 €', '2 €', '50 €', '100 €'], bonne: 0 },
+      { type: 'unique', question: "Coût d'un appel ?", options: ['0,08 €', '0,80 €', '1 €', '0,15 €'], bonne: 0 },
+      { type: 'unique', question: 'Période de la campagne ?', options: ['Du 13 au 17 mars', 'Du 1 au 5 mars', 'En novembre', 'En décembre'], bonne: 0 },
+      { type: 'unique', question: 'Les objectifs ont été...', options: ['Dépassés', 'Non atteints', 'Juste atteints', 'Annulés'], bonne: 0 },
+      { type: 'unique', question: "Coût d'un timbre ?", options: ['1,05 €', '1,50 €', '0,15 €', '0,30 €'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Rendez-vous obtenu', 'Refus', "Coût de l'opération"],
+      zones: [
+        { libelle: 'Maria Deraismes (16 mars)', etiquetteIndex: 0 },
+        { libelle: 'Carnot (14 mars)', etiquetteIndex: 0 },
+        { libelle: 'Ampère (nouveau photocopieur)', etiquetteIndex: 1 },
+        { libelle: 'Léon Gambetta (pas de démarchage)', etiquetteIndex: 1 },
+        { libelle: '12 x 0,08 € (appels)', etiquetteIndex: 2 },
+        { libelle: '1,50 € (publipostage)', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -4676,6 +4967,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'amparis-m1': AMPARIS_M1,
   'amparis-m2': AMPARIS_M2,
   'amparis-m3': AMPARIS_M3,
+  'amparis-m4': AMPARIS_M4,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

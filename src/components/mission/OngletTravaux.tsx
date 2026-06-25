@@ -21,6 +21,9 @@ import type {
   AnnexeCourrier,
   AnnexeCroc,
   AnnexeFicheContact,
+  AnnexeTableauAppels,
+  AnnexeAgenda,
+  AnnexeFichierClients,
   AnnexeMail,
   AnnexeSms,
   AnnexeFicheProduit,
@@ -516,9 +519,44 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
           )}
           {b.crm && <CrmConsultable crm={b.crm} couleur={couleur} />}
           {b.organigramme && <OrganigrammeVue org={b.organigramme} />}
+          {b.journalAppels && <JournalAppelsVue journal={b.journalAppels} couleur={couleur} />}
         </div>
       ))}
       </div>
+    </div>
+  )
+}
+
+// Journal d'appels facon logiciel de compte rendu : liste de fiches d'appel
+// cliquables, avec detail (numero, reponse, interlocuteur).
+function JournalAppelsVue({ journal, couleur }: { journal: NonNullable<BlocDocumentTexte['journalAppels']>; couleur: string }) {
+  const [sel, setSel] = useState<number | null>(null)
+  const detail = sel !== null ? journal.appels[sel] : null
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden', marginTop: 4 }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 14 }}>☎</span>{journal.entete ?? "Journal des appels"}
+        <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 500, opacity: 0.85 }}>{journal.appels.length} appels</span>
+      </div>
+      {detail ? (
+        <div style={{ padding: 14 }}>
+          <button type="button" onClick={() => setSel(null)} style={{ border: `1px solid ${couleur}`, color: couleur, background: '#FFFFFF', borderRadius: 6, padding: '6px 12px', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginBottom: 12 }}>← Retour aux appels</button>
+          <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 4 }}>Vous avez contacté le</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: couleur, marginBottom: 12 }}>{detail.numero}</div>
+          <div style={{ background: '#F7F9FB', border: '1px solid #E2E8F0', borderRadius: 8, padding: 12, fontSize: 14, lineHeight: 1.6, fontStyle: 'italic', color: '#1F2933' }}>{detail.reponse}</div>
+          {detail.interlocuteur && <div style={{ marginTop: 10, fontSize: 13, fontWeight: 700, color: '#374151', textAlign: 'right' }}>— {detail.interlocuteur}</div>}
+        </div>
+      ) : (
+        <div style={{ padding: 10, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+          {journal.appels.map((a, i) => (
+            <button key={i} type="button" onClick={() => setSel(i)} style={{ textAlign: 'left', cursor: 'pointer', border: '1px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF', padding: '10px 12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#1F2933' }}><span style={{ color: couleur }}>☎</span>{a.numero}</div>
+              <div style={{ fontSize: 12, color: '#6B7280', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.interlocuteur || 'Voir la réponse'}</div>
+              <div style={{ fontSize: 12, color: couleur, fontWeight: 600, marginTop: 4 }}>ouvrir →</div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -708,6 +746,9 @@ function rendreAnnexe(
   if (annexe.type === 'courrier') return rendreCourrier(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'croc') return rendreCroc(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'fichecontact') return rendreFicheContact(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'tableauappels') return rendreTableauAppels(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'agenda') return rendreAgenda(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'fichierclients') return rendreFichierClients(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
   if (annexe.type === 'ficheproduit') return rendreFicheProduit(annexe, saisies, set, verrouille, couleur)
@@ -1584,6 +1625,104 @@ function rendreCroc(a: AnnexeCroc, saisies: Saisies, set: (id: string, v: string
 }
 
 // Fiche contact / prospect facon CRM : sections a completer.
+// Tableau de gestion des appels facon logiciel : en-tetes groupes sur 2 niveaux.
+function rendreTableauAppels(a: AnnexeTableauAppels, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '5px 6px', borderRadius: 4, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const th: React.CSSProperties = { background: couleur, color: '#FFFFFF', fontSize: 11, fontWeight: 700, padding: '6px 6px', border: '1px solid #FFFFFF', textAlign: 'center' }
+  const cols = ['Interlocuteur / fonction', 'Téléphone', '1er appel', '2ème appel', 'Rdv (date)', 'Envoi Oui', 'Envoi Non', 'Rappeler + tard', 'Raisons', 'Refus (causes)']
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.entete ?? a.titre}</div>
+      <div style={{ padding: 8, overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', minWidth: 1000 }}>
+          <thead>
+            <tr>
+              <th style={{ ...th, minWidth: 150 }}>Organisation et adresse</th>
+              {cols.map((c) => <th key={c} style={{ ...th, minWidth: 90 }}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {a.organisations.map((org, i) => (
+              <tr key={i}>
+                <td style={{ border: '1px solid #DCE8F4', padding: '4px 8px', fontSize: 12, fontWeight: 700, color: '#1F2933', background: '#F7F9FB' }}>{org}</td>
+                {cols.map((_, cj) => (
+                  <td key={cj} style={{ border: '1px solid #DCE8F4', padding: 3 }}>
+                    <input value={saisies[`${a.id}.l${i}c${cj}`] ?? ''} onChange={(e) => set(`${a.id}.l${i}c${cj}`, e.target.value)} disabled={verrouille} style={champ} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// Agenda hebdomadaire facon logiciel de prise de rendez-vous.
+function rendreAgenda(a: AnnexeAgenda, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '4px 5px', borderRadius: 4, border: '1px solid #E2E8F0', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>📅 {a.entete ?? a.titre}</div>
+      <div style={{ padding: 8, overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', minWidth: 600, width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ background: '#F0F3F6', border: '1px solid #DCE8F4', padding: '6px', fontSize: 11, width: 50 }}></th>
+              {a.jours.map((j) => <th key={j} style={{ background: couleur, color: '#FFFFFF', border: '1px solid #FFFFFF', padding: '6px 8px', fontSize: 12, fontWeight: 700 }}>{j}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {a.creneaux.map((cr, ri) => (
+              <tr key={cr}>
+                <td style={{ background: '#F7F9FB', border: '1px solid #DCE8F4', padding: '4px 6px', fontSize: 11, fontWeight: 700, color: '#6B7280', textAlign: 'center' }}>{cr}</td>
+                {a.jours.map((_, cj) => (
+                  <td key={cj} style={{ border: '1px solid #E2E8F0', padding: 2 }}>
+                    <input value={saisies[`${a.id}.j${cj}h${ri}`] ?? ''} onChange={(e) => set(`${a.id}.j${cj}h${ri}`, e.target.value)} disabled={verrouille} style={champ} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// Fichier clients facon tableur : colonnes + lignes a completer.
+function rendreFichierClients(a: AnnexeFichierClients, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 12, padding: '5px 6px', borderRadius: 4, border: '1px solid #E2E8F0', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>▦ {a.entete ?? a.titre}</div>
+      <div style={{ padding: 8, overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', minWidth: 900, width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ background: '#F0F3F6', border: '1px solid #DCE8F4', padding: '4px', fontSize: 11, width: 30, color: '#9AA5B1' }}>#</th>
+              {a.colonnes.map((c) => <th key={c} style={{ background: couleur, color: '#FFFFFF', border: '1px solid #FFFFFF', padding: '6px 8px', fontSize: 11, fontWeight: 700, minWidth: 110 }}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: a.nbLignes }).map((_, ri) => (
+              <tr key={ri}>
+                <td style={{ background: '#F7F9FB', border: '1px solid #DCE8F4', padding: '4px', fontSize: 11, color: '#9AA5B1', textAlign: 'center' }}>{ri + 1}</td>
+                {a.colonnes.map((_, cj) => (
+                  <td key={cj} style={{ border: '1px solid #E2E8F0', padding: 2 }}>
+                    <input value={saisies[`${a.id}.l${ri}c${cj}`] ?? ''} onChange={(e) => set(`${a.id}.l${ri}c${cj}`, e.target.value)} disabled={verrouille} style={champ} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 function rendreFicheContact(a: AnnexeFicheContact, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
   const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '7px 9px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
   const lab: React.CSSProperties = { display: 'block', fontSize: 11, fontWeight: 700, color: '#6B7280', marginBottom: 3 }
