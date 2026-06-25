@@ -32,6 +32,7 @@ import type {
   AnnexeOrganigrammeAremplir,
   NoeudOrgaVide,
   AnnexeCochage,
+  AnnexeReformulation,
   AnnexeFicheAppel,
   AnnexeMail,
   AnnexeSms,
@@ -466,7 +467,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -552,8 +553,46 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.organigramme && <OrganigrammeVue org={b.organigramme} />}
           {b.journalAppels && <JournalAppelsVue journal={b.journalAppels} couleur={couleur} />}
           {b.transcription && <TranscriptionVue transcription={b.transcription} couleur={couleur} />}
+          {b.procedure && <ProcedureVue procedure={b.procedure} couleur={couleur} />}
         </div>
       ))}
+      </div>
+    </div>
+  )
+}
+
+// Procedure illustree facon page web Free : etapes avec icones SVG, encadre
+// d'alerte, et section secondaire. Lecture seule.
+function ProcedureVue({ procedure, couleur }: { procedure: NonNullable<BlocDocumentTexte['procedure']>; couleur: string }) {
+  const Icone = ({ type }: { type: 'tel' | 'mail' | 'box' }) => {
+    const common = { width: 46, height: 46, fill: 'none', stroke: couleur, strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+    if (type === 'tel') return <svg viewBox="0 0 24 24" {...common}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+    if (type === 'mail') return <svg viewBox="0 0 24 24" {...common}><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+    return <svg viewBox="0 0 24 24" {...common}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5M12 22V12" /></svg>
+  }
+  return (
+    <div style={{ border: '1px solid #E6ECF2', borderRadius: 8, overflow: 'hidden' }}>
+      {/* Titre 1 avec barre rouge facon Free */}
+      <div style={{ borderLeft: `5px solid ${couleur}`, padding: '8px 14px', fontSize: 18, fontWeight: 800, color: couleur, background: '#FFFFFF', borderBottom: '1px solid #EEF1F4' }}>1 - {procedure.titre1}</div>
+      <div style={{ padding: 18 }}>
+        {procedure.intro && <p style={{ margin: '0 0 18px', fontSize: 14, color: '#1F2933' }}>{procedure.intro}</p>}
+        <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {procedure.etapes.map((e, i) => (
+            <div key={i} style={{ flex: '1 1 240px', textAlign: 'center', padding: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}><Icone type={e.icone} /></div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: couleur, marginBottom: 4 }}>{e.titre}</div>
+              <div style={{ fontSize: 13.5, color: '#374151', lineHeight: 1.5 }}>{e.texte}</div>
+            </div>
+          ))}
+        </div>
+        {procedure.alerte && (
+          <div style={{ display: 'flex', gap: 10, background: '#FBE3E4', borderRadius: 6, padding: '12px 14px', marginTop: 18 }}>
+            <span style={{ color: couleur, fontWeight: 800, fontSize: 20 }}>!</span>
+            <div style={{ fontSize: 13, color: '#8A1C24', lineHeight: 1.5 }}>{procedure.alerte.map((a, i) => <p key={i} style={{ margin: i === 0 ? '0 0 6px' : 0 }}>{a}</p>)}</div>
+          </div>
+        )}
+        {procedure.titre2 && <div style={{ borderLeft: `5px solid ${couleur}`, padding: '8px 14px', fontSize: 17, fontWeight: 800, color: couleur, marginTop: 20, borderBottom: '1px solid #EEF1F4' }}>2 - {procedure.titre2}</div>}
+        {procedure.section2 && <div style={{ marginTop: 10 }}>{procedure.section2.map((s, i) => <p key={i} style={{ margin: '0 0 8px', fontSize: 13.5, color: '#1F2933', lineHeight: 1.55 }}>{s}</p>)}</div>}
       </div>
     </div>
   )
@@ -811,6 +850,7 @@ function rendreAnnexe(
   if (annexe.type === 'grilletarifaire') return rendreGrilleTarifaire(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'organigrammearemplir') return rendreOrganigrammeAremplir(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'cochage') return rendreCochage(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'reformulation') return rendreReformulation(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'ficheappel') return rendreFicheAppel(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
@@ -1777,6 +1817,39 @@ function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id:
             <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Tableau de reformulation : numero etroit + proposition large multi-lignes.
+function rendreReformulation(a: AnnexeReformulation, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champNum: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '6px', borderRadius: 4, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', textAlign: 'center' }
+  const champTxt: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 4, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical', lineHeight: 1.5 }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>✎ {a.titre}</div>
+      <div style={{ padding: 8, overflowX: 'auto' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ width: 70, textAlign: 'center', padding: '7px 8px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, border: '1px solid #FFFFFF' }}>N°</th>
+              <th style={{ textAlign: 'left', padding: '7px 8px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, border: '1px solid #FFFFFF' }}>Proposition de reformulation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: a.nbLignes }).map((_, r) => (
+              <tr key={r}>
+                <td style={{ border: '1px solid #E2E8F0', padding: 4, width: 70, verticalAlign: 'top' }}>
+                  <input value={saisies[`${a.id}.r${r}.num`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.num`, e.target.value)} disabled={verrouille} style={champNum} />
+                </td>
+                <td style={{ border: '1px solid #E2E8F0', padding: 4 }}>
+                  <textarea value={saisies[`${a.id}.r${r}.txt`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.txt`, e.target.value)} disabled={verrouille} rows={3} style={champTxt} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

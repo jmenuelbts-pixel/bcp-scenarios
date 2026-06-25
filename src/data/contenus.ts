@@ -168,6 +168,12 @@ export interface AnnexeCochage {
 
 // Fiche d'appel CERC facon logiciel : sections (Contact, Ecoute, Reponse,
 // Conclusion) avec sous-zones a rediger.
+export interface AnnexeReformulation {
+  type: 'reformulation'
+  id: string
+  titre: string
+  nbLignes: number
+}
 export interface AnnexeFicheAppel {
   type: 'ficheappel'
   id: string
@@ -409,7 +415,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeFicheAppel | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -468,6 +474,16 @@ export interface BlocDocumentTexte {
   // Transcription en temps reel facon logiciel (centre d'appel) : echanges
   // numerotes, bulles entrant/sortant facon messagerie.
   transcription?: { entete?: string; echanges: { numero: string; locuteur: string; texte: string; entrant?: boolean }[] }
+  // Procedure illustree facon page web : etapes avec icone + encadre d'alerte +
+  // sections. Rendue facon vraie page (ex : "Comment resilier votre abonnement").
+  procedure?: {
+    titre1: string
+    intro?: string
+    etapes: { icone: 'tel' | 'mail' | 'box'; titre: string; texte: string }[]
+    alerte?: string[]
+    titre2?: string
+    section2?: string[]
+  }
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -6382,8 +6398,8 @@ const FREE_M2: ContenuMission = {
           libelle: '1 - Je reçois un appel : j\u2019applique le contact', teinte: 'tete', enfants: [
             { libelle: '2 - Je pratique l\u2019écoute', teinte: 'bleu', enfants: [
               { libelle: '3 - Je prends en charge le problème', teinte: 'jaune', enfants: [
-                { libelle: '4A - Le problème n\u2019a pas pu être traité', teinte: 'rose', enfants: [ { libelle: '5A - Je propose au client de le rappeler', teinte: 'gris' } ] },
-                { libelle: '4B - Une solution a été trouvée', teinte: 'vert', enfants: [ { libelle: '7 - Je conclue', teinte: 'gris' } ] },
+                { libelle: '4A - Le problème n\u2019a pas pu être traité', teinte: 'rose', enfants: [ { libelle: '5A - Je propose au client de le rappeler', teinte: 'gris', enfants: [ { libelle: '7 - Je conclue', teinte: 'vert' } ] } ] },
+                { libelle: '4B - Une solution a été trouvée', teinte: 'rose', enfants: [ { libelle: '7 - Je conclue', teinte: 'vert' } ] },
               ] },
             ] },
           ],
@@ -6397,12 +6413,23 @@ const FREE_M2: ContenuMission = {
       ] },
       { numero: 6, titre: 'Procédure de résiliation Freebox du Free Helper', images: [], texte: [
         { pageWeb: true },
-        { intertitre: 'Procédure de résiliation', paragraphes: ['Pour résilier votre abonnement, vous devez :'] },
-        { puces: [
-          'Envoyer votre courrier à l\u2019adresse suivante : Publidispatch – Free résiliation, Service résiliation, 6 rue Désir Prévost – La Grande Brèche, 91 070 Bondoufle.',
-          'Puis, votre résiliation sera effective 10 jours après la réception de votre courrier.',
-          'Enfin, au plus tard 15 jours après la résiliation, vous devrez nous retourner les équipements et accessoires des box qui ont été mis à votre disposition.',
-        ] },
+        { procedure: {
+          titre1: 'Comment résilier votre abonnement Freebox ?',
+          intro: 'Afin de résilier votre abonnement Freebox (ADSL ou Fibre) :',
+          etapes: [
+            { icone: 'tel', titre: 'ÉTAPE 1', texte: 'Contactez le 3244 (appel inclus depuis une ligne Free).' },
+            { icone: 'mail', titre: 'ÉTAPE 2', texte: "Adressez votre demande par courrier à l'adresse communiquée : Publidispatch – Free résiliation, Service résiliation, 6 rue Désir Prévost – La Grande Brèche, 91 070 Bondoufle." },
+          ],
+          alerte: [
+            'Votre résiliation sera effective sous 10 jours à compter de la réception de ce courrier par nos services ou à la fin du mois si vous le demandez.',
+            "Vous avez la possibilité d'annuler une demande de résiliation depuis votre Espace Abonné tant que celle-ci n'est pas effective.",
+          ],
+          titre2: 'Pensez à retourner vos équipements Freebox',
+          section2: [
+            'Les équipements et accessoires des box mis à votre disposition doivent nous être retournés au plus tard 15 jours suivant la prise d\u2019effet de la résiliation.',
+            'Les informations relatives à la restitution (éléments à rendre, adresse, moyen de retour etc.) vous seront communiquées lors de votre appel au 3244.',
+          ],
+        } },
       ] },
       { numero: 7, titre: 'Coordonnées Free', images: [], texte: [
         { pageWeb: true },
@@ -6441,7 +6468,7 @@ const FREE_M2: ContenuMission = {
       { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les éléments de la prise de contact', colonnes: ["Les éléments d'une bonne prise de contact", 'Contenus'], nbLignes: 3, prerempli: [['Les signes non verbaux', ''], ["L'attitude en face-à-face ou au téléphone", ''], ['Les caractéristiques du message verbal', '']] },
       { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Les étapes correspondant à la méthode C.E.R.C.', colonnes: ['Étapes', 'La méthode C.E.R.C.'], nbLignes: 4, prerempli: [['1', ''], ['2', ''], ['3', ''], ['4', '']] },
       { type: 'cochage', id: 'annexe3', titre: 'Annexe 3 — Les interventions à améliorer', entete: 'À améliorer', lignes: FREE_HELPER_LIGNES },
-      { type: 'grille', id: 'annexe4', titre: "Annexe 4 — Proposition de correction de l'intervention du Free Helper", colonnes: ["Numéro d'intervention à améliorer", 'Proposition de reformulation'], nbLignes: 8 },
+      { type: 'reformulation', id: 'annexe4', titre: "Annexe 4 — Proposition de correction de l'intervention du Free Helper", nbLignes: 8 },
       { type: 'ficheappel', id: 'annexe5', titre: 'Annexe 5 — La fiche d\u2019appel C.E.R.C.', sections: [
         { cle: 'contact', libelle: 'CONTACT', aide: 'Saluer, se présenter, montrer sa disponibilité.', lignes: 2 },
         { cle: 'ecoute', libelle: 'ÉCOUTE (questionnement + reformulation)', aide: 'Questionner puis reformuler le besoin du client.', lignes: 4 },
