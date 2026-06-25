@@ -409,6 +409,8 @@ export interface BlocDocumentTexte {
   paragraphes?: string[]
   puces?: string[]
   dialogue?: { locuteur?: string; texte: string; italique?: boolean }[]
+  // Lien audio optionnel pour ecouter une partie de dialogue (bouton discret).
+  audioLien?: string
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -5453,6 +5455,340 @@ const ORPI_M2: ContenuMission = {
   },
 }
 
+const ORPI_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Présentez la mise en œuvre de l'action de FDRC retenue (réactivation du compte Instagram) : cible, objectifs, outils, contraintes, étapes, ventes au rebond, enrichissement du SIC, puis évaluation et bilan de l'action.",
+    contexte:
+      "Maxime, élève de terminale Bac Pro MCVB, a effectué son premier stage au sein de l'agence Orpi Guy Môquet. À la fin de ce premier stage, il avait proposé deux actions pour améliorer la relation client et fidéliser la clientèle. L'action retenue pour mise en œuvre était la mise à jour et l'animation du compte Instagram de l'agence, qui n'avait pas été utilisée depuis plusieurs mois. Après avoir pris conscience de l'importance de la présence numérique dans la relation client, Maxime a désormais entamé sa deuxième période de stage au sein de la même agence. Son objectif pour cette deuxième période est de mettre en œuvre l'action de fidélisation choisie et d'évaluer ses résultats à travers un PowerPoint qu'il présentera à son tuteur, M. Lefevre, et à son professeur.",
+    videoContexte: 'https://drive.google.com/file/d/18YRhTetHDxQu5raeNDO0IiuIMEm4-sTc/view',
+    documents: [
+      { numero: 1, titre: "Suite du dialogue entre Maxime et le directeur d'agence, M. Lefevre", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: "Partie Ia : Fidélisation client — la réactivation du compte Instagram de l'entreprise", dialogue: [
+          { locuteur: 'Maxime', texte: "Bonjour M. Lefevre, je suis content de reprendre mon stage ici et de pouvoir mettre en œuvre l'action de fidélisation que vous avez choisie avec mon professeur : la mise à jour du compte Instagram de l'agence. Pour ce second PowerPoint que je vais réaliser pour mon examen, je voudrais aborder plusieurs points afin de détailler la mise en œuvre de l'action. Est-ce que vous pouvez m'aider à répondre à mes questions ?" },
+          { locuteur: 'M. Lefevre', texte: "Bien sûr Maxime, je suis ravi que tu sois de retour et que tu t'occupes de cette action importante pour l'agence. Dis-moi, par quoi veux-tu commencer ?" },
+          { locuteur: 'Maxime', texte: "Je vais commencer par la présentation de l'action. Je vais expliquer que l'action retenue est la mise à jour et l'animation du compte Instagram de l'agence, car c'est un moyen efficace de toucher une clientèle plus jeune et de renforcer notre présence numérique. Mais j'aimerais avoir votre avis : pourquoi, selon vous, c'est une bonne idée de se concentrer sur Instagram ?" },
+          { locuteur: 'M. Lefevre', texte: "C'est une très bonne question, Maxime. Instagram est devenu un outil incontournable pour les entreprises qui souhaitent toucher une clientèle dynamique et connectée. Beaucoup de nos clients potentiels, notamment les jeunes couples et les investisseurs immobiliers, utilisent Instagram pour se tenir informés des tendances du marché et des nouvelles opportunités. Nous avons un potentiel inexploité sur cette plateforme, et mettre à jour notre compte nous permettra de moderniser notre image tout en nous rapprochant de cette cible plus jeune et active." },
+          { locuteur: 'Maxime', texte: "Très bien, je vais l'indiquer dans ma présentation. Ensuite, il faut que je parle des objectifs de l'action. Je pensais mentionner la volonté de renforcer l'image de l'agence, mais aussi de garder le contact avec nos clients, notamment en les tenant informés des nouveaux biens ou des actualités immobilières. Vous en pensez quoi ?" },
+          { locuteur: 'M. Lefevre', texte: "Exactement ! Ces deux objectifs sont essentiels. Instagram nous permettra de garder un lien constant avec nos clients, même lorsqu'ils ne sont pas directement en recherche d'un bien. De plus, cette plateforme peut augmenter notre visibilité et attirer une nouvelle clientèle, ce qui est important pour la croissance de l'agence. Pour l'image, cela nous aidera à moderniser notre approche et à être perçus comme une agence à la fois locale et connectée aux nouvelles tendances numériques." },
+          { locuteur: 'Maxime', texte: "Parfait. Je vais aussi parler des outils nécessaires à la réalisation de l'action. Dans ce cas, l'outil principal sera les réseaux sociaux, particulièrement Instagram, bien sûr. Je vais devoir prendre en charge la création de contenu, la planification des publications et interagir avec les abonnés. Est-ce qu'il y a des contraintes auxquelles je devrais faire attention ?" },
+          { locuteur: 'M. Lefevre', texte: "Oui, bien sûr. Les principales contraintes seront les délais. Je pense que tu pourras y consacrer environ 5 heures par semaine pour préparer le contenu, planifier les publications, et répondre aux messages ou commentaires. Il te faudra aussi une bonne collaboration avec Virginie, pour t'aider à obtenir les photos et informations nécessaires. Quant au budget, il ne devrait pas être un problème, car nous n'avons pas besoin de dépenses supplémentaires si ce n'est du temps et de l'effort." },
+        ], audioLien: 'https://drive.google.com/file/d/1Xp8B3hf4S5M4GL0mGG5g3heHJvKPIXKB/view' },
+        { intertitre: 'Partie Ib : la réactivation du compte Instagram (suite)', dialogue: [
+          { locuteur: 'Maxime', texte: "D'accord, j'en prends note. Ensuite, il faudra que je décrive les étapes de l'action. Selon vous, quelles sont les étapes clés pour réussir la mise à jour du compte Instagram ?" },
+          { locuteur: 'M. Lefevre', texte: "Le processus peut être découpé en plusieurs étapes : Audit du compte existant : j'ai vérifié ce qui est déjà en ligne et je me suis assuré que les informations sont à jour. Création d'un calendrier éditorial : j'ai planifié les types de contenu à publier (biens à vendre, témoignages clients, actualités du marché, etc.). Création et publication du contenu : j'ai réalisé des photos et vidéos attractives pour montrer les biens, les services de l'agence, ou des éléments qui valorisent notre expertise locale. Interaction avec les abonnés : j'ai répondu aux commentaires, messages directs, et créé une relation plus personnalisée avec nos abonnés. Analyse des résultats : j'ai fait une évaluation de l'impact des publications en termes de vues, likes, interactions et nouveaux abonnés." },
+          { locuteur: 'Maxime', texte: "Super, je vais détailler ces étapes. Pour ma participation, je vais essentiellement me concentrer sur la création du calendrier et la gestion des publications. Je vais aussi participer à l'analyse des résultats après quelques semaines." },
+          { locuteur: 'M. Lefevre', texte: "Très bien, ça me semble cohérent. Passons maintenant aux opportunités de vente au rebond. Dans le cadre de l'animation d'Instagram, je vois plusieurs occasions où nous pourrions proposer des services supplémentaires, comme des visites privées ou des conseils en investissement. Par exemple, lorsqu'un client s'intéresse à un bien, tu pourrais lui proposer des visites virtuelles ou un suivi personnalisé par email. Une autre situation pourrait être de proposer un service de gestion locative à un investisseur intéressé par un bien pour le mettre en location." },
+          { locuteur: 'Maxime', texte: "Oui, ce sont de très bonnes idées. Je vais inclure ces opportunités dans ma présentation. Ensuite, je dois parler de l'enrichissement du SIC (Système d'Information Client). Comment puis-je enrichir le SIC avec l'action Instagram ?" },
+          { locuteur: 'M. Lefevre', texte: "Tu peux enrichir le SIC en ajoutant des informations sur les interactions que nous avons avec les clients via Instagram. Par exemple, lorsqu'un client nous contacte par message ou s'abonne à notre page, tu peux l'ajouter au CRM, en notant ses préférences (type de bien recherché, zone géographique, etc.). Cela nous permettra de mieux personnaliser les futurs échanges et de relancer les clients de manière plus ciblée." },
+        ], audioLien: 'https://drive.google.com/file/d/1tIDcfQwswTDLLEV_-0jLUJRja9bdV-VJ/view' },
+        { intertitre: "Partie II : L'évaluation et le bilan de l'action", paragraphes: ["Deux semaines après la mise en place de la mise à jour du compte Instagram de l'agence Orpi Guy Môquet, Maxime, stagiaire, fait le point avec M. Lefevre sur les résultats de l'action de fidélisation. Ils discutent des premiers retours obtenus, des indicateurs quantitatifs et qualitatifs, et des ajustements à envisager pour améliorer l'efficacité de l'action."], dialogue: [
+          { locuteur: 'Maxime', texte: "D'accord, pour l'évaluation de l'action, je vais me baser sur des indicateurs quantitatifs, comme les vues, les likes, le nombre de nouveaux abonnés et l'impact sur les visites en agence. Pour les indicateurs qualitatifs, j'analyserai les commentaires des clients et leur satisfaction." },
+          { locuteur: 'M. Lefevre', texte: "Parfait. C'est important de comparer ces résultats avec ceux d'avant. Et pour les retours des clients, prends bien note de ce qu'ils ont aimé et ce qu'on pourrait améliorer." },
+          { locuteur: 'Maxime', texte: "Oui, je me suis déjà penché sur ces indicateurs. En termes quantitatifs, je peux déjà te donner quelques chiffres. En ce qui concerne les likes et vues : nos derniers posts ont généré environ 20% de vues en plus par rapport à avant la mise à jour du compte. Par exemple, la publication sur l'appartement récemment rénové a eu 350 vues et 50 likes, contre 100 vues et 15 likes en moyenne avant l'action. Pour ce qui est des nouveaux abonnés : nous avons gagné 10% de nouveaux abonnés en seulement deux semaines, ce qui est un bon début. Enfin, pour les visites en agence : concernant les visites physiques, 5 clients sont venus après avoir vu un post sur Instagram, et plusieurs ont pris contact pour des renseignements supplémentaires, dont 3 ont réservé une visite pour un appartement en particulier." },
+          { locuteur: 'M. Lefevre', texte: "C'est un bon début ! Et les retours des clients ?" },
+          { locuteur: 'Maxime', texte: "Les commentaires sont globalement positifs : ils apprécient les photos et descriptions détaillées. Cependant, il y a eu quelques commentaires négatifs sur le peu des posts publiés et certains clients qui déplorent une trop longue attente pour avoir une réponse." },
+          { locuteur: 'M. Lefevre', texte: "D'accord, la réactivité est essentielle. Pour améliorer ça, il faut publier plus souvent et répondre plus vite aux messages." },
+          { locuteur: 'Maxime', texte: "Je propose de publier 3 à 4 fois par semaine et de répondre plus rapidement aux commentaires. Aussi, les stories Instagram pourraient être un bon moyen de maintenir l'engagement en temps réel." },
+          { locuteur: 'M. Lefevre', texte: "Très bien, ça semble une bonne stratégie. Et pour ton bilan de l'action, tu vas souligner quoi ?" },
+          { locuteur: 'Maxime', texte: "Je vais présenter les points positifs, comme l'augmentation des interactions, la meilleure visibilité de l'agence et les premiers retours positifs des clients. Toutefois, je vais aussi souligner les aspects à améliorer, comme le manque de réactivité dans certains posts et les quelques commentaires négatifs sur certains biens. Pour ces aspects négatifs, je proposerai de publier 3 à 4 fois par semaine. Aussi, les stories Instagram pourraient être un bon moyen de maintenir l'engagement en temps réel. Il faudrait également répondre plus rapidement aux commentaires et aussi peut-être faire plus attention à la diversité des biens présentés (par exemple, plus de photos d'intérieur pour les appartements plus petits, pas seulement les biens hauts de gamme)." },
+          { locuteur: 'M. Lefevre', texte: "Exactement, chaque retour est une opportunité d'amélioration. Tu fais du bon travail, Maxime." },
+          { locuteur: 'Maxime', texte: "Merci, M. Lefevre ! Je vais finaliser mon Powerpoint et vous le montrer dès que j'aurai fini pour qu'il soit parfait pour mon oral." },
+        ], audioLien: 'https://drive.google.com/file/d/1U9u1Wi7EmkA5t98lMF7uZe3F2VbvN8pk/view' },
+      ] },
+      { numero: 2, titre: "Quelques exemples de cibles visées par une action ainsi que l'objectif", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Définition de la cible', paragraphes: ["Cela désigne les prospects ou clients potentiels que l'entreprise cherche à atteindre, en fonction de critères particuliers (démographiques, lieux d'habitation, comportements d'achat, etc.). Un ciblage précis permet d'augmenter les chances de transformer les prospects en clients. Cela aide à concentrer les actions sur les segments les plus pertinents."] },
+        { intertitre: '1. Secteur Immobilier', paragraphes: ['Cible : Jeunes couples à la recherche de leur première maison'] },
+        { puces: ['Objectif : Fidéliser ces clients en leur offrant des conseils personnalisés et des visites de biens correspondant à leurs besoins.', 'Proposer des alertes sur les nouveaux biens qui correspondent à leurs critères.'] },
+        { paragraphes: ['Cible : Investisseurs immobiliers'] },
+        { puces: ['Objectif : Offrir des services de conseil en investissement immobilier et des offres de biens à fort potentiel.', "Fidéliser ces clients en leur proposant des opportunités exclusives avant qu'elles ne soient publiques."] },
+        { intertitre: '2. Secteur Automobile', paragraphes: ['Cible : Clients ayant acheté un véhicule récemment'] },
+        { puces: ["Objectif : Les inciter à revenir pour des services après-vente comme l'entretien, les réparations ou l'achat d'accessoires.", 'Proposer des offres de fidélité pour des remises sur les services ou pièces de rechange.'] },
+        { paragraphes: ["Cible : Conducteurs de voitures d'occasion"] },
+        { puces: ["Objectif : Proposer des garanties supplémentaires ou des services d'entretien à prix réduit pour encourager les clients à revenir.", 'Mettre en place un programme de fidélité où les clients accumulent des points à chaque service ou achat.'] },
+      ] },
+      { numero: 3, titre: "Quelques exemples d'outils nécessaires à la réalisation d'une action", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: '1. Secteur Immobilier', puces: [
+          "CRM (Gestion de la Relation Client) : C'est un outil qui aide à suivre ce que les clients veulent, à garder une trace de leurs préférences et à organiser des rappels pour rester en contact avec eux.",
+          "Réseaux sociaux (Instagram, Facebook, LinkedIn) : Ces plateformes permettent de publier des annonces de biens, des avis de clients satisfaits, des informations sur le marché, et des conseils en immobilier.",
+          "Emailing personnalisé : Cela consiste à envoyer des emails avec des offres ou des informations sur des biens qui correspondent aux critères de recherche des clients (comme le type de bien ou la localisation).",
+          "Visites virtuelles : Outil qui permet aux clients de visiter un bien immobilier depuis chez eux, en ligne, pour les aider à mieux décider.",
+        ] },
+        { intertitre: '2. Secteur Automobile', puces: [
+          "Programme de fidélité : Un système qui offre des points ou des réductions pour récompenser les clients qui reviennent pour des services comme l'entretien, les réparations ou l'achat d'un véhicule.",
+          "SMS ou Emailing pour rappels de service : Envoi de messages pour rappeler aux clients de faire entretenir leur voiture, vérifier les garanties, ou profiter d'offres spéciales sur des accessoires.",
+          "CRM automobile : Outil utilisé pour suivre l'historique des achats et des entretiens des clients, et pour planifier des rappels ou des suivis personnalisés.",
+          "Offres exclusives ou réductions : Envoi d'offres spéciales ou de réductions aux clients qui ont déjà acheté une voiture, via SMS ou email.",
+        ] },
+        { intertitre: '3. Secteur Bancaire / Assurances', puces: [
+          "Emailing et newsletters : Envoi de messages personnalisés avec des informations financières, des conseils, ou des offres sur des produits comme les prêts ou les assurances.",
+          "Applications bancaires : Des applications mobiles qui permettent aux clients de gérer leurs comptes et de recevoir des alertes sur des offres spéciales ou des opportunités.",
+          "Système de recommandation de produits : Logiciels qui analysent les informations des clients et leur suggèrent des produits bancaires ou d'assurance qui pourraient les intéresser.",
+        ] },
+      ] },
+      { numero: 4, titre: "Quelques exemples de contraintes liées à la réalisation d'une action", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: '1. Secteur Immobilier', puces: [
+          "Budget limité : Organiser des événements ou créer des contenus de qualité pour les réseaux sociaux peut coûter cher.",
+          "Temps de travail : Mettre à jour les informations sur les biens à vendre et créer des contenus intéressants peut prendre beaucoup de temps, ce qui peut être difficile à gérer.",
+          "Outils complexes : Utiliser des logiciels comme des CRM (gestion des contacts clients) ou des outils pour les visites virtuelles demande parfois des formations et un budget supplémentaire.",
+          "Beaucoup de concurrence : L'immobilier est un secteur où il y a beaucoup d'agences, et fidéliser les clients peut être difficile si d'autres agences proposent des offres plus intéressantes.",
+        ] },
+        { intertitre: '2. Secteur Automobile', puces: [
+          "Coût des offres spéciales : Offrir des réductions ou des cadeaux pour les clients fidèles peut diminuer les profits de l'entreprise.",
+          "Entretien des outils de fidélisation : Gérer des cartes de fidélité ou des applications mobiles pour les clients demande de l'argent et du temps pour maintenir le service.",
+          "Besoins différents des clients : Certains clients veulent acheter une voiture neuve, d'autres ont besoin de réparations. Il est donc plus difficile de créer des offres de fidélisation qui conviennent à tout le monde.",
+          "Équipe réduite : Si l'équipe commerciale est petite, elle peut avoir du mal à gérer à la fois les ventes et les actions pour fidéliser les clients, ce qui peut affecter la qualité du service.",
+        ] },
+        { intertitre: '3. Secteur Bancaire / Assurances', puces: [
+          "Réglementation stricte : Les banques et les assurances ont des règles très strictes qui limitent certaines actions de fidélisation, comme offrir des cadeaux ou des promotions.",
+          "Produits difficiles à comprendre : Les produits financiers (comptes, assurances, etc.) sont souvent compliqués pour les clients, ce qui rend difficile de personnaliser les offres de fidélisation.",
+          "Protection des données : Il est très important de respecter la confidentialité et la sécurité des informations des clients, ce qui rend la gestion des données sensibles pour la fidélisation.",
+          "Marché saturé : Les clients sont souvent contactés par différentes banques ou assurances, ce qui rend difficile de se démarquer et d'obtenir leur fidélité.",
+        ] },
+      ] },
+      { numero: 5, titre: "Quelques exemples d'opportunités de vente au rebond", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Définition de la vente au rebond', paragraphes: ["Le rebond commercial est une technique qui consiste à profiter de l'appel d'un client ou de sa venue en agence ou en magasin pour lui proposer une offre commerciale additionnelle.", "Par exemple, lorsque le client contacte son banquier ou son assureur pour des informations concernant son contrat, le professionnel peut lui proposer une offre additionnelle (assurance supplémentaire, option payante, banque en ligne etc.)"] },
+        { intertitre: "1. Secteur de l'immobilier", puces: [
+          "Services de gestion locative : Après la vente d'un bien à un investisseur, proposer un service de gestion locative pour faciliter la gestion des propriétés.",
+          "Assurance habitation : Offrir des assurances habitation lors de la vente d'un bien immobilier ou lors d'une location.",
+          "Rénovation et aménagement : Proposer des services de rénovation ou de décoration intérieure après la vente d'un appartement ou d'une maison.",
+          "Visites privées ou services personnalisés : Offrir des visites privées de nouveaux biens ou des conseils personnalisés pour les acheteurs potentiels.",
+        ] },
+        { intertitre: '2. Secteur automobile', puces: [
+          "Accessoires et pièces détachées : Après la vente d'un véhicule, proposer des accessoires complémentaires (chaises auto, tapis, sièges chauffants, systèmes audio, etc.).",
+          "Contrats de maintenance et garantie : Offrir des contrats de maintenance ou de prolongation de garantie pour le véhicule acheté.",
+          "Assurance auto : Proposer une assurance auto lors de la vente de la voiture.",
+          "Produits d'entretien automobile : Vendre des produits comme des nettoyants, des protections de carrosserie, des huiles ou des fluides.",
+        ] },
+        { intertitre: '3. Secteur du prêt bancaire / assurance', puces: [
+          "Prêts complémentaires ou refinancement : Après avoir accordé un prêt immobilier, proposer des prêts à la consommation ou des refinancements si le client a des projets futurs.",
+          "Assurances complémentaires : Proposer des assurances vie, santé ou invalidité après la souscription d'une assurance emprunteur.",
+          "Cartes bancaires premium : Offrir des cartes bancaires haut de gamme, avec des avantages supplémentaires, après l'ouverture d'un compte courant.",
+        ] },
+      ] },
+      { numero: 6, titre: "Quelques exemples d'indicateurs quantitatifs et qualitatifs pour l'évaluation de l'action", images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Définition indicateurs quantitatifs', paragraphes: ["Les indicateurs quantitatifs sont des chiffres ou des données qui permettent de mesurer quelque chose de manière précise. Ces indicateurs sont souvent utilisés pour savoir combien de choses se sont produites ou pour évaluer l'ampleur d'un phénomène. Exemples : nombre de ventes, chiffre d'affaires, nombre de clients, nombre de likes sur les réseaux sociaux. Ce sont des données chiffrées qui aident à évaluer des résultats de manière quantifiable."] },
+        { intertitre: 'Indicateurs quantitatifs — 1. Secteur Immobilier', puces: [
+          "Nombre de nouveaux contacts (leads) : Nombre de personnes qui ont montré de l'intérêt pour des biens immobiliers après une action de fidélisation.",
+          "Taux de conversion : Proportion de ces contacts qui deviennent des clients réels (qui achètent ou louent un bien).",
+          "Nombre de visites sur le site internet : Nombre de fois que les clients visitent le site après avoir vu une offre ou une information sur les réseaux sociaux.",
+          "Ventes réalisées : Combien de biens ont été vendus ou loués grâce à l'action de fidélisation.",
+          "Nombre de clients revenant : Nombre de clients qui reviennent pour acheter ou louer à nouveau après une première expérience.",
+        ] },
+        { intertitre: 'Définition indicateurs qualitatifs', paragraphes: ["Les indicateurs qualitatifs sont des éléments qui permettent de mesurer la qualité de quelque chose, mais pas avec des chiffres. Ils permettent de savoir comment les gens réagissent ou ce qu'ils pensent, mais sans donner un nombre exact. Ces indicateurs mesurent les opinions, les ressentis ou les impressions, et non des quantités précises."] },
+        { intertitre: 'Indicateurs qualitatifs — 1. Secteur Immobilier', puces: [
+          "Satisfaction des clients : Comment les clients se sentent après avoir utilisé les services de l'agence.",
+          "Commentaires sur les réseaux sociaux : Avis laissés par les clients sur des plateformes comme Instagram ou Facebook : sont-ils positifs ou négatifs ?",
+          "Qualité des témoignages : Les témoignages de clients sur les biens ou services sont-ils enthousiastes et détaillés ?",
+        ] },
+        { intertitre: "Indicateurs négatifs et propositions d'amélioration — Secteur Immobilier", paragraphes: ['Indicateur Quantitatif Négatif : Baisse du nombre de vues sur les publications Instagram.', "Axe d'Amélioration : Publier plus régulièrement ; utiliser des hashtags populaires pour toucher une audience plus large ; améliorer la qualité visuelle des photos et vidéos ; collaborer avec des influenceurs ou des partenaires locaux pour étendre la portée.", 'Indicateur Qualitatif Négatif : Commentaires négatifs sur les biens en vente.', "Axe d'Amélioration : Répondre rapidement aux commentaires pour clarifier les informations ; fournir plus de détails sur les biens (vidéos de visite, description détaillée) ; ajuster les prix si nécessaire ou proposer des alternatives qui correspondent mieux aux attentes des clients."] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Épreuve E33 — Bloc 3',
+      intitule: "Mettre en œuvre et évaluer une action de FDRC",
+      detail: "3.2.1 Sélectionner et mettre en œuvre les outils de FDRC ; 3.2.2 Concourir à la préparation et l'organisation d'opérations de FDRC ; 3.2.5 Effectuer des ventes au rebond ; 3.3.1 Enrichir et actualiser le SIC ; 3.3.2 Mesurer et analyser les résultats ; 3.3.4 Proposer des axes d'amélioration.",
+    },
+    objectifs: [
+      "Présenter la mise en œuvre d'une action de fidélisation (cible, objectifs, outils, contraintes, étapes).",
+      "Identifier les opportunités de vente au rebond et enrichir le SIC.",
+      "Évaluer l'action à l'aide d'indicateurs quantitatifs et qualitatifs et proposer des améliorations.",
+    ],
+    activites: [
+      {
+        titre: "Activité 1 — La mise en œuvre de l'action de fidélisation : mise à jour du compte Instagram",
+        questions: [
+          { numero: 1, consigne: "Notez le nom de l'action qui a été retenue après le premier oral de Maxime.", ressources: 'Lire le document 1, compléter la diapositive 1. [3.2.1]', annexeId: 'ppt' },
+          { numero: 2, consigne: "Indiquez quelle est la cible et les objectifs de l'action.", ressources: 'Lire les documents 1 et 2, compléter la diapositive 2. [3.2.1]', annexeId: 'ppt' },
+          { numero: 3, consigne: "Listez les outils nécessaires à la réalisation de l'action ainsi que les contraintes auxquelles Maxime devra faire face.", ressources: 'Lire les documents 1, 3 et 4, compléter la diapositive 3. [3.2.1]', annexeId: 'ppt' },
+          { numero: 4, consigne: "Indiquez les principales étapes de la mise en place de l'action ainsi que le rôle de Maxime à chaque étape.", ressources: 'Lire le document 1, compléter la diapositive 4. [3.2.2]', annexeId: 'ppt' },
+          { numero: 5, consigne: "Énumérez les opportunités de vente au rebond qui ont été saisies par Maxime lors de l'action de fidélisation.", ressources: 'Lire les documents 1 et 5, compléter la diapositive 5. [3.2.5]', annexeId: 'ppt' },
+          { numero: 6, consigne: "Expliquez comment Maxime a enrichi la S.I.C. suite à l'action.", ressources: 'Lire le document 1, compléter la diapositive 6. [3.3.1]', annexeId: 'ppt' },
+        ],
+      },
+      {
+        titre: "Activité 2 — L'évaluation et le bilan de l'action",
+        questions: [
+          { numero: 7, consigne: "Évaluez l'action de fidélisation mise en place par Maxime en analysant les indicateurs quantitatifs et qualitatifs.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 7. [3.3.2]', annexeId: 'ppt' },
+          { numero: 8, consigne: "Pour chaque indicateur qualitatif négatif, présentez les suggestions d'amélioration proposées par Maxime.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 8. [3.3.2 / 3.3.4]', annexeId: 'ppt' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'powerpoint', id: 'ppt', titre: 'Annexe — Le PowerPoint de Maxime', diapos: [
+        { titre: 'Page de garde', garde: true, mentions: ['BACCALAUREAT PROFESSIONNEL METIERS DU COMMERCE ET DE LA VENTE option B', 'EPREUVE E33', "Situation d\u2019évaluation n°2", "Présentation de la mise en œuvre de l\u2019action de FDRC retenue", 'Lycée Maria Deraismes'] },
+        { titre: 'Diapositive 1', intitule: "Le nom de l'action retenue", competence: '3.2.1 : Sélectionner et mettre en œuvre les outils de FDRC de l\u2019entreprise', champs: [{ cle: 'action', lignes: 2 }] },
+        { titre: 'Diapositive 2', intitule: "La cible et les objectifs de l'action", competence: '3.2.1 : Sélectionner et mettre en œuvre les outils de FDRC de l\u2019entreprise', champs: [{ cle: 'cible', libelle: 'La cible', lignes: 2 }, { cle: 'objectifs', libelle: 'Les objectifs', lignes: 3 }] },
+        { titre: 'Diapositive 3', intitule: 'Les outils et les contraintes', competence: '3.2.1 : Sélectionner et mettre en œuvre les outils de FDRC de l\u2019entreprise', champs: [{ cle: 'outils', libelle: 'Les outils', lignes: 2 }, { cle: 'contraintes', libelle: 'Les contraintes', lignes: 3 }] },
+        { titre: 'Diapositive 4', intitule: "Les étapes de l'action et la participation de Maxime", competence: '3.2.2 : Concourir à la préparation et à l\u2019organisation d\u2019évènements ou d\u2019opérations de FDRC', champs: [
+          { cle: 'etape1', libelle: '1ère étape + ma participation', lignes: 2 }, { cle: 'etape2', libelle: '2ème étape + ma participation', lignes: 2 }, { cle: 'etape3', libelle: '3ème étape + ma participation', lignes: 2 }, { cle: 'etape4', libelle: '4ème étape + ma participation', lignes: 2 }, { cle: 'etape5', libelle: '5ème étape + ma participation', lignes: 2 },
+        ] },
+        { titre: 'Diapositive 5', intitule: 'Les opportunités de vente au rebond', competence: '3.2.5 : Effectuer des ventes au rebond', champs: [{ cle: 'situation1', libelle: 'Situation 1 + opportunité', lignes: 2 }, { cle: 'situation2', libelle: 'Situation 2 + opportunité', lignes: 2 }] },
+        { titre: 'Diapositive 6', intitule: "L'enrichissement du S.I.C.", competence: '3.3.1 : Enrichir et actualiser le S.I.C.', champs: [{ cle: 'sic', lignes: 3 }] },
+        { titre: 'Diapositive 7', intitule: "L'évaluation de l'action", competence: '3.3.2 : Mesurer et analyser les résultats', champs: [{ cle: 'quanti', libelle: 'Indicateurs quantitatifs', lignes: 4 }, { cle: 'quali', libelle: 'Indicateurs qualitatifs', lignes: 3 }] },
+        { titre: 'Diapositive 8', intitule: "Le bilan de l'action", competence: '3.3.2 : Mesurer et analyser les résultats / 3.3.4 : Proposer des axes d\u2019amélioration', champs: [{ cle: 'negatifs', libelle: 'Indicateurs négatifs', lignes: 3 }, { cle: 'suggestions', libelle: "Suggestions d'amélioration", lignes: 4 }] },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Nom de l'action (diapositive 1).", documents: ['Document 1'], bareme: 2, reponse: "La mise à jour et l'animation du compte Instagram de l'agence." },
+      {
+        intitule: 'Cible et objectifs (diapositive 2).', documents: ['Documents 1 et 2'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['', ''], lignes: [
+          ['Cible', "Une clientèle plus jeune et connectée : jeunes couples et investisseurs immobiliers qui utilisent Instagram."],
+          ['Objectifs', "Renforcer l'image de l'agence et la moderniser ; garder le contact avec les clients (nouveaux biens, actualités) ; augmenter la visibilité et attirer une nouvelle clientèle."],
+        ] },
+      },
+      {
+        intitule: 'Outils et contraintes (diapositive 3).', documents: ['Documents 1, 3 et 3 bis'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['', ''], lignes: [
+          ['Outils', 'Les réseaux sociaux, particulièrement Instagram (création de contenu, planification des publications, interaction avec les abonnés).'],
+          ['Contraintes', "Les délais (environ 5 heures par semaine) ; la collaboration nécessaire avec Virginie pour les photos et informations ; le budget (pas de dépenses supplémentaires, surtout du temps et de l'effort)."],
+        ] },
+      },
+      {
+        intitule: 'Étapes et participation (diapositive 4).', documents: ['Document 1'], bareme: 5, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Étape', 'Participation de Maxime'], lignes: [
+          ['1. Audit du compte existant', 'Vérifier ce qui est en ligne et la mise à jour des informations'],
+          ['2. Création d\u2019un calendrier éditorial', 'Création du calendrier (rôle principal de Maxime)'],
+          ['3. Création et publication du contenu', 'Gestion des publications (rôle principal de Maxime)'],
+          ['4. Interaction avec les abonnés', 'Répondre aux commentaires et messages'],
+          ['5. Analyse des résultats', "Participer à l'analyse après quelques semaines"],
+        ] },
+      },
+      {
+        intitule: 'Ventes au rebond (diapositive 5).', documents: ['Documents 1 et 4'], bareme: 4, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Situation', 'Opportunité'], lignes: [
+          ["Un client s'intéresse à un bien", 'Proposer des visites virtuelles ou un suivi personnalisé par email'],
+          ['Un investisseur intéressé par un bien', 'Proposer un service de gestion locative pour le mettre en location'],
+        ] },
+      },
+      { intitule: 'Enrichissement du SIC (diapositive 6).', documents: ['Document 1'], bareme: 3, reponse: "Ajouter au CRM les informations sur les interactions Instagram : lorsqu'un client contacte l'agence par message ou s'abonne, l'ajouter au CRM en notant ses préférences (type de bien recherché, zone géographique), pour personnaliser les futurs échanges et relancer de manière ciblée." },
+      {
+        intitule: "Évaluation de l'action (diapositive 7).", documents: ['Documents 1, 5 et 5 bis'], bareme: 6, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Indicateurs quantitatifs', 'Indicateurs qualitatifs'], lignes: [
+          ['+20% de vues ; post appartement rénové : 350 vues / 50 likes (contre 100 vues / 15 likes avant)', 'Commentaires globalement positifs : clients apprécient les photos et descriptions détaillées'],
+          ['+10% de nouveaux abonnés en 2 semaines', 'Commentaires négatifs : trop peu de posts publiés'],
+          ['5 clients venus en agence après un post, 3 ont réservé une visite', "Clients déplorent une trop longue attente pour avoir une réponse"],
+        ] },
+      },
+      {
+        intitule: "Bilan et suggestions d'amélioration (diapositive 8).", documents: ['Documents 1 et 6'], bareme: 6, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Indicateur négatif', "Suggestion d'amélioration"], lignes: [
+          ['Trop peu de posts publiés', 'Publier 3 à 4 fois par semaine ; utiliser les stories Instagram pour maintenir l\u2019engagement en temps réel'],
+          ['Trop longue attente pour une réponse', 'Répondre plus rapidement aux commentaires et messages'],
+          ['Manque de diversité des biens présentés', 'Plus de photos d\u2019intérieur pour les appartements plus petits, pas seulement les biens hauts de gamme'],
+        ] },
+      },
+    ],
+  },
+  synthese: {
+    titre: "La mise en œuvre et l'évaluation de l'action",
+    proposition: ["Le nom de l'action", 'La cible', 'Les indicateurs quantitatifs', 'Les indicateurs qualitatifs'],
+    racine: {
+      id: 'racine', texte: "L'action de fidélisation",
+      enfants: [
+        { id: 'mise', texte: "La mise en œuvre de l'action", enfants: [
+          { id: 'nom', texte: null, reponse: "Le nom de l'action" },
+          { id: 'cible', texte: null, reponse: 'La cible' },
+        ] },
+        { id: 'eval', texte: "L'évaluation de l'action", enfants: [
+          { id: 'quanti', texte: 'Les indicateurs quantitatifs' },
+          { id: 'quali', texte: 'Les indicateurs qualitatifs' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: "Mettre en œuvre l'action (3.2.1 / 3.2.2)",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas décrire une action de fidélisation." },
+          { niveau: 'debrouille', description: "Je nomme l'action et sa cible." },
+          { niveau: 'averti', description: "Je décris outils, contraintes et étapes." },
+          { niveau: 'expert', description: "Je présente toute la mise en œuvre et mon rôle." },
+        ],
+      },
+      {
+        id: 'c2', intitule: "Vente au rebond et SIC (3.2.5 / 3.3.1)",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas la vente au rebond." },
+          { niveau: 'debrouille', description: "Je cite une opportunité de vente au rebond." },
+          { niveau: 'averti', description: "J'identifie les ventes au rebond et j'enrichis le SIC." },
+          { niveau: 'expert', description: "Je relie ventes au rebond et SIC à la fidélisation." },
+        ],
+      },
+      {
+        id: 'c3', intitule: "Évaluer l'action (3.3.2 / 3.3.4)",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne distingue pas quantitatif et qualitatif." },
+          { niveau: 'debrouille', description: "Je cite un indicateur." },
+          { niveau: 'averti', description: "J'analyse indicateurs quantitatifs et qualitatifs." },
+          { niveau: 'expert', description: "Je propose des axes d'amélioration justifiés." },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Action de fidélisation', definition: "Action visant à conserver et renforcer la relation avec les clients (ici : réactivation d'Instagram)." },
+      { terme: 'Cible', definition: "Prospects ou clients que l'entreprise cherche à atteindre selon des critères." },
+      { terme: 'Calendrier éditorial', definition: 'Planification des types de contenu à publier et de leur date.' },
+      { terme: 'Vente au rebond', definition: "Profiter de l'appel ou de la venue d'un client pour proposer une offre additionnelle." },
+      { terme: 'SIC', definition: "Système d'Information Client : ensemble des informations sur les clients (souvent dans un CRM)." },
+      { terme: 'CRM', definition: 'Outil de gestion de la relation client (préférences, historique, relances).' },
+      { terme: 'Indicateur quantitatif', definition: 'Donnée chiffrée mesurant un résultat (vues, likes, abonnés, ventes).' },
+      { terme: 'Indicateur qualitatif', definition: 'Élément mesurant la qualité, le ressenti (satisfaction, commentaires).' },
+      { terme: 'Taux de conversion', definition: 'Proportion de contacts qui deviennent des clients réels.' },
+      { terme: 'Story Instagram', definition: 'Publication éphémère permettant de maintenir l\u2019engagement en temps réel.' },
+    ],
+    flashcards: [
+      { recto: "Nom de l'action retenue ?", verso: "La mise à jour et l'animation du compte Instagram." },
+      { recto: 'Cible de l\u2019action ?', verso: 'Une clientèle jeune et connectée (jeunes couples, investisseurs).' },
+      { recto: 'Outil principal ?', verso: 'Les réseaux sociaux, particulièrement Instagram.' },
+      { recto: 'Temps consacré par semaine ?', verso: 'Environ 5 heures par semaine.' },
+      { recto: "Que signifie SIC ?", verso: "Système d'Information Client." },
+      { recto: 'Définition de la vente au rebond ?', verso: "Profiter de l'appel ou de la venue d'un client pour proposer une offre additionnelle." },
+      { recto: 'Évolution des vues ?', verso: '+20% de vues (350 vues / 50 likes sur le post de l\u2019appartement rénové).' },
+      { recto: 'Évolution des abonnés ?', verso: '+10% de nouveaux abonnés en 2 semaines.' },
+      { recto: 'Indicateur qualitatif négatif ?', verso: 'Trop peu de posts et trop longue attente pour une réponse.' },
+      { recto: 'Suggestion d\u2019amélioration ?', verso: 'Publier 3 à 4 fois par semaine et utiliser les stories.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Nom de l'action retenue ?", options: ["Mise à jour du compte Instagram", 'Création d\u2019un site web', 'Campagne SMS', 'Programme de parrainage'], bonne: 0 },
+      { type: 'unique', question: 'Outil principal de l\u2019action ?', options: ['Instagram', 'Le téléphone', 'Le courrier', "L'affichage"], bonne: 0 },
+      { type: 'unique', question: 'Temps hebdomadaire consacré ?', options: ['Environ 5 heures', '1 heure', '20 heures', '40 heures'], bonne: 0 },
+      { type: 'unique', question: "Que signifie SIC ?", options: ["Système d'Information Client", 'Service Interne Commercial', 'Suivi Important Client', 'Stock Initial Client'], bonne: 0 },
+      { type: 'unique', question: 'Évolution des vues ?', options: ['+20%', '-20%', '+200%', 'Aucune'], bonne: 0 },
+      { type: 'unique', question: 'Nouveaux abonnés en 2 semaines ?', options: ['+10%', '+50%', '-10%', '+1%'], bonne: 0 },
+      { type: 'unique', question: 'La vente au rebond consiste à...', options: ['Proposer une offre additionnelle', 'Baisser les prix', 'Licencier', 'Fermer l\u2019agence'], bonne: 0 },
+      { type: 'unique', question: 'Un indicateur quantitatif ?', options: ['Nombre de likes', 'La satisfaction', "L'image de marque", 'Les commentaires'], bonne: 0 },
+      { type: 'unique', question: 'Un indicateur qualitatif ?', options: ['La satisfaction client', 'Le nombre de vues', 'Le nombre d\u2019abonnés', 'Le taux de conversion'], bonne: 0 },
+      { type: 'unique', question: 'Suggestion d\u2019amélioration ?', options: ['Publier 3 à 4 fois par semaine', 'Arrêter Instagram', 'Publier 1 fois par an', 'Ne rien changer'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément dans la bonne catégorie.',
+      etiquettes: ['Indicateur quantitatif', 'Indicateur qualitatif', "Suggestion d'amélioration"],
+      zones: [
+        { libelle: '+20% de vues', etiquetteIndex: 0 },
+        { libelle: '+10% d\u2019abonnés', etiquetteIndex: 0 },
+        { libelle: 'Clients satisfaits des photos', etiquetteIndex: 1 },
+        { libelle: 'Attente trop longue pour une réponse', etiquetteIndex: 1 },
+        { libelle: 'Publier 3 à 4 fois par semaine', etiquetteIndex: 2 },
+        { libelle: 'Utiliser les stories Instagram', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -5471,6 +5807,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'amparis-m4': AMPARIS_M4,
   'orpi-m1': ORPI_M1,
   'orpi-m2': ORPI_M2,
+  'orpi-m3': ORPI_M3,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

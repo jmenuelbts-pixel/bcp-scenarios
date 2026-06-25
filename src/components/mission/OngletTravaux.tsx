@@ -508,6 +508,9 @@ function DocumentTexteVue({ blocs, couleur }: { blocs: BlocDocumentTexte[]; coul
               {d.texte}
             </p>
           ))}
+          {b.audioLien && (
+            <a href={b.audioLien} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', background: '#FFFFFF', color: couleur, border: `1px solid ${couleur}`, borderRadius: 16, padding: '5px 12px', fontSize: 12, fontWeight: 700, marginTop: 4 }}>🔊 Écouter cette partie</a>
+          )}
           {b.tableau && (
             <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: 4 }}>
               <thead>
