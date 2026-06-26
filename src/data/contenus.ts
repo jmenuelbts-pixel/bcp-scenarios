@@ -528,10 +528,40 @@ export interface BlocDocumentTexte {
     avatarInitiale?: string
     date?: string
     message: string[]
-    stats?: { repondre?: string; reposter?: string; jaime?: string }
+    stats?: { repondre?: string; reposter?: string; jaime?: string; vues?: string }
   }
   // Jauge de satisfaction facon widget : smileys de rouge a vert + libelle.
   jaugeSatisfaction?: { libelle?: string }
+  // Questionnaire dynamique facon logiciel : l'eleve avance question par
+  // question (navigation conditionnelle possible), choisit une reponse, valide,
+  // puis ecran final. Chaque question a un id, un type et des options (avec
+  // saut conditionnel optionnel vers une autre question ou 'fin').
+  questionnaire?: {
+    titre: string
+    intro?: string[]
+    sousTitre?: string
+    questions: {
+      id: string
+      numero?: string
+      libelle: string
+      obligatoire?: boolean
+      type: 'unique' | 'echelle' | 'likert' | 'texte'
+      min?: number // pour echelle (ex 1)
+      max?: number // pour echelle (ex 10)
+      options?: { libelle: string; saut?: string }[] // pour unique ; saut = id question ou 'fin'
+      saut?: string // saut systematique apres cette question (id ou 'fin')
+    }[]
+    final?: string[]
+  }
+  // Mockup smartphone affichant une page Instagram cliquable qui ouvre un
+  // questionnaire integre (defini par le champ questionnaire ci-dessus).
+  instagramTelephone?: {
+    compte: string
+    sousTitre?: string
+    bio?: string[]
+    libelleLien: string // texte du lien clicable dans la bio
+    statistiques?: { publications?: string; abonnes?: string; abonnements?: string }
+  }
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -7316,22 +7346,28 @@ const FREE_M5: ContenuMission = {
       { numero: 2, titre: 'Le questionnaire de satisfaction client', images: [], texte: [
         { pageWeb: true },
         { jaugeSatisfaction: { libelle: 'Votre avis nous intéresse' } },
-        { intertitre: 'Questionnaire de satisfaction client', paragraphes: [
-          "Dans le cadre de l'amélioration continue de nos services, Free est à votre écoute. Afin de nous aider à comprendre comment mieux vous satisfaire, nous vous proposons de consacrer 2 minutes de votre temps pour répondre à cette enquête, suite au(x) contact(s) que vous avez eu avec notre Service Abonné. Nous vous remercions par avance de votre participation. L'équipe Free.",
-        ] },
-        { puces: [
-          "Question 1 : Avez-vous été au téléphone avec un conseiller aujourd'hui ? (Oui / Non)",
-          'Question 2 : Évaluez le contact que vous avez eu avec le conseiller (1 étant très insatisfaisant, 10 excellent).',
-          "Question 3 : À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) était aimable et courtois(e) ? (Pas du tout d'accord → Tout à fait d'accord)",
-          "Question 4 : … s'exprimait clairement en utilisant un vocabulaire simple et compréhensible ?",
-          "Question 5 : … compétent(e) et possédait les connaissances professionnelles suffisantes pour vous répondre ?",
-          "Question 6 : Si vous estimez que le (la) conseiller(e) était compétent(e) et professionnel(le), expliquez pourquoi.",
-          "Question 7 : … à votre écoute ? (Oui / Non)",
-          "Question 8 : Si vous estimez qu'il (elle) n'a pas été suffisamment à votre écoute, expliquez pourquoi.",
-          "Question 9 : … a bien pris en charge votre demande ?",
-          "Question 10 : … était à votre écoute ?",
-          'Question 11 : Si vous avez des remarques ou des suggestions complémentaires concernant la prestation du conseiller, vous pouvez les formuler ici.',
-        ] },
+        { questionnaire: {
+          titre: 'Questionnaire de satisfaction client',
+          intro: [
+            "Dans le cadre de l'amélioration continue de nos services, Free est à votre écoute.",
+            "Afin de nous aider à comprendre comment mieux vous satisfaire, nous vous proposons de consacrer 2 minutes de votre temps pour répondre à cette enquête, suite au(x) contact(s) que vous avez eu avec notre Service Abonné.",
+            "Nous vous remercions par avance de votre participation. L'équipe Free.",
+          ],
+          questions: [
+            { id: 'q1', numero: '1', libelle: "Avez-vous été au téléphone avec un conseiller aujourd'hui ?", obligatoire: true, type: 'unique', options: [{ libelle: 'Oui', saut: 'q2' }, { libelle: 'Non', saut: 'q11' }] },
+            { id: 'q2', numero: '2', libelle: 'Évaluez le contact que vous avez eu avec le conseiller (1 étant très insatisfaisant, 10 excellent).', obligatoire: true, type: 'echelle', min: 1, max: 10, saut: 'q3' },
+            { id: 'q3', numero: '3', libelle: "À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) était aimable et courtois(e) ?", obligatoire: true, type: 'likert', saut: 'q4' },
+            { id: 'q4', numero: '4', libelle: "À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) s'exprimait clairement en utilisant un vocabulaire simple et compréhensible ?", obligatoire: true, type: 'likert', saut: 'q5' },
+            { id: 'q5', numero: '5', libelle: "À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) était compétent(e) et possédait les connaissances professionnelles suffisantes pour vous répondre ?", obligatoire: true, type: 'likert', saut: 'q6' },
+            { id: 'q6', numero: '6', libelle: "Si vous estimez que le (la) conseiller(e) était compétent(e) et professionnel(le), expliquez pourquoi.", type: 'texte', saut: 'q7' },
+            { id: 'q7', numero: '7', libelle: "À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) était à votre écoute ?", obligatoire: true, type: 'unique', options: [{ libelle: 'Oui', saut: 'q9' }, { libelle: 'Non', saut: 'q8' }] },
+            { id: 'q8', numero: '8', libelle: "Si vous estimez qu'il (elle) n'a pas été suffisamment à votre écoute, expliquez pourquoi.", type: 'texte', saut: 'q9' },
+            { id: 'q9', numero: '9', libelle: "À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) a bien pris en charge votre demande ?", obligatoire: true, type: 'likert', saut: 'q10' },
+            { id: 'q10', numero: '10', libelle: "À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) était à votre écoute ?", obligatoire: true, type: 'likert', saut: 'q11' },
+            { id: 'q11', numero: '11', libelle: 'Si vous avez des remarques ou des suggestions complémentaires concernant la prestation du conseiller, vous pouvez les formuler ici.', type: 'texte', saut: 'fin' },
+          ],
+          final: ['Merci pour votre participation !', 'Vos réponses ont bien été enregistrées.', "L'équipe Free"],
+        } },
       ] },
       { numero: 3, titre: "Les résultats de l'enquête sur la performance au téléphone", images: [], texte: [
         { pageWeb: true },
@@ -7380,13 +7416,13 @@ const FREE_M5: ContenuMission = {
           ] },
         ] } },
       ] },
-      { numero: 6, titre: '« X » (ex-Twitter)', images: [], texte: [
+      { numero: 6, titre: '« X »', images: [], texte: [
         { pageWeb: true },
-        { reseauSocial: { plateforme: 'x', compte: 'Trobairitz', pseudo: '@s_rhmzn', avatarInitiale: 'T', date: '09:14 – 15 février 202N', message: ["@free impossible de me connecter sur votre page abonné, une page d'erreur s'affiche à chaque fois ! C'est insupportable, ça fait deux jours que ça dure…"], stats: { repondre: '12', reposter: '3', jaime: '8' } } },
+        { reseauSocial: { plateforme: 'x', compte: 'Trobairitz', pseudo: '@s_rhmzn', avatarInitiale: 'T', date: '09:14 · 15 févr. 202N', message: ["@free impossible de me connecter sur votre page abonné, une page d'erreur s'affiche à chaque fois ! C'est insupportable, ça fait deux jours que ça dure…"], stats: { repondre: '12', reposter: '3', jaime: '8', vues: '1 204' } } },
       ] },
       { numero: 7, titre: 'Facebook', images: [], texte: [
         { pageWeb: true },
-        { reseauSocial: { plateforme: 'facebook', compte: 'Anthony', avatarInitiale: 'A', date: '15 février à 08:42', message: ["Bonjour, j'ai un gros problème avec ma facture ce mois-ci, on m'a prélevé deux fois ! Je veux qu'on me rembourse rapidement."], stats: { jaime: '5' } } },
+        { reseauSocial: { plateforme: 'facebook', compte: 'Anthony Dumas', avatarInitiale: 'A', date: '15 février à 08:42', message: ["Bonjour, j'ai un gros problème avec ma facture ce mois-ci, on m'a prélevé deux fois ! Je veux qu'on me rembourse rapidement. @Free"], stats: { jaime: '5', repondre: '2', reposter: '1' } } },
       ] },
       { numero: 8, titre: 'Procédure pour répondre sur les réseaux sociaux', images: [], texte: [
         { pageWeb: true },
@@ -7399,13 +7435,33 @@ const FREE_M5: ContenuMission = {
       ] },
       { numero: 9, titre: 'Questionnaire satisfaction Freebox Pop (Instagram) — Partie II', images: [], texte: [
         { pageWeb: true },
-        { intertitre: 'Assistance Freebox — Instagram', paragraphes: ["Instagrameur, Instagrameuse, vous avez certainement entendu parler de la nouvelle Freebox Pop et votre avis nous est précieux. Nous vous proposons de consacrer 2 minutes pour répondre à cette enquête. Nous vous remercions par avance pour votre participation."] },
-        { intertitre: 'Partie II — FREE ET VOUS', puces: [
-          'Question 6 : Concernant la Freebox Pop et les services proposés, dans quelle mesure seriez-vous prêt à la recommander autour de vous ? (1 à 5)',
-          'Question 7 : Dans quelle mesure seriez-vous prêt à recommander Free autour de vous ? (1 à 5)',
-          "Question 8 : Avez-vous eu l'occasion de recommander Free autour de vous ? (Oui / Non)",
-          'Question 9 : À combien de personnes avez-vous recommandé Free ? (1 à plus de 5 personnes)',
-        ] },
+        { instagramTelephone: {
+          compte: 'assistance.freebox',
+          sousTitre: 'Assistance Freebox',
+          bio: ['Service Abonné Free', 'Votre avis compte : aidez-nous à améliorer la Freebox Pop', '👇 Répondez à notre enquête'],
+          libelleLien: 'forms.gle/freebox-pop',
+          statistiques: { publications: '128', abonnes: '54,2 k', abonnements: '12' },
+        }, questionnaire: {
+          titre: 'Questionnaire satisfaction Freebox Pop',
+          intro: [
+            'Instagrameur, Instagrameuse,',
+            'Vous avez certainement entendu parler de la nouvelle Freebox Pop et votre avis nous est précieux. Nous vous proposons de consacrer 2 minutes pour répondre à cette enquête.',
+            'Nous vous remercions par avance pour votre participation.',
+          ],
+          questions: [
+            { id: 'p1', numero: '1', libelle: 'Possédez-vous la Freebox Pop ?', obligatoire: true, type: 'unique', options: [{ libelle: 'Oui', saut: 'p2' }, { libelle: 'Non', saut: 'p7' }] },
+            { id: 'p2', numero: '2', libelle: 'Comment avez-vous connu la nouvelle Freebox Pop ?', obligatoire: true, type: 'unique', options: [{ libelle: 'Par internet', saut: 'p3' }, { libelle: 'Sur les réseaux sociaux', saut: 'p3' }, { libelle: 'À la télévision', saut: 'p3' }] },
+            { id: 'p3', numero: '3', libelle: 'Évaluez le contact que vous avez eu avec le Service Abonné Free pour la souscription à la Freebox Pop.', obligatoire: true, type: 'echelle', min: 1, max: 5, saut: 'p4' },
+            { id: 'p4', numero: '4', libelle: 'Évaluez le délai de réception de la Freebox Pop.', obligatoire: true, type: 'echelle', min: 1, max: 5, saut: 'p5' },
+            { id: 'p5', numero: '5', libelle: 'Évaluez les avantages de la Freebox Pop par rapport à votre ancienne box, quel que soit l\u2019opérateur.', obligatoire: true, type: 'echelle', min: 1, max: 5, saut: 'p6' },
+            { id: 'p6', numero: '6', libelle: 'Concernant la Freebox Pop et les services proposés, dans quelle mesure seriez-vous prêt à la recommander autour de vous ?', obligatoire: true, type: 'echelle', min: 1, max: 5, saut: 'p7' },
+            { id: 'p7', numero: '7', libelle: 'Dans quelle mesure seriez-vous prêt à recommander Free autour de vous ?', obligatoire: true, type: 'echelle', min: 1, max: 5, saut: 'p8' },
+            { id: 'p8', numero: '8', libelle: "Avez-vous eu l'occasion de recommander Free autour de vous ?", obligatoire: true, type: 'unique', options: [{ libelle: 'Oui', saut: 'p9' }, { libelle: 'Non', saut: 'fin' }] },
+            { id: 'p9', numero: '9', libelle: 'À combien de personnes avez-vous recommandé Free ?', obligatoire: true, type: 'unique', options: [{ libelle: '1 personne', saut: 'fin' }, { libelle: '2 personnes', saut: 'fin' }, { libelle: '3 personnes', saut: 'fin' }, { libelle: '4 personnes', saut: 'fin' }, { libelle: '5 personnes', saut: 'fin' }, { libelle: 'Plus de 5 personnes', saut: 'fin' }] },
+          ],
+          final: ["Nous vous remercions d'avoir pris ces quelques minutes pour répondre à ce questionnaire.", 'À bientôt !'],
+        } },
+        { intertitre: 'Partie II — FREE ET VOUS', paragraphes: ["La partie II du questionnaire (questions 6 à 9) porte sur la recommandation de Free et de la Freebox Pop autour de soi."] },
       ] },
     ],
     competence: {
@@ -7431,7 +7487,7 @@ const FREE_M5: ContenuMission = {
         titre: 'Activité 2 — La fidélisation du client',
         questions: [
           { numero: 4, consigne: 'Trouvez un titre pour chaque étape du document.', ressources: "Lire le document 5, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Rédigez sur X (ex-Twitter) la réponse à Trobairitz, puis répondez via le lien.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5a ; compléter l'annexe 5b.", annexeId: 'annexe5a' },
+          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz, puis répondez via le lien.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5a ; compléter l'annexe 5b.", annexeId: 'annexe5a' },
           { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony, puis répondez via le lien.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6a ; compléter l'annexe 6b.", annexeId: 'annexe6a' },
           { numero: 7, consigne: "Analysez la partie II du questionnaire « FREE ET VOUS » (Instagram) et indiquez à quelle étape du document 5 elle correspond. Justifiez.", ressources: "Lire le document 9, compléter l'annexe 7.", annexeId: 'annexe7' },
         ],

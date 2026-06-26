@@ -470,7 +470,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -565,6 +565,8 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.bareme && <BaremeVue bareme={b.bareme} couleur={couleur} />}
           {b.articleEtapes && <ArticleEtapesVue data={b.articleEtapes} couleur={couleur} />}
           {b.reseauSocial && <ReseauSocialVue post={b.reseauSocial} />}
+          {b.questionnaire && !b.instagramTelephone && <QuestionnaireVue q={b.questionnaire} couleur={couleur} />}
+          {b.instagramTelephone && <InstagramTelephoneVue data={b.instagramTelephone} questionnaire={b.questionnaire} couleur={couleur} />}
         </div>
       ))}
       </div>
@@ -636,40 +638,261 @@ function ArticleEtapesVue({ data, couleur }: { data: NonNullable<BlocDocumentTex
   )
 }
 
-// Post de reseau social realiste (X / Facebook / Instagram) facon application.
+// Post de reseau social tres realiste : X et Facebook avec barres d'actions,
+// icones SVG, badges, compteurs. Lecture seule (le message du client).
 function ReseauSocialVue({ post }: { post: NonNullable<BlocDocumentTexte['reseauSocial']> }) {
-  const bleuX = '#1D9BF0', bleuFb = '#1877F2'
-  const accent = post.plateforme === 'facebook' ? bleuFb : post.plateforme === 'instagram' ? '#C13584' : bleuX
-  const Logo = () => {
-    if (post.plateforme === 'facebook') return <span style={{ color: bleuFb, fontWeight: 900, fontSize: 20 }}>f</span>
-    if (post.plateforme === 'instagram') return <span style={{ fontSize: 18 }}>📷</span>
-    return <span style={{ color: '#1F2933', fontWeight: 900, fontSize: 18 }}>𝕏</span>
-  }
+  if (post.plateforme === 'facebook') return <FacebookVue post={post} />
+  if (post.plateforme === 'instagram') return <FacebookVue post={post} />
+  return <XVue post={post} />
+}
+
+function XVue({ post }: { post: NonNullable<BlocDocumentTexte['reseauSocial']> }) {
+  const gris = '#536471', bleu = '#1D9BF0'
+  const ico = { width: 18, height: 18, fill: 'none', stroke: gris, strokeWidth: 2 }
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', maxWidth: 540, background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderBottom: '1px solid #F1F3F5' }}>
-        <Logo />
-        <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 600, textTransform: 'capitalize' }}>{post.plateforme === 'x' ? 'X (ex-Twitter)' : post.plateforme}</span>
+    <div style={{ border: '1px solid #E1E8ED', borderRadius: 16, maxWidth: 560, background: '#FFFFFF', overflow: 'hidden', fontFamily: '-apple-system, Segoe UI, Roboto, Arial, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderBottom: '1px solid #EFF3F4' }}>
+        <span style={{ fontSize: 20, fontWeight: 900, color: '#0F1419' }}>𝕏</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: '#0F1419' }}>Post</span>
       </div>
-      <div style={{ display: 'flex', gap: 12, padding: 14 }}>
-        <div style={{ flexShrink: 0, width: 46, height: 46, borderRadius: '50%', background: accent, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800 }}>{post.avatarInitiale ?? post.compte.charAt(0)}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 800, fontSize: 14.5, color: '#0F1419' }}>{post.compte}</span>
-            {post.pseudo && <span style={{ fontSize: 13, color: '#6B7280' }}>{post.pseudo}</span>}
-            {post.plateforme === 'x' && <span style={{ color: bleuX, fontSize: 14 }}>✔</span>}
-          </div>
-          {post.message.map((m, i) => <p key={i} style={{ margin: '6px 0 0', fontSize: 14.5, color: '#0F1419', lineHeight: 1.5 }}>{m}</p>)}
-          {post.date && <div style={{ marginTop: 8, fontSize: 12.5, color: '#6B7280' }}>{post.date}</div>}
-          {post.stats && (
-            <div style={{ display: 'flex', gap: 22, marginTop: 10, color: '#6B7280', fontSize: 13 }}>
-              <span>💬 {post.stats.repondre ?? ''}</span>
-              {post.plateforme !== 'facebook' && <span>🔁 {post.stats.reposter ?? ''}</span>}
-              <span>❤️ {post.stats.jaime ?? ''}</span>
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#8E54E9,#4776E6)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 800 }}>{post.avatarInitiale ?? post.compte.charAt(0)}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+              <span style={{ fontWeight: 800, fontSize: 15, color: '#0F1419' }}>{post.compte}</span>
+              <svg viewBox="0 0 24 24" width="17" height="17" style={{ fill: bleu }}><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" /></svg>
+              <span style={{ fontSize: 14, color: gris }}>{post.pseudo}</span>
             </div>
-          )}
+            <div style={{ fontSize: 15, color: '#0F1419', lineHeight: 1.5, marginTop: 4 }}>
+              {post.message.map((m, i) => <p key={i} style={{ margin: i ? '6px 0 0' : 0 }}>{m.split(/(@\w+)/).map((part, j) => part.startsWith('@') ? <span key={j} style={{ color: bleu }}>{part}</span> : part)}</p>)}
+            </div>
+          </div>
+        </div>
+        {post.date && <div style={{ fontSize: 14, color: gris, marginTop: 12, paddingBottom: 12, borderBottom: '1px solid #EFF3F4' }}>{post.date} · <span style={{ fontWeight: 700, color: '#0F1419' }}>{post.stats?.vues ?? ''}</span> <span>vues</span></div>}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 6px 2px', maxWidth: 440 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: gris, fontSize: 13 }}><svg viewBox="0 0 24 24" {...ico}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>{post.stats?.repondre}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: gris, fontSize: 13 }}><svg viewBox="0 0 24 24" {...ico}><path d="M17 1l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="M7 23l-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>{post.stats?.reposter}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: gris, fontSize: 13 }}><svg viewBox="0 0 24 24" {...ico}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>{post.stats?.jaime}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: gris, fontSize: 13 }}><svg viewBox="0 0 24 24" {...ico}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg></span>
         </div>
       </div>
+    </div>
+  )
+}
+
+function FacebookVue({ post }: { post: NonNullable<BlocDocumentTexte['reseauSocial']> }) {
+  const gris = '#65676B', bleu = '#1877F2'
+  return (
+    <div style={{ border: '1px solid #DADDE1', borderRadius: 10, maxWidth: 560, background: '#FFFFFF', overflow: 'hidden', fontFamily: '-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderBottom: '1px solid #F0F2F5' }}>
+        <svg viewBox="0 0 24 24" width="22" height="22" style={{ fill: bleu }}><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z" /></svg>
+        <span style={{ fontSize: 14, fontWeight: 700, color: '#050505' }}>facebook</span>
+      </div>
+      <div style={{ padding: '12px 14px 6px' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ flexShrink: 0, width: 42, height: 42, borderRadius: '50%', background: 'linear-gradient(135deg,#42a5f5,#1565c0)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800 }}>{post.avatarInitiale ?? post.compte.charAt(0)}</div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: '#050505' }}>{post.compte}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12.5, color: gris }}>{post.date} · <svg viewBox="0 0 24 24" width="12" height="12" style={{ fill: gris }}><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3a2 2 0 110 4 2 2 0 010-4zm0 14a8 8 0 01-6-2.7c0-2 4-3.1 6-3.1s6 1.1 6 3.1A8 8 0 0112 19z" /></svg></div>
+          </div>
+        </div>
+        <div style={{ fontSize: 14.5, color: '#050505', lineHeight: 1.5, marginTop: 10 }}>
+          {post.message.map((m, i) => <p key={i} style={{ margin: i ? '6px 0 0' : 0 }}>{m.split(/(@\w+)/).map((part, j) => part.startsWith('@') ? <span key={j} style={{ color: bleu, fontWeight: 600 }}>{part}</span> : part)}</p>)}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0 6px', borderBottom: '1px solid #CED0D4' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: gris }}>
+            <span style={{ width: 18, height: 18, borderRadius: '50%', background: bleu, color: '#FFFFFF', fontSize: 11, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>👍</span>
+            <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#F33E58', color: '#FFFFFF', fontSize: 10, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: -6 }}>❤</span>
+            <span style={{ marginLeft: 4 }}>{post.stats?.jaime}</span>
+          </span>
+          <span style={{ fontSize: 13, color: gris }}>{post.stats?.repondre} commentaires · {post.stats?.reposter} partages</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-around', padding: '4px 0' }}>
+          {[['👍', 'J\u2019aime'], ['💬', 'Commenter'], ['↪', 'Partager']].map(([i, l]) => (
+            <span key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, color: gris, padding: '6px 10px' }}>{i} {l}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Questionnaire dynamique facon logiciel : navigation conditionnelle, une
+// question a la fois, barre de progression, ecran final de validation.
+function QuestionnaireVue({ q, couleur, compact }: { q: NonNullable<BlocDocumentTexte['questionnaire']>; couleur: string; compact?: boolean }) {
+  const [demarre, setDemarre] = useState(false)
+  const [courant, setCourant] = useState(q.questions[0]?.id ?? 'fin')
+  const [reps, setReps] = useState<Record<string, string>>({})
+  const [fini, setFini] = useState(false)
+  const [parcours, setParcours] = useState<string[]>([])
+
+  const question = q.questions.find((x) => x.id === courant)
+  const index = q.questions.findIndex((x) => x.id === courant)
+  const progression = fini ? 100 : Math.round((parcours.length / (q.questions.length + 1)) * 100)
+
+  const set = (v: string) => setReps((r) => ({ ...r, [courant]: v }))
+  const avancer = () => {
+    if (!question) return
+    let dest = question.saut ?? 'fin'
+    if (question.type === 'unique' && question.options) {
+      const opt = question.options.find((o) => o.libelle === reps[courant])
+      if (opt?.saut) dest = opt.saut
+    }
+    setParcours((p) => [...p, courant])
+    if (dest === 'fin' || !q.questions.find((x) => x.id === dest)) setFini(true)
+    else setCourant(dest)
+  }
+  const reset = () => { setDemarre(false); setCourant(q.questions[0]?.id ?? 'fin'); setReps({}); setFini(false); setParcours([]) }
+  const repondu = question ? (question.obligatoire ? !!reps[courant] : true) : false
+
+  const cadre: React.CSSProperties = { border: compact ? 'none' : '1px solid #DADCE0', borderRadius: 12, overflow: 'hidden', maxWidth: compact ? '100%' : 600, background: '#FFFFFF', fontFamily: 'Roboto, Arial, sans-serif' }
+  const barreHaut = <div style={{ height: 8, background: couleur }} />
+
+  if (!demarre) {
+    return (
+      <div style={cadre}>
+        {barreHaut}
+        <div style={{ padding: 22 }}>
+          <div style={{ fontSize: 22, fontWeight: 500, color: '#202124', marginBottom: 12 }}>{q.titre}</div>
+          {q.intro?.map((p, i) => <p key={i} style={{ fontSize: 14, color: '#5F6368', lineHeight: 1.6, margin: '0 0 8px' }}>{p}</p>)}
+          <button onClick={() => { setDemarre(true); setParcours([]) }} style={{ marginTop: 14, background: couleur, color: '#FFFFFF', border: 'none', borderRadius: 6, padding: '10px 22px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>Commencer</button>
+        </div>
+      </div>
+    )
+  }
+
+  if (fini) {
+    return (
+      <div style={cadre}>
+        {barreHaut}
+        <div style={{ padding: 28, textAlign: 'center' }}>
+          <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#E6F4EA', color: '#1E8E3E', fontSize: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>✓</div>
+          {q.final?.map((p, i) => <p key={i} style={{ fontSize: i === 0 ? 18 : 14, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? '#202124' : '#5F6368', margin: '0 0 8px' }}>{p}</p>)}
+          <button onClick={reset} style={{ marginTop: 14, background: 'transparent', color: couleur, border: `1px solid ${couleur}`, borderRadius: 6, padding: '8px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Recommencer</button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={cadre}>
+      {barreHaut}
+      <div style={{ height: 4, background: '#F1F3F4' }}><div style={{ height: '100%', width: `${progression}%`, background: couleur, transition: 'width .3s' }} /></div>
+      <div style={{ padding: 22 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: couleur, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Question {question?.numero} {question?.obligatoire && <span style={{ color: '#D93025' }}>*</span>}</div>
+        <div style={{ fontSize: 16, color: '#202124', lineHeight: 1.5, marginBottom: 18 }}>{question?.libelle}</div>
+
+        {question?.type === 'unique' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {question.options?.map((o) => {
+              const on = reps[courant] === o.libelle
+              return (
+                <button key={o.libelle} onClick={() => set(o.libelle)} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', border: `1px solid ${on ? couleur : '#DADCE0'}`, background: on ? '#FDECEC' : '#FFFFFF', borderRadius: 8, padding: '11px 14px', fontSize: 14.5, color: '#202124', cursor: 'pointer' }}>
+                  <span style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${on ? couleur : '#9AA0A6'}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{on && <span style={{ width: 8, height: 8, borderRadius: '50%', background: couleur }} />}</span>
+                  {o.libelle}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {question?.type === 'likert' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {['Pas du tout d\u2019accord', 'Plutôt pas d\u2019accord', 'Plutôt d\u2019accord', 'Tout à fait d\u2019accord'].map((o) => {
+              const on = reps[courant] === o
+              return (
+                <button key={o} onClick={() => set(o)} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', border: `1px solid ${on ? couleur : '#DADCE0'}`, background: on ? '#FDECEC' : '#FFFFFF', borderRadius: 8, padding: '11px 14px', fontSize: 14.5, color: '#202124', cursor: 'pointer' }}>
+                  <span style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${on ? couleur : '#9AA0A6'}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{on && <span style={{ width: 8, height: 8, borderRadius: '50%', background: couleur }} />}</span>
+                  {o}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {question?.type === 'echelle' && (
+          <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+              {Array.from({ length: (question.max ?? 10) - (question.min ?? 1) + 1 }).map((_, i) => {
+                const n = (question.min ?? 1) + i
+                const on = reps[courant] === String(n)
+                return (
+                  <button key={n} onClick={() => set(String(n))} style={{ width: 42, height: 42, borderRadius: '50%', border: `2px solid ${on ? couleur : '#DADCE0'}`, background: on ? couleur : '#FFFFFF', color: on ? '#FFFFFF' : '#5F6368', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{n}</button>
+                )
+              })}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 12, color: '#9AA0A6' }}><span>{question.min ?? 1} (faible)</span><span>{question.max ?? 10} (excellent)</span></div>
+          </div>
+        )}
+
+        {question?.type === 'texte' && (
+          <textarea value={reps[courant] ?? ''} onChange={(e) => set(e.target.value)} rows={3} placeholder="Votre réponse…" style={{ width: '100%', boxSizing: 'border-box', border: 'none', borderBottom: `2px solid ${couleur}`, fontSize: 14.5, padding: '6px 2px', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }} />
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 22 }}>
+          <span style={{ fontSize: 12, color: '#9AA0A6' }}>Question {index + 1} sur {q.questions.length}</span>
+          <button onClick={avancer} disabled={!repondu} style={{ background: repondu ? couleur : '#E0E0E0', color: '#FFFFFF', border: 'none', borderRadius: 6, padding: '9px 24px', fontSize: 14.5, fontWeight: 600, cursor: repondu ? 'pointer' : 'not-allowed' }}>{(question?.saut === 'fin' || (question?.type === 'unique' && question.options?.some((o) => o.saut === 'fin' && o.libelle === reps[courant]))) ? 'Valider' : 'Suivant'}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Mockup smartphone affichant une page Instagram cliquable qui ouvre le
+// questionnaire integre (sans quitter l'app).
+function InstagramTelephoneVue({ data, questionnaire, couleur }: { data: NonNullable<BlocDocumentTexte['instagramTelephone']>; questionnaire?: BlocDocumentTexte['questionnaire']; couleur: string }) {
+  const [ouvert, setOuvert] = useState(false)
+  const cadreTel: React.CSSProperties = { width: 340, maxWidth: '100%', margin: '0 auto', border: '11px solid #1A1A1A', borderRadius: 40, overflow: 'hidden', background: '#FFFFFF', boxShadow: '0 12px 34px rgba(0,0,0,0.28)' }
+  return (
+    <div style={cadreTel}>
+      <div style={{ height: 26, background: '#1A1A1A', position: 'relative' }}><div style={{ width: 130, height: 20, background: '#1A1A1A', borderRadius: '0 0 14px 14px', position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: 0 }} /></div>
+      {!ouvert ? (
+        <div style={{ fontFamily: '-apple-system, Segoe UI, Roboto, Arial, sans-serif' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderBottom: '1px solid #DBDBDB' }}>
+            <span style={{ fontSize: 16, fontWeight: 700 }}>{data.compte}</span>
+            <span style={{ fontSize: 12, color: '#3897F0', fontWeight: 600 }}>✔</span>
+            <span style={{ marginLeft: 'auto', fontSize: 18 }}>⋯</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 12px' }}>
+            <div style={{ width: 66, height: 66, borderRadius: '50%', padding: 3, background: 'linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf)' }}><div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: couleur, fontSize: 18, fontWeight: 800, fontStyle: 'italic' }}>free</span></div></div>
+            <div style={{ display: 'flex', gap: 10, flex: 1, justifyContent: 'space-around', textAlign: 'center' }}>
+              {[['publications', data.statistiques?.publications], ['abonnés', data.statistiques?.abonnes], ['suivi(e)s', data.statistiques?.abonnements]].map(([l, v]) => (
+                <div key={l}><div style={{ fontSize: 15, fontWeight: 700 }}>{v}</div><div style={{ fontSize: 11, color: '#262626' }}>{l}</div></div>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: '0 12px 10px' }}>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>{data.sousTitre}</div>
+            {data.bio?.map((b, i) => <div key={i} style={{ fontSize: 12.5, color: '#262626', lineHeight: 1.45 }}>{b}</div>)}
+            <button onClick={() => setOuvert(true)} style={{ marginTop: 4, background: 'transparent', border: 'none', color: '#00376B', fontWeight: 700, fontSize: 13, cursor: 'pointer', padding: 0 }}>🔗 {data.libelleLien}</button>
+          </div>
+          <div style={{ display: 'flex', gap: 6, padding: '0 12px 10px' }}>
+            <button onClick={() => setOuvert(true)} style={{ flex: 1, background: couleur, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '7px 0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Répondre à l\u2019enquête</button>
+            <span style={{ background: '#EFEFEF', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600 }}>Message</span>
+          </div>
+          <div style={{ display: 'flex', borderTop: '1px solid #DBDBDB', borderBottom: '1px solid #DBDBDB' }}>
+            <div style={{ flex: 1, textAlign: 'center', padding: 8, borderBottom: '2px solid #262626', fontSize: 16 }}>▦</div>
+            <div style={{ flex: 1, textAlign: 'center', padding: 8, fontSize: 16, color: '#9AA0A6' }}>👤</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2 }}>
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} style={{ aspectRatio: '1', background: i % 4 === 1 ? couleur : '#F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: i % 4 === 1 ? '#FFFFFF' : '#B0B0B0', fontSize: 12, fontWeight: 700, fontStyle: 'italic' }}>{i % 4 === 1 ? 'Pop.' : 'free'}</div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', fontSize: 11, color: '#9AA0A6', padding: 8 }}>Touchez le lien pour ouvrir le questionnaire</div>
+        </div>
+      ) : (
+        <div style={{ maxHeight: 580, overflowY: 'auto', background: '#FAFAFA' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#FFFFFF', borderBottom: '1px solid #DBDBDB', position: 'sticky', top: 0, zIndex: 2 }}>
+            <button onClick={() => setOuvert(false)} style={{ border: 'none', background: 'transparent', fontSize: 20, cursor: 'pointer', lineHeight: 1 }}>‹</button>
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: '#262626' }}>🔒 forms.gle</span>
+          </div>
+          <div style={{ padding: 10 }}>
+            {questionnaire ? <QuestionnaireVue q={questionnaire} couleur={couleur} compact /> : <div style={{ fontSize: 13, color: '#5F6368', textAlign: 'center' }}>Questionnaire indisponible.</div>}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -2021,26 +2244,38 @@ function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id:
   )
 }
 
-// Zone de reponse reseau social facon application : entete compte + champ de
-// redaction de la reponse, plus bouton lien (Quiziniere).
+// Zone de reponse reseau social facon application : entete plateforme + fil de
+// reponse (avatar Assistance Freebox), champ de redaction, bouton lien.
 function rendreReponseReseau(a: AnnexeReponseReseau, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
-  const accent = a.plateforme === 'facebook' ? '#1877F2' : '#1D9BF0'
+  const fb = a.plateforme === 'facebook'
+  const accent = fb ? '#1877F2' : '#1D9BF0'
   return (
-    <div style={{ border: '1px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', maxWidth: 560, background: '#FFFFFF' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: accent, color: '#FFFFFF' }}>
-        <span style={{ fontWeight: 900, fontSize: 18 }}>{a.plateforme === 'facebook' ? 'f' : '𝕏'}</span>
-        <span style={{ fontSize: 13, fontWeight: 700 }}>Assistance Freebox</span>
-        <span style={{ marginLeft: 'auto', fontSize: 12, opacity: 0.9 }}>En réponse à {a.enReponseA}</span>
+    <div style={{ border: '1px solid #E1E8ED', borderRadius: 16, overflow: 'hidden', maxWidth: 560, background: '#FFFFFF', fontFamily: '-apple-system, Segoe UI, Roboto, Arial, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderBottom: '1px solid #EFF3F4' }}>
+        {fb
+          ? <svg viewBox="0 0 24 24" width="22" height="22" style={{ fill: accent }}><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z" /></svg>
+          : <span style={{ fontSize: 20, fontWeight: 900, color: '#0F1419' }}>𝕏</span>}
+        <span style={{ fontSize: 14, fontWeight: 700, color: '#0F1419' }}>{fb ? 'Répondre au commentaire' : 'Répondre'}</span>
       </div>
-      <div style={{ display: 'flex', gap: 12, padding: 14 }}>
-        <div style={{ flexShrink: 0, width: 42, height: 42, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>F</div>
-        <textarea value={saisies[`${a.id}.reponse`] ?? ''} onChange={(e) => set(`${a.id}.reponse`, e.target.value)} disabled={verrouille} rows={5} placeholder="Rédigez votre réponse…" style={{ flex: 1, boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14.5, padding: '8px 10px', borderRadius: 8, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical', lineHeight: 1.5 }} />
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderTop: '1px solid #F1F3F5' }}>
-        {a.boutonLien
-          ? <a href={a.boutonLien} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, fontWeight: 700, color: couleur, textDecoration: 'none', border: `1px solid ${couleur}`, borderRadius: 16, padding: '5px 12px' }}>🔗 {a.boutonLibelle ?? 'Répondre via le lien'}</a>
-          : <span />}
-        <span style={{ background: accent, color: '#FFFFFF', borderRadius: 16, padding: '6px 16px', fontSize: 13, fontWeight: 700 }}>{a.plateforme === 'facebook' ? 'Publier' : 'Répondre'}</span>
+      <div style={{ padding: 14 }}>
+        <div style={{ fontSize: 13, color: '#536471', marginBottom: 10 }}>En réponse à <span style={{ color: accent, fontWeight: 600 }}>{a.enReponseA}</span></div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, fontStyle: 'italic' }}>free</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+              <span style={{ fontWeight: 800, fontSize: 14.5, color: '#0F1419' }}>Assistance Freebox</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" style={{ fill: accent }}><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" /></svg>
+              {!fb && <span style={{ fontSize: 13, color: '#536471' }}>@free</span>}
+            </div>
+            <textarea value={saisies[`${a.id}.reponse`] ?? ''} onChange={(e) => set(`${a.id}.reponse`, e.target.value)} disabled={verrouille} rows={5} placeholder="Rédigez votre réponse…" style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'inherit', fontSize: 14.5, padding: '6px 0', border: 'none', outline: 'none', resize: 'vertical', lineHeight: 1.5, color: verrouille ? '#6B7280' : '#0F1419', borderBottom: `2px solid ${accent}` }} />
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 }}>
+          {a.boutonLien
+            ? <a href={a.boutonLien} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, fontWeight: 700, color: couleur, textDecoration: 'none', border: `1px solid ${couleur}`, borderRadius: 16, padding: '6px 12px' }}>🔗 {a.boutonLibelle ?? 'Répondre via le lien'}</a>
+            : <span />}
+          <span style={{ background: accent, color: '#FFFFFF', borderRadius: 18, padding: '7px 20px', fontSize: 14, fontWeight: 700 }}>{fb ? 'Publier' : 'Répondre'}</span>
+        </div>
       </div>
     </div>
   )
