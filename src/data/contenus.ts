@@ -439,7 +439,39 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+// Module d'analyse de clientele facon CRM : un bloc repartition (type de
+// clientele, cases a cocher + pourcentage) et un bloc profil-type (un critere
+// par ligne, reponse + pourcentage). Look fiche d'etude de clientele.
+export interface AnnexeClientele {
+  type: 'clientele'
+  id: string
+  titre: string
+  typesClientele: string[] // ex : Particuliers, Professionnels
+  criteres: string[] // ex : Sexe, Tranche d'age, Lieu d'habitation...
+}
+
+// Tableau de veille concurrentielle facon logiciel d'etude de marche : une
+// ligne par concurrent (nom + cases Direct / Indirect exclusives + zone de
+// justification). Ergonomie type CRM.
+export interface AnnexeConcurrents {
+  type: 'concurrents'
+  id: string
+  titre: string
+  entete?: string
+  nbLignes: number
+}
+
+// Formulaire d'etude facon outil de reporting : questions numerotees avec zone
+// de reponse, presentation type questionnaire professionnel.
+export interface AnnexeQuestionsReponses {
+  type: 'questionsreponses'
+  id: string
+  titre: string
+  entete?: string
+  questions: { libelle: string; lignes?: number }[]
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses
 
 export interface QuestionTravaux {
   numero: number
@@ -573,6 +605,10 @@ export interface BlocDocumentTexte {
     tete: NoeudOrga
     transversal?: string // bande pleine largeur en bas (ex : Le corps professoral)
   }
+  // Image illustrative inseree dans le flux du document (logo, graphique,
+  // capture). Reproduit les visuels d'origine (camembert, histogramme, icones
+  // reseaux sociaux, grille produits...). Legende optionnelle.
+  image?: { src: string; alt: string; legende?: string; largeur?: number }
   // Habillage facon page web riche : quand true, le bloc est encadre avec un
   // bandeau de marque (logo AMParis) et une mise en page de site.
   pageWeb?: boolean
@@ -7647,6 +7683,651 @@ const FREE_M5: ContenuMission = {
   },
 }
 
+
+// ---------------------------------------------------------------------------
+// CONTENU : Leroy Merlin, mission 1 - La presentation de l'unite commerciale
+// et de son marche
+// ---------------------------------------------------------------------------
+const LEROY_MERLIN_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez la « carte d'identité » de l'entreprise Leroy Merlin : identité, partenaires, clientèle, biens et services, concurrents et marché du bricolage.",
+    contexte:
+      "Vous êtes en PFMP dans l'entreprise Leroy Merlin, situé à Paris. L'enseigne est spécialisée dans l'amélioration de l'habitat (construction, aménagement, décoration, bricolage et jardinage). C'est votre premier jour et donc avant de vous confier des tâches importantes, votre responsable Mme Annie Mâle souhaite que vous vous familiarisiez avec l'entreprise, ses produits et son marché. Votre tuteur vous demande de réaliser la « carte d'identité » de celle-ci.",
+    documents: [
+      {
+        numero: 1,
+        titre: "Identité de l'entreprise",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "IDENTITÉ DE L'ENTREPRISE" },
+          { paragraphes: ['03 28 80 80 80'] },
+          { intertitre: 'Renseignements juridiques' },
+          {
+            tableau: {
+              colonnes: ['Renseignements juridiques', ''],
+              lignes: [
+                ['Forme juridique', "SA à conseil d'administration"],
+                ['Noms commerciaux', 'LEROY MERLIN FRANCE'],
+                ['Téléphone', '03 28 80 80 80'],
+                ['Adresse postale', 'RUE CHANZY 59260 LEZENNES'],
+              ],
+            },
+          },
+          {
+            tableau: {
+              colonnes: ["Numéros d'identification", ''],
+              lignes: [
+                ['Numéro SIREN', '384560942'],
+                ['Numéro SIRET (siège)', '38456094200045'],
+                ['Numéro TVA Intracommunautaire', 'FR49384560942'],
+                ['Numéro RCS', 'Lille Metropole B 384 560 942'],
+              ],
+            },
+          },
+          {
+            tableau: {
+              colonnes: ['Informations commerciales', ''],
+              lignes: [
+                ['Catégorie', 'Commerce de détail'],
+                ['Activité (Code NAF ou APE)', 'Commerce de détail de quincaillerie, peintures et verres en grandes surfaces (400 m² et plus) (4752B)'],
+              ],
+            },
+          },
+          {
+            tableau: {
+              colonnes: ["Taille de l'entreprise", ''],
+              lignes: [
+                ['Effectif moyen', '25 322'],
+                ['Capital social', '100 000 000,00 €'],
+                ["Chiffre d'affaires 2020", '6 607 737 500.00 €'],
+              ],
+            },
+          },
+          { intertitre: '1924' },
+          {
+            paragraphes: [
+              "À l'issue de la première guerre mondiale, Adolphe Leroy père s'intéresse au surplus des Stocks américains, véritable mine de matériel indispensable à une époque où tout est à reconstruire, à commencer par les logements. En 1924, son fils Adolphe épouse Rose Merlin. Ensemble, le couple ouvre son premier magasin à Noeux-les-Mines. Dans les années 30, ils y proposent des maisons vendues en kit et d'autres matériaux de construction.",
+            ],
+          },
+          { image: { src: '/docs/leroy-merlin-m1/reseaux.jpg', alt: 'Réseaux sociaux de Leroy Merlin', largeur: 240 } },
+        ],
+      },
+      {
+        numero: 2,
+        titre: 'Nos partenaires actuels de recherche (Leroy Merlin Source)',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Nos partenaires actuels de recherche' },
+          {
+            paragraphes: [
+              "L'Agence de l'environnement et de la maîtrise de l'énergie (ADEME) participe à la mise en œuvre des politiques publiques dans les domaines de l'environnement, de l'énergie et du développement durable. Elle aide en outre au financement de projets, de la recherche à la mise en œuvre (gestion des déchets, préservation des sols, efficacité énergétique et énergies renouvelables, économies de matières premières, qualité de l'air, lutte contre le bruit, transition vers l'économie circulaire…).",
+              "Le Centre d'étude des mutations sociales (CEMS) rassemble des personnes physiques et morales étudiant les mutations sociales dans de nombreux domaines : travail, action sociale, discriminations, inégalités, politiques publiques, etc. Il produit des connaissances interdisciplinaires co-construites avec une pluralité d'acteurs : institutionnels, entreprises, centres de recherche… Pour réaliser ses missions de recherches scientifiques, d'expertises techniques et de conseils ou pour l'animation et l'organisation de formations, le CEMS fait appel à des chercheur.e.s en sciences humaines et sociales.",
+              "Le centre d'expertise nationale en stimulation cognitive (CEN Stimco) intervient dans le champ des aides techniques pour sur la stimulation et la compensation cognitives, quels que soient l'âge, les pathologies et les handicaps des publics utilisateurs. Son action, tournée vers l'utilité sociale et basée sur des méthodes scientifiques, s'articule autour de 3 axes : l'information, la formation, l'évaluation.",
+              "Le Centre Max Weber est un laboratoire de recherche de sociologie généraliste. Il regroupe un grand nombre de sociologues du site de Lyon-Saint-Étienne. Situé sur quatre sites géographiques, il est rattaché institutionnellement à quatre tutelles : le CNRS, l'École Normale Supérieure de Lyon, l'Université Jean Monnet Saint-Étienne et l'Université Lumière Lyon 2. Il est membre de la Maison des Sciences de l'Homme Lyon Saint-Étienne.",
+              "Le CERLIS est un laboratoire de recherche en sciences humaines et sociales centré sur la question du lien social. Ses tutelles sont l'Université Paris Descartes, l'Université Sorbonne Nouvelle et le CNRS (Unité Mixte de Recherche 8070).",
+              "Le Forum urbain a vocation à rapprocher les mondes de la recherche et des territoires avec une double ambition : ancrer la recherche dans la réalité de ceux qui font et vivent la ville (décideurs, professionnels, associations, habitants), et apporter un éclairage aux problématiques contemporaines afin d'améliorer les pratiques.",
+              "Créé en 2011, le FORUM VIES MOBILES est un institut de recherche sur la mobilité qui prépare la transition vers des modes de vie plus désirés et durables. Il encadre des recherches, publie des ouvrages et organise des événements dans les domaines scientifique et artistique.",
+              "Mixing Générations est un cabinet d'études et de recherche. Il ambitionne de transformer le regard de la société française sur les relations entre les générations en apportant un nouveau regard politique et culturel. Objectif : stopper l'indifférence et la stigmatisation liées à notre diversité sociale et en faire une richesse et un axe d'évolution.",
+              "Agence d'études et de conseil : atelier de prospective, fabrique de services, laboratoire des usages. (Nova 7)",
+              "Le laboratoire PAVE, école nationale supérieure d'architecture et du paysage de Bordeaux (Ensap Bx), travaille depuis 1998 au croisement disciplinaire entre sociologie, anthropologie et architecture pour investir la connaissance des formes matérielles des sociétés.",
+              "Le laboratoire REGARDS (Recherches en Economie Gestion AgroRessources Durabilité Santé) de l'Université de Reims a pour « front de recherche » celui de la formation de préférences collectives, généralement mal appréhendée en théorie économique ou en sciences de gestion, au-delà de l'hypothèse d'une somme de préférences individuelles : résistance du consommateur, conséquences sociales et sociétales de la consommation, consommations alternatives ou émergentes, RSE, stratégies organisationnelles ou formes originales d'entrepreneuriat…",
+              "SOLIHA est issu de la fusion en mai 2015 des Mouvements PACT et Habitat & Développement. Avec SOLIHA, Solidaires pour l'habitat, un nouveau Mouvement associatif est né. Ce Mouvement plus solide est capable d'apporter plus de solutions aux personnes qui rencontrent des difficultés pour se maintenir ou accéder à un logement compatible avec leurs ressources. Le Mouvement SOLIHA est le 1er acteur associatif en matière d'amélioration de l'habitat. Ce Mouvement est composé d'une Fédération nationale et de 163 organismes locaux présents sur tout le territoire national. L'Union Régionale Nouvelle-Aquitaine, regroupe 12 structures locales.",
+              "Le TASDA rassemble les acteurs du bien-vieillir et développe, de façon collective, les usages des nouvelles technologies intégrées aux prises en charge à domicile de demain. Il travaille dans une démarche collective avec les usagers, les acteurs de terrain, les entreprises, les financeurs, en Auvergne Rhône-Alpes. Et selon une approche systémique intégrant la dimension des pratiques métiers, des organisations, des solutions techniques, des politiques publiques, des modèles économiques.",
+            ],
+          },
+          { image: { src: '/docs/leroy-merlin-m1/partenaires-1.jpg', alt: 'Partenaires de recherche Leroy Merlin Source (1)' } },
+          { image: { src: '/docs/leroy-merlin-m1/partenaires-2.jpg', alt: 'Partenaires de recherche Leroy Merlin Source (2)' } },
+        ],
+      },
+      {
+        numero: 3,
+        titre: 'La clientèle (Leroy Merlin Studio)',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          {
+            paragraphes: [
+              "« Notre plateforme connecte nos clients à un réseau d'architectes, souligne la responsable Nathalie Hervet. Nous avons constitué un réseau d'architectes DPLG (diplômés par l'État), des architectes d'intérieur et décorateurs. Il y a également une équipe Leroy Merlin Studio en back office afin de mettre en relation les projets soumis et l'équipe d'architectes appelé 'pilote' (38 personnes actuellement avec un objectif de 50 pilotes en fin d'année). » Concrètement, le client demande un rendez-vous téléphonique. Leroy Merlin Studio le rappelle sous 48 heures et programme une visite à domicile (tarifée à 45 euros). « Cette visite est réalisée par notre 'pilote' -architecte d'intérieur, décorateur ou architecte DPLG-. Nous faisons coïncider le profil du pilote avec le projet accompagné. Puis, nous délivrons un devis sous 10 jours afin d'aider le client à se projeter en respectant son budget. »",
+            ],
+          },
+          { intertitre: '« Un seul pro pour diriger les travaux »' },
+          {
+            paragraphes: [
+              "Un expert unique accompagne le client tout du long du projet de rénovation. Le slogan même du service : « Un seul pro pour diriger les travaux ». « Nous nous inscrivons dans le processus d'achat ou de réalisation du client à partir de 15 000 euros, pointe Nathalie Hervet. Cela nous permet d'avoir une prestation en cohérence avec le projet. » Aujourd'hui, le panier moyen frôle les 40 000 euros. De gros projets dédiés à la rénovation et à l'aménagement de l'habitat parisien. Les profils clients sont sensiblement différents de ceux fréquentant les magasins de l'enseigne. Une clientèle de 35-55 ans, CSP++*, n'ayant pas envie ou choisi de réaliser les travaux. « Initialement, nos points de vente sont plutôt installés en périphérie et touchent peu le cœur des villes, indique la responsable de Leroy Merlin Studio. C'est la raison pour laquelle nous avons créé ce concept digital afin de cibler les hyper urbains. » Et cerise sur le gâteau, 73% des produits sélectionnés pour réaliser les chantiers sont ceux de Leroy Merlin.",
+              "Contrairement aux idées reçues selon laquelle la clientèle de Leroy Merlin serait surtout professionnel, elle est surtout composée à 98% de particuliers.",
+              "Nous traitons essentiellement avec des propriétaires (69%) résidant en zone urbaine (96%). Ces données nous permettent de connaître notre clientèle.",
+              "À titre indicatif, 63% de nos clients sont des hommes, contre 37% de femmes. Cette tendance tend à s'inverser car de plus en plus de femme tendent à s'initier au bricolage.",
+              "* Situation professionnelle",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 4,
+        titre: 'Les services (Retour & remboursement)',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Retour & remboursement' },
+          {
+            paragraphes: [
+              "Leroy Merlin reprend vos articles jusqu'à 6 mois après vos achats. Vous avez trouvé moins cher ailleurs ? Leroy Merlin vous rembourse la différence.",
+            ],
+          },
+          { intertitre: 'Retour en magasin' },
+          {
+            paragraphes: [
+              "Les magasins ne reprennent que les articles en parfait état. Si votre article est cassé ou défectueux, veuillez contacter le Service Client, qui se charge d'organiser le retour de votre article.",
+              "Selon l'état général de l'article, les magasins ont la possibilité de vous rediriger vers le Service Client.",
+            ],
+          },
+          { intertitre: 'Remboursement et remplacement' },
+          {
+            paragraphes: [
+              "Les remboursements et remplacements d'articles retournés sont émis à réception de l'article initial par nos services.",
+              "En cas de remboursement, celui-ci est effectué sur la méthode de paiement choisie pour la commande initiale. En cas de paiement par chèque, il vous est demandé de nous fournir un Relevé d'Identité Bancaire. Vous êtes averti par email dès que le remboursement est effectué.",
+              "Si vous avez choisi un remplacement de votre article, veuillez noter que le délai de livraison de l'échange est calculé à réception de l'article retourné par nos services et en fonction de sa disponibilité.",
+            ],
+          },
+          { intertitre: 'Remboursement de la différence' },
+          {
+            paragraphes: [
+              "Nous vous remboursons la différence.",
+              "Vous offrir les meilleurs produits au meilleur prix, c'est pour nous la moindre des choses. Alors, si vous trouvez moins cher dans un autre magasin, nous vous remboursons la différence (Voir conditions en magasin)",
+            ],
+          },
+          { intertitre: 'À chaque type de colis, son tarif adapté !' },
+          {
+            tableau: {
+              colonnes: ['Type de colis', 'Dimensions', 'Tarifs de livraison'],
+              lignes: [
+                ['Les petits colis', "Inférieur et égal à 30 kg et 0,5m³. Colis d'environ 1m x 1m x 0,5m. Par exemple : une perceuse", 'Retrait magasin : Gratuit. Livraison chez vous ou point retrait : 2,90€. Livraison en 24h : 6,90€'],
+                ['Les gros colis', 'Supérieur à 30 Kg et inférieur à 500 Kg ou supérieur à 0.5 m³. Par exemple : du carrelage', 'Retrait magasin : Gratuit. Livraison devant chez vous ou point retrait : 49.90€. Livraison en 24h : 99.90€'],
+                ['Les très gros colis', "Supérieur à 500 Kg. Par exemple : un portail, un abri de jardin…", 'Retrait magasin : Gratuit. Livraison chez vous ou point retrait : 99.90€. Livraison en 24h : 119.90€'],
+              ],
+            },
+          },
+          { image: { src: '/docs/leroy-merlin-m1/services-bandeau.jpg', alt: 'Services Leroy Merlin : retrait gratuit, livraison à domicile, retour gratuit, 6 mois pour changer d\'avis' } },
+        ],
+      },
+      {
+        numero: 5,
+        titre: 'Les biens (catalogue Produits)',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Produits' },
+          { image: { src: '/docs/leroy-merlin-m1/produits-grille.jpg', alt: 'Catalogue des produits Leroy Merlin' } },
+          {
+            puces: [
+              'Carrelage, parquet et sol souple',
+              'Chauffage et plomberie',
+              'Menuiserie',
+              'Salle de bains',
+              'Décoration et éclairage',
+              'Peinture et droguerie',
+              'Électricité et domotique',
+              'Outillage',
+              'Quincaillerie',
+              'Cuisine',
+              'Rangement et dressing',
+              'Terrasse et jardin',
+              'Matériaux de construction',
+              'Meuble',
+            ],
+          },
+        ],
+      },
+      {
+        numero: 6,
+        titre: 'Les concurrents',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { image: { src: '/docs/leroy-merlin-m1/concurrents-graph.jpg', alt: 'Chiffres des enseignes concurrentes du bricolage' } },
+          { intertitre: 'Schimdt « Cuisines au cœur de la maison »' },
+          {
+            paragraphes: [
+              "Le magasin Schmidt se situe dans la région rennaise, à Melesse. C'est une société de meubles, familiale d'origine alsacienne de meubles (SALM) qui fabrique et commercialise une large gamme de meubles pour cuisines et salles de bains, de rangements et de tables et chaises.",
+            ],
+          },
+          { intertitre: 'Mobalpa' },
+          {
+            paragraphes: [
+              "Mobalpa est une marque de meubles de cuisines, de salles de bains et de rangements. Mobalpa - ou Mobilier des Alpes - est une marque de la société Fournier, entreprise savoyarde fondée en 1907 et installée à Thônes, en Haute-Savoie (France)",
+            ],
+          },
+          { intertitre: 'Hygena' },
+          {
+            paragraphes: [
+              "Hygena est un cuisiniste, équipementier de salles de bains et d'électroménager français.",
+            ],
+          },
+          { intertitre: 'Conforama Henri Fréville « Bien chez soi, bien moins cher »' },
+          {
+            paragraphes: [
+              "Conforama est un détaillant de mobilier et objets de décoration en kit, d'origine française. Les produits, en kit, sont quasiment tous vendus en paquets plats pour que le transport soit moins cher et que le client puisse le rapporter lui-même à son domicile et le monter.",
+            ],
+          },
+          { intertitre: 'Ikea' },
+          {
+            paragraphes: [
+              "Ikea est une entreprise néerlandaise d'origine suédoise, spécialisée dans la conception et la vente de détail de mobilier et objets de décoration en kit. Le concept repose sur le libre service de la grande distribution",
+            ],
+          },
+          { intertitre: 'Alinea' },
+          {
+            paragraphes: [
+              "Alinéa est une chaîne de détaillant de mobilier, souvent à assembler, uniquement basé en France appartenant au groupe Auchan.",
+            ],
+          },
+          { intertitre: 'Point P' },
+          {
+            paragraphes: [
+              "Le Groupe Point.P est une entreprise qui revendique le titre de leader en Europe de la distribution de matériaux de construction. Ainsi, ce magasin ne propose pas de cuisine à proprement parlé, seulement du matériel, dont une large gamme de plans de travail.",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 7,
+        titre: "Le marché du bricolage",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Le secteur du bricolage en hausse d'environ 6%" },
+          {
+            paragraphes: [
+              "Chez Castorama, un des géants du secteur, le chiffre d'affaires a augmenté de 6,5 % pour atteindre 2,5 milliards d'euros. Celui de Leroy Merlin a également grimpé de 5,2 % à 7,345 milliards d'euros. Cet acteur majeur a généré 546 millions d'euros de chiffre d'affaires grâce aux ventes en ligne. L'autre record : les visites enregistrées sur son site Internet : 562 millions de visites.",
+              "En Europe, les trois enseignes du groupement des Mousquetaires d'équipement de la maison ont enregistré un chiffre d'affaires de 3,97 milliards d'euros. Au sein de l'Hexagone, Bricomarché, Bricorama et Brico Cash constituent le premier réseau de proximité et d'indépendants. Ainsi, les trois enseignes ont réalisé un chiffre d'affaires cumulé de 3,2 milliards d'euros, en progression de 11% l'année passée. Un chiffre d'affaires porté par les rayons jardin et décoration.",
+              "Les trois enseignes ont également pu miser sur la croissance du e-commerce et du drive. Rappelons que la prise de participation dans BricoPrivé.com cette année est le signe d'une véritable volonté de transformation omnicanale, avec un renforcement des compétences digitales.",
+              "Entreprise du Groupe ADEO depuis 2004, Weldom compte 213 magasins et 4 000 collaborateurs. L'enseigne a réalisé, l'année passée, un chiffre d'affaires de 884 millions d'euros.",
+              "Spécialiste du commerce indépendant en bricolage de proximité en France, Mr Bricolage comptait, au 30 juin, 855 magasins sous enseigne ou affiliés dont 69 à l'International, implantés dans 9 pays. Nouvelle plateforme de marque, nouveau concept, nouvelle identité visuelle, transformation digitale, plan de développement ambitieux, nouveaux formats de magasin… Depuis quelques mois, l'enseigne met les bouchées doubles pour devenir le leader incontesté de la proximité.",
+              "(+ 8% par rapport à l'année précédente)",
+            ],
+          },
+          { image: { src: '/docs/leroy-merlin-m1/marche-camembert.jpg', alt: 'Le marché du bricolage : 24,8 milliards €', largeur: 480 } },
+        ],
+      },
+      {
+        numero: 8,
+        titre: 'La concurrence (définitions et exemples)',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document — La concurrence' },
+          { intertitre: 'Concurrents directs' },
+          {
+            paragraphes: [
+              "Un concurrent direct est une entreprise ou une organisation qui propose un produit, un service ou un prix similaire ou comparable à celui d'une autre entreprise. Elles ont la même activité principale.",
+            ],
+          },
+          {
+            paragraphes: [
+              "Exemple 1 : Un client qui veut aller à Toulouse il peut le faire avec la compagnie Air France. Ce client peut aussi voyager avec des concurrents directs d'Air France : Easy Jet, Rayan Air.",
+              "Exemple 2 : Un client veut acheter des vêtements chez H&M. Ce client peut aussi acheter des vêtements chez des concurrents directs d'H&M : Bershka, Zara. L'activité principale des deux enseignes est la vente de vêtements.",
+              "Exemple 3 : Un client veut acheter un four à micro-onde chez Darty. Ce client peut aussi acheter son four micro-onde chez des concurrents directs de Darty : Boulanger. L'activité principale des deux enseignes sont la télé, la Hi-fi et l'électroménager.",
+              "Exemple 4 : Un client cherche un appartement chez La Forêt Immobilier. Ce client peut aussi chercher son appartement chez des concurrents directs de La Forêt Immobilier : ERA Immobilier, Century 21.",
+            ],
+          },
+          { intertitre: 'Concurrents indirects' },
+          {
+            paragraphes: [
+              "Un concurrent indirect est une entreprise ou une organisation dont l'activité principale n'est pas la même ou qui propose un produit ou un service comparable ou différent, mais susceptible de répondre au même besoin du consommateur.",
+            ],
+          },
+          {
+            paragraphes: [
+              "Exemple 1 : Ce client peut aussi voyager avec des concurrents indirects d'Air France : Co-voiturage, Train SNCF.",
+              "Exemple 2 : Ce client peut aussi acheter des vêtements chez des concurrents indirects d'H&M : Louis Vuitton, Gucci. Ils ne proposent pas du tout les mêmes prix qu'H&M alors même qu'ils vendent aussi des vêtements.",
+              "Exemple 3 : Ce client peut aussi acheter des vêtements chez des concurrents indirects Darty : Carrefour. Carrefour vend certes des micro-ondes aussi mais son activité principale est l'alimentaire.",
+              "Exemple 4 : Ce client peut aussi chercher son appartement chez des concurrents indirects de La Forêt Immobilier : Agence immobilière en ligne, Magazine (ex : Particulier à Particulier).",
+            ],
+          },
+        ],
+      },
+    ],
+    objectifs: [
+      "Rechercher et actualiser les informations sur l'entreprise et son marché.",
+      "Identifier l'identité, la clientèle, les biens et services, les concurrents et le marché de l'unité commerciale.",
+    ],
+    competence: {
+      groupe: 'Compétences travaillées',
+      intitule: "C.1.1 — Rechercher, actualiser les informations sur l'entreprise et son marché",
+      detail: 'Maîtriser la technologie des produits.',
+    },
+    activites: [
+      {
+        titre: "Activité 1 — Identification de l'entreprise",
+        questions: [
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Consulter le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez les partenaires de l'entreprise.", ressources: 'Consulter le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Réalisez le profil-type de la clientèle de l'entreprise.", ressources: 'Consulter le document 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Les biens et les services de l'entreprise",
+        questions: [
+          { numero: 4, consigne: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.", ressources: 'Consulter le document 4, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Listez tous les biens proposés par Leroy Merlin à sa clientèle.', ressources: 'Consulter le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Les concurrents',
+        questions: [
+          { numero: 6, consigne: "Listez les différents concurrents de l'entreprise.", ressources: 'Consulter les documents 6 et 8, compléter l\'annexe 6.', annexeId: 'annexe6' },
+        ],
+      },
+      {
+        titre: 'Activité 4 — Le marché',
+        questions: [
+          { numero: 7, consigne: 'Étudier le marché du bricolage.', ressources: 'Consulter le document 7, compléter l\'annexe 7.', annexeId: 'annexe7' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'fichesignaletique',
+        id: 'annexe1',
+        titre: "Annexe 1 — Identité de l'entreprise",
+        champs: [
+          { cle: 'denom', libelle: 'Dénomination' },
+          { cle: 'secteur', libelle: "Secteur d'activité", lignes: 2 },
+          { cle: 'nationalite', libelle: 'Nationalité' },
+          { cle: 'datecrea', libelle: 'Date de création' },
+          { cle: 'ca', libelle: "Chiffres d'affaires" },
+          { cle: 'reseaux', libelle: 'Réseaux sociaux', lignes: 2 },
+          { cle: 'adresse', libelle: 'Adresse', lignes: 2 },
+        ],
+      },
+      {
+        type: 'reformulation',
+        id: 'annexe2',
+        titre: 'Annexe 2 — Les partenaires',
+        nbLignes: 6,
+      },
+      {
+        type: 'clientele',
+        id: 'annexe3',
+        titre: 'Annexe 3 — La clientèle',
+        typesClientele: ['Particuliers', 'Professionnels'],
+        criteres: ['Sexe', "Tranche d'âge", "Lieu d'habitation", 'Panier moyen', 'Situation professionnelle'],
+      },
+      {
+        type: 'casesservices',
+        id: 'annexe4',
+        titre: 'Annexe 4 — Les services',
+        entete: 'Annexe 4 — Les services (Marchand = payant ; Non marchand = gratuit ou quasi-gratuit)',
+        colonnes: ['Marchand', 'Non marchand'],
+        nbLignes: 5,
+      },
+      {
+        type: 'grille',
+        id: 'annexe5',
+        titre: 'Annexe 5 — Les biens',
+        colonnes: ['Les types de biens vendus', ''],
+        nbLignes: 7,
+      },
+      {
+        type: 'concurrents',
+        id: 'annexe6',
+        titre: 'Annexe 6 — Les concurrents',
+        entete: 'Annexe 6 — Les concurrents',
+        nbLignes: 14,
+      },
+      {
+        type: 'questionsreponses',
+        id: 'annexe7',
+        titre: 'Annexe 7 — Étude du marché du bricolage',
+        entete: 'Annexe 7 — Étude du marché du bricolage',
+        questions: [
+          { libelle: "Parmi les enseignes citées, quelle est celle qui a le plus augmentée son chiffre d'affaires et celle qui a le moins augmenté ?", lignes: 2 },
+          { libelle: "Quelle est l'enseigne qui a le plus augmenté son chiffre d'affaires en pourcentage ?", lignes: 2 },
+          { libelle: "Listez l'ensemble des actions mises en œuvre par Mr Bricolage pour devenir le leader du marché du bricolage de proximité ?", lignes: 3 },
+          { libelle: "Quel est le chiffre d'affaires de Weldom ?", lignes: 1 },
+          { libelle: 'De quel groupe fait partie Bricorama ?', lignes: 1 },
+          { libelle: "Quelles sont les deux méthodes de vente qui ont permis aux enseignes de bricolage d'augmenter autant leur chiffre d'affaires ?", lignes: 2 },
+        ],
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Complétez l'identité de l'entreprise.",
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 4,
+        reponse: '',
+        tableau: {
+          colonnes: ['Élément', 'Réponse attendue'],
+          lignes: [
+            ['Dénomination', 'Leroy Merlin'],
+            ["Secteur d'activité", 'Commerce de détail de quincaillerie, peinture et verre en grandes surfaces'],
+            ['Nationalité', 'Française'],
+            ['Date de création', '1924'],
+            ["Chiffres d'affaires", '6 244 471 900 €'],
+            ['Réseaux sociaux', 'Facebook ; Twitter ; Pinterest'],
+            ['Adresse', 'Rue Chanzy 59260 LEZENNES'],
+          ],
+        },
+      },
+      {
+        intitule: "Indiquez les partenaires de l'entreprise.",
+        documents: ['Document 2', 'Annexe 2'],
+        bareme: 3,
+        reponse:
+          "ADEME – CEMS – Broca Living Lab – Max Weber – CERLIS – Forum Urbain – Mobile Lives FORUM Vie Mobile – Mixing Generations – Nova 7 – PAVE – Regards – Union Régionale SOLIHA – TASDA",
+      },
+      {
+        intitule: "Réalisez le profil-type de la clientèle de l'entreprise.",
+        documents: ['Document 3', 'Annexe 3'],
+        bareme: 5,
+        reponse: '',
+        tableau: {
+          colonnes: ['Critère', 'Réponse', 'Pourcentage'],
+          lignes: [
+            ['Type de clientèle — Particuliers', 'Coché', '98 %'],
+            ['Type de clientèle — Professionnels', 'Coché', '2 %'],
+            ['Sexe', 'Hommes', '63 %'],
+            ["Tranche d'âge", '35 – 55 ans', ''],
+            ["Lieu d'habitation", 'Résidant en zone urbaine', '96 %'],
+            ['Panier moyen', '40 000 €', ''],
+            ['Situation professionnelle', 'CSP++', ''],
+          ],
+        },
+      },
+      {
+        intitule: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.",
+        documents: ['Document 4', 'Annexe 4'],
+        bareme: 5,
+        reponse: '',
+        tableau: {
+          colonnes: ['Les services', 'Marchand', 'Non marchand'],
+          lignes: [
+            ['Remboursement et remplacement', '', 'X'],
+            ['Remboursement de la différence', '', 'X'],
+            ['Retrait gratuit en magasin', '', 'X'],
+            ['Livraison à domicile', 'X', ''],
+            ['Retour gratuit en magasin', '', 'X'],
+          ],
+        },
+      },
+      {
+        intitule: 'Listez tous les biens proposés par Leroy Merlin à sa clientèle.',
+        documents: ['Document 5', 'Annexe 5'],
+        bareme: 4,
+        reponse:
+          "Carrelage, parquet et sol souple ; Chauffage et plomberie ; Menuiserie ; Salle de bains ; Décoration et éclairage ; Peinture et droguerie ; Électricité et domotique ; Outillage ; Quincaillerie ; Cuisine ; Rangement / dressing ; Terrasse et jardin ; Matériaux de construction ; Meuble.",
+      },
+      {
+        intitule: "Listez les différents concurrents de l'entreprise.",
+        documents: ['Document 6', 'Document 8', 'Annexe 6'],
+        bareme: 7,
+        reponse: '',
+        tableau: {
+          colonnes: ['Nom des concurrents', 'Concurrent', 'Justification'],
+          lignes: [
+            ['Castorama', 'Direct', 'Même activité principale'],
+            ['Brico Dépôt', 'Direct', 'Même activité principale'],
+            ['Brico Marché', 'Direct', 'Même activité principale'],
+            ['Mano Mano', 'Direct', 'Même activité principale'],
+            ['Mr. Bricolage', 'Direct', 'Même activité principale'],
+            ['Bricorama', 'Direct', 'Même activité principale'],
+            ['Lapeyre', 'Direct', 'Même activité principale'],
+            ['Weldom', 'Indirect', 'Activité principale différente'],
+            ['Schmidt', 'Indirect', 'Activité principale différente'],
+            ['Mobalpa', 'Indirect', 'Activité principale différente'],
+            ['Hygena', 'Indirect', 'Activité principale différente'],
+            ['Ikea', 'Indirect', 'Activité principale différente'],
+            ['Alinéa', 'Indirect', 'Activité principale différente'],
+            ['Point P.', 'Indirect', 'Activité principale différente'],
+          ],
+        },
+      },
+      {
+        intitule: 'Étudier le marché du bricolage.',
+        documents: ['Document 7', 'Annexe 7'],
+        bareme: 6,
+        reponse: '',
+        tableau: {
+          colonnes: ['Questions', 'Réponses'],
+          lignes: [
+            ["Celle qui a le plus / le moins augmenté son CA en €", "Plus augmenté : Leroy Merlin (7,345 milliards d'€). Moins augmenté : Castorama (2,5 milliards d'€)."],
+            ["Enseigne qui a le plus augmenté son CA en %", 'En progression de 11% l\'an passé (Bricomarché, Bricorama et Brico Cash).'],
+            ['Actions de Mr Bricolage pour devenir le leader de proximité', 'Nouvelle plateforme de marque, nouveau concept, nouvelle identité visuelle, transformation digitale, plan de développement ambitieux, nouveaux formats de magasin…'],
+            ["Chiffre d'affaires de Weldom", "884 millions d'€"],
+            ['Groupe de Bricorama', 'Les Mousquetaires'],
+            ['Deux méthodes de vente', 'En magasin ; Sur internet (e-commerce)'],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: "Présentation de l'unité commerciale et de son marché",
+    proposition: [
+      'Particuliers',
+      'Hommes',
+      '40 000 €',
+      'Les biens',
+      'Les services',
+      'Concurrents directs',
+      'Concurrents indirects',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Leroy Merlin',
+      enfants: [
+        {
+          id: 'clientele',
+          texte: 'Le profil-type de la clientèle',
+          enfants: [
+            { id: 'cl-1', texte: 'Types de clientèle', enfants: [{ id: 'cl-1-1', texte: null, reponse: 'Particuliers' }] },
+            { id: 'cl-2', texte: 'Sexe', enfants: [{ id: 'cl-2-1', texte: null, reponse: 'Hommes' }] },
+            { id: 'cl-3', texte: 'Panier moyen', enfants: [{ id: 'cl-3-1', texte: null, reponse: '40 000 €' }] },
+          ],
+        },
+        {
+          id: 'produits',
+          texte: 'Les produits vendus par l\'entreprise',
+          enfants: [
+            { id: 'pr-1', texte: null, reponse: 'Les biens' },
+            { id: 'pr-2', texte: null, reponse: 'Les services' },
+          ],
+        },
+        {
+          id: 'concurrents',
+          texte: 'Les types de concurrents',
+          enfants: [
+            { id: 'co-1', texte: null, reponse: 'Concurrents directs' },
+            { id: 'co-2', texte: null, reponse: 'Concurrents indirects' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: "Identifier les caractéristiques de l'unité commerciale",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas décrire l'unité commerciale." },
+          { niveau: 'debrouille', description: 'Je cite quelques caractéristiques sans les organiser.' },
+          { niveau: 'averti', description: "Je décris l'identité de l'unité de façon structurée." },
+          { niveau: 'expert', description: "Je décris l'unité et je la situe sur son marché." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Distinguer les biens et les services',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne connais pas l'offre de l'enseigne." },
+          { niveau: 'debrouille', description: "Je cite quelques éléments de l'offre." },
+          { niveau: 'averti', description: 'Je distingue clairement les biens et les services (marchands / non marchands).' },
+          { niveau: 'expert', description: "Je relie chaque élément de l'offre à un besoin client." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Identifier les concurrents et le marché',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas distinguer un concurrent direct d\'un concurrent indirect.' },
+          { niveau: 'debrouille', description: 'Je cite quelques concurrents sans les classer.' },
+          { niveau: 'averti', description: 'Je classe les concurrents (directs / indirects) et je les justifie.' },
+          { niveau: 'expert', description: 'Je situe l\'enseigne sur son marché à partir de données chiffrées.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Unité commerciale', definition: 'Lieu physique ou virtuel où un client peut accéder à une offre de biens et de services.' },
+      { terme: 'Bien', definition: 'Produit matériel et tangible que l\'on peut stocker (ex : une perceuse, du carrelage).' },
+      { terme: 'Service', definition: 'Prestation immatérielle proposée au client (ex : livraison, retour, remboursement).' },
+      { terme: 'Service marchand', definition: 'Service payant fourni par l\'entreprise (ex : livraison à domicile).' },
+      { terme: 'Service non marchand', definition: 'Service gratuit ou quasi-gratuit (ex : retrait gratuit en magasin).' },
+      { terme: 'Concurrent direct', definition: 'Entreprise ayant la même activité principale et proposant un produit ou un prix comparable.' },
+      { terme: 'Concurrent indirect', definition: 'Entreprise dont l\'activité principale diffère mais qui répond au même besoin du consommateur.' },
+      { terme: 'Panier moyen', definition: 'Montant moyen dépensé par un client lors d\'un achat.' },
+      { terme: 'CSP', definition: 'Catégorie socio-professionnelle ; CSP++ désigne les catégories les plus aisées.' },
+      { terme: 'Partenaire', definition: 'Organisation associée à l\'entreprise pour mener des projets communs (recherche, financement…).' },
+    ],
+    flashcards: [
+      { recto: 'Date de création de Leroy Merlin ?', verso: '1924' },
+      { recto: "Chiffre d'affaires de Leroy Merlin ?", verso: '6 244 471 900 €' },
+      { recto: 'Part de particuliers dans la clientèle ?', verso: '98 %' },
+      { recto: 'Panier moyen (Leroy Merlin Studio) ?', verso: '40 000 €' },
+      { recto: 'Un concurrent direct, c\'est…', verso: 'Une enseigne ayant la même activité principale.' },
+      { recto: 'Un concurrent indirect, c\'est…', verso: 'Une enseigne d\'activité différente répondant au même besoin.' },
+      { recto: 'Groupe de Bricorama ?', verso: 'Les Mousquetaires' },
+      { recto: "Chiffre d'affaires de Weldom ?", verso: "884 millions d'€" },
+    ],
+    quiz: [
+      { type: 'unique', question: 'En quelle année Leroy Merlin a-t-il été créé ?', options: ['1907', '1924', '1959', '2004'], bonne: 1 },
+      { type: 'unique', question: 'Quelle est la part de particuliers dans la clientèle ?', options: ['69 %', '96 %', '98 %', '63 %'], bonne: 2 },
+      { type: 'qcm', question: 'Parmi ces enseignes, lesquelles sont des concurrents DIRECTS de Leroy Merlin ?', options: ['Castorama', 'Ikea', 'Brico Dépôt', 'Point P'], bonnes: [0, 2] },
+      { type: 'unique', question: 'La livraison à domicile est un service…', options: ['Non marchand', 'Marchand', 'Gratuit', 'Interdit'], bonne: 1 },
+      { type: 'unique', question: 'De quel groupe fait partie Bricorama ?', options: ['ADEO', 'Les Mousquetaires', 'Auchan', 'Kingfisher'], bonne: 1 },
+      { type: 'trous', texte: 'Un concurrent {x} a la même activité principale, un concurrent {x} a une activité différente.', reponses: ['direct', 'indirect'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque enseigne comme concurrent direct ou indirect de Leroy Merlin.',
+      etiquettes: ['Castorama', 'Brico Dépôt', 'Ikea', 'Mobalpa'],
+      zones: [
+        { libelle: 'Concurrent direct', etiquetteIndex: 0 },
+        { libelle: 'Concurrent direct', etiquetteIndex: 1 },
+        { libelle: 'Concurrent indirect', etiquetteIndex: 2 },
+        { libelle: 'Concurrent indirect', etiquetteIndex: 3 },
+      ],
+    },
+  },
+}
+
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -7672,6 +8353,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'free-m3': FREE_M3,
   'free-m4': FREE_M4,
   'free-m5': FREE_M5,
+  'leroy-merlin-m1': LEROY_MERLIN_M1,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

@@ -48,6 +48,9 @@ import type {
   AnnexeTraitObjections,
   AnnexeSimulateur,
   AnnexeCatalogue,
+  AnnexeClientele,
+  AnnexeConcurrents,
+  AnnexeQuestionsReponses,
   ProduitCatalogue,
   VehiculeCatalogue,
   BlocDocumentTexte,
@@ -72,6 +75,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     orpi: { nom: 'Orpi', url: 'www.orpi.com' },
     free: { nom: 'free', url: 'www.free.fr' },
     peugeot: { nom: 'Peugeot', url: 'www.peugeot.fr' },
+    leroy: { nom: 'Leroy Merlin', url: 'www.leroymerlin.fr' },
   }
   const prefixe = (missionId ?? '').split('-')[0]
   const marque = MARQUES[prefixe] ?? { nom: 'Documentation', url: 'www.exemple.fr' }
@@ -470,7 +474,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone && !b.image))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -551,6 +555,12 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
                 ))}
               </tbody>
             </table>
+          )}
+          {b.image && (
+            <figure style={{ margin: '8px 0', textAlign: 'center' }}>
+              <img src={b.image.src} alt={b.image.alt} style={{ width: b.image.largeur ? b.image.largeur : '100%', maxWidth: '100%', height: 'auto', borderRadius: 8, border: '1px solid #E6ECF2', display: 'inline-block', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }} />
+              {b.image.legende && <figcaption style={{ fontSize: 12, color: '#6B7280', marginTop: 6, fontStyle: 'italic' }}>{b.image.legende}</figcaption>}
+            </figure>
           )}
           {b.crm && <CrmConsultable crm={b.crm} couleur={couleur} />}
           {b.organigramme && <OrganigrammeVue org={b.organigramme} />}
@@ -1255,6 +1265,9 @@ function rendreAnnexe(
   if (annexe.type === 'formulaire') return rendreFormulaire(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'saisiegeo') return rendreSaisieGeo(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'casesservices') return rendreCasesServices(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'clientele') return rendreClientele(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'concurrents') return rendreConcurrents(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'questionsreponses') return rendreQuestionsReponses(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'critereseg') return rendreCritereSeg(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'courrier') return rendreCourrier(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'croc') return rendreCroc(annexe, saisies, set, verrouille, couleur)
@@ -2736,6 +2749,105 @@ function rendreCasesServices(a: AnnexeCasesServices, saisies: Saisies, set: (id:
                 </div>
               )
             })}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Module d'analyse de clientele facon CRM : repartition (cases a cocher + %) +
+// profil-type (un critere par ligne, reponse + %).
+function rendreClientele(a: AnnexeClientele, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const champPct: React.CSSProperties = { ...champ, textAlign: 'center' }
+  const coche = (cle: string) => (saisies[cle] ?? '') === '1'
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>👥 {a.titre}</div>
+      <div style={{ padding: 14 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#4B5563', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.4 }}>Répartition de la clientèle</div>
+        <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', marginBottom: 18 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 130px', background: '#F3F6F9', padding: '8px 12px', fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+            <div>Type de clientèle</div><div style={{ textAlign: 'center' }}>Cochez</div><div style={{ textAlign: 'center' }}>Pourcentage</div>
+          </div>
+          {a.typesClientele.map((t, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 130px', alignItems: 'center', padding: '8px 12px', borderTop: '1px solid #EEF2F6' }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2933' }}>{t}</div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <input type="checkbox" checked={coche(`${a.id}.t${i}.coche`)} disabled={verrouille} onChange={(e) => set(`${a.id}.t${i}.coche`, e.target.checked ? '1' : '')} style={{ width: 18, height: 18, cursor: verrouille ? 'default' : 'pointer', accentColor: couleur }} />
+              </div>
+              <input value={saisies[`${a.id}.t${i}.pct`] ?? ''} onChange={(e) => set(`${a.id}.t${i}.pct`, e.target.value)} disabled={verrouille} placeholder="%" style={champPct} />
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#4B5563', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.4 }}>Profil-type du client</div>
+        <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr 130px', background: '#F3F6F9', padding: '8px 12px', fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+            <div>Critères</div><div>Réponse</div><div style={{ textAlign: 'center' }}>Pourcentage</div>
+          </div>
+          {a.criteres.map((c, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '180px 1fr 130px', alignItems: 'center', gap: 8, padding: '8px 12px', borderTop: '1px solid #EEF2F6' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>{c}</div>
+              <input value={saisies[`${a.id}.c${i}.rep`] ?? ''} onChange={(e) => set(`${a.id}.c${i}.rep`, e.target.value)} disabled={verrouille} style={champ} />
+              <input value={saisies[`${a.id}.c${i}.pct`] ?? ''} onChange={(e) => set(`${a.id}.c${i}.pct`, e.target.value)} disabled={verrouille} placeholder="%" style={champPct} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Tableau de veille concurrentielle : nom + cases Direct/Indirect exclusives +
+// justification.
+function rendreConcurrents(a: AnnexeConcurrents, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const setExcl = (i: number, col: 'd' | 'i') => {
+    set(`${a.id}.l${i}.d`, col === 'd' ? '1' : '')
+    set(`${a.id}.l${i}.i`, col === 'i' ? '1' : '')
+  }
+  const coche = (cle: string) => (saisies[cle] ?? '') === '1'
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>🔍 {a.entete ?? a.titre}</div>
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 90px 1.4fr', gap: 8, padding: '0 4px 8px', fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+          <div>Nom du concurrent</div><div style={{ textAlign: 'center' }}>Direct</div><div style={{ textAlign: 'center' }}>Indirect</div><div>Justification</div>
+        </div>
+        {Array.from({ length: a.nbLignes }).map((_, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 90px 1.4fr', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+            <input value={saisies[`${a.id}.l${i}.nom`] ?? ''} onChange={(e) => set(`${a.id}.l${i}.nom`, e.target.value)} disabled={verrouille} placeholder={`Concurrent ${i + 1}`} style={champ} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <input type="checkbox" checked={coche(`${a.id}.l${i}.d`)} disabled={verrouille} onChange={() => setExcl(i, 'd')} style={{ width: 18, height: 18, cursor: verrouille ? 'default' : 'pointer', accentColor: couleur }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <input type="checkbox" checked={coche(`${a.id}.l${i}.i`)} disabled={verrouille} onChange={() => setExcl(i, 'i')} style={{ width: 18, height: 18, cursor: verrouille ? 'default' : 'pointer', accentColor: couleur }} />
+            </div>
+            <input value={saisies[`${a.id}.l${i}.just`] ?? ''} onChange={(e) => set(`${a.id}.l${i}.just`, e.target.value)} disabled={verrouille} placeholder="Justification" style={champ} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Formulaire d'etude : questions numerotees + zone de reponse.
+function rendreQuestionsReponses(a: AnnexeQuestionsReponses, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical' }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>📊 {a.entete ?? a.titre}</div>
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {a.questions.map((q, i) => (
+          <div key={i} style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', background: '#F7F9FB' }}>
+              <span style={{ flexShrink: 0, width: 24, height: 24, borderRadius: '50%', background: couleur, color: '#FFFFFF', fontSize: 13, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#1F2933', lineHeight: 1.4 }}>{q.libelle}</span>
+            </div>
+            <div style={{ padding: 12 }}>
+              <textarea value={saisies[`${a.id}.q${i}`] ?? ''} onChange={(e) => set(`${a.id}.q${i}`, e.target.value)} disabled={verrouille} rows={q.lignes ?? 2} placeholder="Votre réponse…" style={champ} />
+            </div>
           </div>
         ))}
       </div>
