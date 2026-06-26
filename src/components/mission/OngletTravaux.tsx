@@ -34,6 +34,7 @@ import type {
   AnnexeCochage,
   AnnexeReformulation,
   AnnexeFicheTechnique,
+  AnnexeReponseReseau,
   AnnexeArgumentaire,
   AnnexeFicheAppel,
   AnnexeMail,
@@ -469,7 +470,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -560,8 +561,114 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.offrePrix && <OffrePrixVue offre={b.offrePrix} couleur={couleur} />}
           {b.cartesTechniques && <CartesTechniquesVue data={b.cartesTechniques} couleur={couleur} />}
           {b.offreFlash && <OffreFlashVue offre={b.offreFlash} couleur={couleur} />}
+          {b.jaugeSatisfaction && <JaugeSatisfactionVue data={b.jaugeSatisfaction} couleur={couleur} />}
+          {b.bareme && <BaremeVue bareme={b.bareme} couleur={couleur} />}
+          {b.articleEtapes && <ArticleEtapesVue data={b.articleEtapes} couleur={couleur} />}
+          {b.reseauSocial && <ReseauSocialVue post={b.reseauSocial} />}
         </div>
       ))}
+      </div>
+    </div>
+  )
+}
+
+// Jauge de satisfaction facon widget : demi-cercle de smileys rouge -> vert.
+function JaugeSatisfactionVue({ data, couleur }: { data: NonNullable<BlocDocumentTexte['jaugeSatisfaction']>; couleur: string }) {
+  const segs = [
+    { c: '#E53935', e: '\u2639\uFE0F' }, { c: '#FB8C00', e: '\u{1F641}' }, { c: '#FDD835', e: '\u{1F610}' }, { c: '#7CB342', e: '\u{1F642}' }, { c: '#2E7D32', e: '\u{1F600}' },
+  ]
+  return (
+    <div style={{ textAlign: 'center', padding: '14px 10px', background: '#FFFFFF', border: '1px solid #EEF1F4', borderRadius: 10 }}>
+      <div style={{ display: 'inline-flex', gap: 6, alignItems: 'flex-end' }}>
+        {segs.map((s, i) => (
+          <div key={i} style={{ width: 46, height: 46 + (i === 2 ? 14 : Math.abs(2 - i) === 1 ? 7 : 0), background: s.c, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{s.e}</div>
+        ))}
+      </div>
+      {data.libelle && <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, color: couleur, textTransform: 'uppercase', letterSpacing: 0.5 }}>{data.libelle}</div>}
+    </div>
+  )
+}
+
+// Bareme de prime facon logiciel RH : intro + tableau seuils -> pourcentage.
+function BaremeVue({ bareme, couleur }: { bareme: NonNullable<BlocDocumentTexte['bareme']>; couleur: string }) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>💶 Système de rémunération — Prime sur objectif</div>
+      <div style={{ padding: 14 }}>
+        {bareme.intro?.map((p, i) => <p key={i} style={{ margin: '0 0 8px', fontSize: 13.5, color: '#374151', lineHeight: 1.55, fontStyle: 'italic' }}>{p}</p>)}
+        <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: 6 }}>
+          <thead>
+            <tr>{bareme.colonnes.map((h) => <th key={h} style={{ textAlign: 'left', padding: '8px 10px', fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: couleur, border: '1px solid #FFFFFF' }}>{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {bareme.lignes.map((l, i) => {
+              const top = l[1].startsWith('100')
+              return (
+                <tr key={i} style={{ background: top ? '#FBE3E4' : i % 2 ? '#F7F9FB' : '#FFFFFF' }}>
+                  <td style={{ padding: '7px 10px', fontSize: 13, color: '#1F2933', border: '1px solid #E2E8F0' }}>{l[0]}</td>
+                  <td style={{ padding: '7px 10px', fontSize: 13, fontWeight: 700, color: top ? couleur : '#1F2933', border: '1px solid #E2E8F0' }}>{l[1]}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// Article a etapes facon blog pro : grosses pastilles #1 #2 #3.
+function ArticleEtapesVue({ data, couleur }: { data: NonNullable<BlocDocumentTexte['articleEtapes']>; couleur: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {data.etapes.map((e, i) => (
+        <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', background: '#FFFFFF', border: '1px solid #EEF1F4', borderRadius: 10, padding: 14 }}>
+          <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, opacity: 0.85 }}>ÉTAPE</span>
+            <span style={{ fontSize: 20, fontWeight: 800 }}>{e.numero}</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            {e.texte.map((p, j) => <p key={j} style={{ margin: j === 0 ? '0 0 8px' : 0, fontSize: 13.5, color: '#374151', lineHeight: 1.6 }}>{p}</p>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Post de reseau social realiste (X / Facebook / Instagram) facon application.
+function ReseauSocialVue({ post }: { post: NonNullable<BlocDocumentTexte['reseauSocial']> }) {
+  const bleuX = '#1D9BF0', bleuFb = '#1877F2'
+  const accent = post.plateforme === 'facebook' ? bleuFb : post.plateforme === 'instagram' ? '#C13584' : bleuX
+  const Logo = () => {
+    if (post.plateforme === 'facebook') return <span style={{ color: bleuFb, fontWeight: 900, fontSize: 20 }}>f</span>
+    if (post.plateforme === 'instagram') return <span style={{ fontSize: 18 }}>📷</span>
+    return <span style={{ color: '#1F2933', fontWeight: 900, fontSize: 18 }}>𝕏</span>
+  }
+  return (
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', maxWidth: 540, background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderBottom: '1px solid #F1F3F5' }}>
+        <Logo />
+        <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 600, textTransform: 'capitalize' }}>{post.plateforme === 'x' ? 'X (ex-Twitter)' : post.plateforme}</span>
+      </div>
+      <div style={{ display: 'flex', gap: 12, padding: 14 }}>
+        <div style={{ flexShrink: 0, width: 46, height: 46, borderRadius: '50%', background: accent, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800 }}>{post.avatarInitiale ?? post.compte.charAt(0)}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 800, fontSize: 14.5, color: '#0F1419' }}>{post.compte}</span>
+            {post.pseudo && <span style={{ fontSize: 13, color: '#6B7280' }}>{post.pseudo}</span>}
+            {post.plateforme === 'x' && <span style={{ color: bleuX, fontSize: 14 }}>✔</span>}
+          </div>
+          {post.message.map((m, i) => <p key={i} style={{ margin: '6px 0 0', fontSize: 14.5, color: '#0F1419', lineHeight: 1.5 }}>{m}</p>)}
+          {post.date && <div style={{ marginTop: 8, fontSize: 12.5, color: '#6B7280' }}>{post.date}</div>}
+          {post.stats && (
+            <div style={{ display: 'flex', gap: 22, marginTop: 10, color: '#6B7280', fontSize: 13 }}>
+              <span>💬 {post.stats.repondre ?? ''}</span>
+              {post.plateforme !== 'facebook' && <span>🔁 {post.stats.reposter ?? ''}</span>}
+              <span>❤️ {post.stats.jaime ?? ''}</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -941,6 +1048,7 @@ function rendreAnnexe(
   if (annexe.type === 'cochage') return rendreCochage(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'reformulation') return rendreReformulation(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'fichetechnique') return rendreFicheTechnique(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'reponsereseau') return rendreReponseReseau(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'argumentaire') return rendreArgumentaire(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'ficheappel') return rendreFicheAppel(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
@@ -1908,6 +2016,31 @@ function rendreRedactionOral(a: AnnexeRedactionOral, saisies: Saisies, set: (id:
             <textarea value={saisies[`${a.id}.${s.cle}`] ?? ''} onChange={(e) => set(`${a.id}.${s.cle}`, e.target.value)} disabled={verrouille} rows={s.lignes ?? 3} style={champ} />
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Zone de reponse reseau social facon application : entete compte + champ de
+// redaction de la reponse, plus bouton lien (Quiziniere).
+function rendreReponseReseau(a: AnnexeReponseReseau, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const accent = a.plateforme === 'facebook' ? '#1877F2' : '#1D9BF0'
+  return (
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', maxWidth: 560, background: '#FFFFFF' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: accent, color: '#FFFFFF' }}>
+        <span style={{ fontWeight: 900, fontSize: 18 }}>{a.plateforme === 'facebook' ? 'f' : '𝕏'}</span>
+        <span style={{ fontSize: 13, fontWeight: 700 }}>Assistance Freebox</span>
+        <span style={{ marginLeft: 'auto', fontSize: 12, opacity: 0.9 }}>En réponse à {a.enReponseA}</span>
+      </div>
+      <div style={{ display: 'flex', gap: 12, padding: 14 }}>
+        <div style={{ flexShrink: 0, width: 42, height: 42, borderRadius: '50%', background: couleur, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>F</div>
+        <textarea value={saisies[`${a.id}.reponse`] ?? ''} onChange={(e) => set(`${a.id}.reponse`, e.target.value)} disabled={verrouille} rows={5} placeholder="Rédigez votre réponse…" style={{ flex: 1, boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14.5, padding: '8px 10px', borderRadius: 8, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none', resize: 'vertical', lineHeight: 1.5 }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderTop: '1px solid #F1F3F5' }}>
+        {a.boutonLien
+          ? <a href={a.boutonLien} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5, fontWeight: 700, color: couleur, textDecoration: 'none', border: `1px solid ${couleur}`, borderRadius: 16, padding: '5px 12px' }}>🔗 {a.boutonLibelle ?? 'Répondre via le lien'}</a>
+          : <span />}
+        <span style={{ background: accent, color: '#FFFFFF', borderRadius: 16, padding: '6px 16px', fontSize: 13, fontWeight: 700 }}>{a.plateforme === 'facebook' ? 'Publier' : 'Répondre'}</span>
       </div>
     </div>
   )

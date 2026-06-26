@@ -174,6 +174,17 @@ export interface AnnexeFicheTechnique {
   titre: string
   sections: { nom: string; lignes: { cle: string; libelle?: string }[] }[]
 }
+// Zone de reponse sur reseau social facon application (X / Facebook) : entete
+// avec compte + message du client, puis zone de redaction de la reponse.
+export interface AnnexeReponseReseau {
+  type: 'reponsereseau'
+  id: string
+  titre: string
+  plateforme: 'x' | 'facebook'
+  enReponseA: string
+  boutonLien?: string
+  boutonLibelle?: string
+}
 export interface AnnexeArgumentaire {
   type: 'argumentaire'
   id: string
@@ -428,7 +439,7 @@ export interface AnnexeCatalogue {
   demandeJustif: string // libelle de la zone de justification
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue
 
 export interface QuestionTravaux {
   numero: number
@@ -505,6 +516,22 @@ export interface BlocDocumentTexte {
   cartesTechniques?: { rappel?: string; cartes: { icone: 'plus' | 'moins'; titre: string; texte: string }[] }
   // Offre flash facon encart promo : badge + lignes mises en avant.
   offreFlash?: { badge: string; lignes: string[]; mention?: string }
+  // Bareme de prime facon logiciel RH : seuils -> pourcentage, ligne en avant.
+  bareme?: { intro?: string[]; colonnes: [string, string]; lignes: [string, string][] }
+  // Article a etapes facon blog pro : intro + etapes numerotees avec puce.
+  articleEtapes?: { etapes: { numero: string; texte: string[] }[] }
+  // Post de reseau social realiste (X, Facebook, Instagram) facon application.
+  reseauSocial?: {
+    plateforme: 'x' | 'facebook' | 'instagram'
+    compte: string
+    pseudo?: string
+    avatarInitiale?: string
+    date?: string
+    message: string[]
+    stats?: { repondre?: string; reposter?: string; jaime?: string }
+  }
+  // Jauge de satisfaction facon widget : smileys de rouge a vert + libelle.
+  jaugeSatisfaction?: { libelle?: string }
   tableau?: { colonnes: string[]; lignes: string[][] }
   // CRM consultable facon logiciel professionnel : liste de fiches organisations
   // cliquables (recherche + detail + retour). Le titre de section sert d'entete.
@@ -7268,6 +7295,302 @@ const FREE_M4: ContenuMission = {
   },
 }
 
+const FREE_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Étudiez la satisfaction du client (types de questions, résultats d'enquête, calcul de la prime) puis travaillez la fidélisation (titres des étapes, réponses aux clients mécontents sur les réseaux sociaux).",
+    contexte:
+      "Mme Vière vous rappelle que si le service client est un service très stratégique parce qu'il contribue à véhiculer une image positive de l'entreprise, la satisfaction du client est tout aussi importante car elle permet de le fidéliser. Elle souhaite donc dans un premier temps que vous étudiiez le questionnaire de satisfaction qu'elle a créé afin que vous sachiez les points sur lesquels il vous faut être vigilant lors du contact avec les clients, puis dans un deuxième temps les actions de fidélisation qu'elle a mises en place.",
+    documents: [
+      { numero: 1, titre: 'Comment connaître les différents types de questions', images: [], texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['Types de questions', 'Définition', 'Exemple'], lignes: [
+          ['Ouverte « O »', "Elle laisse le client s'exprimer.", 'Dites-nous ce que vous avez pensé de notre site internet.'],
+          ['Fermée « F »', 'Elle ne permet qu\u2019une réponse précise : Oui ou non.', 'Les informations qui vous ont été données vous ont-elles aidé ? Oui / Non'],
+          ['Alternative « A »', 'Elle donne le choix entre 2 possibilités.', 'Préférez-vous nous contacter par téléphone ou par internet ?'],
+          ['Questions à choix multiple à réponse unique', "Elle donne le choix entre plusieurs possibilités. Le client ne peut donner qu'une seule réponse parmi celles proposées.", 'Quel est le réseau social que vous utilisez le plus : Facebook / Instagram / Snapchat / Pinterest ?'],
+          ['Questions à échelle ou échelle d\u2019évaluation', "Échelle comportant une plage de valeurs en guise d'options de réponse (0 à 100, 1 à 10, etc.). Les participants sélectionnent le chiffre qui se rapproche le plus de ce qu'ils pensent.", 'Comment notez-vous votre expérience d\u2019achat dans notre enseigne ? (note de 0 à 10)'],
+          ['Questions avec échelle de Likert', "Questions de type « D'accord / Pas d'accord » qui permettent d'évaluer l'opinion et le ressenti des participants.", 'Vous trouvez tout ce dont vous avez besoin : Tout à fait d\u2019accord – D\u2019accord – Pas d\u2019accord – Pas du tout d\u2019accord'],
+        ] } },
+      ] },
+      { numero: 2, titre: 'Le questionnaire de satisfaction client', images: [], texte: [
+        { pageWeb: true },
+        { jaugeSatisfaction: { libelle: 'Votre avis nous intéresse' } },
+        { intertitre: 'Questionnaire de satisfaction client', paragraphes: [
+          "Dans le cadre de l'amélioration continue de nos services, Free est à votre écoute. Afin de nous aider à comprendre comment mieux vous satisfaire, nous vous proposons de consacrer 2 minutes de votre temps pour répondre à cette enquête, suite au(x) contact(s) que vous avez eu avec notre Service Abonné. Nous vous remercions par avance de votre participation. L'équipe Free.",
+        ] },
+        { puces: [
+          "Question 1 : Avez-vous été au téléphone avec un conseiller aujourd'hui ? (Oui / Non)",
+          'Question 2 : Évaluez le contact que vous avez eu avec le conseiller (1 étant très insatisfaisant, 10 excellent).',
+          "Question 3 : À propos du contact avec le (la) conseiller(e), diriez-vous qu'il (elle) était aimable et courtois(e) ? (Pas du tout d'accord → Tout à fait d'accord)",
+          "Question 4 : … s'exprimait clairement en utilisant un vocabulaire simple et compréhensible ?",
+          "Question 5 : … compétent(e) et possédait les connaissances professionnelles suffisantes pour vous répondre ?",
+          "Question 6 : Si vous estimez que le (la) conseiller(e) était compétent(e) et professionnel(le), expliquez pourquoi.",
+          "Question 7 : … à votre écoute ? (Oui / Non)",
+          "Question 8 : Si vous estimez qu'il (elle) n'a pas été suffisamment à votre écoute, expliquez pourquoi.",
+          "Question 9 : … a bien pris en charge votre demande ?",
+          "Question 10 : … était à votre écoute ?",
+          'Question 11 : Si vous avez des remarques ou des suggestions complémentaires concernant la prestation du conseiller, vous pouvez les formuler ici.',
+        ] },
+      ] },
+      { numero: 3, titre: "Les résultats de l'enquête sur la performance au téléphone", images: [], texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['Questions de l\u2019enquête sur le conseiller', 'Nombre d\u2019avis négatifs', 'Nombre d\u2019avis positifs'], lignes: [
+          ['2 - Évaluez le contact (de 0 à 10)', '15', '285'],
+          ['3 - L\u2019amabilité et la courtoisie', '23', '277'],
+          ['4 - Une expression claire et un vocabulaire simple et compréhensible', '58', '242'],
+          ['5 - La compétence et les connaissances professionnelles', '44', '256'],
+          ['7 - L\u2019écoute', '21', '279'],
+          ['9 - La prise en charge de la demande', '73', '227'],
+        ] } },
+      ] },
+      { numero: 4, titre: 'Le système de rémunération', images: [], texte: [
+        { pageWeb: true },
+        { bareme: {
+          intro: [
+            "L'objectif de tout conseiller est de satisfaire à 100 % les clients qui nous appellent. C'est l'image de notre entreprise qui est en jeu.",
+            "Pour vous motiver dans l'atteinte de cet objectif, nous avons mis en place une prime qui sera versée au prorata de la satisfaction de ces derniers à travers le questionnaire qu'ils rempliront.",
+            "Cette prime s'élève à 200 €, pour ceux qui atteignent ou s'approchent le plus près possible de l'objectif de 100 %. La prime se répartira de la façon suivante :",
+          ],
+          colonnes: ['Taux de réalisation des objectifs (en %)', 'Pourcentage de la prime'],
+          lignes: [
+            ['Entre 0 % et 55 % d\u2019avis positifs', '0 % de la prime'],
+            ['Entre 56 % et 60 % d\u2019avis positifs', '10 % de la prime'],
+            ['Entre 61 % et 70 % d\u2019avis positifs', '20 % de la prime'],
+            ['Entre 71 % et 80 % d\u2019avis positifs', '70 % de la prime'],
+            ['Entre 80 % et 90 % d\u2019avis positifs', '80 % de la prime'],
+            ['Plus de 90 % d\u2019avis positifs', '100 % de la prime'],
+          ],
+        } },
+      ] },
+      { numero: 5, titre: 'Comment bien communiquer sur les réseaux sociaux pour fidéliser les clients', images: [], texte: [
+        { pageWeb: true },
+        { articleEtapes: { etapes: [
+          { numero: '#1', texte: [
+            "Les études sont toutes d'accord sur le sujet : vos clients attendent de vous un échange sur les réseaux sociaux et surtout une réponse quand ils vous sollicitent. Ils sont même d'ailleurs 53 % à attendre une réponse de votre part dans l'heure sur les réseaux sociaux, ce taux grimpant à 72 % en cas de plainte !",
+            "Pour bien communiquer sur les réseaux sociaux et fidéliser vos clients, vous devez donc être à leur écoute et être réactif en cas de sollicitation.",
+          ] },
+          { numero: '#2', texte: [
+            "Une communauté de clients constitue un espace où votre clientèle peut partager des conseils et des expériences. Développer une communauté vous permet également de prendre part à la conversation une fois la prestation effectuée, dans un environnement différent des services de relation client. Elle facilite la prise en compte des commentaires des clients pour les exploiter.",
+            "L'objectif est que vos clients puissent avant tout vous contacter facilement. Les clients apprécient un support réactif et pratique et c'est ce qui les amène de plus en plus à se tourner vers les réseaux sociaux.",
+          ] },
+          { numero: '#3', texte: [
+            "Si vous avez mené à bien les premières étapes, vous aurez inévitablement converti une partie de vos clients en ambassadeurs sur les réseaux sociaux. Il y a une règle qui dit que 90 % des internautes consultent du contenu sur les réseaux sociaux sans agir, que 9 % aiment ou partagent et que seuls 1 % commentent.",
+            "Si vous parvenez donc à convaincre 10 % de vos clients de faire votre promotion sur les réseaux sociaux, vous aurez fait du bon boulot !",
+          ] },
+        ] } },
+      ] },
+      { numero: 6, titre: '« X » (ex-Twitter)', images: [], texte: [
+        { pageWeb: true },
+        { reseauSocial: { plateforme: 'x', compte: 'Trobairitz', pseudo: '@s_rhmzn', avatarInitiale: 'T', date: '09:14 – 15 février 202N', message: ["@free impossible de me connecter sur votre page abonné, une page d'erreur s'affiche à chaque fois ! C'est insupportable, ça fait deux jours que ça dure…"], stats: { repondre: '12', reposter: '3', jaime: '8' } } },
+      ] },
+      { numero: 7, titre: 'Facebook', images: [], texte: [
+        { pageWeb: true },
+        { reseauSocial: { plateforme: 'facebook', compte: 'Anthony', avatarInitiale: 'A', date: '15 février à 08:42', message: ["Bonjour, j'ai un gros problème avec ma facture ce mois-ci, on m'a prélevé deux fois ! Je veux qu'on me rembourse rapidement."], stats: { jaime: '5' } } },
+      ] },
+      { numero: 8, titre: 'Procédure pour répondre sur les réseaux sociaux', images: [], texte: [
+        { pageWeb: true },
+        { organigramme: { tete: {
+          libelle: 'Saluer le client', teinte: 'tete', enfants: [
+            { libelle: 'Si la réclamation concerne un problème non personnel', teinte: 'bleu', enfants: [ { libelle: 'Montrer au client que le problème soulevé a été pris en compte et qu\u2019il va être réglé rapidement', teinte: 'vert', enfants: [ { libelle: 'Salutations au client', teinte: 'gris' } ] } ] },
+            { libelle: 'Si la réclamation concerne un problème personnel', teinte: 'jaune', enfants: [ { libelle: 'Ne jamais donner de réponse directe : demander au client de contacter Free en message privé', teinte: 'rose', enfants: [ { libelle: 'Demander de préciser son n° de tél. ; demander son nom et prénom', teinte: 'rose', enfants: [ { libelle: 'Salutations au client', teinte: 'gris' } ] } ] } ] },
+          ],
+        } } },
+      ] },
+      { numero: 9, titre: 'Questionnaire satisfaction Freebox Pop (Instagram) — Partie II', images: [], texte: [
+        { pageWeb: true },
+        { intertitre: 'Assistance Freebox — Instagram', paragraphes: ["Instagrameur, Instagrameuse, vous avez certainement entendu parler de la nouvelle Freebox Pop et votre avis nous est précieux. Nous vous proposons de consacrer 2 minutes pour répondre à cette enquête. Nous vous remercions par avance pour votre participation."] },
+        { intertitre: 'Partie II — FREE ET VOUS', puces: [
+          'Question 6 : Concernant la Freebox Pop et les services proposés, dans quelle mesure seriez-vous prêt à la recommander autour de vous ? (1 à 5)',
+          'Question 7 : Dans quelle mesure seriez-vous prêt à recommander Free autour de vous ? (1 à 5)',
+          "Question 8 : Avez-vous eu l'occasion de recommander Free autour de vous ? (Oui / Non)",
+          'Question 9 : À combien de personnes avez-vous recommandé Free ? (1 à plus de 5 personnes)',
+        ] },
+      ] },
+    ],
+    competence: {
+      groupe: 'Groupe de compétences',
+      intitule: "Mesurer la satisfaction et fidéliser le client",
+      detail: "Identifier les types de questions d'une enquête, exploiter des résultats (calculs de pourcentages, prime), et répondre aux clients sur les réseaux sociaux pour fidéliser.",
+    },
+    objectifs: [
+      'Identifier les types de questions d\u2019un questionnaire de satisfaction.',
+      'Exploiter les résultats d\u2019une enquête (pourcentages) et calculer une prime.',
+      'Répondre à des clients mécontents sur les réseaux sociaux selon une procédure.',
+    ],
+    activites: [
+      {
+        titre: 'Activité 1 — La satisfaction du client',
+        questions: [
+          { numero: 1, consigne: "Pour chacune des questions de l'enquête de satisfaction, indiquez le type de question dont il s'agit.", ressources: "Lire le document 1, consulter le document 2, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Calculez ce que représentent en pourcentage les avis négatifs et positifs.', ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2a' },
+          { numero: 3, consigne: 'Calculez le montant de la rémunération que vous allez percevoir ce mois-ci.', ressources: "Lire le document 4, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La fidélisation du client',
+        questions: [
+          { numero: 4, consigne: 'Trouvez un titre pour chaque étape du document.', ressources: "Lire le document 5, compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Rédigez sur X (ex-Twitter) la réponse à Trobairitz, puis répondez via le lien.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5a ; compléter l'annexe 5b.", annexeId: 'annexe5a' },
+          { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony, puis répondez via le lien.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6a ; compléter l'annexe 6b.", annexeId: 'annexe6a' },
+          { numero: 7, consigne: "Analysez la partie II du questionnaire « FREE ET VOUS » (Instagram) et indiquez à quelle étape du document 5 elle correspond. Justifiez.", ressources: "Lire le document 9, compléter l'annexe 7.", annexeId: 'annexe7' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Le questionnaire de satisfaction', colonnes: ['Numéro de la question', 'Type de question'], nbLignes: 11, prerempli: [['1', ''], ['2', ''], ['3', ''], ['4', ''], ['5', ''], ['6', ''], ['7', ''], ['8', ''], ['9', ''], ['10', ''], ['11', '']] },
+      { type: 'grille', id: 'annexe2a', titre: 'Annexe 2a — Les résultats de l\u2019enquête (en %)', colonnes: ['Questions de l\u2019enquête sur le conseiller', 'Avis négatifs en % (calcul + résultat)', 'Avis positifs en % (calcul + résultat)'], nbLignes: 6, prerempli: [['2 - Évaluez le contact (de 0 à 10)', '', ''], ['3 - L\u2019amabilité et la courtoisie', '', ''], ['4 - Expression claire et vocabulaire simple', '', ''], ['5 - La compétence et les connaissances', '', ''], ['7 - L\u2019écoute', '', ''], ['9 - La prise en charge de la demande', '', '']] },
+      { type: 'grille', id: 'annexe2b', titre: 'Annexe 2b — Transformation du nombre d\u2019avis en pourcentage', colonnes: ['Avis négatifs en % (calcul + résultat)', 'Avis positifs en % (calcul + résultat)'], nbLignes: 1 },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Le calcul de votre rémunération', colonnes: ['Nature de la prime', 'Objectif fixé', 'Objectif d\u2019avis positifs réalisé', 'Tranche de % de la prime', 'Montant de la prime', 'Rémunération de base'], nbLignes: 2, prerempli: [['Prime sur objectif', '100 %', '', '', '', '1219 €'], ['Votre rémunération totale (calcul + résultat)', '', '', '', '', '']] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Titre de chaque étape', colonnes: ['Étape', 'Titre'], nbLignes: 3, prerempli: [['Étape 1', ''], ['Étape 2', ''], ['Étape 3', '']] },
+      { type: 'reponsereseau', id: 'annexe5a', titre: 'Annexe 5a — Réponse au Tweet de Trobairitz', plateforme: 'x', enReponseA: '@s_rhmzn', boutonLien: 'https://www.quiziniere.com/#/Exercice/785AE3', boutonLibelle: 'Annexe 5b — Répondre via Quizinière (QR Code / lien)' },
+      { type: 'reponsereseau', id: 'annexe6a', titre: 'Annexe 6a — Réponse au message Facebook d\u2019Anthony', plateforme: 'facebook', enReponseA: 'Anthony', boutonLien: 'https://www.quiziniere.com/#/Exercice/NW4G7X', boutonLibelle: 'Annexe 6b — Répondre via Quizinière (QR Code / lien)' },
+      { type: 'grille', id: 'annexe7', titre: 'Annexe 7 — Analyse de la Partie II du questionnaire', colonnes: ['Étape du document 5', 'Justifications'], nbLignes: 1 },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Type de chaque question (annexe 1).', documents: ['Documents 1 et 2'], bareme: 11, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Question', 'Type'], lignes: [
+          ['1', 'Question fermée'], ['2', 'Question à échelle (échelle d\u2019évaluation)'], ['3', 'Question avec échelle de Likert'], ['4', 'Question avec échelle de Likert'], ['5', 'Question avec échelle de Likert'], ['6', 'Question ouverte'], ['7', 'Question fermée'], ['8', 'Question ouverte'], ['9', 'Question avec échelle de Likert'], ['10', 'Question avec échelle de Likert'], ['11', 'Question ouverte'],
+        ] },
+      },
+      {
+        intitule: 'Avis en pourcentage (annexe 2a et 2b).', documents: ['Document 3'], bareme: 12, reponse: 'Sur 300 avis par question. Négatif % = négatifs / 300 × 100.',
+        tableau: { colonnes: ['Question', 'Avis négatifs en %', 'Avis positifs en %'], lignes: [
+          ['2 - Contact', '15/300 = 5 %', '95 %'],
+          ['3 - Amabilité/courtoisie', '23/300 = 7,67 %', '92,33 %'],
+          ['4 - Expression claire', '58/300 = 19,33 %', '80,67 %'],
+          ['5 - Compétence', '44/300 = 14,67 %', '85,33 %'],
+          ['7 - Écoute', '21/300 = 7 %', '93 %'],
+          ['9 - Prise en charge', '73/300 = 24,33 %', '75,67 %'],
+          ['Moyenne (annexe 2b)', '78 / 6 = 13 %', '522 / 6 = 87 %'],
+        ] },
+      },
+      {
+        intitule: 'Calcul de la rémunération (annexe 3).', documents: ['Document 4'], bareme: 6, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Élément', 'Valeur'], lignes: [
+          ['Objectif d\u2019avis positifs réalisé', '87 %'],
+          ['Tranche de la prime', 'Entre 80 % et 90 % → 80 % de la prime'],
+          ['Montant de la prime', '200 × 0,8 = 160 €'],
+          ['Rémunération de base', '1219 €'],
+          ['Rémunération totale', '1219 + 160 = 1279 € (fixe + prime)'],
+        ] },
+      },
+      {
+        intitule: 'Titres des étapes (annexe 4).', documents: ['Document 5'], bareme: 3, reponse: 'Voir tableau.',
+        tableau: { colonnes: ['Étape', 'Titre'], lignes: [
+          ['Étape 1', 'Écouter et interagir avec ses clients'],
+          ['Étape 2', 'Créer une communauté de clients'],
+          ['Étape 3', 'Transformer ses clients en ambassadeurs'],
+        ] },
+      },
+      { intitule: 'Réponse à Trobairitz sur X (annexe 5a).', documents: ['Documents 6 et 8'], bareme: 4, reponse: "« Bonjour, nous vous remercions de nous alerter quant à la page d'erreur qui s'affiche lorsque vous essayez de vous connecter sur notre page. Notre équipe technique met tout en œuvre pour un retour à la normale dans les plus brefs délais. Bonne journée. » (problème non personnel : réponse directe rassurante.)" },
+      { intitule: 'Réponse à Anthony sur Facebook (annexe 6a).', documents: ['Documents 7 et 8'], bareme: 4, reponse: "« Bonjour, afin de pouvoir vous apporter une réponse précise, je vous invite à formuler votre demande en message privé, en précisant votre nom et votre prénom ou votre numéro de téléphone. Bonne journée. » (problème personnel : pas de réponse directe, passage en message privé.)" },
+      { intitule: 'Analyse de la Partie II (annexe 7).', documents: ['Documents 5 et 9'], bareme: 4, reponse: "Il s'agit de l'étape 3. La partie II du questionnaire sur Instagram correspond à cette étape car elle pose des questions sur le fait de recommander « Free » ou la « Freebox » : l'entreprise cherche à savoir si ses clients jouent les ambassadeurs." },
+    ],
+  },
+  synthese: {
+    titre: "La satisfaction et la fidélisation",
+    proposition: ['Question fermée', 'Échelle de Likert', 'Écouter et interagir', 'Transformer en ambassadeurs'],
+    racine: {
+      id: 'racine', texte: 'La relation client',
+      enfants: [
+        { id: 'satis', texte: 'La satisfaction', enfants: [
+          { id: 'fermee', texte: null, reponse: 'Question fermée' },
+          { id: 'likert', texte: null, reponse: 'Échelle de Likert' },
+        ] },
+        { id: 'fidel', texte: 'La fidélisation', enfants: [
+          { id: 'ecoute', texte: null, reponse: 'Écouter et interagir' },
+          { id: 'ambass', texte: null, reponse: 'Transformer en ambassadeurs' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1', intitule: 'Identifier les types de questions',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les types de questions.' },
+          { niveau: 'debrouille', description: 'Je distingue ouverte et fermée.' },
+          { niveau: 'averti', description: 'Je reconnais Likert, échelle, alternative…' },
+          { niveau: 'expert', description: 'Je qualifie chaque question d\u2019un questionnaire.' },
+        ],
+      },
+      {
+        id: 'c2', intitule: 'Exploiter des résultats chiffrés',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas calculer un pourcentage.' },
+          { niveau: 'debrouille', description: 'Je calcule un pourcentage simple.' },
+          { niveau: 'averti', description: 'Je calcule des moyennes de pourcentages.' },
+          { niveau: 'expert', description: 'Je calcule la prime à partir d\u2019un barème.' },
+        ],
+      },
+      {
+        id: 'c3', intitule: 'Répondre sur les réseaux sociaux',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas répondre à un client mécontent.' },
+          { niveau: 'debrouille', description: 'Je rédige une réponse polie.' },
+          { niveau: 'averti', description: 'J\u2019applique la procédure (privé / public).' },
+          { niveau: 'expert', description: 'Je distingue problème personnel et non personnel.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Satisfaction client', definition: "Niveau de contentement du client après un contact ou un achat." },
+      { terme: 'Fidélisation', definition: 'Ensemble des actions visant à conserver durablement un client.' },
+      { terme: 'Question ouverte', definition: "Question qui laisse le client s'exprimer librement." },
+      { terme: 'Question fermée', definition: 'Question à réponse précise (Oui / Non).' },
+      { terme: 'Échelle de Likert', definition: 'Échelle d\u2019accord (Tout à fait d\u2019accord → Pas du tout d\u2019accord).' },
+      { terme: 'Échelle d\u2019évaluation', definition: 'Note sur une plage de valeurs (ex : 0 à 10).' },
+      { terme: 'Ambassadeur', definition: 'Client qui fait la promotion de la marque autour de lui.' },
+      { terme: 'Prime sur objectif', definition: 'Rémunération variable versée selon l\u2019atteinte d\u2019un objectif.' },
+      { terme: 'Avis positif', definition: 'Réponse favorable d\u2019un client à une question d\u2019enquête.' },
+      { terme: 'Réseau social', definition: 'Plateforme (X, Facebook, Instagram) d\u2019échange avec les clients.' },
+    ],
+    flashcards: [
+      { recto: 'Question « Oui / Non » ?', verso: 'Question fermée.' },
+      { recto: 'Question « Tout à fait d\u2019accord… » ?', verso: 'Échelle de Likert.' },
+      { recto: 'Question « note de 0 à 10 » ?', verso: 'Échelle d\u2019évaluation.' },
+      { recto: 'Montant maximal de la prime ?', verso: '200 €.' },
+      { recto: '% positifs moyen obtenu ?', verso: '87 %.' },
+      { recto: 'Tranche de prime pour 87 % ?', verso: 'Entre 80 et 90 % → 80 % de la prime (160 €).' },
+      { recto: 'Rémunération totale ?', verso: '1219 + 160 = 1279 €.' },
+      { recto: 'Titre de l\u2019étape 3 ?', verso: 'Transformer ses clients en ambassadeurs.' },
+      { recto: 'Problème personnel sur les réseaux : que faire ?', verso: 'Passer en message privé, demander nom/prénom ou n° de tél.' },
+      { recto: 'Délai de réponse attendu en cas de plainte ?', verso: '72 % attendent une réponse dans l\u2019heure.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Question « Oui / Non » ?', options: ['Fermée', 'Ouverte', 'Likert', 'Alternative'], bonne: 0 },
+      { type: 'unique', question: 'Question « note de 0 à 10 » ?', options: ['Échelle d\u2019évaluation', 'Fermée', 'Ouverte', 'Alternative'], bonne: 0 },
+      { type: 'unique', question: 'Question « Tout à fait d\u2019accord » ?', options: ['Échelle de Likert', 'Fermée', 'Ouverte', 'Alternative'], bonne: 0 },
+      { type: 'unique', question: 'Montant maximal de la prime ?', options: ['200 €', '100 €', '1219 €', '160 €'], bonne: 0 },
+      { type: 'unique', question: '% positifs moyen obtenu ?', options: ['87 %', '78 %', '95 %', '13 %'], bonne: 0 },
+      { type: 'unique', question: 'Prime perçue pour 87 % ?', options: ['160 €', '200 €', '140 €', '0 €'], bonne: 0 },
+      { type: 'unique', question: 'Rémunération totale ?', options: ['1279 €', '1219 €', '1379 €', '1059 €'], bonne: 0 },
+      { type: 'unique', question: 'Titre de l\u2019étape 3 ?', options: ['Transformer ses clients en ambassadeurs', 'Écouter ses clients', 'Créer une communauté', 'Vendre plus'], bonne: 0 },
+      { type: 'unique', question: 'Problème personnel sur les réseaux ?', options: ['Passer en message privé', 'Répondre publiquement', 'Ignorer', 'Supprimer le message'], bonne: 0 },
+      { type: 'unique', question: 'Un client ambassadeur...', options: ['Fait la promotion de la marque', 'Se plaint toujours', 'Résilie', 'Ne paie pas'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque question dans le bon type.',
+      etiquettes: ['Question fermée', 'Échelle de Likert', 'Question ouverte'],
+      zones: [
+        { libelle: 'Avez-vous été au téléphone ? (Oui/Non)', etiquetteIndex: 0 },
+        { libelle: 'Étiez-vous à votre écoute ? (Oui/Non)', etiquetteIndex: 0 },
+        { libelle: 'Le conseiller était aimable (D\u2019accord…)', etiquetteIndex: 1 },
+        { libelle: 'A bien pris en charge la demande (D\u2019accord…)', etiquetteIndex: 1 },
+        { libelle: 'Expliquez pourquoi il était compétent', etiquetteIndex: 2 },
+        { libelle: 'Vos remarques complémentaires', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -7292,6 +7615,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'free-m2': FREE_M2,
   'free-m3': FREE_M3,
   'free-m4': FREE_M4,
+  'free-m5': FREE_M5,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
