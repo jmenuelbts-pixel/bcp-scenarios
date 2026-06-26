@@ -55,6 +55,12 @@ export interface AnnexeGrille {
   // Pre-remplissage optionnel de certaines cellules (libelles fixes a gauche,
   // le reste a completer). Tableau de lignes ; '' = cellule a saisir.
   prerempli?: string[][]
+  // Largeurs de colonnes optionnelles (ex : ['35%','65%']) pour donner plus de
+  // place aux reponses.
+  largeurs?: string[]
+  // Si vrai, les cellules saisissables sont des zones multi-lignes (textarea).
+  reponseMultiligne?: boolean
+  lignesReponse?: number // nb de lignes de la zone de saisie (defaut 3)
 }
 
 export interface AnnexeTexte {
@@ -550,9 +556,24 @@ export interface AnnexeEtapesLivraison {
   titre: string
   nbEtapes: number
   preEtapes?: string[] // etapes pre-remplies ('' = a completer)
+  // Disposition en schema non lineaire : etiquettes des cases melangees + zones
+  // jaunes a numeroter / completer (comme le document d'origine). Si fournie,
+  // remplace le rendu lineaire.
+  schema?: { etiquettes: string[]; nbZones: number }
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison
+// Personnage + bulle de dialogue : l'eleve ecrit dans la bulle (comme une vraie
+// scene de vente). Reproduit les annexes "phrase a prononcer".
+export interface AnnexeBulle {
+  type: 'bulle'
+  id: string
+  titre: string
+  perso?: string // image du personnage
+  placeholder?: string
+  nbLignes?: number
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle
 
 export interface QuestionTravaux {
   numero: number
@@ -694,6 +715,11 @@ export interface BlocDocumentTexte {
   // Galerie de produits facon site marchand : cartes avec photo, titre, prix,
   // reference, coloris, dimensions. Reproduit une page catalogue riche.
   galerieProduits?: { titre: string; image: string; prix: string; reference: string; coloris: string; dimensions: string }[]
+  // Suite d'etapes visuelles (cartes numerotees reliees par des fleches) facon
+  // schema de processus. Plus dynamique qu'une simple liste a puces.
+  etapesVisuelles?: string[]
+  // Logo affiche en haut a droite du bloc (ex : en-tete de note interne).
+  logoEntete?: string
   // Habillage facon page web riche : quand true, le bloc est encadre avec un
   // bandeau de marque (logo AMParis) et une mise en page de site.
   pageWeb?: boolean
@@ -9581,6 +9607,7 @@ const LEROY_MERLIN_M4: ContenuMission = {
         texte: [
           { pageWeb: true },
           { intertitre: 'Document 3 — Note de votre tutrice' },
+          { logoEntete: '/docs/leroy-merlin-m4/logo.jpg' },
           { intertitre: 'NOTE INTERNE' },
           { paragraphes: ['A l\'attention des conseillers de vente,', "Lorsque vous serez sur le point d'annoncer du délai de livraison au client et de compléter le planning d'intervention, suivez les étapes suivantes :"] },
           {
@@ -9601,7 +9628,7 @@ const LEROY_MERLIN_M4: ContenuMission = {
           { pageWeb: true },
           { intertitre: 'Document 4 — Les étapes de la livraison' },
           {
-            puces: [
+            etapesVisuelles: [
               'Signature du bon de commande',
               'Préparation du produit',
               'Une semaine avant, appel pour le choix du créneau de livraison',
@@ -9709,9 +9736,11 @@ const LEROY_MERLIN_M4: ContenuMission = {
     ],
     annexes: [
       {
-        type: 'reformulation',
+        type: 'bulle',
         id: 'annexe1',
         titre: "Annexe 1 — Technique de la « peau de l'ours » pour obtenir l'accord du couple",
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: "Rédigez ici la phrase que vous prononcerez face aux clients…",
         nbLignes: 3,
       },
       {
@@ -9720,6 +9749,9 @@ const LEROY_MERLIN_M4: ContenuMission = {
         titre: "Annexe 2 — Analyse de l'article",
         colonnes: ['Questions', 'Réponses'],
         nbLignes: 3,
+        largeurs: ['38%', '62%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
         prerempli: [
           ['Quelle est la conséquence une fois le bon de commande daté et signé par le client ?', ''],
           ["Quel autre moyen que la signature le client a-t-il pour manifester son accord ?", ''],
@@ -9812,12 +9844,25 @@ const LEROY_MERLIN_M4: ContenuMission = {
         id: 'annexe5',
         titre: 'Annexe 5 — Reconstitution des étapes de la livraison',
         nbEtapes: 6,
+        schema: {
+          etiquettes: [
+            'Livraison à votre domicile des articles',
+            'Signature du bon de commande',
+            'SMS de rappel la veille de la livraison',
+            'Préparation du produit',
+            'Évaluez la livraison sur votre smartphone',
+            "Une semaine avant, appel pour le choix de l'heure du créneau de livraison",
+          ],
+          nbZones: 6,
+        },
       },
       {
-        type: 'reformulation',
+        type: 'bulle',
         id: 'annexe6',
         titre: 'Annexe 6 — Énoncé des délais et des étapes de la livraison',
-        nbLignes: 5,
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: 'Expliquez au couple le délai et les différentes étapes de la livraison…',
+        nbLignes: 6,
       },
       {
         type: 'sms',
@@ -9832,6 +9877,9 @@ const LEROY_MERLIN_M4: ContenuMission = {
         titre: 'Annexe 8 — Questions de votre tutrice',
         colonnes: ['Questions', 'Réponses'],
         nbLignes: 4,
+        largeurs: ['30%', '70%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
         prerempli: [
           ['Résumez ce que signifie « Rassurer » dans la technique des « 4 R »', ''],
           ['Résumez ce que signifie « Remercier » dans la technique des « 4 R »', ''],
@@ -9840,10 +9888,12 @@ const LEROY_MERLIN_M4: ContenuMission = {
         ],
       },
       {
-        type: 'reformulation',
+        type: 'bulle',
         id: 'annexe9',
         titre: 'Annexe 9 — Phrase de la prise de congé',
-        nbLignes: 4,
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: 'Rédigez la phrase de prise de congé en respectant les 4 R…',
+        nbLignes: 5,
       },
     ],
   },
@@ -9941,10 +9991,15 @@ const LEROY_MERLIN_M4: ContenuMission = {
   synthese: {
     titre: "L'accord du client, les modalités de livraison et la prise de congé",
     proposition: [
+      "La conclusion directe",
       "La peau de l'ours",
+      'Le regret',
       'Signature du bon de commande',
       'Livraison à domicile des articles',
       'Rassurer',
+      'Remercier',
+      'Raccompagner',
+      'Revoir',
     ],
     racine: {
       id: 'racine',
@@ -9952,17 +10007,26 @@ const LEROY_MERLIN_M4: ContenuMission = {
       enfants: [
         {
           id: 'accord',
-          texte: '3 techniques de conclusion',
+          texte: "L'accord du client — 3 techniques de conclusion",
           enfants: [
-            { id: 'a-1', texte: null, reponse: "La peau de l'ours" },
+            { id: 'a-1', texte: null, reponse: 'La conclusion directe' },
+            { id: 'a-2', texte: null, reponse: "La peau de l'ours" },
+            { id: 'a-3', texte: null, reponse: 'Le regret' },
+          ],
+        },
+        {
+          id: 'commande',
+          texte: 'La formalisation',
+          enfants: [
+            { id: 'co-1', texte: "Le bon de commande signé et daté vaut engagement" },
           ],
         },
         {
           id: 'livraison',
           texte: 'Le suivi de la livraison',
           enfants: [
-            { id: 'l-1', texte: 'Première étape', enfants: [{ id: 'l-1-1', texte: null, reponse: 'Signature du bon de commande' }] },
-            { id: 'l-2', texte: 'Dernière étape avant évaluation', enfants: [{ id: 'l-2-1', texte: null, reponse: 'Livraison à domicile des articles' }] },
+            { id: 'l-1', texte: '1re étape', enfants: [{ id: 'l-1-1', texte: null, reponse: 'Signature du bon de commande' }] },
+            { id: 'l-2', texte: '5e étape', enfants: [{ id: 'l-2-1', texte: null, reponse: 'Livraison à domicile des articles' }] },
           ],
         },
         {
@@ -9970,6 +10034,9 @@ const LEROY_MERLIN_M4: ContenuMission = {
           texte: 'La prise de congé — La technique des 4 R',
           enfants: [
             { id: 'c-1', texte: null, reponse: 'Rassurer' },
+            { id: 'c-2', texte: null, reponse: 'Remercier' },
+            { id: 'c-3', texte: null, reponse: 'Raccompagner' },
+            { id: 'c-4', texte: null, reponse: 'Revoir' },
           ],
         },
       ],
@@ -10022,27 +10089,53 @@ const LEROY_MERLIN_M4: ContenuMission = {
     ],
     flashcards: [
       { recto: "Peau de l'ours ?", verso: 'Se comporter comme si le client avait déjà acheté' },
+      { recto: 'Conclusion directe ?', verso: 'Inviter naturellement le client à finaliser la vente' },
+      { recto: 'Technique du regret ?', verso: "Présenter un avantage réservé à un achat immédiat" },
       { recto: 'Que faut-il pour engager le client ?', verso: 'Un bon de commande signé et daté' },
+      { recto: 'Mention de sécurité sur un bon de commande ?', verso: '« Lu et approuvé » ou « Bon pour accord »' },
       { recto: 'Que signifient les 4 R ?', verso: 'Rassurer, Remercier, Raccompagner, Revoir' },
       { recto: 'Délai de livraison du dressing ?', verso: '30 jours' },
       { recto: 'Montant de l\'avoir (30%) ?', verso: '447,86 €' },
       { recto: 'Dernière étape de la vente / première de la fidélisation ?', verso: 'La prise de congé' },
+      { recto: 'Comment compte-t-on le délai de livraison ?', verso: 'À partir du jour suivant la signature, hors dimanches et jours fériés' },
     ],
     quiz: [
-      { type: 'unique', question: "« Vous souhaitez une extension de garantie avec ? » est une technique…", options: ['Conclusion directe', "Peau de l'ours", 'Le regret', 'Aucune'], bonne: 1 },
+      { type: 'unique', question: "« Vous souhaitez une extension de garantie avec ? » est une technique…", options: ['Conclusion directe', "Peau de l'ours", 'Le regret', 'La relance'], bonne: 1 },
+      { type: 'unique', question: "« Alors vous la prenez ? » correspond à…", options: ['La conclusion directe', "La peau de l'ours", 'Le regret', "L'alternative"], bonne: 0 },
+      { type: 'unique', question: "« Je peux vous faire -15% si vous le prenez ! » est…", options: ['La conclusion directe', "La peau de l'ours", 'Le regret', 'La synthèse'], bonne: 2 },
       { type: 'unique', question: "Qu'est-ce qui engage réellement le client ?", options: ['Accord oral', 'Bon de commande signé et daté', 'Un email', 'Un appel'], bonne: 1 },
+      { type: 'unique', question: 'Quelle mention renforce la sécurité du bon de commande ?', options: ['« Vu »', '« Bon pour accord »', '« Reçu »', '« Noté »'], bonne: 1 },
       { type: 'qcm', question: 'Quels éléments composent les 4 R ?', options: ['Rassurer', 'Réduire', 'Raccompagner', 'Revoir'], bonnes: [0, 2, 3] },
       { type: 'unique', question: 'Quel est le délai de livraison du dressing ?', options: ['15 jours', '30 jours', '45 jours', '60 jours'], bonne: 1 },
-      { type: 'trous', texte: 'On compte le délai à partir du jour {x} la signature, en enlevant les dimanches et les jours {x}.', reponses: ['suivant', 'fériés'] },
+      { type: 'unique', question: "Le montant de l'avoir versé (30%) est de…", options: ['447,86 €', '1244,05 €', '1492,86 €', '149,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Quelle est la première étape de la livraison ?', options: ['Préparation du produit', 'Signature du bon de commande', 'SMS de rappel', 'Livraison'], bonne: 1 },
+      { type: 'unique', question: "La prise de congé est la dernière étape de la vente mais la première de…", options: ['la prospection', 'la fidélisation', "l'accueil", 'la négociation'], bonne: 1 },
     ],
     glisserDeposer: {
-      consigne: 'Remettez les étapes de la livraison dans l\'ordre (1 = première).',
-      etiquettes: ['Signature du bon de commande', 'Préparation du produit', 'Livraison à domicile', 'Évaluation par SMS'],
+      consigne: 'Associez chaque élément à la bonne catégorie de la mission 4.',
+      etiquettes: [
+        "« Alors vous la prenez ? »",
+        "« Vous souhaitez une extension de garantie avec ? »",
+        '« Je peux vous faire -15% si vous le prenez ! »',
+        'Bon de commande signé et daté',
+        '« Bon pour accord »',
+        'Rassurer et Remercier',
+        'Raccompagner',
+        'Revoir',
+        '30 jours',
+        '447,86 €',
+      ],
       zones: [
-        { libelle: 'Étape 1', etiquetteIndex: 0 },
-        { libelle: 'Étape 2', etiquetteIndex: 1 },
-        { libelle: 'Étape 5', etiquetteIndex: 2 },
-        { libelle: 'Étape 6', etiquetteIndex: 3 },
+        { libelle: 'Conclusion directe', etiquetteIndex: 0 },
+        { libelle: "Peau de l'ours", etiquetteIndex: 1 },
+        { libelle: 'Le regret', etiquetteIndex: 2 },
+        { libelle: 'Ce qui engage le client', etiquetteIndex: 3 },
+        { libelle: 'Mention de sécurité', etiquetteIndex: 4 },
+        { libelle: 'Féliciter et remercier le client', etiquetteIndex: 5 },
+        { libelle: 'Clore en relation privilégiée', etiquetteIndex: 6 },
+        { libelle: 'Remettre sa carte de visite', etiquetteIndex: 7 },
+        { libelle: 'Délai de livraison', etiquetteIndex: 8 },
+        { libelle: "Montant de l'avoir (30%)", etiquetteIndex: 9 },
       ],
     },
   },

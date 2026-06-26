@@ -1,6 +1,6 @@
 /* Generateur Word - Leroy Merlin - Mission 4 (vert #7AB51D) */
 const fs = require('fs')
-const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType, AlignmentType } = require('docx')
+const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType, AlignmentType, ImageRun } = require('docx')
 
 const VERT = '7AB51D'
 const VERTF = 'EAF5DA'
@@ -67,6 +67,7 @@ function documents() {
   ;["Selon votre secteur d'activité, l'établissement d'un bon de commande signé par vos soins constitue une obligation. En règle générale, il est toutefois recommandé de délivrer systématiquement ce document au client lorsque sa commande porte sur un montant ou des volumes importants.", "Le bon de commande, une fois signé et daté par le client, implique son accord pour entamer les travaux et le prive ensuite de toute voie de recours concernant le tarif demandé. En plus de la signature, l'ajout d'une mention type comme « Lu et approuvé » ou « Bon pour accord » peut constituer une sécurité supplémentaire pour vous. Le client reste bien sûr libre de s'opposer à une prestation ou une surfacturation non prévue au devis initial, sauf s'il consent à signer un avenant au devis dans les mêmes conditions. A défaut d'une signature sur le devis lui-même, le client peut vous faire parvenir une « lettre de bon pour accord », dans laquelle il vous fait connaître explicitement son accord : ce formalisme est un peu plus lourd, et l'engage de la même façon.", "Dans tous les cas, un bon de commande non signé par le client ne l'engage en rien, même s'il vous a manifesté verbalement son accord ! N'engagez pas des frais importants sans cette garantie minimale."].forEach((p) => out.push(P(p)))
 
   out.push(H('Document 3 – Note de votre tutrice'))
+  out.push(new Paragraph({ alignment: AlignmentType.RIGHT, spacing: { after: 60 }, children: [new ImageRun({ data: fs.readFileSync('/home/claude/bcp/public/docs/leroy-merlin-m4/logo.jpg'), transformation: { width: 120, height: 78 } })] }))
   out.push(P('NOTE INTERNE', { b: true }))
   out.push(P("A l'attention des conseillers de vente,"))
   out.push(P("Lorsque vous serez sur le point d'annoncer du délai de livraison au client et de compléter le planning d'intervention, suivez les étapes suivantes :"))
@@ -76,7 +77,11 @@ function documents() {
   out.push(P('Bonnes ventes à tous,')); out.push(P('Mme Annie Mâle — Responsable', { b: true }))
 
   out.push(H('Document 4 – Les étapes de la livraison'))
-  ;['Signature du bon de commande', 'Préparation du produit', 'Une semaine avant, appel pour le choix du créneau de livraison', 'SMS de rappel la veille de la livraison', 'Livraison à domicile des articles', "Réception d'un SMS pour l'évaluation de la livraison"].forEach((e) => out.push(bullet(e)))
+  const etapesLiv = ['Signature du bon de commande', 'Préparation du produit', 'Une semaine avant, appel pour le choix du créneau de livraison', 'SMS de rappel la veille de la livraison', 'Livraison à domicile des articles', "Réception d'un SMS pour l'évaluation de la livraison"]
+  out.push(tbl([
+    new TableRow({ children: etapesLiv.slice(0, 3).map((e, i) => cell((i + 1) + '. ' + e, { fill: true, b: true, align: AlignmentType.CENTER })) }),
+    new TableRow({ children: etapesLiv.slice(3, 6).map((e, i) => cell((i + 4) + '. ' + e, { fill: true, b: true, align: AlignmentType.CENTER })) }),
+  ]))
 
   out.push(H("Document 5 – Rédaction d'un SMS de rappel"))
   out.push(P("Lors de la rédaction d'un SMS de rappel, vous devrez faire attention à :"))
@@ -135,7 +140,7 @@ function annexesEleve() {
   out.push(...blank(3))
   out.push(H("Annexe 2 – Analyse de l'article"))
   const a2 = ['Quelle est la conséquence une fois le bon de commande daté et signé par le client ?', "Quel autre moyen que la signature le client a-t-il pour manifester son accord ?", "Si le client dit oralement qu'il est d'accord, est-il engagé ? Justifiez votre réponse."]
-  out.push(tbl([new TableRow({ children: [cell('Questions', { head: true, width: 50 }), cell('Réponses', { head: true, width: 50 })] }), ...a2.map((q) => new TableRow({ children: [cell(q, { fill: true }), cell('')] }))]))
+  out.push(tbl([new TableRow({ children: [cell('Questions', { head: true, width: 38 }), cell('Réponses', { head: true, width: 62 })] }), ...a2.map((q) => new TableRow({ children: [cell(q, { fill: true, size: 18 }), cell('\n\n\n')] }))]))
   out.push(H('Annexe 3 – Bon de commande'))
   out.push(P('COMMANDE N° 2535753 — Leroy Merlin Daumesnil, 139 avenue Daumesnil, 75012 Paris — Téléphone : 01.33.XX.XX.XX.', { b: true }))
   out.push(P('BRICOLAGE – CONSTRUCTION – DECORATION – ENTRETIEN', { size: 18, color: GRIS }))
@@ -150,12 +155,18 @@ function annexesEleve() {
     new TableRow({ children: [cell('Taux TVA', { head: true, width: 33 }), cell('Base HT', { head: true, width: 33 }), cell('Montant Total', { head: true, width: 34 })] }),
     new TableRow({ children: [cell('20.00 %', { align: AlignmentType.CENTER }), cell(''), cell('')] }),
   ], { w: 60 }))
-  out.push(P("Montant de l'avoir (30%) : ______________            Bon pour accord — Signature client : ______________"))
+  out.push(P("Montant de l'avoir (30%) : ______________"))
+  out.push(P('Délais de livraison : ______ jours            Bon pour accord — Signature client : ______________'))
   out.push(H("Annexe 4 – Planning d'intervention Leroy Merlin"))
   out.push(P('Complétez la case du créneau choisi (nom du client + intervention). Matin à partir de 8h · Après-midi à partir de 14h.', { it: true, size: 18 }))
   PLANNING_MOIS.forEach((m) => { out.push(planningTable(m, null)); out.push(P('')) })
   out.push(H('Annexe 5 – Reconstitution des étapes de la livraison'))
-  for (let i = 1; i <= 6; i++) out.push(P(`${i}. ____________________________________________`))
+  out.push(P('Étiquettes à replacer dans le bon ordre :', { b: true }))
+  out.push(P('Livraison à votre domicile des articles  ·  Signature du bon de commande  ·  SMS de rappel la veille de la livraison  ·  Préparation du produit  ·  Évaluez la livraison sur votre smartphone  ·  Une semaine avant, appel pour le choix de l\'heure du créneau de livraison', { it: true, size: 20 }))
+  out.push(tbl([
+    new TableRow({ children: [cell('1', { head: true, width: 5, align: AlignmentType.CENTER }), cell('', { width: 28 }), cell('2', { head: true, width: 5, align: AlignmentType.CENTER }), cell('', { width: 29 }), cell('3', { head: true, width: 5, align: AlignmentType.CENTER }), cell('', { width: 28 })] }),
+    new TableRow({ children: [cell('4', { head: true, align: AlignmentType.CENTER }), cell(''), cell('5', { head: true, align: AlignmentType.CENTER }), cell(''), cell('6', { head: true, align: AlignmentType.CENTER }), cell('')] }),
+  ]))
   out.push(H('Annexe 6 – Énoncé des délais et des étapes de la livraison'))
   out.push(...blank(5))
   out.push(H('Annexe 7 – SMS de rappel'))
@@ -163,7 +174,7 @@ function annexesEleve() {
   out.push(...blank(4))
   out.push(H('Annexe 8 – Questions de votre tutrice'))
   const a8 = ['Résumez ce que signifie « Rassurer » dans la technique des « 4 R »', 'Résumez ce que signifie « Remercier » dans la technique des « 4 R »', 'Résumez ce que signifie « Raccompagner » dans la technique des « 4 R »', 'Résumez ce que signifie « Revoir » dans la technique des « 4 R »']
-  out.push(tbl([new TableRow({ children: [cell('Questions', { head: true, width: 50 }), cell('Réponses', { head: true, width: 50 })] }), ...a8.map((q) => new TableRow({ children: [cell(q, { fill: true }), cell('')] }))]))
+  out.push(tbl([new TableRow({ children: [cell('Questions', { head: true, width: 30 }), cell('Réponses', { head: true, width: 70 })] }), ...a8.map((q) => new TableRow({ children: [cell(q, { fill: true, size: 18 }), cell('\n\n\n')] }))]))
   out.push(H('Annexe 9 – Phrase de la prise de congé'))
   out.push(...blank(4))
   return out

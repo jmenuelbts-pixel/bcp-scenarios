@@ -4,7 +4,7 @@
 // sont serialisees en JSON dans le champ travail unique de la mission, puis
 // verrouillees apres envoi.
 
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { VisionneuseDocument } from '../ui/VisionneuseDocument'
 import type {
   ContenuTravaux,
@@ -57,6 +57,7 @@ import type {
   CreneauPlanning,
   AnnexeBonCommande,
   AnnexeEtapesLivraison,
+  AnnexeBulle,
   ProduitCatalogue,
   VehiculeCatalogue,
   BlocDocumentTexte,
@@ -486,7 +487,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone && !b.image && !b.galerieProduits))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone && !b.image && !b.galerieProduits && !b.etapesVisuelles && !b.logoEntete))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -567,6 +568,24 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
                 ))}
               </tbody>
             </table>
+          )}
+          {b.logoEntete && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 6 }}>
+              <img src={b.logoEntete} alt="Leroy Merlin" style={{ height: 40 }} />
+            </div>
+          )}
+          {b.etapesVisuelles && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'stretch', margin: '12px 0' }}>
+              {b.etapesVisuelles.map((e, ei) => (
+                <Fragment key={ei}>
+                  <div style={{ flex: '1 1 150px', minWidth: 140, background: '#FFFFFF', border: `2px solid ${couleur}`, borderRadius: 10, padding: '12px 12px 14px', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                    <span style={{ width: 30, height: 30, borderRadius: '50%', background: couleur, color: '#FFFFFF', fontSize: 15, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{ei + 1}</span>
+                    <span style={{ fontSize: 13, color: '#1F2933', fontWeight: 600, lineHeight: 1.3 }}>{e}</span>
+                  </div>
+                  {ei < b.etapesVisuelles!.length - 1 && <div style={{ alignSelf: 'center', color: couleur, fontSize: 24, fontWeight: 800 }}>→</div>}
+                </Fragment>
+              ))}
+            </div>
           )}
           {b.galerieProduits && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14, margin: '10px 0' }}>
@@ -1303,6 +1322,7 @@ function rendreAnnexe(
   if (annexe.type === 'planning') return rendrePlanning(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'boncommande') return rendreBonCommande(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'etapeslivraison') return rendreEtapesLivraison(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'bulle') return rendreBulle(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'critereseg') return rendreCritereSeg(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'courrier') return rendreCourrier(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'croc') return rendreCroc(annexe, saisies, set, verrouille, couleur)
@@ -2043,11 +2063,11 @@ function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: st
     <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: a.colonnes.length > 2 ? 640 : undefined }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: a.largeurs ? 'fixed' : undefined, minWidth: a.colonnes.length > 2 ? 640 : undefined }}>
           <thead>
             <tr>
               {a.colonnes.map((c, ci) => (
-                <th key={ci} style={{ padding: '6px 8px', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #ECEFF2', textAlign: 'left', whiteSpace: 'nowrap' }}>{c}</th>
+                <th key={ci} style={{ padding: '6px 8px', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #ECEFF2', textAlign: 'left', width: a.largeurs?.[ci], whiteSpace: a.largeurs ? 'normal' : 'nowrap' }}>{c}</th>
               ))}
             </tr>
           </thead>
@@ -2057,11 +2077,13 @@ function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: st
                 {a.colonnes.map((_, ci) => {
                   const fixe = a.prerempli?.[r]?.[ci]
                   if (fixe) {
-                    return <td key={ci} style={{ padding: '8px 8px', fontSize: 13, fontWeight: 700, color: '#1F2933', background: '#F7F9FB' }}>{fixe}</td>
+                    return <td key={ci} style={{ padding: '8px 8px', fontSize: 13, fontWeight: 600, color: '#1F2933', background: '#F7F9FB', verticalAlign: 'top', width: a.largeurs?.[ci] }}>{fixe}</td>
                   }
                   return (
-                    <td key={ci} style={{ padding: '4px 6px' }}>
-                      <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />
+                    <td key={ci} style={{ padding: '4px 6px', verticalAlign: 'top', width: a.largeurs?.[ci] }}>
+                      {a.reponseMultiligne
+                        ? <textarea value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} rows={a.lignesReponse ?? 3} style={{ ...champStyle, width: '100%', minWidth: 120, resize: 'vertical' }} />
+                        : <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />}
                     </td>
                   )
                 })}
@@ -3103,8 +3125,17 @@ function rendreBonCommande(a: AnnexeBonCommande, saisies: Saisies, set: (id: str
             <td style={{ border: '1px solid #DCE8F4', padding: 3 }}><input value={v('total')} onChange={(e) => set2('total', e.target.value)} disabled={verrouille} style={{ ...champ, border: 'none', textAlign: 'center' }} /></td>
           </tr></tbody>
         </table>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: '#4B5563' }}>Montant de l'avoir (30%) :</span>
+          <input value={v('avoir')} onChange={(e) => set2('avoir', e.target.value)} disabled={verrouille} style={{ ...champ, width: 140 }} />
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, alignItems: 'end' }}>
-          <div><span style={{ fontSize: 12, fontWeight: 700, color: '#4B5563' }}>Montant de l'avoir (30%) :</span><input value={v('avoir')} onChange={(e) => set2('avoir', e.target.value)} disabled={verrouille} style={champ} /></div>
+          <div><span style={{ fontSize: 12, fontWeight: 700, color: '#4B5563' }}>Délais de livraison :</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input value={v('delaiBas')} onChange={(e) => set2('delaiBas', e.target.value)} disabled={verrouille} style={{ ...champ, width: 90 }} />
+              <span style={{ fontSize: 13, color: '#374151' }}>jours</span>
+            </div>
+          </div>
           <div style={{ border: '1px dashed #B7C4D6', borderRadius: 6, padding: '12px 10px', textAlign: 'center', color: '#6B7280', fontSize: 12 }}>
             <div style={{ fontWeight: 700, marginBottom: 4 }}>Bon pour accord — Signature client</div>
             <input value={v('signature')} onChange={(e) => set2('signature', e.target.value)} disabled={verrouille} placeholder="Mention + signature" style={champ} />
@@ -3115,9 +3146,62 @@ function rendreBonCommande(a: AnnexeBonCommande, saisies: Saisies, set: (id: str
   )
 }
 
-// Frise des etapes de la livraison : cases a completer (jaunes).
+// Personnage + bulle de dialogue : l'eleve ecrit dans la bulle.
+function rendreBulle(a: AnnexeBulle, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, background: '#F8FBF3', padding: 18, display: 'flex', alignItems: 'flex-end', gap: 14 }}>
+      <img src={a.perso ?? '/docs/leroy-merlin-m4/perso-conseiller.png'} alt="Conseiller" style={{ width: 110, flexShrink: 0, alignSelf: 'flex-end' }} />
+      <div style={{ position: 'relative', flex: 1, marginBottom: 18 }}>
+        <div style={{ position: 'relative', background: '#FFFFFF', border: `2px solid ${couleur}`, borderRadius: 16, padding: 14 }}>
+          <textarea
+            value={saisies[`${a.id}.bulle`] ?? ''}
+            onChange={(e) => set(`${a.id}.bulle`, e.target.value)}
+            disabled={verrouille}
+            rows={a.nbLignes ?? 3}
+            placeholder={a.placeholder ?? 'Écrivez votre phrase ici…'}
+            style={{ width: '100%', boxSizing: 'border-box', border: 'none', outline: 'none', resize: 'vertical', fontFamily: 'Arial, sans-serif', fontSize: 14, color: verrouille ? '#6B7280' : '#1F2933', background: 'transparent', fontStyle: 'italic' }}
+          />
+          {/* queue de la bulle vers le personnage */}
+          <div style={{ position: 'absolute', left: -14, bottom: 16, width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: `14px solid ${couleur}` }} />
+          <div style={{ position: 'absolute', left: -10, bottom: 18, width: 0, height: 0, borderTop: '7px solid transparent', borderBottom: '7px solid transparent', borderRight: '11px solid #FFFFFF' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Frise des etapes de la livraison : schema non lineaire (etiquettes a placer
+// dans des cases numerotees) ou frise simple a completer.
 function rendreEtapesLivraison(a: AnnexeEtapesLivraison, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
   const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '8px 10px', borderRadius: 6, border: '1px dashed #C9A227', background: verrouille ? '#FBF6E5' : '#FFFBEA', color: '#1F2933', outline: 'none', resize: 'vertical' }
+  // Mode schema : banque d'etiquettes en desordre + cases numerotees a remplir
+  if (a.schema) {
+    return (
+      <div style={{ border: '1px solid #C9D6E3', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+        <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.titre}</div>
+        <div style={{ padding: 16 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#4B5563', marginBottom: 8 }}>Étiquettes à replacer dans le bon ordre :</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
+            {a.schema.etiquettes.map((e, i) => (
+              <span key={i} style={{ background: '#EAF1F8', border: '1px solid #B7C4D6', borderRadius: 20, padding: '6px 14px', fontSize: 12.5, color: '#2A3A53', fontWeight: 600 }}>{e}</span>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 8, flexWrap: 'wrap' }}>
+            {Array.from({ length: a.schema.nbZones }).map((_, i) => (
+              <Fragment key={i}>
+                <div style={{ flex: '1 1 150px', minWidth: 150, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <span style={{ width: 26, height: 26, borderRadius: '50%', background: couleur, color: '#FFFFFF', fontSize: 13, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                  <textarea value={saisies[`${a.id}.z${i}`] ?? ''} onChange={(e) => set(`${a.id}.z${i}`, e.target.value)} disabled={verrouille} rows={3} placeholder="Étape…" style={{ ...champ, flex: 1 }} />
+                </div>
+                {i < a.schema!.nbZones - 1 && <div style={{ alignSelf: 'center', color: couleur, fontSize: 22, fontWeight: 800 }}>→</div>}
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+  // Mode frise simple
   return (
     <div style={{ border: '1px solid #C9D6E3', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
       <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.titre}</div>
