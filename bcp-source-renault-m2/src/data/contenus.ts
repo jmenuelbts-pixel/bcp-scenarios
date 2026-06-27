@@ -767,9 +767,15 @@ export interface BlocDocumentTexte {
     titulaire: string
     adresse?: string
     telephone?: string
-    montant?: string
+    montant?: string // montant en chiffres (ex : 8 290,00 €)
+    montantLettres?: string // montant en toutes lettres
+    beneficiaire?: string // a l'ordre de
     lieu?: string
     date?: string
+    micr?: string // ligne magnetique bas de cheque
+    // Post-it colle sur le cheque : annee d'achat du vehicule + accessoire achete.
+    postitAnnee?: string
+    postitAccessoire?: string
   }[]
   // Post-it de suggestions clients facon note manuscrite (papier jaune, coin
   // corne). Reproduit les fiches suggestion laissees par les clients.
@@ -791,6 +797,8 @@ export interface BlocDocumentTexte {
     adresse?: string
     iban?: string
     bic?: string
+    postitAnnee?: string
+    postitAccessoire?: string
   }[]
 }
 export interface DocumentRessource {
@@ -1395,17 +1403,29 @@ const RENAULT_M2: ContenuMission = {
         { pageWeb: true },
         { intertitre: 'Les chèques' },
         { cheques: [
-          { banque: 'Crédit Agricole Mutuel', couleur: '#009639', agence: 'E rue Frédéric Clavel — 92150 Suresnes — Tél : 01.76.01.39.84', titulaire: 'MME ÉDITH AURIALLE', adresse: '12 rue du Plaisir, 93400 Saint-Ouen', telephone: '01.63.90.58.32' },
-          { banque: 'Société Générale', couleur: '#E2241A', titulaire: 'MR TRISTAN HAMOUR', adresse: '20 rue des Écoles, 92700 Colombes', telephone: '01.04.07.02.09' },
-          { banque: 'BNP Paribas', couleur: '#00915A', titulaire: 'MME BETH RHAVES', adresse: '62 rue de Douai, 75009 Paris', telephone: '01.23.84.67.21' },
-          { banque: 'LCL', couleur: '#003B7E', titulaire: 'MME SANDY QUILAU', adresse: '13 rue de Rome, 75008 Paris', telephone: '01.03.63.81.01' },
-          { banque: 'La Banque Postale', couleur: '#003087', titulaire: 'MR LARRY BAMBEL', adresse: '2 rue Vincent Compoint, 75018 Paris', telephone: '01.09.63.58.88' },
-          { banque: 'Caisse d\u2019Épargne', couleur: '#C8102E', titulaire: 'MME BERNADETTE DEJEU', adresse: '8 rue Eugène Carrière, 75018 Paris', telephone: '01.73.18.95.49' },
+          { banque: 'Crédit Agricole', couleur: '#006B3F', agence: 'Mutuel — Caisse Régionale du Centre de la Normandie, 10 rue Guilbert, 14300 Caen', titulaire: 'Mme Sasha Hutte', adresse: '7 rue Molière, 75001 Paris', telephone: '01.76.01.39.84', montant: '20,50 €', montantLettres: 'vingt euros et cinquante centimes', lieu: 'Paris', date: '02/10/2013', micr: '\u2448 0925614 \u2448   11006 \u2446 02041 \u2446 00021457893 \u2448', postitAnnee: '2016', postitAccessoire: 'Kit de sécurité 3 en 1' },
+          { banque: 'Caisse d\u2019Épargne', couleur: '#C8102E', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Édith Aurialle', adresse: '12 rue du Plaisir, 93400 Saint-Ouen', telephone: '01.63.90.58.32', montant: '412,33 €', montantLettres: 'quatre cent douze euros et 33 centimes', lieu: 'Paris', date: '28/03/2017', micr: '000036   0230021566985   00700065456', postitAccessoire: 'Aide au stationnement avant' },
+          { banque: 'Banque', couleur: '#1565C0', agence: 'Paris 18ème, 14 avenue de la Banque, 75018 Paris', titulaire: 'M. Tristan Hamour', adresse: '20 rue des Écoles, 92700 Colombes', telephone: '01.04.07.02.09', montant: '54,00 €', montantLettres: 'cinquante quatre euros', lieu: 'Paris', date: '10/04/2018', micr: '000048   0480042598712   00800015297', postitAnnee: '2010', postitAccessoire: 'Tapis de sol textile' },
+          { banque: 'Banque', couleur: '#C8A415', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Beth Rhaves', adresse: '62 rue de Douai, 75009 Paris', telephone: '01.23.84.67.21', montant: '668,00 €', montantLettres: 'six cent soixante huit euros', lieu: 'Clichy', date: '04/07/2017', micr: '000036   0230021566985   00700065456', postitAnnee: '2017', postitAccessoire: 'Porte vélo sur attelage' },
+          { banque: 'Banque', couleur: '#1565C0', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Sandy Quilau', adresse: '13 rue de Rome, 75008 Paris', telephone: '01.03.63.81.01', montant: '89,64 €', montantLettres: 'quatre vingt neuf euros et soixante quatre centimes', lieu: 'Paris', date: '06/01/2014', micr: '0230021566985   00700065456', postitAnnee: '2006', postitAccessoire: 'Antivol mécanique' },
+          { banque: 'Spécimen Chèque', couleur: '#5B6770', agence: 'Paris 18ème, 36 quai de la Bourse, 75018 Paris', titulaire: 'M. Larry Bambel', adresse: '2 rue Vincent Compoint, 75018 Paris', telephone: '01.09.63.58.88', montant: '407,01 €', montantLettres: 'quatre cent sept euros et 1 centime', lieu: 'Paris', date: '13/02/2020', micr: '00001234   98765556789002000   189654123', postitAnnee: '2011', postitAccessoire: 'Coffre de toit' },
+          { banque: 'BNP Paribas', couleur: '#00915A', agence: 'Domiciliation Grenette (00622)', titulaire: 'M. Cyril Hique', adresse: '9 rue Ganneron, 75017 Paris', telephone: '01.61.94.70.36', montant: '43,83 €', montantLettres: 'quarante trois euros et quatre vingt trois centimes', lieu: 'Paris', date: '15/05/2010', micr: '003564   66   7054   45126358   01', postitAnnee: '2010', postitAccessoire: 'Enjoliveur noir et jaune' },
+          { banque: 'Banque', couleur: '#C8A415', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Bernadette Dejeu', adresse: '8 rue Eugène Carrière, 75018 Paris', telephone: '01.73.18.95.49', montant: '802,99 €', montantLettres: 'huit cent deux euros et 99 centimes', lieu: 'Paris', date: '21/05/2020', micr: '000036   0230021566985   00700065456', postitAnnee: '2019', postitAccessoire: 'Pack attelage col de cygne 13B' },
+        ] },
+        { intertitre: "Les relevés d'identité bancaire (RIB)" },
+        { ribs: [
+          { banque: 'Société Générale', couleur: '#E2241A', titulaire: 'M. Guy Tar', adresse: '12 rue Arsène Houssaye, 92230 Gennevilliers — Tél : 01.71.67.23.98', iban: 'FR76 30003 03200 00050509796 96', bic: 'SOGEFRPP', postitAnnee: '2020', postitAccessoire: 'Aide au stationnement avant' },
+          { banque: 'LCL', couleur: '#003B7E', titulaire: 'M. Jacques Huze', adresse: '33 rue de la Joncquière, 75017 Paris — Tél : 01.39.45.93.25', iban: 'FR76 3000 2080 2600 0006 6341 X20', bic: 'CRLYFRPP', postitAnnee: '2016' },
+          { banque: 'Banque', couleur: '#1565C0', titulaire: 'Mme Eva Zion', adresse: '11 rue Georges Seurat, 92110 Clichy — Tél : 01.65.84.03.69', iban: 'FR00 1234 5123 4512 3456 7891 A12', bic: 'ABCDEFGH', postitAnnee: '2010' },
+          { banque: 'Crédit Agricole', couleur: '#006B3F', titulaire: 'M. Éric Dupont', adresse: '8 rue des Fermiers, 75017 Paris — Tél : 01.02.03.04.05', iban: 'FR76 1990 6000 0942 5760 0800 171', bic: 'AGRIRERX', postitAnnee: '2006' },
+          { banque: 'CIC — Crédit Industriel et Commercial', couleur: '#003B7E', titulaire: 'M. Yvan Dubois', adresse: '60 rue du Colonel Fabien, 93100 Montreuil — Tél : 01.56.18.94.03', iban: 'FR76 3006 6107 4100 0104 6100 156', bic: 'CMCIFRPP', postitAnnee: '2011' },
+          { banque: 'Caisse d\u2019Épargne', couleur: '#C8102E', titulaire: 'M. Jean Bon', adresse: '6 rue du Dr Paul Brousse, 75017 Paris — Tél : 01.41.84.07.40', iban: 'FR76 1382 5002 0008 1101 8161 990', bic: 'CEPAFRPP382', postitAnnee: '2018' },
+          { banque: 'BNP Paribas', couleur: '#00915A', titulaire: 'Mme Élise Hémoi', adresse: '32 rue du Général Bertrand, 75007 Paris — Tél : 01.78.41.29.57', iban: 'FR76 3000 4006 2200 0102 6178 556', bic: 'BNPAFRPPTAS', postitAnnee: '2019' },
         ] },
         { intertitre: 'Les suggestions des clients' },
         { postits: [
           { prenom: 'Cécile', nom: 'Anssieux', adresse: '1 rue Fructidor, 93400 Saint-Ouen', telephone: '01.91.36.01.57', suggestion: "J'étais venue pour un rétroviseur. Je suis enceinte de 8 mois et j'aurais aimé pouvoir m'asseoir en attendant mon tour.", date: '06 déc. 2019' },
-          { prenom: 'Paul', nom: 'Auchon', adresse: '11 Passage de Flandres, 75015 Paris', telephone: '01.58.23.94.71', suggestion: "Je suis venu acheter un autoradio, il y avait une queue pas possible. Il aurait été appréciable avec cette chaleur qu'il y ait une fontaine à eau à disposition des clients.", date: '22 juin 2015' },
+          { prenom: 'Paul', nom: 'Auchon', adresse: '11 Passage de Flandres, 75015 Paris', telephone: '01.58.23.94.71', suggestion: "Je suis venu acheter un autoradio, il y avait une queue pas possible. Il aurait été appréciable avec cette chaleur qu'il y ait une fontaine à eau à disposition des clients.", date: '22 juin 2015', couleur: '#F4C9D7' },
         ] },
       ] },
       { numero: 4, titre: "Tableau d'arrondis en temps", texte: [

@@ -732,61 +732,105 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
   )
 }
 
-// Chèques bancaires réalistes : couleur + logo (initiales) de la banque.
+// Chèques bancaires réalistes : en-tête banque (couleur + logo), agence, montant
+// chiffres + lettres, bénéficiaire, titulaire, lieu/date, ligne MICR. Le post-it
+// (année + accessoire) est placé AU-DESSUS du chèque, sans recouvrir aucune info.
 function ChequesVue({ cheques }: { cheques: NonNullable<BlocDocumentTexte['cheques']> }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14, margin: '10px 0' }}>
-      {cheques.map((c, i) => (
-        <div key={i} style={{ position: 'relative', border: `1px solid ${c.couleur}33`, borderTop: `5px solid ${c.couleur}`, borderRadius: 8, background: 'linear-gradient(180deg,#FFFFFF 0%, #FBFCFD 100%)', boxShadow: '0 1px 5px rgba(0,0,0,0.08)', padding: '14px 16px', overflow: 'hidden' }}>
-          {/* filigrane diagonal */}
-          <div style={{ position: 'absolute', right: -20, top: 10, fontSize: 46, fontWeight: 800, color: `${c.couleur}0F`, transform: 'rotate(-12deg)', letterSpacing: 1, pointerEvents: 'none', whiteSpace: 'nowrap' }}>{c.banque}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <span style={{ width: 34, height: 34, borderRadius: 6, background: c.couleur, color: '#FFFFFF', fontWeight: 800, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              {c.banque.split(' ').map((m) => m.charAt(0)).join('').slice(0, 3).toUpperCase()}
-            </span>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: 800, fontSize: 14, color: c.couleur }}>{c.banque}</div>
-              {c.agence && <div style={{ fontSize: 11, color: '#6B7280' }}>{c.agence}</div>}
-            </div>
-            <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-              {c.montant && <div style={{ border: '1px solid #C9D6E3', borderRadius: 4, padding: '4px 10px', fontSize: 13, fontWeight: 700, color: '#1F2933', background: '#FFFFFF' }}>{c.montant}</div>}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18, margin: '10px 0' }}>
+      {cheques.map((c, i) => {
+        const initiales = c.banque.split(' ').map((m) => m.charAt(0)).join('').slice(0, 3).toUpperCase()
+        const aPostit = !!(c.postitAnnee || c.postitAccessoire)
+        return (
+          <div key={i}>
+            {aPostit && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -6, paddingRight: 18 }}>
+                <div style={{ background: '#FFF7B0', padding: '8px 12px', boxShadow: '0 3px 7px rgba(0,0,0,0.22)', transform: 'rotate(-2deg)', fontFamily: '"Bradley Hand","Segoe Print","Comic Sans MS",cursive', fontSize: 13, color: '#3A3A1E', lineHeight: 1.4, borderRadius: 2 }}>
+                  {c.postitAnnee && <div style={{ fontWeight: 700 }}>Véhicule acheté en {c.postitAnnee}</div>}
+                  {c.postitAccessoire && <div>{c.postitAccessoire}</div>}
+                </div>
+              </div>
+            )}
+            <div style={{ position: 'relative', background: '#FBFCFB', border: `1px solid ${c.couleur}33`, borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 5px rgba(0,0,0,0.13)' }}>
+              <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(115deg, ${c.couleur}0C 0 10px, transparent 10px 20px)`, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', right: 14, top: 10, fontSize: 44, fontWeight: 800, color: `${c.couleur}12`, transform: 'rotate(-8deg)', letterSpacing: 1, pointerEvents: 'none' }}>{initiales}</div>
+              <div style={{ position: 'relative', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+                    <span style={{ width: 32, height: 30, borderRadius: 4, background: c.couleur, color: '#FFFFFF', fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{initiales}</span>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 800, fontSize: 14, color: c.couleur }}>{c.banque}</div>
+                      {c.agence && <div style={{ fontSize: 10, color: '#6B7280' }}>{c.agence}</div>}
+                      {c.telephone && <div style={{ fontSize: 10, color: '#6B7280' }}>Tél : {c.telephone}</div>}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 8.5, color: '#7A7A7A', letterSpacing: 0.5 }}>B.P.F.</div>
+                    {c.montant && <div style={{ border: `1.5px solid ${c.couleur}`, borderRadius: 3, padding: '4px 12px', fontWeight: 700, fontSize: 14, marginTop: 2, color: '#1F2933', background: '#FFFFFF' }}>{c.montant}</div>}
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: '#222', lineHeight: 1.7 }}>
+                  <div style={{ borderBottom: '1px dotted #BBBBBB', paddingBottom: 2 }}>Payez contre ce chèque non endossable : <span style={{ fontStyle: 'italic', color: '#555' }}>{c.montantLettres ?? '\u2026'}</span></div>
+                  <div style={{ borderBottom: '1px dotted #BBBBBB', paddingTop: 4, paddingBottom: 2 }}>à : <span style={{ fontWeight: 700 }}>{c.beneficiaire ?? 'RENAULT RETAIL GROUP — Championnet'}</span></div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
+                  <div style={{ fontSize: 11, lineHeight: 1.45 }}>
+                    <div style={{ fontWeight: 700, textTransform: 'uppercase' }}>{c.titulaire}</div>
+                    {c.adresse && <div style={{ color: '#444' }}>{c.adresse}</div>}
+                  </div>
+                  <div style={{ textAlign: 'right', fontSize: 10, color: '#555', flexShrink: 0 }}>
+                    {c.lieu && <div>à {c.lieu}</div>}
+                    {c.date && <div>le {c.date}</div>}
+                  </div>
+                </div>
+                <div style={{ fontFamily: '"Courier New", monospace', fontSize: 11, letterSpacing: 1, color: '#222', borderTop: '1px solid #DDD', paddingTop: 6, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                  <span>{c.micr ?? '\u2448 0000000 \u2448   00000 \u2446 00000 \u2446 00000000000 \u2448'}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div style={{ borderTop: '1px dashed #DCE3EA', paddingTop: 10, fontSize: 13, color: '#1F2933', lineHeight: 1.5, position: 'relative' }}>
-            <div style={{ fontWeight: 700 }}>{c.titulaire}</div>
-            {c.adresse && <div>{c.adresse}</div>}
-            {c.telephone && <div style={{ color: '#4B5563' }}>Tél : {c.telephone}</div>}
-            {(c.lieu || c.date) && <div style={{ marginTop: 4, fontSize: 12, color: '#6B7280', fontStyle: 'italic' }}>{[c.lieu, c.date].filter(Boolean).join(', le ')}</div>}
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
 
-// RIB facon document bancaire : entete coloree + titulaire + IBAN/BIC.
+// RIB facon document bancaire : entete coloree + titulaire + IBAN/BIC. Post-it
+// (annee + accessoire) place au-dessus, sans recouvrir aucune information.
 function RibsVue({ ribs }: { ribs: NonNullable<BlocDocumentTexte['ribs']> }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14, margin: '10px 0' }}>
-      {ribs.map((r, i) => (
-        <div key={i} style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 5px rgba(0,0,0,0.07)' }}>
-          <div style={{ background: r.couleur, color: '#FFFFFF', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 30, height: 30, borderRadius: 6, background: 'rgba(255,255,255,0.22)', fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {r.banque.split(' ').map((m) => m.charAt(0)).join('').slice(0, 3).toUpperCase()}
-            </span>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 14 }}>{r.banque}</div>
-              <div style={{ fontSize: 11, opacity: 0.9 }}>Relevé d\u2019Identité Bancaire (RIB)</div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '10px 0' }}>
+      {ribs.map((r, i) => {
+        const initiales = r.banque.split(' ').map((m) => m.charAt(0)).join('').slice(0, 3).toUpperCase()
+        const aPostit = !!(r.postitAnnee || r.postitAccessoire)
+        return (
+          <div key={i}>
+            {aPostit && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -6, paddingRight: 16 }}>
+                <div style={{ background: '#FFF7B0', padding: '8px 12px', boxShadow: '0 3px 7px rgba(0,0,0,0.22)', transform: 'rotate(-2deg)', fontFamily: '"Bradley Hand","Segoe Print","Comic Sans MS",cursive', fontSize: 13, color: '#3A3A1E', lineHeight: 1.4, borderRadius: 2 }}>
+                  {r.postitAnnee && <div style={{ fontWeight: 700 }}>Véhicule acheté en {r.postitAnnee}</div>}
+                  {r.postitAccessoire && <div>{r.postitAccessoire}</div>}
+                </div>
+              </div>
+            )}
+            <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 5px rgba(0,0,0,0.07)' }}>
+              <div style={{ background: r.couleur, color: '#FFFFFF', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 30, height: 30, borderRadius: 6, background: 'rgba(255,255,255,0.22)', fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{initiales}</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 14 }}>{r.banque}</div>
+                  <div style={{ fontSize: 11, opacity: 0.9 }}>Relevé d\u2019Identité Bancaire (RIB)</div>
+                </div>
+              </div>
+              <div style={{ padding: '12px 14px', fontSize: 13, color: '#1F2933', lineHeight: 1.6 }}>
+                <div style={{ fontWeight: 700 }}>{r.titulaire}</div>
+                {r.adresse && <div style={{ color: '#4B5563' }}>{r.adresse}</div>}
+                {r.iban && <div style={{ marginTop: 6, fontFamily: 'monospace', fontSize: 13, letterSpacing: 0.5 }}><span style={{ color: '#6B7280', fontFamily: 'Arial' }}>IBAN </span>{r.iban}</div>}
+                {r.bic && <div style={{ fontFamily: 'monospace', fontSize: 13 }}><span style={{ color: '#6B7280', fontFamily: 'Arial' }}>BIC </span>{r.bic}</div>}
+              </div>
             </div>
           </div>
-          <div style={{ padding: '12px 14px', fontSize: 13, color: '#1F2933', lineHeight: 1.6 }}>
-            <div style={{ fontWeight: 700 }}>{r.titulaire}</div>
-            {r.adresse && <div style={{ color: '#4B5563' }}>{r.adresse}</div>}
-            {r.iban && <div style={{ marginTop: 6, fontFamily: 'monospace', fontSize: 13, letterSpacing: 0.5 }}><span style={{ color: '#6B7280', fontFamily: 'Arial' }}>IBAN </span>{r.iban}</div>}
-            {r.bic && <div style={{ fontFamily: 'monospace', fontSize: 13 }}><span style={{ color: '#6B7280', fontFamily: 'Arial' }}>BIC </span>{r.bic}</div>}
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
