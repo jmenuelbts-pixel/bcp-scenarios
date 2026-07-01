@@ -3,8 +3,9 @@
 // Deux zones de saisie enregistrees dans Supabase (un journal par mission,
 // le dernier remplace le precedent) et rechargees a l'ouverture.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { enregistrerJournal, chargerJournal } from '../../lib/eleve'
+import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon } from '../../lib/brouillon'
 
 interface Props {
   couleur: string
@@ -19,12 +20,31 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
 
+  const brouillon = useRef(creerEnregistreurBrouillon<{ nonReussi: string; moinsBien: string }>(etudiantId ?? 'anon', missionId, 'journal'))
+  useEffect(() => {
+    brouillon.current = creerEnregistreurBrouillon<{ nonReussi: string; moinsBien: string }>(etudiantId ?? 'anon', missionId, 'journal')
+  }, [etudiantId, missionId])
+
   useEffect(() => {
     if (!etudiantId) return
-    chargerJournal(etudiantId, missionId).then((j) => {
-      setNonReussi(j.nonReussi)
-      setMoinsBien(j.moinsBienReussi)
+    let actif = true
+    chargerJournal(etudiantId, missionId).then(async (j) => {
+      if (!actif) return
+      // Brouillon non encore enregistre : il est plus recent que le journal en base, il prime.
+      const b = await chargerBrouillon<{ nonReussi: string; moinsBien: string }>(etudiantId, missionId, 'journal')
+      if (!actif) return
+      if (b && typeof b === 'object') {
+        setNonReussi(b.nonReussi ?? j.nonReussi)
+        setMoinsBien(b.moinsBien ?? j.moinsBienReussi)
+      } else {
+        setNonReussi(j.nonReussi)
+        setMoinsBien(j.moinsBienReussi)
+      }
     })
+    return () => {
+      actif = false
+      brouillon.current.flush()
+    }
   }, [etudiantId, missionId])
 
   async function enregistrer() {
@@ -38,6 +58,8 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
     if (erreur) {
       setErreur('L enregistrement a echoue. Veuillez reessayer.')
     } else {
+      brouillon.current.annuler()
+      void effacerBrouillon(etudiantId, missionId, 'journal')
       setEnregistre(true)
     }
     setEnCours(false)
@@ -70,6 +92,7 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
         onChange={(e) => {
           setNonReussi(e.target.value)
           setEnregistre(false)
+          brouillon.current.sauver({ nonReussi: e.target.value, moinsBien })
         }}
         style={champ}
       />
@@ -83,6 +106,7 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
         onChange={(e) => {
           setMoinsBien(e.target.value)
           setEnregistre(false)
+          brouillon.current.sauver({ nonReussi, moinsBien: e.target.value })
         }}
         style={champ}
       />

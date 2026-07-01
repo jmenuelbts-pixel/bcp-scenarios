@@ -2,9 +2,10 @@
 // Onglet Synthèse : carte arborescente a completer puis envoyer au professeur.
 // Une fois envoyee, la saisie est verrouillee (plus aucune modification).
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ContenuSynthese, NoeudSynthese } from '../../data/contenus'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
+import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon } from '../../lib/brouillon'
 import { eclaircir } from '../../data/schema'
 
 interface Props {
@@ -20,18 +21,30 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
 
+  const brouillon = useRef(creerEnregistreurBrouillon<Record<string, string>>(etudiantId ?? 'anon', missionId, 'synthese'))
+  useEffect(() => {
+    brouillon.current = creerEnregistreurBrouillon<Record<string, string>>(etudiantId ?? 'anon', missionId, 'synthese')
+  }, [etudiantId, missionId])
+
   useEffect(() => {
     let actif = true
     if (!etudiantId) return
-    chargerQuiz(etudiantId, missionId, 'synthese').then((s) => {
-      if (!actif || !s) return
-      if (s.reponses && typeof s.reponses === 'object') {
-        setReponses(s.reponses as Record<string, string>)
+    chargerQuiz(etudiantId, missionId, 'synthese').then(async (s) => {
+      if (!actif) return
+      if (s) {
+        if (s.reponses && typeof s.reponses === 'object') {
+          setReponses(s.reponses as Record<string, string>)
+        }
+        setVerrouille(true)
+        void effacerBrouillon(etudiantId, missionId, 'synthese')
+        return
       }
-      setVerrouille(true)
+      const b = await chargerBrouillon<Record<string, string>>(etudiantId, missionId, 'synthese')
+      if (actif && b && typeof b === 'object') setReponses(b)
     })
     return () => {
       actif = false
+      brouillon.current.flush()
     }
   }, [etudiantId, missionId])
 
@@ -54,7 +67,11 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
     setErreur(null)
     const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'synthese', reponses, 0)
     if (erreur) setErreur('L envoi a echoue. Veuillez reessayer.')
-    else setVerrouille(true)
+    else {
+      brouillon.current.annuler()
+      void effacerBrouillon(etudiantId, missionId, 'synthese')
+      setVerrouille(true)
+    }
     setEnCours(false)
   }
 
@@ -66,7 +83,11 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
         disabled={verrouille}
         onChange={(e) => {
           if (verrouille) return
-          setReponses((r) => ({ ...r, [noeud.id]: e.target.value }))
+          setReponses((r) => {
+            const maj = { ...r, [noeud.id]: e.target.value }
+            brouillon.current.sauver(maj)
+            return maj
+          })
         }}
         style={{
           fontFamily: 'Arial, sans-serif',

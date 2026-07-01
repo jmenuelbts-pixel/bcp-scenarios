@@ -55,6 +55,12 @@ export interface AnnexeGrille {
   // Pre-remplissage optionnel de certaines cellules (libelles fixes a gauche,
   // le reste a completer). Tableau de lignes ; '' = cellule a saisir.
   prerempli?: string[][]
+  // Largeurs de colonnes optionnelles (ex : ['35%','65%']) pour donner plus de
+  // place aux reponses.
+  largeurs?: string[]
+  // Si vrai, les cellules saisissables sont des zones multi-lignes (textarea).
+  reponseMultiligne?: boolean
+  lignesReponse?: number // nb de lignes de la zone de saisie (defaut 3)
 }
 
 export interface AnnexeTexte {
@@ -292,6 +298,18 @@ export interface AnnexeMail {
   titre: string
 }
 
+// Mail en lecture seule facon Gmail/Yahoo : en-tete fenetre, De/A/Objet figes,
+// corps affiche (paragraphes). Sert a reproduire un courriel a lire.
+export interface AnnexeMailLecture {
+  type: 'maillecture'
+  id: string
+  titre: string
+  de: string
+  a: string
+  objet: string
+  corps: string[]
+}
+
 export interface AnnexeSms {
   type: 'sms'
   id: string
@@ -418,6 +436,13 @@ export interface AnnexeSimulateur {
   nbEtapesAffiche: number // pour la barre de progression (ex : 6)
   etapes: EtapeSimulateur[]
   resultats: EcranResultatSimulateur[]
+  // Personnalisation de l'habillage (optionnel ; valeurs par defaut = prime conversion)
+  enteteTitre?: string // bandeau du haut
+  accrocheTitre?: string // gros titre de l'ecran d'accueil
+  accrocheSousTitre?: string // sous-titre de l'ecran d'accueil
+  libelleEtape?: string // mot affiche dans la progression (ex : Question, Étape)
+  libelleResultatProgression?: string // mot affiche a la fin de la progression
+  resultatTitreOk?: string // titre de l'ecran resultat positif
 }
 
 // Catalogue d'accessoires facon site marchand pro : compteur, filtres par
@@ -471,13 +496,119 @@ export interface AnnexeQuestionsReponses {
   questions: { libelle: string; lignes?: number }[]
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses
+// Tableau de freins facon logiciel : zone de citation du frein + cases a cocher
+// exclusives parmi des types (Peur / Inhibition / Prix).
+export interface AnnexeFreins {
+  type: 'freins'
+  id: string
+  titre: string
+  entete?: string
+  colonnes: string[] // types de freins (ex : Peur, Inhibition, Prix)
+  nbLignes: number
+}
+
+// Fiche client facon vrai logiciel de gestion commerciale : fenetre avec barre
+// de titre, sections Identite / Coordonnees / Divers, menus deroulants, boutons
+// Nettoyer / Historique / Valider / Quitter.
+export interface AnnexeFicheClient {
+  type: 'ficheclient'
+  id: string
+  titre: string
+}
+
+// Planning d'interventions facon logiciel de prise de rendez-vous : grille
+// calendrier (jours en colonnes, creneaux matin / apres-midi en lignes), cases
+// pre-remplies avec les interventions existantes, cases vides cliquables ou
+// l'eleve place le rendez-vous du client. Logo en en-tete.
+export interface CreneauPlanning {
+  jour: number // numero du jour dans le mois
+  creneau: 'matin' | 'aprem'
+  texte?: string // intervention pre-remplie (vide = a completer par l'eleve)
+  ferie?: boolean
+}
+export interface MoisPlanning {
+  titre: string // ex : AVRIL 202N
+  // premier jour de la semaine du 1er (0 = lundi ... 6 = dimanche)
+  decalage: number
+  nbJours: number
+  creneaux: CreneauPlanning[]
+}
+export interface AnnexePlanning {
+  type: 'planning'
+  id: string
+  titre: string
+  logo?: string
+  mois: MoisPlanning[]
+}
+
+// Bon de commande facon logiciel professionnel : en-tete enseigne, coordonnees
+// client, lignes d'articles, totaux TVA, zone signature. Champs saisissables.
+export interface LigneBonCommande {
+  reference?: string
+  libelle?: string
+  quantite?: string
+  prixHT?: string
+  prixTTC?: string
+}
+export interface AnnexeBonCommande {
+  type: 'boncommande'
+  id: string
+  titre: string
+  numero: string
+  vendeur: string[] // bloc enseigne (adresse, tel)
+  nbLignesArticles: number
+  preLignes?: LigneBonCommande[]
+}
+
+// Frise des etapes de la livraison : suite d'etapes a remettre dans l'ordre /
+// completer. Certaines etapes sont fixes, d'autres a saisir (cases jaunes).
+export interface AnnexeEtapesLivraison {
+  type: 'etapeslivraison'
+  id: string
+  titre: string
+  nbEtapes: number
+  preEtapes?: string[] // etapes pre-remplies ('' = a completer)
+  // Disposition en schema non lineaire : etiquettes des cases melangees + zones
+  // jaunes a numeroter / completer (comme le document d'origine). Si fournie,
+  // remplace le rendu lineaire.
+  schema?: { etiquettes: string[]; nbZones: number }
+}
+
+// Personnage + bulle de dialogue : l'eleve ecrit dans la bulle (comme une vraie
+// scene de vente). Reproduit les annexes "phrase a prononcer".
+export interface AnnexeBulle {
+  type: 'bulle'
+  id: string
+  titre: string
+  perso?: string // image du personnage
+  placeholder?: string
+  nbLignes?: number
+}
+
+export interface AnnexeNote {
+  type: 'note'
+  id: string
+  titre: string
+  logo?: string
+  de?: string
+  a?: string
+  date?: string
+  objet?: string
+  corps?: string[]
+  signature?: string
+}
+
+export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote
 
 export interface QuestionTravaux {
   numero: number
   consigne: string // ex : Completez l'identite de l'entreprise.
   ressources?: string // ex : Ressource 1, completez l'annexe 1.
   annexeId?: string // annexe rattachee a remplir
+  annexeId2?: string // seconde annexe rattachee (ex : 1a + 1b)
+  // Mise en situation intercalee, affichee juste AVANT cette question (encadre
+  // italique). Reproduit les contextualisations glissees entre deux questions.
+  contexteAvant?: string
   // Bouton optionnel ouvrant une ressource externe (le lien n'apparait jamais
   // en clair). Utilise par AMParis pour consulter les sites de l'entreprise.
   boutonLien?: string
@@ -486,6 +617,8 @@ export interface QuestionTravaux {
 
 export interface ActiviteTravaux {
   titre: string // ex : Activite 1 - L'entreprise et ses produits
+  // Mise en situation affichee sous le titre de l'activite (encadre italique).
+  contexte?: string
   questions: QuestionTravaux[]
 }
 
@@ -609,17 +742,161 @@ export interface BlocDocumentTexte {
   // capture). Reproduit les visuels d'origine (camembert, histogramme, icones
   // reseaux sociaux, grille produits...). Legende optionnelle.
   image?: { src: string; alt: string; legende?: string; largeur?: number }
+  // Galerie de produits facon site marchand : cartes avec photo, titre, prix,
+  // reference, coloris, dimensions. Reproduit une page catalogue riche.
+  galerieProduits?: { titre: string; image: string; prix: string; reference: string; coloris: string; dimensions: string }[]
+  // Suite d'etapes visuelles (cartes numerotees reliees par des fleches) facon
+  // schema de processus. Plus dynamique qu'une simple liste a puces.
+  etapesVisuelles?: string[]
+  // Cartes d'offres de prestation facon page Leroy Merlin (titre, prix, photo,
+  // note avis, details, conditions, engagements).
+  offresPrestation?: {
+    titre: string
+    prix: string
+    prixLibelle?: string
+    image?: string
+    note?: string
+    avis?: string
+    details: string[]
+    conditions?: string[]
+    engagements?: { titre: string; texte: string }[]
+    filAriane?: string
+  }[]
+  // Logo affiche en haut a droite du bloc (ex : en-tete de note interne).
+  logoEntete?: string
   // Habillage facon page web riche : quand true, le bloc est encadre avec un
   // bandeau de marque (logo AMParis) et une mise en page de site.
   pageWeb?: boolean
   // Journal d'appels facon logiciel de compte rendu : liste de fiches d'appel
   // (numero appele + reponse + interlocuteur), cliquables avec detail.
   journalAppels?: { entete?: string; appels: { numero: string; reponse: string; interlocuteur?: string }[] }
+  // Cheques bancaires realistes : chaque cheque reprend la couleur et le logo
+  // (initiales) de sa banque (Societe Generale rouge/noir, BNP vert, Credit
+  // Agricole vert, LCL bleu...). Sert de support pour relever les coordonnees.
+  cheques?: {
+    banque: string
+    couleur: string // couleur dominante de la banque
+    agence?: string // ligne agence (adresse de la banque)
+    titulaire: string
+    adresse?: string
+    telephone?: string
+    montant?: string // montant en chiffres (ex : 8 290,00 €)
+    montantLettres?: string // montant en toutes lettres
+    beneficiaire?: string // a l'ordre de
+    lieu?: string
+    date?: string
+    micr?: string // ligne magnetique bas de cheque
+    // Post-it colle sur le cheque : annee d'achat du vehicule + accessoire achete.
+    postitAnnee?: string
+    postitAccessoire?: string
+  }[]
+  // Post-it de suggestions clients facon note manuscrite (papier jaune, coin
+  // corne). Reproduit les fiches suggestion laissees par les clients.
+  postits?: {
+    prenom?: string
+    nom?: string
+    adresse?: string
+    telephone?: string
+    suggestion?: string
+    date?: string
+    couleur?: string // couleur du papier (defaut jaune)
+  }[]
+  // Relevé d'identité bancaire (RIB) facon document bancaire : entete banque
+  // coloree + bloc titulaire + IBAN/BIC. Reprend la couleur/logo de la banque.
+  ribs?: {
+    banque: string
+    couleur: string
+    titulaire: string
+    adresse?: string
+    iban?: string
+    bic?: string
+    postitAnnee?: string
+    postitAccessoire?: string
+  }[]
+  // Configurateur de recherche vehicule facon formulaire Google/logiciel concession :
+  // suite d'etapes (Type, Categorie, Marque, Energie, Boite, Couleur, Prix...) avec
+  // options. Affiche comme un vrai formulaire a choix, etape par etape.
+  configurateurVehicule?: {
+    marque?: string
+    etapes: { titre: string; obligatoire?: boolean; aide?: string; options: string[] }[]
+  }
+  // Fiches produit vehicule consultables facon logiciel de concession : chaque fiche
+  // a des onglets (Fiche technique / Equipements / Services / Offres), un prix, une
+  // photo, des caracteristiques cle. L'eleve clique pour explorer chaque vehicule.
+  fichesVehicule?: {
+    titre?: string
+    vehicules: {
+      modele: string
+      version?: string
+      prix?: string
+      bandeau?: string // ex : Eligible prime a la conversion
+      image?: string
+      resume?: string // ex : Electrique - Zen - Automatique - 18 383 km - 2014
+      lieu?: string
+      etat?: string // Occasion / Neuf
+      garantie?: string
+      essentiel?: { label: string; valeur: string }[]
+      caracteristiques?: { label: string; valeur: string }[]
+      equipements?: string[]
+    }[]
+  }
+  // Simulateur/formulaire professionnel facon logiciel (prime a la conversion, calcul
+  // de credit...) : suite d'etapes, chacune soit a choix, soit a saisie libre (champs).
+  formulaireInteractif?: {
+    titre?: string
+    intro?: string[]
+    accent?: string // couleur d'accent (defaut : vert Quiziniere)
+    logo?: string // chemin image logo a afficher en tete
+    etapes: {
+      section?: string // bandeau de section
+      titre: string
+      obligatoire?: boolean
+      aide?: string
+      options?: { label: string; suite?: string }[] // choix (avec branchement optionnel)
+      champs?: { label: string; suffixe?: string }[] // saisies libres
+    }[]
+  }
+  // Catalogue d'accessoires facon boutique en ligne : barre de filtres par categorie
+  // + grille de produits (nom, sous-titre, prix, categorie). L'eleve filtre et consulte.
+  catalogueAccessoires?: {
+    titre?: string
+    nbTotal?: number
+    categories?: string[]
+    produits: { nom: string; categorie?: string; sousTitre?: string; prix: string; image?: string }[]
+  }
+  // Document facon livre ouvert a pages tournables : chaque page a un titre et du
+  // contenu (paragraphes/puces). L'eleve tourne les pages comme dans un vrai support.
+  livreOuvert?: {
+    titre?: string
+    pages: { titre?: string; paragraphes?: string[]; puces?: string[] }[]
+  }
+  // Temoignage facon personnage + bulle de dialogue : avatar a gauche, bulle a droite
+  // avec le texte, et un bouton discret pour regarder la video (accessibilite).
+  bulle?: {
+    nom?: string
+    role?: string
+    avatar?: string // image du personnage (optionnel)
+    initiale?: string // sinon, initiale dans une pastille
+    couleurAvatar?: string
+    lignes: string[] // paragraphes du temoignage
+    videoLien?: string
+  }
+  // Gabarit de note professionnelle (De / A / Date / Objet + corps), facon vrai
+  // logiciel de traitement de texte, avec en-tete logo. L'eleve la complete.
+  note?: {
+    logo?: string
+    de?: string
+    a?: string
+    date?: string
+    objet?: string
+    corps?: string[]
+    signature?: string
+  }
 }
 export interface DocumentRessource {
   numero: number // numero affiche (Document 1, 2...)
   titre: string
-  images: string[] // chemins des images (depuis /public), une ou plusieurs pages
+  images?: string[] // chemins des images (depuis /public), une ou plusieurs pages ; optionnel si le document est entierement textuel
   // Contenu textuel du document (reproduit mot pour mot), affiche quand il n'y
   // a pas d'image. Sert pour les documents entierement redactionnels.
   texte?: BlocDocumentTexte[]
@@ -755,11 +1032,99 @@ const RENAULT_M1: ContenuMission = {
     contexte:
       "Vous êtes en PFMP dans la concession Renault Paris Championnet, située 203-215 rue Championnet, 75018 Paris (18e arrondissement). L'entreprise est spécialisée dans la vente de véhicules neufs, de véhicules d'occasion et d'accessoires. C'est votre premier stage dans l'enseigne. Le responsable de l'agence souhaite que vous vous informiez sur l'entreprise afin de prendre en main les clients et les réclamations, sous la responsabilité de votre tuteur.",
     documents: [
-      { numero: 1, titre: "Identité de l'entreprise (site RRG Championnet)", images: ['/docs/renault-m1/doc1.jpg'] },
-      { numero: 2, titre: "Horaires d'ouverture du showroom", images: ['/docs/renault-m1/doc2.jpg'] },
-      { numero: 3, titre: 'Les biens (site RRG Championnet)', images: ['/docs/renault-m1/doc3.jpg'] },
-      { numero: 4, titre: 'Les services', images: ['/docs/renault-m1/doc4.jpg'] },
-      { numero: 5, titre: 'Le personnel (équipes présentées dans le désordre)', images: ['/docs/renault-m1/doc5a.jpg', '/docs/renault-m1/doc5b.jpg'] },
+      { numero: 1, titre: "Identité de l'entreprise (site RRG Championnet)", texte: [
+        { pageWeb: true },
+        { intertitre: 'Présentation de RENAULT CHAMPIONNET' },
+        { paragraphes: ['Bienvenue chez Renault Championnet Occasions.'] },
+        { intertitre: 'Qui sommes-nous ?' },
+        { puces: ['Société créée en 1978', 'Concessionnaire'] },
+        { paragraphes: [
+          'Nous mettons à votre disposition en exposition un très large choix de véhicules d\u2019occasion, plus de 500 véhicules toutes marques dont utilitaires récents, révisés, peu kilométrés et garantis.',
+          'Nous vous proposons également des solutions de financement adaptées sur mesure à vos besoins et à votre budget, ainsi que des devis de reprise de votre ancien véhicule sur place ou à domicile.',
+          'Un taux en TAEG à 1,90 % sur 12 mois pour 2000 € emprunté assurance incluse, ou un taux à 3,90 % en TEG sur 24 à 36 mois peu importe la somme empruntée. Une LOA est également possible sur des véhicules d\u2019occasions. Essai également possible sur RDV.',
+        ] },
+        { tableau: { colonnes: ['Contact société', ''], lignes: [
+          ['Raison sociale', 'RENAULT RETAIL GROUP — Championnet'],
+          ['Adresse', '215 rue Championnet, 75018 Paris (Métro Guy Môquet)'],
+          ['Téléphone', '01 42 28 36 36'],
+          ['Langues parlées', 'Français, Anglais, Allemand, Espagnol, Italien'],
+          ['Site internet', 'renault-occasions-paris-championnet.espacevo.fr'],
+        ] } },
+      ] },
+      { numero: 2, titre: "Horaires d'ouverture du showroom", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le showroom' },
+        { tableau: { colonnes: ['Jour', 'Horaires'], lignes: [
+          ['Lundi', '09:00 - 19:00'],
+          ['Mardi', '09:00 - 19:00'],
+          ['Mercredi', '09:00 - 19:00'],
+          ['Jeudi', '09:00 - 19:00'],
+          ['Vendredi', '09:00 - 19:00'],
+          ['Samedi', '09:00 - 18:00'],
+          ['Dimanche', 'Fermé'],
+        ] } },
+        { intertitre: 'Atelier mécanique' },
+        { tableau: { colonnes: ['Jour', 'Matin', 'Après-midi'], lignes: [
+          ['Lundi', '07:30 - 12:00', '13:00 - 18:00'],
+          ['Mardi', '07:30 - 12:00', '13:00 - 18:00'],
+          ['Mercredi', '07:30 - 12:00', '13:00 - 18:00'],
+          ['Jeudi', '07:30 - 12:00', '13:00 - 18:00'],
+          ['Vendredi', '07:30 - 12:00', '13:00 - 18:00'],
+          ['Samedi', 'Fermé', 'Fermé'],
+          ['Dimanche', 'Fermé', 'Fermé'],
+        ] } },
+      ] },
+      { numero: 3, titre: 'Les biens (site RRG Championnet)', texte: [
+        { pageWeb: true },
+        { intertitre: 'Nos véhicules' },
+        { paragraphes: ['La concession propose à la vente deux grands types de véhicules.'] },
+        { puces: [
+          'Véhicules neufs : la gamme Renault (Clio, Captur, Mégane, Kadjar, Twingo, Espace, Scénic, utilitaires…).',
+          'Véhicules d\u2019occasion : plus de 500 véhicules toutes marques, révisés, garantis, peu kilométrés (Clio 4, Kadjar, Nissan Qashqai 2…).',
+        ] },
+        { intertitre: 'Exemples de véhicules d\u2019occasion (nos coups de cœur)' },
+        { tableau: { colonnes: ['Modèle', 'Prix', 'Kilométrage'], lignes: [
+          ['Renault Clio 4', '11 290 €', '33 966 km'],
+          ['Renault Kadjar', '20 290 €', '18 890 km'],
+          ['Nissan Qashqai 2', '—', '—'],
+        ] } },
+      ] },
+      { numero: 4, titre: 'Les services', texte: [
+        { pageWeb: true },
+        { intertitre: 'Services disponibles' },
+        { puces: [
+          'Je recherche un véhicule : renseignez-vous sur nos véhicules neufs et d\u2019occasion.',
+          'J\u2019entretiens mon véhicule : prenez rendez-vous en atelier.',
+          'J\u2019ai besoin d\u2019un dépannage : contactez Renault Assistance.',
+          'Je loue un véhicule : louez un véhicule avec Renault Rent ou Renault Mobility.',
+        ] },
+        { intertitre: 'Entretien et réparation' },
+        { paragraphes: ['Entretien et Service APV de votre véhicule par des experts du réseau Renault, n° 01 53 53 60 75.'] },
+        { intertitre: 'Nos interventions' },
+        { puces: ['Entretien', 'Carrosserie / Vitrage', 'Révision', 'Diagnostic / réparation'] },
+      ] },
+      { numero: 5, titre: 'Le personnel (équipes présentées dans le désordre)', texte: [
+        { pageWeb: true },
+        { intertitre: 'L\u2019équipe des véhicules neufs' },
+        { tableau: { colonnes: ['Nom', 'Fonction'], lignes: [
+          ['Celine ETCHECOPAR', 'Assistant(e) de livraison'],
+          ['Pascal JEAN', 'Conseiller(e) commercial(e) véhicules neufs'],
+          ['Guillaume RAMUS', 'Chef des ventes véhicules neufs'],
+          ['Sergio POLATIAN', 'Directeur'],
+          ['José BENITEZ', 'Conseiller(e) commercial(e) véhicules neufs'],
+        ] } },
+        { intertitre: 'L\u2019équipe des véhicules d\u2019occasions' },
+        { tableau: { colonnes: ['Nom', 'Fonction'], lignes: [
+          ['Yayha ALLAOUI', 'Conseiller(e) commercial(e) véhicule occasion'],
+          ['Cyril COTTARD', 'Conseiller(e) commercial(e) véhicule occasion'],
+        ] } },
+        { intertitre: 'L\u2019équipe Services' },
+        { tableau: { colonnes: ['Nom', 'Fonction'], lignes: [
+          ['Matthieu MULLIEZ', 'Chef des ventes pièces de rechange'],
+          ['Bernard MERCIER', 'Conseiller(e) pièces de rechange'],
+          ['Badr CHATRAOUI', 'Chef des services techniques'],
+        ] } },
+      ] },
     ],
     objectifs: [
       "Identifier et présenter l'identité d'une unité commerciale (dénomination, statut, activité, coordonnées).",
@@ -774,6 +1139,7 @@ const RENAULT_M1: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — L'entreprise et ses produits",
+        contexte: "Votre responsable vous demande de vous familiariser avec l'entreprise en complétant son identité.",
         questions: [
           { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
           { numero: 2, consigne: 'Indiquez les horaires d\'ouverture de la partie showroom de la concession.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
@@ -1098,11 +1464,93 @@ const RENAULT_M2: ContenuMission = {
     contexte:
       "Votre responsable M. Prauviste souhaite mettre en place une campagne de communication. Il vous demande d'analyser le lieu de provenance des clients de la concession à partir du fichier clients, car il souhaite informer ceux qui sont à 20 minutes maximum des Journées Portes Ouvertes qui auront lieu le 11 novembre de 10 heures à 20 heures. Votre tuteur M. Yves Jamen souhaite que vous évaluiez, en voiture, la distance en temps qui sépare les clients de la concession.",
     documents: [
-      { numero: 1, titre: 'Les explications de M. Prauvit (la zone de chalandise)', images: ['/docs/renault-m2/doc1.jpg'] },
-      { numero: 2, titre: 'Les différentes représentations de la zone de chalandise', images: ['/docs/renault-m2/doc2.jpg'] },
-      { numero: 3, titre: 'Chèques, relevés d\'identité bancaire et suggestions des clients', images: ['/docs/renault-m2/doc3.jpg'] },
-      { numero: 4, titre: 'Tableau d\'arrondis en temps', images: ['/docs/renault-m2/doc4.jpg'] },
-      { numero: 5, titre: 'Extrait du fichier client (noms et adresses mail)', images: ['/docs/renault-m2/doc5.jpg'] },
+      { numero: 1, titre: 'Les explications de M. Prauviste (la zone de chalandise)', texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { texte: "« La zone de chalandise est la zone géographique qui entoure l'unité commerciale et dans laquelle on retrouve les clients et des prospects.", italique: true },
+          { texte: "Cet espace est traditionnellement réparti en trois zones :", italique: true },
+        ] },
+        { puces: [
+          "Primaire : c'est celle qui est la plus proche de l'unité commerciale et qui comporte la majorité de ses clients ou prospects ;",
+          "Secondaire : elle se trouve autour de la zone primaire et comporte un peu moins de clients ou prospects ;",
+          "Tertiaire : c'est la zone la plus éloignée de l'unité commerciale. Elle comporte un très petit nombre de clients ou prospects.",
+        ] },
+        { dialogue: [
+          { texte: "Le schéma de la zone de chalandise, avec ses trois zones géographiques, peut être représenté :", italique: true },
+        ] },
+        { puces: ['En temps (minutes) ;', 'En distance ;', 'En densité de clients. »'] },
+      ] },
+      { numero: 2, titre: 'Les différentes représentations de la zone de chalandise', texte: [
+        { pageWeb: true },
+        { intertitre: 'Les trois représentations' },
+        { paragraphes: ['La zone de chalandise peut être représentée de trois manières différentes selon le critère retenu.'] },
+        { image: { src: '/docs/renault-m2/zone-chalandise.png', alt: 'Les trois représentations de la zone de chalandise : en temps (courbes isochrones), en distance (courbes isométriques), en densité de clients ou prospects.', legende: 'En temps : courbes isochrones — En distance : courbes isométriques — En densité de clients ou prospects.' } },
+        { tableau: { colonnes: ['Représentation', 'Légende'], lignes: [
+          ['En temps : courbes isochrones', 'Moins de 5 minutes / Moins de 10 minutes / Moins de 15 minutes'],
+          ['En distance : courbes isométriques', "Moins d'1 kilomètre / Moins de 3 kilomètres / Moins de 5 kilomètres"],
+          ['En densité de clients ou prospects', 'Forte densité / Densité moyenne / Faible densité de clients ou prospects'],
+        ] } },
+      ] },
+      { numero: 3, titre: "Chèques, relevés d'identité bancaire et suggestions des clients", texte: [
+        { pageWeb: true },
+        { intertitre: 'Les chèques' },
+        { cheques: [
+          { banque: 'Crédit Agricole', couleur: '#006B3F', agence: 'Mutuel — Caisse Régionale du Centre de la Normandie, 10 rue Guilbert, 14300 Caen', titulaire: 'Mme Sasha Hutte', adresse: '7 rue Molière, 75001 Paris', telephone: '01.76.01.39.84', montant: '20,50 €', montantLettres: 'vingt euros et cinquante centimes', lieu: 'Paris', date: '02/10/2013', micr: '\u2448 0925614 \u2448   11006 \u2446 02041 \u2446 00021457893 \u2448', postitAnnee: '2016', postitAccessoire: 'Kit de sécurité 3 en 1' },
+          { banque: 'Caisse d\u2019Épargne', couleur: '#C8102E', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Édith Aurialle', adresse: '12 rue du Plaisir, 93400 Saint-Ouen', telephone: '01.63.90.58.32', montant: '412,33 €', montantLettres: 'quatre cent douze euros et 33 centimes', lieu: 'Paris', date: '28/03/2017', micr: '000036   0230021566985   00700065456', postitAccessoire: 'Aide au stationnement avant' },
+          { banque: 'Banque', couleur: '#1565C0', agence: 'Paris 18ème, 14 avenue de la Banque, 75018 Paris', titulaire: 'M. Tristan Hamour', adresse: '20 rue des Écoles, 92700 Colombes', telephone: '01.04.07.02.09', montant: '54,00 €', montantLettres: 'cinquante quatre euros', lieu: 'Paris', date: '10/04/2018', micr: '000048   0480042598712   00800015297', postitAnnee: '2010', postitAccessoire: 'Tapis de sol textile' },
+          { banque: 'Banque', couleur: '#C8A415', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Beth Rhaves', adresse: '62 rue de Douai, 75009 Paris', telephone: '01.23.84.67.21', montant: '668,00 €', montantLettres: 'six cent soixante huit euros', lieu: 'Clichy', date: '04/07/2017', micr: '000036   0230021566985   00700065456', postitAnnee: '2017', postitAccessoire: 'Porte vélo sur attelage' },
+          { banque: 'Banque', couleur: '#1565C0', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Sandy Quilau', adresse: '13 rue de Rome, 75008 Paris', telephone: '01.03.63.81.01', montant: '89,64 €', montantLettres: 'quatre vingt neuf euros et soixante quatre centimes', lieu: 'Paris', date: '06/01/2014', micr: '0230021566985   00700065456', postitAnnee: '2006', postitAccessoire: 'Antivol mécanique' },
+          { banque: 'Spécimen Chèque', couleur: '#5B6770', agence: 'Paris 18ème, 36 quai de la Bourse, 75018 Paris', titulaire: 'M. Larry Bambel', adresse: '2 rue Vincent Compoint, 75018 Paris', telephone: '01.09.63.58.88', montant: '407,01 €', montantLettres: 'quatre cent sept euros et 1 centime', lieu: 'Paris', date: '13/02/2020', micr: '00001234   98765556789002000   189654123', postitAnnee: '2011', postitAccessoire: 'Coffre de toit' },
+          { banque: 'BNP Paribas', couleur: '#00915A', agence: 'Domiciliation Grenette (00622)', titulaire: 'M. Cyril Hique', adresse: '9 rue Ganneron, 75017 Paris', telephone: '01.61.94.70.36', montant: '43,83 €', montantLettres: 'quarante trois euros et quatre vingt trois centimes', lieu: 'Paris', date: '15/05/2010', micr: '003564   66   7054   45126358   01', postitAnnee: '2010', postitAccessoire: 'Enjoliveur noir et jaune' },
+          { banque: 'Banque', couleur: '#C8A415', agence: 'CE-060809 — Paris 15ème, 18 rue de la Banque, 75015 Paris', titulaire: 'Mme Bernadette Dejeu', adresse: '8 rue Eugène Carrière, 75018 Paris', telephone: '01.73.18.95.49', montant: '802,99 €', montantLettres: 'huit cent deux euros et 99 centimes', lieu: 'Paris', date: '21/05/2020', micr: '000036   0230021566985   00700065456', postitAnnee: '2019', postitAccessoire: 'Pack attelage col de cygne 13B' },
+        ] },
+        { intertitre: "Les relevés d'identité bancaire (RIB)" },
+        { ribs: [
+          { banque: 'Société Générale', couleur: '#E2241A', titulaire: 'M. Guy Tar', adresse: '12 rue Arsène Houssaye, 92230 Gennevilliers — Tél : 01.71.67.23.98', iban: 'FR76 30003 03200 00050509796 96', bic: 'SOGEFRPP', postitAnnee: '2020', postitAccessoire: 'Aide au stationnement avant' },
+          { banque: 'LCL', couleur: '#003B7E', titulaire: 'M. Jacques Huze', adresse: '33 rue de la Joncquière, 75017 Paris — Tél : 01.39.45.93.25', iban: 'FR76 3000 2080 2600 0006 6341 X20', bic: 'CRLYFRPP', postitAnnee: '2016' },
+          { banque: 'Banque', couleur: '#1565C0', titulaire: 'Mme Eva Zion', adresse: '11 rue Georges Seurat, 92110 Clichy — Tél : 01.65.84.03.69', iban: 'FR00 1234 5123 4512 3456 7891 A12', bic: 'ABCDEFGH', postitAnnee: '2010' },
+          { banque: 'Crédit Agricole', couleur: '#006B3F', titulaire: 'M. Éric Dupont', adresse: '8 rue des Fermiers, 75017 Paris — Tél : 01.02.03.04.05', iban: 'FR76 1990 6000 0942 5760 0800 171', bic: 'AGRIRERX', postitAnnee: '2006' },
+          { banque: 'CIC — Crédit Industriel et Commercial', couleur: '#003B7E', titulaire: 'M. Yvan Dubois', adresse: '60 rue du Colonel Fabien, 93100 Montreuil — Tél : 01.56.18.94.03', iban: 'FR76 3006 6107 4100 0104 6100 156', bic: 'CMCIFRPP', postitAnnee: '2011' },
+          { banque: 'Caisse d\u2019Épargne', couleur: '#C8102E', titulaire: 'M. Jean Bon', adresse: '6 rue du Dr Paul Brousse, 75017 Paris — Tél : 01.41.84.07.40', iban: 'FR76 1382 5002 0008 1101 8161 990', bic: 'CEPAFRPP382', postitAnnee: '2018' },
+          { banque: 'BNP Paribas', couleur: '#00915A', titulaire: 'Mme Élise Hémoi', adresse: '32 rue du Général Bertrand, 75007 Paris — Tél : 01.78.41.29.57', iban: 'FR76 3000 4006 2200 0102 6178 556', bic: 'BNPAFRPPTAS', postitAnnee: '2019' },
+        ] },
+        { intertitre: 'Les suggestions des clients' },
+        { postits: [
+          { prenom: 'Cécile', nom: 'Anssieux', adresse: '1 rue Fructidor, 93400 Saint-Ouen', telephone: '01.91.36.01.57', suggestion: "J'étais venue pour un rétroviseur. Je suis enceinte de 8 mois et j'aurais aimé pouvoir m'asseoir en attendant mon tour.", date: '06 déc. 2019' },
+          { prenom: 'Paul', nom: 'Auchon', adresse: '11 Passage de Flandres, 75015 Paris', telephone: '01.58.23.94.71', suggestion: "Je suis venu acheter un autoradio, il y avait une queue pas possible. Il aurait été appréciable avec cette chaleur qu'il y ait une fontaine à eau à disposition des clients.", date: '22 juin 2015', couleur: '#F4C9D7' },
+        ] },
+      ] },
+      { numero: 4, titre: "Tableau d'arrondis en temps", texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['Zone', 'Distance en minutes', 'Arrondi des minutes'], lignes: [
+          ['Zone primaire', 'Entre 0 min et 10 min', '10 minutes'],
+          ['Zone secondaire', 'Entre 11 min et 20 min', '20 minutes'],
+          ['Zone tertiaire', 'Entre 21 min et 30 min', '30 minutes'],
+        ] } },
+      ] },
+      { numero: 5, titre: 'Extrait du fichier client', texte: [
+        { pageWeb: true },
+        { intertitre: 'Fichier clients' },
+        { tableau: { colonnes: ['Nom et prénom', 'Téléphone portable', 'Téléphone fixe', 'Adresse mail'], lignes: [
+          ['Éric Dupont', '07.61.94.70.36', '01.02.03.04.05', 'dupont.eric@gmail.com'],
+          ['Jean Bon', '07.39.45.93.25', '01.41.84.07.40', 'j.bon@gmail.com'],
+          ['Bernadette Dejeu', '06.03.63.81.01', '01.73.18.95.49', 'bernadejeu@yahoo.fr'],
+          ['Tristan Hamour', '07.58.23.94.71', '01.04.07.02.09', 'hamour.t@laposte.fr'],
+          ['Sandy Quilau', '06.56.18.94.03', '01.03.63.81.01', 's.quilau@hotmail.fr'],
+          ['Larry Bambel', '06.41.84.07.40', '01.09.63.58.88', 'l.bambel2@orange.fr'],
+          ['Beth Rhaves', '06.65.84.03.69', '01.23.84.67.21', 'rhavesbeth@yahoo.fr'],
+          ['Cyril Hique', '07.34.25.61.28', '01.61.94.70.36', 'cyrilhique@icloud.fr'],
+          ['Cécile Anssieux', '06.10.12.56.65', '01.91.36.01.57', 'cecile.anssieux@gmail.com'],
+          ['Yvan Dubois', '07.76.01.39.84', '01.56.18.94.03', 'duboisyvan75@outlook.com'],
+          ['Guy Tar', '06.64.46.82.28', '01.71.67.23.98', 'guy.tar@hotmail.com'],
+          ['Édith Aurialle', '06.61.94.70.36', '01.63.90.58.32', 'e_aurialle@orange.fr'],
+          ['Paul Auchon', '07.41.98.02.06', '01.58.23.94.71', 'polochon@free.fr'],
+          ['Eva Zion', '07.63.90.58.32', '01.65.84.03.69', 'e.zion@caramail.com'],
+          ['Sasha Hutte', '06.63.93.17.39', '01.76.01.39.84', 'sashahutte@sfr.fr'],
+          ['Élise Hémoi', '06.03.63.81.01', '01.78.41.29.57', 'hemoi-elise@gmail.com'],
+          ['Jacques Huze', '06.04.07.02.09', '01.39.45.93.25', 'jhuze@outlook.com'],
+        ] } },
+      ] },
     ],
     competence: {
       groupe: 'Compétence travaillée',
@@ -1117,12 +1565,14 @@ const RENAULT_M2: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — Les éléments de provenance de la clientèle',
+        contexte: "Votre responsable M. Prauviste souhaite mettre en place une campagne de communication. Il vous demande donc d'analyser le lieu de provenance des clients de la concession et du garage à partir du fichier clients car il souhaite informer ceux qui sont à 20 minutes maximum, des Journées Portes Ouvertes qui auront lieu le 11 novembre à 10 heures à 20 heures.",
         questions: [
           { numero: 1, consigne: 'À partir des chèques, des relevés d\'identité bancaire et des suggestions des clients, complétez le tableau de provenance.', ressources: 'Lire les documents 1, 2 et 3, compléter l\'annexe 1.', annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — La détermination de la zone de chalandise : en temps',
+        contexte: "Maintenant, votre tuteur M. Yves Jamen souhaite que vous évaluiez, en voiture, la distance en temps qui sépare les clients de la concession.",
         questions: [
           { numero: 2, consigne: 'Retrouvez et notez l\'adresse de la concession Renault.', ressources: 'Compléter l\'annexe 2.', annexeId: 'annexe2' },
           { numero: 3, consigne: 'Complétez le tableau en inscrivant les nom et prénom des clients, calculez la distance en temps (Google Maps) puis arrondissez à la dizaine supérieure.', ressources: 'Lire le document 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
@@ -1130,21 +1580,23 @@ const RENAULT_M2: ContenuMission = {
       },
       {
         titre: 'Activité 3 — La construction de la zone de chalandise',
+        contexte: "Maintenant que vous avez identifié la provenance des clients et le temps qu'ils mettent pour se rendre à la concession, votre tuteur vous demande de répondre à sa question.",
         questions: [
           { numero: 4, consigne: 'Selon vous, quel est l\'avantage pour la concession Renault de connaître d\'où viennent ses clients ?', ressources: 'Compléter l\'annexe 4.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 4 — Sélectionner les clients',
+        contexte: "Votre tuteur vous annonce qu'il ne souhaite faire bénéficier de ces journées portes ouvertes qu'aux clients de la zone primaire ou secondaire et qui ont une voiture achetée avant 2015. Il vous charge de les identifier tandis que les prospects, eux, seront contactés par l'autre stagiaire de la concession.",
         questions: [
-          { numero: 5, consigne: 'Indiquez le nom des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2022).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 5, consigne: 'Indiquez le nom et le mail des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2015).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
         ],
       },
     ],
     annexes: [
       { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Provenance des clients de la concession', colonnes: ['Nom et prénom', 'Adresse', 'Téléphone', 'Produit acheté', 'Année'], nbLignes: 17 },
       { type: 'tableau', id: 'annexe2', titre: 'Annexe 2 — Adresse de la concession', lignes: [{ id: 'adr', libelle: 'Adresse de la concession' }] },
-      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul de la distance en temps', colonnes: ['Nom', 'Prénom', 'Distance en km', 'Distance en minutes', 'Arrondi (dizaine sup.)'], nbLignes: 17 },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul de la distance en km et en temps', colonnes: ['Nom', 'Prénom', 'Distance entre le domicile du client et la concession en km', 'Distance entre le domicile du client et la concession en minute', 'Arrondir le temps à la dizaine supérieur'], nbLignes: 17 },
       { type: 'texte', id: 'annexe4', titre: 'Annexe 4 — Avantage pour Renault', lignes: 3 },
       { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Le nom des bénéficiaires de l\'invitation', colonnes: ['Nom des clients bénéficiaires'], nbLignes: 4 },
     ],
@@ -1329,10 +1781,53 @@ const RENAULT_M3: ContenuMission = {
     contexte:
       "Nous sommes le 2 novembre. Votre tuteur est absent et vous laisse une note vous demandant de rédiger le courriel commercial qui sera envoyé aux clients sélectionnés pour les Journées Portes Ouvertes du 11 novembre. Les jours suivants, vous préparerez le SMS de rappel puis l'accueil des clients le jour de l'évènement.",
     documents: [
-      { numero: 1, titre: 'Note de M. Prauviste (contenu du courriel)', images: ['/docs/renault-m3/doc1.jpg'] },
-      { numero: 2, titre: "Consignes pour la rédaction d'un SMS commercial", images: ['/docs/renault-m3/doc2.jpg'] },
-      { numero: 3, titre: "Consignes d'accueil de M. Prauviste", images: ['/docs/renault-m3/doc3.jpg'] },
-      { numero: 4, titre: 'Le paralangage (éléments non verbaux et signification)', images: ['/docs/renault-m3/doc4.jpg'] },
+      { numero: 1, titre: 'Note de M. Prauviste (contenu du courriel)', texte: [
+        { pageWeb: true },
+        { intertitre: "Note d'information" },
+        { paragraphes: ['Le courriel doit inciter les clients à venir découvrir les nouveaux modèles Renault.'] },
+        { paragraphes: ['Pour rédiger le courriel :'] },
+        { puces: [
+          'Écrivez en gros le nom de la concession ;',
+          "Écrivez une phrase d'accroche ;",
+          "Écrivez la date et l'heure de l'évènement ;",
+          'Insérez la photo d\u2019un des modèles de véhicules récents qui sera exposé ;',
+          "Écrivez l'adresse de la concession.",
+        ] },
+        { paragraphes: ["N'oubliez pas d'écrire l'adresse mail de tous les destinataires ainsi que celui de l'entreprise dpo@renault.com."] },
+      ] },
+      { numero: 2, titre: "Consignes pour la rédaction d'un SMS commercial", texte: [
+        { pageWeb: true },
+        { paragraphes: ["« SMS » signifie Short Message Service, c'est-à-dire « service de messages courts ». Cela signifie qu'en très peu de mots et en allant à l'essentiel, le client doit savoir de quoi il s'agit quand il ouvre le message."] },
+        { paragraphes: ['Donc pour rédiger le message de rappel, vous le structurerez de la façon suivante :'] },
+        { puces: [
+          "Nom de l'entreprise ;",
+          "Phrase d'accroche rappelant l'évènement ;",
+          "La date et l'heure ;",
+          "Site de l'entreprise et numéro de téléphone ;",
+          'STOP 36321 (cela donne la possibilité au client ou au prospect de ne plus recevoir de message publicitaire s\u2019il le souhaite).',
+        ] },
+        { paragraphes: ['Une fois le message rédigé, vérifiez votre orthographe puis envoyez-le. »'] },
+      ] },
+      { numero: 3, titre: "Consignes d'accueil de M. Prauviste", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire' },
+        { intertitre: '1 — Accueillir le client' },
+        { paragraphes: ["Lors de l'accueil :"] },
+        { puces: [
+          'Faire attention à votre communication non-verbale ;',
+          "Saluer le client avec une phrase d'accueil chaleureuse ;",
+        ] },
+      ] },
+      { numero: 4, titre: 'Le paralangage (éléments non verbaux et signification)', texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['Éléments non verbaux', 'Signification'], lignes: [
+          ['Regard', "Plus il est franc et long, plus il sera considéré comme « intéressé » ; plus il est court, plus il affirmera votre manque d'intérêt. Une personne dont le regard est fuyant ou focalisé sur les détails plutôt que sur ses interlocuteurs envoie un message négatif."],
+          ['Expression du visage', "Les froncements de sourcils marquent un mécontentement ou une remise en cause de l'échange ; les sourires en coin expriment un manque d'intérêt voire de sérieux ; le mordillement des lèvres une certaine gêne. À l'inverse, le sourire franc et les yeux grands ouverts traduisent l'ouverture d'esprit, l'écoute et l'empathie."],
+          ['Timbre de la voix', "Une voix tremblante, à peine audible, et une élocution rapide marquent un état d'anxiété, alors que la maîtrise de sa respiration, le timbre clair et une parfaite prononciation sont des preuves d'une forte personnalité."],
+          ['Gestes', "Passer sa main dans ses cheveux, se frotter le nez, la bouche ou le menton peuvent trahir un doute ou une grande anxiété, de même que des mouvements saccadés ou rapides. Au contraire, des mouvements amples, maîtrisés et lents sont des signes de confiance en soi. On peut citer la poignée de main, plus ou moins molle, plus ou moins appuyée."],
+          ['Posture', "Le dos droit, les pieds bien ancrés dans le sol, les mains contrôlées, le regard non fuyant montrent la confiance en soi, la solidité, la force ou un certain charisme. Le dos courbé, le regard fuyant, les mains constamment torturées marquent timidité, malaise, manque de confiance, nervosité. Bras ou jambes croisés dénotent une attitude fermée."],
+        ] } },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -1346,18 +1841,21 @@ const RENAULT_M3: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La rédaction du courriel pour les Journées Portes Ouvertes',
+        contexte: "Nous sommes le 2 novembre et votre tuteur est absent du bureau aujourd'hui. Il vous laisse une note dans laquelle il vous demande de rédiger le courriel commercial qui sera envoyé à tous les clients que vous avez sélectionnés précédemment selon les critères qu'il vous avait donnés.",
         questions: [
           { numero: 1, consigne: 'Rédigez le courriel destiné aux clients sélectionnés. Vous pouvez le rédiger directement sur l\'annexe 1a, ou en ligne (lien Quizinière / QR code, annexe 1b).', ressources: 'Lire le document 1, compléter l\'annexe 1a.', annexeId: 'annexe1a' },
         ],
       },
       {
         titre: 'Activité 2 — La prise de contact par SMS',
+        contexte: "Nous sommes le 10 novembre et c'est demain qu'auront lieu les Journées Portes Ouvertes organisées par Renault. Ce sera une journée très importante pour la concession et votre tuteur souhaite absolument que vous vous entraîniez à prendre contact avec la clientèle et ce quel que soit le canal utilisé.",
         questions: [
           { numero: 2, consigne: 'Rédigez le SMS destiné aux clients sélectionnés pour rappeler l\'évènement.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
         ],
       },
       {
         titre: 'Activité 3 — La prise de contact en face-à-face',
+        contexte: "Nous sommes aujourd'hui le 11 novembre il est 9h et l'évènement organisé va commencer dans une heure. Vous jetez un dernier coup d'œil rapide sur le livret que vous a donné votre responsable la veille. Il comporte les consignes pour faire un accueil positif au client.",
         questions: [
           { numero: 3, consigne: 'Pour chaque élément non verbal et sa signification, indiquez la communication que vous adopterez face au client.', ressources: 'Lire les documents 3 et 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
           { numero: 4, consigne: 'Rédigez la phrase d\'accueil que vous prononcerez pour répondre au client.', ressources: 'Lire et compléter l\'annexe 4.', annexeId: 'annexe4' },
@@ -1564,9 +2062,49 @@ const RENAULT_M4: ContenuMission = {
     contexte:
       "L'étape de la prise de contact est passée. Vous êtes en confiance pour mener l'entretien de vente en commençant par la recherche des besoins, afin de prodiguer ensuite les meilleurs conseils à vos clients. Vous recevez M. Dupont, accompagné de sa famille, venu envisager le changement de son véhicule.",
     documents: [
-      { numero: 1, titre: 'Comment connaître les besoins (les types de questions)', images: ['/docs/renault-m4/doc1.jpg'] },
-      { numero: 2, titre: "Les mobiles et motivations d'achat du client (SONCAS-E)", images: ['/docs/renault-m4/doc2.jpg'] },
-      { numero: 3, titre: 'Comment reformuler (les types de reformulation)', images: ['/docs/renault-m4/doc3.jpg'] },
+      { numero: 1, titre: 'Comment connaître les besoins (les types de questions)', texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 2. Recherche des besoins' },
+        { paragraphes: ['Les types de questions :'] },
+        { tableau: { colonnes: ['Type de question', 'Définition', 'Exemple'], lignes: [
+          ['Ouverte « O »', "Elle laisse le client s'exprimer.", "Pourquoi préférez-vous ce type d'enjoliveur ?"],
+          ['Fermée « F »', 'Elle ne permet qu\u2019une réponse précise : oui ou non, âge, pointure…', "Q : « Avez-vous déjà un autoradio ? » — R : « Oui » (ou non). Q : « Quelle est votre pointure ? » — R : « Je fais du 39 »"],
+          ['Alternative « A »', 'Elle donne le choix entre 2 possibilités.', 'Vous recherchez une voiture de 3 ou 5 portes ?'],
+          ['Questions à choix multiple « CM »', 'Elle donne le choix entre plusieurs possibilités. Le client peut donner plusieurs réponses parmi celles proposées.', 'Q : Vous prenez la cravate, la chemise, le pantalon, la ceinture ? — R : Je vais prendre la chemise, la cravate et la ceinture.'],
+          ['Question ricochet « R »', 'Elle permet de faire rebondir la conversation pour faire préciser sa pensée au client.', 'Pourquoi dites-vous que… ?'],
+          ['Question miroir « M »', 'Elle permet de relancer le dialogue en répétant de façon interrogative ce que vient de dire le client.', 'Client : Cette couleur me semble un peu voyante. Vendeur : Voyante ?'],
+        ] } },
+      ] },
+      { numero: 2, titre: "Les mobiles et motivations d'achat du client (SONCAS-E)", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 3. Identification des mobiles et des motivations' },
+        { paragraphes: ["Les mobiles d'achat :"] },
+        { tableau: { colonnes: ['Typologie', 'Exemples'], lignes: [
+          ['S comme Sécurité', 'Produit solide, fiable, robuste, garanti, de qualité'],
+          ['O comme Orgueil', 'Produit prestigieux, de marque'],
+          ['N comme Nouveauté', 'Produit récent, à la mode, innovant, moderne'],
+          ['C comme Confort', "Produit pratique, facile d'utilisation, efficace"],
+          ['A comme Argent', 'Paiement en plusieurs fois, produit économique, en promotion'],
+          ['S comme Sympathie', "Plaisir procuré par l'achat, attirance pour une couleur, une forme"],
+          ['E comme Environnement', 'Produit durable, écologique'],
+        ] } },
+        { paragraphes: ["Les motivations d'achat :"] },
+        { tableau: { colonnes: ['Typologie', 'Définition'], lignes: [
+          ['Hédoniste ou personnelle', 'Achat pour se faire plaisir'],
+          ['Oblative ou altruiste', 'Achat pour faire plaisir aux autres'],
+          ['Auto-expression', "Achat pour s'affirmer, se démarquer des autres"],
+        ] } },
+      ] },
+      { numero: 3, titre: 'Comment reformuler (les types de reformulation)', texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 4. Reformuler' },
+        { paragraphes: ['Les types de reformulation :'] },
+        { tableau: { colonnes: ['Type de reformulation', 'Définition', 'Exemple'], lignes: [
+          ['Écho ou perroquet', 'Elle consiste à répéter les paroles du client ou un terme important, comme un perroquet.', 'Le client : Je n\u2019aime pas ce modèle. Le commercial : Vous n\u2019aimez pas ce modèle ? — « Un bon prix ? »'],
+          ['Miroir ou reflet', 'Vous reformulez les propos du client avec vos propres mots.', '« Vous recherchez donc une voiture d\u2019occasion, avec une fonction GPS simple à utiliser et à un prix raisonnable ? »'],
+          ['Résumé ou synthèse', 'Vous faites une synthèse de tout ce que vous a dit le client. En d\u2019autres termes… / Vous voulez dire que… / Si j\u2019ai bien compris… C\u2019est bien cela ?', '« Si j\u2019ai bien compris, vous recherchez une voiture d\u2019occasion, qui vous permettra de calculer facilement vos trajets et à un bon prix. C\u2019est bien cela ? »'],
+        ] } },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -1582,12 +2120,14 @@ const RENAULT_M4: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — Le questionnement',
+        contexte: "L'étape de la prise de contact passée, vous êtes en confiance pour pouvoir mener l'entretien de vente en commençant par faire la recherche des besoins afin de pouvoir ensuite prodiguer les meilleurs conseils à vos clients.",
         questions: [
           { numero: 1, consigne: "Questionnez M. Dupont avec la méthode en entonnoir (du général au particulier). En fonction de chaque réponse, construisez la question du vendeur et cochez le type de question dont il s'agit.", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1dlg' },
         ],
       },
       {
         titre: "Activité 2 — Les mobiles et les motivations d'achat",
+        contexte: "Maintenant que vous avez questionné les clients quant à leurs attentes, vous cherchez à connaître les raisons qui incitent la famille Dupont à changer de voiture. Vous consultez la page 3 de votre livret.",
         questions: [
           { numero: 2, consigne: "Cochez le ou les mobiles d'achat exprimés par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2mob' },
           { numero: 3, consigne: "Cochez la ou les motivations d'achat exprimées par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3mot' },
@@ -1595,6 +2135,7 @@ const RENAULT_M4: ContenuMission = {
       },
       {
         titre: 'Activité 3 — La reformulation',
+        contexte: "Vous avez fait une recherche des besoins exhaustive et pour être sûr que vous avez correctement compris toutes les exigences de la famille Dupont, vous procédez à la reformulation.",
         questions: [
           { numero: 4, consigne: "Reformulez toutes les demandes du client en utilisant la reformulation synthèse.", ressources: "Lire le document 3, compléter l'annexe 4. [C.1.2]", annexeId: 'annexe4ref' },
         ],
@@ -1887,9 +2428,70 @@ const RENAULT_M5: ContenuMission = {
     contexte:
       "Les clients vous ont confirmé que vous avez bien compris leurs besoins (mission 4). Il est donc temps de leur proposer des produits qui y correspondent. Vous allez utiliser le configurateur de recherche de la concession pour identifier les véhicules disponibles, réaliser leur fiche produit, choisir le plus pertinent, en faire la démonstration puis l'argumenter.",
     documents: [
-      { numero: 1, titre: 'Comment convaincre le client (méthode C.A.P. et SONCAS-E)', images: ['/docs/renault-m5/doc1.jpg'] },
-      { numero: 2, titre: 'Fiche technique du premier véhicule (Renault Zoé Zen)', images: ['/docs/renault-m5/doc2.jpg'] },
-      { numero: 3, titre: 'Fiche technique du second véhicule (Renault Zoé Life)', images: ['/docs/renault-m5/doc3.jpg'] },
+      { numero: 1, titre: 'Le logiciel de recherche des offres véhicules (Renault Championnet)', texte: [
+        { pageWeb: true },
+        { paragraphes: ["Renseignez les critères de la famille Dupont pour trouver le véhicule correspondant. Chaque étape filtre les offres disponibles."] },
+        { configurateurVehicule: { marque: 'Renault', etapes: [
+          { titre: 'Le type de véhicule', obligatoire: true, options: ['Véhicule neuf', "Véhicule d'occasion", 'Véhicule de démonstration'] },
+          { titre: 'La catégorie du véhicule', obligatoire: true, options: ['4 X 4 / SUV / Crossover', 'Berline / Break', 'Citadine', 'Coupé et Cabriolet', 'Monospace', 'Utilitaire'] },
+          { titre: 'La marque du véhicule', obligatoire: true, options: ['RENAULT', 'DACIA', 'ALPHA ROMEO', 'AUDI', 'BMW', 'CITROËN'] },
+          { titre: "L'énergie du véhicule", obligatoire: true, options: ['Diésel', 'Essence', 'GPL', 'Hybride', 'Electrique'] },
+          { titre: 'Boîte de vitesses du véhicule', obligatoire: true, options: ['Automatique', 'Manuelle'] },
+          { titre: 'La couleur du véhicule', obligatoire: true, options: ['Beige', 'Blanc', 'Bleu', 'Bordeau', 'Gris', 'Jaune'] },
+          { titre: 'Prix', obligatoire: true, options: ['- 5000 €', 'entre 5001 € et 6400 €', 'entre 6400 € et 7400 €', 'entre 7400 € et 8400 €', 'entre 8400 € et 9400 €', 'entre 9400 € et 15 000 €', 'entre 15 000 et 25 000 €', 'Plus de 25 000 €'] },
+        ] } },
+        { paragraphes: ['Pour la recherche « entre 7400 € et 8400 € », deux véhicules correspondent.'] },
+      ] },
+      { numero: 2, titre: 'Les véhicules disponibles (fiches produit)', texte: [
+        { pageWeb: true },
+        { intertitre: '2 véhicules disponibles' },
+        { fichesVehicule: { vehicules: [
+          { modele: 'RENAULT ZOE', version: 'Zoe Gris', prix: '8 290 €', bandeau: 'Éligible prime à la conversion', image: '/docs/renault-m5/fiche-zoe-8290.png', resume: 'Électrique - Zen - Automatique - 18 383 km - 2014', etat: 'Occasion', lieu: 'Paris Lefebvre', garantie: 'Garantie jusqu\u2019à 36 mois | Contrôle de 76 points | Assistance 24/24H | Satisfait ou remboursé | Contrôle gratuit après 1 mois',
+            essentiel: [
+              { label: 'Énergie', valeur: 'Électrique' }, { label: 'Places', valeur: '5' },
+              { label: 'Puissance DIN', valeur: '88 cv' }, { label: 'Catégorie', valeur: 'Citadine' },
+              { label: 'Puissance fiscale', valeur: '1' }, { label: 'Version', valeur: 'Zoe' },
+              { label: 'Transmission', valeur: 'Automatique' }, { label: 'Teinte', valeur: 'Gris' },
+              { label: 'Portes', valeur: '5' },
+            ],
+            caracteristiques: [
+              { label: 'Poids à vide', valeur: '1 435 kg' }, { label: 'Motricité', valeur: 'Traction avant' },
+              { label: 'Longueur', valeur: '4 084 cm' }, { label: 'Cylindrée', valeur: '0 cm³' },
+              { label: 'Hauteur', valeur: '1 568 cm' }, { label: 'Pneu', valeur: '195/55 R16' },
+            ],
+            equipements: ['Régulateur limiteur de vitesse', 'Système de fixation ISOFIX', 'Aide au parking AR', 'Rétroviseurs extérieurs électriques dégivrants', 'Carte fonction "mains libres"', 'Allumage automatique des feux et des essuie-glaces', 'Climatisation automatique régulée', 'Navigation Carminat TomTom Z.E. Live', '6 Airbags frontaux et latéraux', 'ABS + AFU', 'Contrôle dynamique de trajectoire ESC', 'Lève-vitres AV électriques (impulsionnel conducteur) et AR', 'Radiosat Mid Classic + Son auditorium « 3D sound by Arkamys » 6HP', 'Condamnation centralisée des ouvrants', 'My Z.E. Connect with Navigation 36m', 'Condamnation automatique des ouvrants', 'R-Link + Carminat TomTom Z.E. Live', 'Lève-vitres AV électriques', 'Enjoliveurs Flexwheel 16" Ozedia'],
+          },
+          { modele: 'RENAULT ZOE', version: 'Zoe Gris', prix: '7 900 €', bandeau: 'Éligible prime à la conversion', image: '/docs/renault-m5/fiche-zoe-7900.png', resume: 'Électrique - Life - Automatique - 50 218 km - 2015', etat: 'Occasion', lieu: 'Paris Lefebvre', garantie: 'Garantie jusqu\u2019à 36 mois | Contrôle de 76 points | Assistance 24/24H | Satisfait ou remboursé | Contrôle gratuit après 1 mois',
+            essentiel: [
+              { label: 'Énergie', valeur: 'Électrique' }, { label: 'Places', valeur: '5' },
+              { label: 'Puissance DIN', valeur: '88 cv' }, { label: 'Catégorie', valeur: 'Citadine' },
+              { label: 'Puissance fiscale', valeur: '1' }, { label: 'Version', valeur: 'Zoe' },
+              { label: 'Transmission', valeur: 'Automatique' }, { label: 'Teinte', valeur: 'Gris' },
+              { label: 'Portes', valeur: '5' },
+            ],
+            caracteristiques: [
+              { label: 'Poids à vide', valeur: '1 435 kg' }, { label: 'Motricité', valeur: 'Traction avant' },
+              { label: 'Longueur', valeur: '4 084 cm' }, { label: 'Cylindrée', valeur: '0 cm³' },
+              { label: 'Hauteur', valeur: '1 562 cm' }, { label: 'Pneu', valeur: '185/65 R15' },
+            ],
+            equipements: ['Régulateur limiteur de vitesse', 'Lève-vitres AV électriques', 'Peinture métallisée', 'Rétroviseurs extérieurs électriques dégivrants', 'Climatisation automatique régulée', 'ABS + AFU', 'Contrôle dynamique de trajectoire ESC', 'Feux de jour à LED', 'Condamnation automatique des ouvrants', 'Détection pression des pneus'],
+          },
+        ] } },
+      ] },
+      { numero: 3, titre: 'Comment convaincre le client (méthode C.A.P. et SONCAS-E)', texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 5. Argumenter' },
+        { paragraphes: ["Lorsque vous arrivez à l'étape de l'argumentation, vous devez respecter la méthode C.A.P. pour construire vos arguments. Il vous faut également retrouver les mobiles d'achat émis par le client."] },
+        { intertitre: "La construction d'un argument avec les mobiles d'achat et la méthode C.A.P." },
+        { tableau: { colonnes: ["Mobile d'achat", 'Caractéristique', 'Avantage', 'Preuve'], lignes: [
+          ['Sécurité / Orgueil / Nouveauté / Confort / Argent / Sympathie / Environnement', '', '', ''],
+        ] } },
+        { paragraphes: ['Exemple :'] },
+        { tableau: { colonnes: ["Mobiles d'achat du client", 'Caractéristique', 'Avantage', 'Preuve'], lignes: [
+          ['Confort', 'Commande vocale du GPS', 'Pas besoin de réglages manuels', 'Regardez comment je fais !'],
+          ['Argent', '99 € par mois', 'Un impact faible sur votre budget', 'Tableau de financement page 5'],
+        ] } },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -1905,6 +2507,7 @@ const RENAULT_M5: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La réalisation de la fiche produit du véhicule',
+        contexte: "Les clients vous ont confirmé que vous avez bien compris leurs besoins. Il est donc temps de leur proposer des produits correspondant à leurs besoins.",
         questions: [
           { numero: 1, consigne: "Utilisez le configurateur Renault en reportant les besoins de la famille Dupont (mission 4, annexe 1) pour faire apparaître les véhicules disponibles, puis réalisez la fiche produit du premier véhicule.", ressources: "Utiliser le configurateur (annexe 1), lire le document 2, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1cfg' },
           { numero: 2, consigne: 'Réalisez la fiche produit du second véhicule correspondant aux besoins du couple.', ressources: "Lire le document 3, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2fp' },
@@ -1918,12 +2521,14 @@ const RENAULT_M5: ContenuMission = {
       },
       {
         titre: 'Activité 3 — La démonstration',
+        contexte: "Vous faites une démonstration aux clients pour les inciter à acheter le véhicule que vous leur conseillez.",
         questions: [
           { numero: 4, consigne: "Montrez aux clients quelques secondes de la vidéo du véhicule pour qu'ils se l'imaginent, puis indiquez ce que vous mettez en avant pendant la démonstration.", ressources: 'Visionner la vidéo de démonstration, compléter l\'annexe 4. [C.1.2]', annexeId: 'annexe4demo' },
         ],
       },
       {
         titre: "Activité 4 — L'argumentation",
+        contexte: "Maintenant que vous avez fait une proposition qui semble plaire aux clients. Vous allez devoir argumenter pour leur montrer en quoi selon vous, c'est le véhicule qui leur correspond le mieux.",
         questions: [
           { numero: 5, consigne: 'Construisez les 3 arguments que vous présenterez à la famille Dupont en respectant la méthode C.A.P.', ressources: "Lire le document 1, compléter l'annexe 5. [C.1.2]", annexeId: 'annexe5cap' },
         ],
@@ -2234,9 +2839,59 @@ const RENAULT_M6: ContenuMission = {
     contexte:
       "Vous avez conseillé la famille Dupont et lui avez proposé le véhicule le plus adapté. Le client émet désormais des objections sur le produit. Vous devez les lever, puis annoncer le prix avec méthode pour conclure sereinement la vente.",
     documents: [
-      { numero: 1, titre: 'Les objections (types et techniques de traitement)', images: ['/docs/renault-m6/doc1.jpg'] },
-      { numero: 2, titre: "L'app My Renault (gestion à distance du véhicule électrique)", images: ['/docs/renault-m6/doc2.jpg'] },
-      { numero: 4, titre: 'Le courriel de votre responsable (annoncer le prix)', images: ['/docs/renault-m6/doc4.jpg'] },
+      { numero: 1, titre: 'Les objections (types et techniques de traitement)', texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 6. Le traitement des objections' },
+        { paragraphes: ["Il arrive que pendant le dialogue de vente le client ait des doutes ou des inquiétudes quant au produit qui lui est proposé. Il appartient au commercial de les lever pour faciliter la vente."] },
+        { intertitre: "Les types d'objections" },
+        { tableau: { colonnes: ['Les objections', 'Définition'], lignes: [
+          ['Objections sincères', "Le client a une crainte qui est réelle, fondée sur son expérience passée négative, des craintes… Le client a besoin d'être rassuré."],
+          ['Objections prétextes', "Le client cherche à fuir le commercial pour ne pas entrer dans l'entretien de vente."],
+        ] } },
+        { intertitre: 'Techniques de traitement des objections' },
+        { tableau: { colonnes: ['Technique', 'Définition', 'Exemple'], lignes: [
+          ['Oui… mais', 'Le commercial donne raison au client puis avance un argument.', '« Oui, je comprends mais… »'],
+          ['Affaiblissement', "Le commercial montre au client que ce qu'il pense être un point faible est en fait un point fort.", "« Le coffre a été conçu pour s'ouvrir facilement dans les cas où le client peut avoir les mains prises. »"],
+          ['Témoignage', "Le commercial utilise l'expérience d'un autre client pour argumenter.", '« On peut demander à ma collègue. Elle a offert le même GPS à sa mère de 70 ans et elle le trouve très simple à utiliser. »'],
+          ['Compensation', 'Le commercial montre que les points forts sont plus nombreux que les points faibles détectés par le client.', "« Il n'y a que cette fonctionnalité qui manque, car il y a tout de même un toit ouvrant, le siège chauffant et le GPS intégré. »"],
+          ['Anticipation', "Le commercial devance l'objection du client en avançant un argument.", '« Je sais que vous allez me dire que… »'],
+        ] } },
+      ] },
+      { numero: 2, titre: "L'app My Renault (gestion à distance du véhicule électrique)", texte: [
+        { pageWeb: true },
+        { intertitre: 'My Renault — Application mobile' },
+        { paragraphes: ["L'application My Renault permet de gérer à distance son véhicule électrique depuis son smartphone."] },
+        { puces: [
+          'Consulter le niveau de charge de la batterie en temps réel ;',
+          'Programmer et suivre la recharge à distance ;',
+          "Recevoir une notification lorsque la charge atteint 100 % ;",
+          'Préconditionner la température de l\u2019habitacle avant de partir ;',
+          'Localiser les bornes de recharge à proximité ;',
+          'Suivre l\u2019autonomie restante et l\u2019historique des trajets.',
+        ] },
+      ] },
+      { numero: 3, titre: 'Objection de M. Dupont', texte: [
+        { pageWeb: true },
+        { dialogue: [
+          { locuteur: 'M. Dupont', texte: "C'est super mais il y a une question que je me pose depuis tout à l'heure. Combien ça risque de nous coûter ? Un véhicule comme ça, je suppose que c'est pas donné !" },
+        ] },
+      ] },
+      { numero: 4, titre: 'Le courriel de votre responsable (annoncer le prix)', texte: [
+        { pageWeb: true },
+        { mailLecture: {
+          de: 'votreresponsable@renault.fr',
+          a: 'commerciauxrenault@renault.fr',
+          objet: 'Annoncer le prix au client',
+          corps: [
+            'Bonjour,',
+            "Je vous rappelle que l'annonce du prix du véhicule est un moment important qui peut faire fuir le client. Il faut donc la soigner en respectant un certain nombre de règles.",
+            "C'est pour cela que je vous demanderais de faire preuve d'empathie, en montrant au client que vous le comprenez, puis faites simple et annoncez le prix en utilisant la technique de « l'addition ». Elle consiste à énumérer quelques avantages forts du véhicule qui justifient le prix qu'on va annoncer.",
+            'Je compte sur vous pour appliquer cette technique et surtout vendre beaucoup de voitures le jour des Journées Portes Ouvertes.',
+            'Cordialement,',
+            'M. Prauviste — Directeur concession Renault',
+          ],
+        } },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -2251,6 +2906,7 @@ const RENAULT_M6: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — L'identification des objections",
+        contexte: "Malgré votre démonstration et votre argumentaire très pertinent, cela n'a pas suffi à complètement rassurer la famille Dupont. En effet, pendant la discussion, elle a émis plusieurs objections qui lui font douter quant au véhicule que vous lui avez proposé. Il vous appartient maintenant de lever ses freins pour avancer dans le processus de vente.",
         questions: [
           { numero: 1, consigne: "Pour chaque phrase de M. Dupont, indiquez s'il s'agit d'une objection sincère ou d'une objection prétexte.", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1obj' },
         ],
@@ -2263,6 +2919,7 @@ const RENAULT_M6: ContenuMission = {
       },
       {
         titre: "Activité 3 — L'annonce du prix",
+        contexte: "Les clients ont été convaincus par vos réponses face à leurs nombreux doutes. Ils ont donc une dernière objection sur le prix.",
         questions: [
           { numero: 3, consigne: "Rédigez l'annonce du prix du véhicule (8 290 €) en respectant les consignes de votre responsable : faire preuve d'empathie puis utiliser la technique de l'addition.", ressources: "Lire le document 4, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3prix' },
         ],
@@ -2489,12 +3146,104 @@ const RENAULT_M7: ContenuMission = {
     contexte:
       "Le prix a été annoncé et les clients semblent séduits. Vous devez être attentif à tous les signaux d'achat du couple pour repérer le bon moment de conclure, puis proposer un financement réaliste et vérifier que le crédit peut être accordé.",
     documents: [
-      { numero: 1, titre: "Les signaux d'achat positifs ou négatifs", images: ['/docs/renault-m7/doc1.jpg'] },
-      { numero: 3, titre: 'Comment conclure la vente (techniques de conclusion)', images: ['/docs/renault-m7/doc3.jpg'] },
-      { numero: 4, titre: 'La prime à la conversion (pour un véhicule plus propre)', images: ['/docs/renault-m7/doc4a.jpg'] },
-      { numero: 5, titre: 'Réponses au test « prime à la conversion »', images: ['/docs/renault-m7/doc5.jpg'] },
-      { numero: 6, titre: 'La méthode de calcul du crédit', images: ['/docs/renault-m7/doc6.jpg'] },
-      { numero: 7, titre: 'La situation financière de la famille Dupont', images: ['/docs/renault-m7/doc7.jpg'] },
+      { numero: 1, titre: "Les signaux d'achat positifs ou négatifs", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 7. Les signaux positifs ou négatifs' },
+        { tableau: { colonnes: ["Signaux d'achat", 'Positifs', 'Négatifs'], lignes: [
+          ['Signaux verbaux', 'Le client : se projette dans l\u2019avenir ; demande les délais de livraison, de la garantie ou du paiement ; souhaite des détails ; demande un avantage supplémentaire ; fait intervenir un tiers pour valider sa décision ; fait de l\u2019humour ; il parle davantage.', "Le client : n'émet que des objections prétextes ; est très critique ; ne voit que les aspects négatifs du produit."],
+          ['Signaux non verbaux', 'Le client : sourit de plus en plus ; est détendu ; avance vers le bureau ; est enthousiaste.', 'Le client : reste silencieux ; regarde constamment son smartphone ; se gratte la tête ; tapote des doigts sur la table ; s\u2019enfonce dans sa chaise ; regarde par la fenêtre.'],
+        ] } },
+      ] },
+      { numero: 2, titre: 'Dialogue entre M. et Mme Dupont', texte: [
+        { pageWeb: true },
+        { paragraphes: ['Assis face à la famille Dupont, vous écoutez le couple discuter à propos du véhicule.'] },
+        { dialogue: [
+          { locuteur: 'M. Dupont', texte: "Alors, t'en penses quoi toi ? C'est pas mal !" },
+          { locuteur: 'Mme Dupont', texte: '(Avec un grand sourire) Oui, elle est très bien cette voiture !' },
+          { locuteur: 'M. Dupont', texte: "(Enthousiaste) C'est vrai qu'elle a tout ce qu'on souhaite. Comme il nous le disait, elle a tout ce qu'il nous faut, elle ne pollue pas, la couleur est belle…" },
+          { locuteur: 'Mme Dupont', texte: "(Se gratte la tête) La seule chose qui m'embête un peu c'est le prix. Même si elle est parfaite et dans nos prix, je pensais qu'on aurait pu avoir un véhicule à un prix un peu plus bas. C'est juste ça !" },
+          { locuteur: 'M. Dupont', texte: "(S'enfonce dans sa chaise) C'est pas faux…" },
+        ] },
+      ] },
+      { numero: 3, titre: 'Comment conclure la vente (techniques de conclusion)', texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 3. Comment conclure la vente ?' },
+        { tableau: { colonnes: ['Technique de conclusion', 'Caractéristiques', 'Exemple'], lignes: [
+          ['La conclusion directe', 'Le commercial invite tout naturellement le client à finaliser la vente.', 'Alors vous la prenez ?'],
+          ['La conclusion alternative', 'Le commercial incite le client en lui proposant le choix entre 2 solutions.', 'Vous la voulez en essence ou diésel ?'],
+          ['La conclusion « joker »', "Le commercial apporte un argument important qu'il avait gardé afin de précipiter la décision du client.", "C'est le dernier jour de la promotion !"],
+        ] } },
+      ] },
+      { numero: 4, titre: 'La prime à la conversion (pour acheter un véhicule plus propre)', texte: [
+        { pageWeb: true },
+        { image: { src: '/docs/renault-m7/prime-conversion.png', alt: 'Prime à la conversion des véhicules et bonus écologique — Testez votre éligibilité en 6 étapes maximum.', legende: 'Testez votre éligibilité en 6 étapes maximum.' } },
+        { paragraphes: ["Cette prime exceptionnelle est réservée aux 200 000 premiers acheteurs, alors n'attendez plus pour faire votre choix parmi les voitures neuves ou plus de 6 000 voitures d'occasion disponibles immédiatement et éligibles à la prime à la conversion."] },
+        { intertitre: 'Testez votre éligibilité — Prime à la conversion et bonus écologique' },
+        { formulaireInteractif: { titre: 'Prime à la conversion des véhicules et bonus écologique', intro: [
+          'Dès maintenant, bénéficiez de la prime à la conversion.',
+          "L'objectif du nouveau dispositif est d'aider tous les Français, particuliers ou professionnels, à acheter un véhicule neuf ou d'occasion en échange de la mise au rebut d'un vieux véhicule.",
+          "La prime peut atteindre 3 000 € pour l'achat d'un véhicule thermique neuf ou d'occasion et 5 000 € pour l'achat d'un véhicule électrique ou hybride rechargeable neuf ou d'occasion.",
+        ], etapes: [
+          { titre: 'Puis-je bénéficier de la prime à la conversion ? Je fais le test', obligatoire: true, options: [{ label: 'OUI, je commence le test', suite: 'Passer à la question 2' }, { label: 'Non, je ne fais pas le test', suite: 'Passer à la question 3' }] },
+          { titre: 'Précisez les caractéristiques de votre voiture particulière', obligatoire: true, options: [{ label: 'Véhicule diesel', suite: 'Passer à la question 4' }, { label: 'Véhicule essence, gaz…', suite: 'Passer à la question 16' }] },
+          { titre: 'Sur votre avis d\u2019imposition 2019 sur les revenus 2018, votre « revenu fiscal de référence » est-il supérieur à 18 000 € ?', obligatoire: true, options: [{ label: 'Oui' }, { label: 'Non', suite: 'Passer à la question 6' }] },
+          { titre: 'Votre véhicule diesel a-t-il été immatriculé avant 2011 ?', obligatoire: true, options: [{ label: 'Oui', suite: 'Passer à la question 8' }, { label: 'Non', suite: 'Passer à la question 7' }] },
+          { titre: 'Quel type de véhicule souhaitez-vous acheter ?', obligatoire: true, options: [{ label: 'Véhicule particulier ou véhicule utilitaire léger', suite: 'Passer à la question 9' }, { label: 'Vélo, trottinette…', suite: 'Passer à la question 15' }] },
+          { titre: "S'agit-il d'un véhicule neuf ou d'occasion ?", obligatoire: true, options: [{ label: 'Neuf', suite: 'Passer à la question 10' }, { label: 'Occasion', suite: 'Passer à la question 10' }] },
+          { titre: "Quel est le classement Crit'Air du véhicule que vous souhaitez acheter ?", obligatoire: true, options: [{ label: 'Véhicule électrique ou hydrogène', suite: 'Passer à la question 12' }, { label: "Véhicule Crit'Air 1", suite: 'Passer à la question 12' }, { label: "Véhicule Crit'Air 3, 4, 5 ou non classé", suite: 'Passer à la question 11' }] },
+          { titre: "Quel est le coût d'acquisition (location de la batterie incluse) du véhicule que vous souhaitez acheter ?", obligatoire: true, options: [{ label: 'Le coût est inférieur ou égal à 60 000 €', suite: 'Passer à la question 13' }, { label: 'Le coût est supérieur à 60 000 €', suite: 'Passer à la question 14' }] },
+          { titre: 'Résultat', obligatoire: true, options: [{ label: "Bonne nouvelle, vous pouvez, sous réserve d'instruction du dossier, bénéficier de la prime à la conversion de 5 000 €." }] },
+        ] } },
+      ] },
+      { numero: 5, titre: 'Réponses au test « prime à la conversion »', texte: [
+        { pageWeb: true },
+        { intertitre: 'Réponses données par M. et Mme Dupont' },
+        { puces: [
+          'Véhicule actuel acheté en 2005 ;',
+          'Revenu fiscal de référence : 17 000 € ;',
+          "Je souhaite acheter un véhicule d'occasion ;",
+          'Je souhaite acheter un véhicule de 8 300 € maximum ;',
+          'Je souhaite acheter un véhicule électrique ;',
+          'Je souhaite acheter un véhicule particulier.',
+        ] },
+      ] },
+      { numero: 6, titre: 'La méthode de calcul du crédit', texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 8. Calculer le crédit' },
+        { paragraphes: ['Le reste à vivre doit être supérieur à :'] },
+        { puces: ['650 € pour une personne célibataire ;', '1 400 € pour un couple ;', '400 € par enfant présent dans le foyer.'] },
+        { paragraphes: [
+          "Reste à vivre (c'est la somme qui reste à un individu pour vivre une fois toutes ses charges payées) = l'ensemble des rentrées d'argent − l'ensemble des dépenses du ménage.",
+          "Le taux d'endettement du foyer doit être de 33 % maximum ; au-delà, le crédit ne peut être accordé. Taux d'endettement = l'ensemble des dépenses du ménage / les salaires du couple × 100.",
+          'Intérêts à payer = (montant de la mensualité × 12 mois × nombre d\u2019années de remboursement) − montant du véhicule.',
+        ] },
+      ] },
+      { numero: 7, titre: 'La situation financière de la famille Dupont', texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['Élément', 'Montant'], lignes: [
+          ['Salaire de M. Dupont', '2 184,98 €'],
+          ['Salaire de Mme Dupont', '2 000,43 €'],
+          ['Allocations familiales', '131,95 €'],
+          ['Nombre d\u2019enfants', '2 enfants'],
+          ['Loyer', '1 030 €'],
+          ['Crédit à la consommation', '315,67 €'],
+        ] } },
+        { paragraphes: ['Le couple souhaite emprunter la totalité du coût de la voiture sur 5 ans avec des mensualités de 200 € par mois.'] },
+      ] },
+      { numero: 8, titre: 'Calcul du crédit de M. et Mme Dupont (simulateur)', texte: [
+        { pageWeb: true },
+        { formulaireInteractif: { titre: 'RENAULT — Calcul du crédit de M. et Mme Dupont', logo: undefined, intro: ['Demande de crédit — Renseignez les informations concernant le client (mettez des chiffres ou une croix selon la réponse du client).'], etapes: [
+          { section: 'DEMANDE DE CRÉDIT', titre: 'Informations concernant le client', champs: [
+            { label: 'Nombre de personnes total dans le foyer' },
+            { label: 'Célibataire' }, { label: 'En couple / marié' }, { label: 'Veuf / veuve' },
+          ] },
+          { titre: 'Reste à vivre', champs: [{ label: 'Calcul' }, { label: 'Résultat', suffixe: '€' }] },
+          { titre: 'Reste à vivre supérieur à', champs: [{ label: 'Calcul' }, { label: 'Résultat', suffixe: '€' }] },
+          { titre: "Taux d'endettement", champs: [{ label: 'Calcul' }, { label: 'Résultat', suffixe: '%' }] },
+          { titre: 'Intérêts à payer', champs: [{ label: 'Calcul' }, { label: 'Résultat', suffixe: '€' }] },
+          { titre: 'Commentaire du commercial', champs: [{ label: 'Commentaire' }] },
+        ] } },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -2510,12 +3259,14 @@ const RENAULT_M7: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — Les signaux d'achat",
+        contexte: "Le prix a été annoncé et les clients semblent séduits.",
         questions: [
           { numero: 1, consigne: "Indiquez les signaux d'achat de M. et Mme Dupont (verbaux et non verbaux, positifs et négatifs).", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1sig' },
         ],
       },
       {
         titre: 'Activité 2 — Conclure la vente',
+        contexte: "En écoutant la conversation en aparté du couple, vous vous rendez compte qu'il est prêt à acheter cette voiture. Pour les inciter à se décider vous choisissez de conclure.",
         questions: [
           { numero: 2, consigne: "Retrouvez les deux arguments « joker » importants à présenter aux prospects.", ressources: "Lire les documents 3 et 4, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2joker' },
           { numero: 3, consigne: "Complétez le test « prime à la conversion » avec les informations du couple. Le test est intégré ci-dessous.", ressources: "Lire les documents 4 et 5, compléter le test (annexe 4b). [C.1.2]", annexeId: 'annexe4btest' },
@@ -2524,6 +3275,7 @@ const RENAULT_M7: ContenuMission = {
       },
       {
         titre: 'Activité 3 — Calculer le crédit',
+        contexte: "Le couple est séduit par votre argument et souhaite acheter le véhicule. Cependant, il veut savoir combien cet achat va lui coûter.",
         questions: [
           { numero: 5, consigne: "Calculez le crédit proposé à M. et Mme Dupont (reste à vivre, reste à vivre minimum, taux d'endettement, intérêts à payer), puis concluez.", ressources: "Lire les documents 6 et 7, compléter l'annexe 4a. [C.1.3]", annexeId: 'annexe4acredit' },
           { numero: 6, consigne: "Calculez le montant que le couple paiera après déduction de la prime à la conversion.", ressources: "Lire le document 5, consulter l'annexe 4, compléter l'annexe 5. [C.1.3]", annexeId: 'annexe5remise' },
@@ -2848,7 +3600,47 @@ const RENAULT_M8: ContenuMission = {
     contexte:
       "Vous avez emporté l'adhésion du client grâce à l'argument « joker ». Il est temps de penser à la vente additionnelle. Votre responsable a fait passer une note rappelant l'intérêt de proposer des produits complémentaires ou supplémentaires.",
     documents: [
-      { numero: 1, titre: 'La note de M. Prauviste (vente complémentaire et supplémentaire)', images: ['/docs/renault-m8/doc1.jpg'] },
+      { numero: 1, titre: 'La note de M. Prauviste (vente complémentaire et supplémentaire)', texte: [
+        { pageWeb: true },
+        { intertitre: "Note d'information — La vente additionnelle" },
+        { paragraphes: [
+          "Je vous rappelle qu'il est important de vendre des produits ou services en plus à vos clients quand cela est possible, car cela permet non seulement d'augmenter le chiffre d'affaires de l'entreprise mais aussi de vous accorder des primes sur ces ventes.",
+          'Vous trouverez ci-dessous un tableau explicatif sur la vente additionnelle.',
+          'La direction',
+        ] },
+        { tableau: { colonnes: ['Vente additionnelle', 'Caractéristiques', 'Exemples'], lignes: [
+          ['La vente complémentaire', "C'est un produit qui complète l'esthétique du produit principal ou est utile pour utiliser le produit principal.", "Un pare-soleil pour l'achat d'une voiture ; la proposition d'options"],
+          ['La vente supplémentaire', "C'est un produit qui n'a rien à voir avec le produit principal mais qui peut être utile pour le client.", 'Un siège bébé'],
+        ] } },
+      ] },
+      { numero: 2, titre: 'Le catalogue des accessoires (Renault Championnet)', texte: [
+        { pageWeb: true },
+        { catalogueAccessoires: { titre: 'Trouver mes accessoires', nbTotal: 42, categories: ['Signalisation secours', 'Diffuseur parfum', 'Stickers', 'Accessoires de la marque', 'Multimédia', 'Extincteurs et supports', 'Écriture', 'Porte-clés', 'Habillement'], produits: [
+          { nom: 'SAC BAGOTO', sousTitre: 'Sac shopping, sac publicitaire', categorie: 'Accessoires de la marque', prix: '2,00 €' },
+          { nom: 'STYLO RENAULT B', sousTitre: 'Écriture', categorie: 'Écriture', prix: '1,25 €' },
+          { nom: 'Extincteur 2 kg avec manomètre', sousTitre: 'Extincteurs et supports', categorie: 'Extincteurs et supports', prix: '33,74 €' },
+          { nom: 'Fixation pour extincteur pour MASTER III', sousTitre: 'Extincteurs et supports', categorie: 'Extincteurs et supports', prix: '32,24 €' },
+          { nom: 'ETUI IP6 ALPINE', sousTitre: 'Accessoires de téléphonie', categorie: 'Multimédia', prix: '20,00 €' },
+          { nom: 'Stickers de personnalisation extérieure — Lignes blanches pour TWINGO III', sousTitre: 'Décors adhésifs extérieurs spécifiques', categorie: 'Stickers', prix: '387,29 €' },
+          { nom: 'Stickers de personnalisation extérieure — Vintage pour TWINGO III', sousTitre: 'Décors adhésifs extérieurs spécifiques', categorie: 'Stickers', prix: '387,29 €' },
+          { nom: 'OURSON ALPINE', sousTitre: 'Autres objets de communication', categorie: 'Accessoires de la marque', prix: '35,00 €' },
+          { nom: 'Porte-clés Losange', sousTitre: 'Porte-clés', categorie: 'Porte-clés', prix: '2,00 €' },
+          { nom: 'Kit de sécurité pour NOUVELLE ALPINE', sousTitre: 'Kits de sécurité', categorie: 'Signalisation secours', prix: '20,40 €' },
+          { nom: 'Kit Sécurité', sousTitre: 'Kits de sécurité', categorie: 'Signalisation secours', prix: '20,50 €' },
+          { nom: 'PINS LOSANGE 9MM', sousTitre: "Pin's", categorie: 'Accessoires de la marque', prix: '1,50 €' },
+          { nom: 'TASSE RENAULT B', sousTitre: 'Autres objets de communication', categorie: 'Accessoires de la marque', prix: '15,00 €' },
+          { nom: 'BATTERIE RENAULTB', sousTitre: 'Accessoires de téléphonie', categorie: 'Multimédia', prix: '30,00 €' },
+          { nom: 'Recharge Parfum Stimulating Forest', sousTitre: 'Cartouches de parfum', categorie: 'Diffuseur parfum', prix: '6,49 €' },
+          { nom: 'Porte-clés', sousTitre: 'Porte-clés', categorie: 'Porte-clés', prix: '5,50 €' },
+          { nom: 'Stylo', sousTitre: 'Écriture', categorie: 'Écriture', prix: '30,00 €' },
+          { nom: 'Extincteur 1 kg avec manomètre pour NOUVELLE ALPINE', sousTitre: 'Extincteurs et supports', categorie: 'Extincteurs et supports', prix: '21,67 €' },
+          { nom: 'Stickers Sécurité pour véhicule de société — Classe A pour TRAFIC III', sousTitre: 'Bandes réfléchissantes', categorie: 'Stickers', prix: '104,11 €' },
+          { nom: 'STYLO BLANC F1', sousTitre: 'Écriture', categorie: 'Écriture', prix: '2,95 €' },
+          { nom: 'Sticker de personnalisation de carte-clé — Diamant Noir', sousTitre: 'Décors adhésifs extérieurs spécifiques', categorie: 'Stickers', prix: '8,69 €' },
+          { nom: 'COQUE TEL TWINGO', sousTitre: 'Accessoires de téléphonie', categorie: 'Multimédia', prix: '15,00 €' },
+        ] } },
+        { image: { src: '/docs/renault-m8/catalogue-accessoires.png', alt: "Catalogue des accessoires Renault Championnet — 42 accessoires disponibles.", legende: 'Aperçu du catalogue en ligne : 42 accessoires disponibles.' } },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -3056,13 +3848,80 @@ const CITROEN_M1: ContenuMission = {
       "Depuis quelques années, l'industrie automobile en France est en pleine transformation, avec un accent croissant sur l'innovation technologique et la durabilité. Citroën se positionne comme un acteur clé, proposant des modèles adaptés aux jeunes conducteurs, alliant style, économie de carburant et respect de l'environnement.\nClara, 19 ans, vient d'obtenir son permis de conduire et est actuellement en première année de BTS NDRC (Négociation et digitalisation de la relation client). Elle doit se déplacer fréquemment entre son lycée et ses stages, ce qui nécessite un moyen de transport fiable.\nSon père, Marc, souhaite lui offrir une voiture pour marquer son entrée dans l'âge adulte. Ensemble, ils se rendent chez un concessionnaire Citroën, où ils exploreront les différentes citadines, qui sont adaptées aux trajets urbains et au style de vie étudiant. Ce processus d'achat est une étape cruciale pour Clara. Il lui permettra d'acquérir autonomie et responsabilité dans sa vie quotidienne.",
     videoContexte: 'https://drive.google.com/file/d/1Z-bYMIdGDl-rkupJOdxDk_6QDqBPftSK/view',
     documents: [
-      { numero: 1, titre: 'Histoire de Citroën', images: ['/docs/citroen-m1/doc1.jpg'] },
-      { numero: 2, titre: 'Vision et valeurs de Citroën', images: ['/docs/citroen-m1/doc2.jpg'] },
-      { numero: 3, titre: 'Chiffres clés de Citroën', images: ['/docs/citroen-m1/doc3.jpg'] },
-      { numero: 4, titre: 'Analyse de marché', images: ['/docs/citroen-m1/doc4.jpg'] },
-      { numero: 5, titre: 'Tendances de consommation', images: ['/docs/citroen-m1/doc5.jpg'] },
-      { numero: 6, titre: 'Gamme de produits Citroën', images: ['/docs/citroen-m1/doc6.jpg'] },
-      { numero: 7, titre: 'Nouveaux modèles', images: ['/docs/citroen-m1/doc7.jpg'] },
+      { numero: 1, titre: 'Histoire de Citroën', texte: [
+        { pageWeb: true },
+        { intertitre: 'Histoire de Citroën' },
+        { paragraphes: [
+          "Citroën a été fondée en 1919 par André Citroën, un ingénieur et industriel qui a joué un rôle pionnier dans l'automobile en Europe. À ses débuts, Citroën se distingue en introduisant des techniques de production avancées inspirées des méthodes américaines, notamment la chaîne de montage, ce qui lui permet de réduire les coûts de production et d'accélérer la fabrication de véhicules. En 1934, la marque lance la Traction Avant, qui révolutionne le marché avec son architecture innovante, un moteur avant et une carrosserie en acier monocoque, offrant une meilleure maniabilité et un confort accru.",
+          "Dans les années qui suivent, Citroën continue d'innover avec des modèles emblématiques tels que la 2CV en 1948, conçue pour être économique et accessible, répondant ainsi aux besoins des familles françaises d'après-guerre. Cette voiture devient rapidement un symbole de liberté et de praticité.",
+          "Au fil des décennies, Citroën fait face à plusieurs défis, notamment des difficultés financières dans les années 1970. Cependant, l'entreprise parvient à se redresser grâce à des modèles innovants comme la BX et la ZX, tout en développant de nouvelles technologies telles que la suspension hydropneumatique. À partir des années 2000, Citroën entame une transformation en intégrant des pratiques durables dans ses processus de production et en investissant dans des véhicules électriques.",
+          "Aujourd'hui, Citroën s'engage à devenir un acteur majeur de la mobilité durable, en proposant des véhicules hybrides et électriques tout en continuant d'innover pour répondre aux besoins variés de sa clientèle. Avec une présence mondiale, Citroën est reconnue pour son design unique, son confort et son rapport qualité-prix.",
+        ] },
+      ] },
+      { numero: 2, titre: 'Vision et valeurs de Citroën', texte: [
+        { pageWeb: true },
+        { intertitre: 'Vision et valeurs de Citroën' },
+        { paragraphes: [
+          "La vision de Citroën repose sur l'idée de rendre la mobilité accessible et durable pour tous. L'entreprise aspire à devenir un leader dans le secteur de la mobilité durable en développant des solutions de transport respectueuses de l'environnement. Citroën met un point d'honneur à placer le client au cœur de ses préoccupations, cherchant constamment à améliorer l'expérience utilisateur à travers l'innovation et le confort.",
+          'Les valeurs fondamentales qui guident la marque comprennent :',
+        ] },
+        { puces: [
+          "Innovation : Citroën investit massivement dans la recherche et le développement pour créer des véhicules qui intègrent les dernières technologies, comme la connectivité avancée, l'assistance à la conduite et les systèmes de sécurité innovants.",
+          "Durabilité : Citroën s'engage à réduire son empreinte carbone, tant dans la production que dans l'utilisation de ses véhicules. Cela passe par des initiatives telles que l'électrification de sa gamme et l'optimisation de ses processus de fabrication.",
+          "Accessibilité : la marque s'efforce de rendre ses véhicules accessibles à un large public, en proposant des modèles économiques tout en maintenant un haut niveau de qualité.",
+          "Confort et bien-être : Citroën se concentre sur l'expérience de conduite en intégrant des technologies visant à améliorer le confort des passagers, comme des sièges ergonomiques et des systèmes de divertissement intuitifs.",
+        ] },
+      ] },
+      { numero: 3, titre: 'Chiffres clés de Citroën', texte: [
+        { pageWeb: true },
+        { intertitre: 'Chiffres clés de Citroën' },
+        { tableau: { colonnes: ['Indicateur', 'Valeur'], lignes: [
+          ["Année de création", '1919'],
+          ['Fondateur', 'André Citroën'],
+          ["Chiffre d'affaires annuel", '≈ 16 milliards €'],
+          ['Nombre de véhicules vendus en 2023', '≈ 1 million de véhicules'],
+          ['Part des ventes électriques et hybrides', '≈ 25 % des ventes'],
+          ['Présence', 'Marque présente à l\u2019international'],
+        ] } },
+      ] },
+      { numero: 4, titre: 'Analyse de marché', texte: [
+        { pageWeb: true },
+        { intertitre: 'Analyse de marché' },
+        { paragraphes: [
+          "Le marché automobile en France est marqué par une forte concurrence. Les principaux acteurs, tels que Renault, Peugeot, Volkswagen et Toyota, dominent le paysage, chacun proposant une gamme variée de véhicules allant des citadines aux SUV. Citroën se positionne principalement sur le segment des citadines et des SUV, visant à attirer des jeunes conducteurs et des familles à la recherche de praticité et de style.",
+          "Pour rester compétitive, Citroën a renforcé sa stratégie de marketing digital, ciblant les jeunes consommateurs à travers des campagnes sur les réseaux sociaux et des partenariats avec des influenceurs. La marque met également en avant ses valeurs d'innovation et de durabilité pour séduire un public de plus en plus conscient des enjeux environnementaux.",
+          "Il y a 1 an, les ventes de véhicules électriques et hybrides ont continué de croître, représentant environ 25 % des ventes totales de la marque. Citroën a investi dans le développement de nouveaux modèles électriques, comme la ë-C3, pour répondre à cette demande croissante.",
+        ] },
+      ] },
+      { numero: 5, titre: 'Tendances de consommation', texte: [
+        { pageWeb: true },
+        { intertitre: 'Tendances de consommation' },
+        { paragraphes: [
+          "Les tendances de consommation dans le secteur automobile révèlent un intérêt accru pour les véhicules écologiques et connectés. Les jeunes consommateurs, en particulier, sont de plus en plus attirés par les voitures compactes qui allient fonctionnalité et esthétique. En parallèle, la montée du télétravail a modifié les comportements d'achat, avec une demande pour des véhicules adaptés aux déplacements quotidiens et aux loisirs.",
+          "Les aspects écologiques sont devenus des critères essentiels dans le choix d'un véhicule. Les consommateurs recherchent des solutions de transport qui minimisent leur empreinte carbone et privilégient les marques qui adoptent des pratiques durables. Citroën, en répondant à ces attentes, se positionne comme un acteur de choix pour les acheteurs soucieux de l'environnement.",
+        ] },
+      ] },
+      { numero: 6, titre: 'Gamme de produits Citroën', texte: [
+        { pageWeb: true },
+        { intertitre: 'Gamme de produits Citroën' },
+        { paragraphes: ['Citroën propose une large gamme de véhicules, adaptés aux besoins variés des consommateurs :'] },
+        { puces: [
+          "Citadines : les modèles comme la C3 se distinguent par leur design moderne, leur compacité et leurs fonctionnalités pratiques pour la vie urbaine. La C3 est équipée de technologies telles que la connectivité Bluetooth, des systèmes de navigation et des options de personnalisation.",
+          "SUV : le C5 Aircross offre un espace intérieur généreux, avec une capacité de chargement impressionnante. Ce modèle intègre des technologies avancées pour le confort et la sécurité, notamment des systèmes d'assistance à la conduite et une connectivité améliorée.",
+          "Véhicules électriques et hybrides : Citroën a lancé plusieurs modèles électriques, dont la ë-C3, qui offre une autonomie de 300 km. Ces modèles intègrent des technologies pour optimiser l'efficacité énergétique et le confort des passagers.",
+          "Véhicules utilitaires : Citroën propose également des modèles pour les professionnels, comme le Berlingo et le Jumpy, qui allient fonctionnalité et économie.",
+        ] },
+      ] },
+      { numero: 7, titre: 'Nouveaux modèles', texte: [
+        { pageWeb: true },
+        { intertitre: 'Nouveaux modèles' },
+        { paragraphes: ["L'an dernier, Citroën a présenté plusieurs nouveaux modèles et mises à jour, dont :"] },
+        { puces: [
+          "La ë-C3 : ce modèle entièrement électrique répond à la demande croissante pour des solutions de mobilité durable. Il est conçu pour offrir une expérience de conduite agréable avec des performances respectueuses de l'environnement.",
+          "Mises à jour de la C5 Aircross : ce modèle a été amélioré avec un système d'info-divertissement moderne et de nouvelles options de motorisation, y compris une version hybride rechargeable. Les améliorations comprennent également des fonctionnalités de sécurité avancées et une ergonomie optimisée pour le confort des passagers.",
+        ] },
+        { paragraphes: ["Citroën a également mis l'accent sur le design de ses véhicules, en introduisant des lignes modernes et des options de personnalisation qui répondent aux goûts variés des consommateurs."] },
+      ] },
     ],
     competence: {
       groupe: 'Groupe de compétences 1',
@@ -3077,6 +3936,7 @@ const CITROEN_M1: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — Recherche d'informations sur l'entreprise",
+        contexte: "Pour mieux connaître la marque, vous plongez dans l'histoire de Citroën car il est important de connaître les origines de l'entreprise, ses modèles emblématiques et sa vision pour comprendre son identité.",
         questions: [
           { numero: 1, consigne: "Donnez le nom du fondateur de l'entreprise et l'année de création.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
           { numero: 2, consigne: "Expliquez comment l'entreprise voit les déplacements écologiques.", ressources: "Consulter le document 2, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
@@ -3087,6 +3947,7 @@ const CITROEN_M1: ContenuMission = {
       },
       {
         titre: 'Activité 2 — Analyse du marché de Citroën',
+        contexte: "Ensuite, votre responsable vous demande d'analyser le marché dans lequel Citroën évolue en identifiant les principaux concurrents de la marque et en examinant son positionnement ainsi que les tendances de consommation qui influencent le secteur automobile.",
         questions: [
           { numero: 6, consigne: 'Citez les principaux concurrents de Citroën sur le marché français.', ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
           { numero: 7, consigne: 'Indiquez les 2 gammes principales de véhicules que vend la marque.', ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
@@ -3097,6 +3958,7 @@ const CITROEN_M1: ContenuMission = {
       },
       {
         titre: 'Activité 3 — Étude des produits de la marque',
+        contexte: "Maintenant, vous allez vous concentrer sur l'étude des produits offerts par Citroën et découvrir la diversité de sa gamme de véhicules, les caractéristiques de certains modèles et les innovations récentes.",
         questions: [
           { numero: 11, consigne: 'Indiquez les 4 types de véhicules de la gamme Citroën.', ressources: "Consulter le document 6, compléter l'annexe 3. [C.1.1]", annexeId: 'annexe3' },
           { numero: 12, consigne: 'Citez les deux points forts des modèles Citroën mentionnés dans le document.', ressources: "Consulter le document 6, compléter l'annexe 4. [C.1.1]", annexeId: 'annexe4' },
@@ -3107,8 +3969,21 @@ const CITROEN_M1: ContenuMission = {
       },
     ],
     annexes: [
-      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Éléments de l'histoire de l'entreprise", colonnes: ['Élément', 'Réponse'], nbLignes: 7 },
-      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le marché de Citroën', colonnes: ["Éléments d'analyse", 'Réponses'], nbLignes: 5 },
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Éléments de l'histoire de l'entreprise", colonnes: ['Élément', 'Réponse'], nbLignes: 6, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["Créateur de l'entreprise", ''],
+        ['Date de création', ''],
+        ['La vision de la marque à propos des déplacements écologiques', ''],
+        ["Chiffre d'affaires", ''],
+        ['2 modèles marquants et leur année de lancement', ''],
+        ['Nombre de véhicules vendus', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le marché de Citroën', colonnes: ["Éléments d'analyse", 'Réponses'], nbLignes: 5, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Ses concurrents', ''],
+        ['Le secteur de marché sur lequel il se positionne', ''],
+        ['La méthode', ''],
+        ['Les tendances de consommation actuelles', ''],
+        ["L'attirance des jeunes pour ses véhicules", ''],
+      ] },
       { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Les types de véhicules de la gamme', colonnes: ['Type 1', 'Type 2', 'Type 3', 'Type 4'], nbLignes: 1 },
       { type: 'texte', id: 'annexe4', titre: 'Annexe 4 — Les points forts des modèles', lignes: 3 },
       { type: 'texte', id: 'annexe5', titre: 'Annexe 5 — Le nouveau modèle', lignes: 2 },
@@ -3536,6 +4411,7 @@ const CITROEN_M2: ContenuMission = { //x
     activites: [
       {
         titre: 'Activité 1 — Prise de contact en face-à-face',
+        contexte: "Votre tuteur vous demande d'apprendre comment établir un contact efficace avec un concessionnaire automobile car selon lui, une bonne prise de contact est fondamentale pour instaurer un climat de confiance et commencer une relation commerciale fructueuse.",
         questions: [
           { numero: 1, consigne: 'Énumérez les étapes clés à suivre lors de la prise de contact avec un client dans une concession automobile.', ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1' },
           { numero: 2, consigne: "Indiquez pourquoi il est important d'avoir une bonne préparation avant d'aborder un client.", ressources: "Consulter le document 1, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2' },
@@ -3546,6 +4422,7 @@ const CITROEN_M2: ContenuMission = { //x
       },
       {
         titre: 'Activité 2 — Découverte des besoins',
+        contexte: "Il vous demande ensuite d'étudier les besoins d'une cliente à travers un dialogue pour lui proposer ensuite un véhicule adapté.",
         questions: [
           { numero: 6, consigne: 'Énumérez les critères mentionnés par Clara pour sa voiture.', ressources: "Consulter le document 2 et le document 3, compléter l'annexe 6. [C.1.2]", annexeId: 'annexe6' },
           { numero: 7, consigne: 'Indiquez pourquoi la taille de la voiture est importante pour Clara.', ressources: "Consulter le document 2, compléter l'annexe 7. [C.1.2]", annexeId: 'annexe7' },
@@ -3554,6 +4431,7 @@ const CITROEN_M2: ContenuMission = { //x
       },
       {
         titre: "Activité 3 — La proposition d'une voiture",
+        contexte: "Ensuite votre responsable vous apprend à présenter des véhicules qui correspondent aux critères émis par le client car cette étape est essentielle pour le convaincre que les options proposées répondent bien à ses besoins.",
         questions: [
           { numero: 9, consigne: 'Citez les 3 modèles proposés par le vendeur.', ressources: "Consulter le document 4, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
           { numero: 10, consigne: 'Indiquez quel modèle est entièrement électrique et quel est son prix.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
@@ -3564,6 +4442,7 @@ const CITROEN_M2: ContenuMission = { //x
       },
       {
         titre: "Activité 4 — L'accord du client",
+        contexte: "Enfin, il vous demande de suivre le processus de finalisation de l'achat d'une voiture. Il vous montre les étapes clés comme choisir le modèle, discuter du financement, comprendre le contrat, et enfin, recevoir les clés de la voiture. Il souhaite que vous compreniez l'importance de bien se préparer avant de signer et de s'assurer que tout est clair.",
         questions: [
           { numero: 14, consigne: "Citez les étapes que Clara et son père doivent suivre pour finaliser l'achat de la voiture.", ressources: "Consulter le document 6, compléter l'annexe 10. [C.1.2]", annexeId: 'annexe10' },
           { numero: 15, consigne: "Indiquez les 2 types d'options de financement proposé par le vendeur.", ressources: "Consulter le document 6, compléter l'annexe 11. [C.1.2]", annexeId: 'annexe11' },
@@ -3581,10 +4460,21 @@ const CITROEN_M2: ContenuMission = { //x
       { type: 'grille', id: 'annexe6', titre: 'Annexe 6 — Critères de Clara pour sa voiture', colonnes: ['5 critères', 'Réponse'], nbLignes: 5 },
       { type: 'texte', id: 'annexe7', titre: 'Annexe 7 — Taille du véhicule', lignes: 3 },
       { type: 'texte', id: 'annexe8', titre: 'Annexe 8 — Budget', lignes: 2 },
-      { type: 'grille', id: 'annexe9', titre: "Annexe 9 — Proposition d'une voiture", colonnes: ['Élément', 'Réponse'], nbLignes: 7 },
+      { type: 'grille', id: 'annexe9', titre: "Annexe 9 — Proposition d'une voiture", colonnes: ['Élément', 'Réponse'], nbLignes: 7, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['3 modèles', ''],
+        ['', ''],
+        ['', ''],
+        ['Modèle complètement électrique et son prix', ''],
+        ['Modèle le plus économique', ''],
+        ['Équipement commun aux 3 véhicules', ''],
+        ['Modèle au-dessus de son budget', ''],
+      ] },
       { type: 'grille', id: 'annexe10', titre: "Annexe 10 — Étapes de finalisation de l'achat", colonnes: ['Étape', 'Réponse'], nbLignes: 5 },
       { type: 'texte', id: 'annexe11', titre: 'Annexe 11 — Options de financement', lignes: 2 },
-      { type: 'grille', id: 'annexe12', titre: 'Annexe 12 — Lire le contrat et la remise des clés', colonnes: ['Élément', 'Réponse'], nbLignes: 2 },
+      { type: 'grille', id: 'annexe12', titre: 'Annexe 12 — Lire le contrat et la remise des clés', colonnes: ['Élément', 'Réponse'], nbLignes: 2, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["L'importance de bien lire le contrat", ''],
+        ['Le moment de la remise des clés', ''],
+      ] },
     ],
   },
   corrige: {
@@ -3886,6 +4776,7 @@ const CITROEN_M3: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — Suivre l'évolution de la commande",
+        contexte: "Vous décidez d'étudier les étapes à suivre pour assurer le suivi d'une commande après la signature du contrat. En effet, cette procédure est essentielle pour garantir une expérience client satisfaisante et pour s'assurer que le véhicule est livré dans les délais.",
         questions: [
           { numero: 1, consigne: 'Indiquez quelle est la première étape après avoir fait la sélection du véhicule.', ressources: "Consulter le document 1, compléter l'annexe 1. [C.2.1]", annexeId: 'annexe1' },
           { numero: 2, consigne: "Expliquez ce qu'est un numéro de commande et son rôle.", ressources: "Consulter le document 1, compléter l'annexe 2. [C.2.1]", annexeId: 'annexe2' },
@@ -3895,6 +4786,7 @@ const CITROEN_M3: ContenuMission = {
       },
       {
         titre: 'Activité 2 — Informer le client sur les conditions et les délais de livraison',
+        contexte: "Enfin, votre tuteur vous demande d'examiner la façon d'informer le client sur les conditions et les délais de livraison de sa citadine.",
         questions: [
           { numero: 5, consigne: "Indiquez comment la disponibilité d'un modèle peut changer la date de livraison.", ressources: "Consulter le document 2, compléter l'annexe 5. [C.2.1]", annexeId: 'annexe5' },
           { numero: 6, consigne: 'Listez les documents que le client doit fournir avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 6. [C.2.1]", annexeId: 'annexe6' },
@@ -4424,12 +5316,14 @@ const AMPARIS_M2: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La segmentation et la cible de prospection',
+        contexte: "Pour commencer, elle souhaite que vous sachiez ce qu'est une cible et que vous l'identifiiez.",
         questions: [
           { numero: 1, consigne: 'Cochez les critères de segmentation retenus par votre tutrice et justifiez votre réponse.', ressources: "Lire les documents 1 et 2, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — La cible de la prospection',
+        contexte: "Maintenant que vous savez quelle est la cible à viser, votre tutrice vous remet un extrait d'annuaire comportant des types d'organisations différentes.",
         questions: [
           { numero: 2, consigne: 'Indiquez quelle est la cible que votre responsable souhaite viser.', ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
           { numero: 3, consigne: 'Selon vous, quelle est la définition de la cible.', ressources: "Lire le document 2, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
@@ -4703,6 +5597,7 @@ const AMPARIS_M3: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — Les techniques de prospection adaptées',
+        contexte: "Votre tutrice vous demande de lui proposer deux techniques de prospection les plus adaptées pour vous mettre en contact avec les prospects. Votre tutrice vous rappelle que s'il existe une infinité de techniques de prospection, toutes ne peuvent pas être applicables dans tous les types d'entreprise car certaines ne conviennent pas à la structure ou l'image de celle-ci. Elle souhaite que les techniques de prospection que vous choisirez soient dynamiques mais qu'elles permettent également d'avoir un contact direct et chaleureux avec les prospects.",
         questions: [
           { numero: 1, consigne: 'Listez les avantages et les inconvénients de chaque technique de prospection.', ressources: "Lire le document 2, compléter l'annexe 1. [C.4B.2]", annexeId: 'annexe1' },
           { numero: 2, consigne: "Répartissez les techniques de prospection selon qu'elles soient à distance ou de contact direct.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2' },
@@ -4712,9 +5607,10 @@ const AMPARIS_M3: ContenuMission = {
       },
       {
         titre: 'Activité 2 — La prospection écrite',
+        contexte: "Vous avez déterminé le type de prospection à distance que vous souhaitez mettre en place et grâce à votre justification pertinente, votre tuteur vous a donné son accord. Vous observez attentivement les coordonnées de chacune des organisations que vous avez sélectionnées (Mission 2 annexe 4). Le document de prospection écrit est « dynamique et pas cher » comme vous l'a demandé votre tutrice dans le document 1.",
         questions: [
           { numero: 5, consigne: 'Rédigez le document de prospection écrite que vous allez envoyer à vos prospects.', ressources: "Lire le document 3, compléter l'annexe 5. [C.4B.2]", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Retournez à la Mission 2, l'annexe 4, puis indiquez quelle coordonnée est manquante.", ressources: "Compléter l'annexe 6. [C.4B.2]", annexeId: 'annexe6' },
+          { numero: 6, consigne: "Retournez à la Mission 2, l'annexe 4, puis indiquez quelle coordonnée est manquante.", ressources: "Compléter l'annexe 6. [C.4B.2]", annexeId: 'annexe6', contexteAvant: "Cependant, vous constatez que pour l'une des organisations, les coordonnées nécessaires à l'envoi du document ne sont pas disponibles." },
           { numero: 7, consigne: "Donnez le nom de l'organisation dont la coordonnée est manquante.", ressources: "Compléter l'annexe 7. [C.4B.2]", annexeId: 'annexe7' },
           { numero: 8, consigne: "Quelle autre coordonnée de l'organisation est disponible pour envoyer le document de prospection écrit.", ressources: "Compléter l'annexe 8. [C.4B.2]", annexeId: 'annexe8' },
           { numero: 9, consigne: "Indiquez quelle autre technique de prospection écrite il est possible d'utiliser.", ressources: "Relire le document 2, compléter l'annexe 9. [C.4B.2]", annexeId: 'annexe9' },
@@ -4723,12 +5619,14 @@ const AMPARIS_M3: ContenuMission = {
       },
       {
         titre: 'Activité 3 — La prospection téléphonique',
+        contexte: "Le document de prospection écrite que vous avez rédigé a été validé par votre tutrice. Cela fait une semaine que vous avez tout envoyé, et vous vous préparez maintenant pour la prospection de contact direct pour relancer vos prospects, les gestionnaires et les chefs d'établissements.",
         questions: [
           { numero: 11, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: "Lire les documents 4 et 5, compléter l'annexe 11. [C.4B.2]", annexeId: 'annexe11' },
         ],
       },
       {
         titre: "Activité 4 — La réalisation d'une fiche prospect",
+        contexte: "Après avoir réalisé votre fiche d'appel, votre tutrice vous demande de préparer la fiche prospect qui sera utilisée lors de la campagne de prospection téléphonique.",
         questions: [
           { numero: 12, consigne: "Listez tous les éléments que vous devez faire figurer dans chaque partie d'une fiche prospect.", ressources: "Lire le document 6, compléter l'annexe 12. [C.4B.2]", annexeId: 'annexe12' },
           { numero: 13, consigne: 'Réalisez un modèle de fiche prospect.', ressources: "Compléter l'annexe 13. [C.4B.2]", annexeId: 'annexe13' },
@@ -4978,11 +5876,12 @@ const AMPARIS_M4: ContenuMission = {
         titre: 'Activité 1 — Les tâches à effectuer',
         questions: [
           { numero: 1, consigne: "Listez les prospects que vous allez appeler aujourd'hui.", ressources: "Consulter la Mission 2 annexe 4, compléter l'annexe 1. [C.4B.2]", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Complétez le fichier contacts à l'aide des numéros que vous avez eu en appelant.", ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2' },
+          { numero: 2, consigne: "Complétez le fichier contacts à l'aide des numéros que vous avez eu en appelant.", ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2', contexteAvant: "Vous avez passé les appels à l'ensemble des organisations sélectionnées. Certains décisionnaires vous ont répondu ce qui permet de compléter le fichier contacts." },
         ],
       },
       {
         titre: 'Activité 2 — Les objectifs de rendez-vous',
+        contexte: "Votre tuteur tient à ce que votre opération de phoning soit rentable et pour qu'elle le soit, étant donné le fait que vous soyez dans l'entreprise depuis très peu de temps, elle vous demande de réussir à obtenir au moins 2 rendez-vous.",
         questions: [
           { numero: 3, consigne: 'Combien de rendez-vous avez-vous réussi à avoir suite à votre campagne de téléprospection ?', ressources: "Consulter l'annexe 2, compléter l'annexe 3. [C.4B.2]", annexeId: 'annexe3' },
           { numero: 4, consigne: "Complétez votre agenda en y inscrivant les rendez-vous que vous avez réussi à obtenir.", ressources: "Consulter l'annexe 2, compléter l'annexe 4. [C.4B.2]", annexeId: 'annexe4' },
@@ -4992,6 +5891,7 @@ const AMPARIS_M4: ContenuMission = {
       },
       {
         titre: "Activité 3 — Calcul du coût de l'opération",
+        contexte: "Votre tutrice vous avait demandé au moment de la mise en place de l'opération de prospection, que celle-ci ne coûte pas trop cher à l'entreprise, soit 20€ maximum. Elle vous demande maintenant de calculer le coût réel de l'opération.",
         questions: [
           { numero: 7, consigne: "Calculez le coût de l'opération.", ressources: "Consulter la Mission 2 annexe 4 puis lire le document 3, compléter l'annexe 7. [C.4B.2]", annexeId: 'annexe7' },
           { numero: 8, consigne: 'Commentez ces résultats au regard du budget que vous a accordé Mme Pauret pour la mise en place de l\u2019opération.', ressources: "Consulter l'annexe 7, compléter l'annexe 8. [C.4B.2]", annexeId: 'annexe8' },
@@ -4999,6 +5899,7 @@ const AMPARIS_M4: ContenuMission = {
       },
       {
         titre: 'Activité 4 — Mettre à jour le fichier client',
+        contexte: "L'opération de prospection s'est bien passée et votre tutrice est satisfaite. Pour que celle-ci soit complétement terminée, elle vous demande de mettre à jour le fichier clients en rentrant les informations qui vous ont été données au cours de vos appels.",
         questions: [
           { numero: 9, consigne: 'Mettez à jour le fichier clients en rentrant les informations qui vous ont été données au cours de vos appels.', ressources: "Relire le document 1 (Mission 4) et le document 2 (Mission 2), compléter l'annexe 9. [C.4B.2]", annexeId: 'annexe9' },
         ],
@@ -5234,6 +6135,7 @@ const ORPI_M1: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — Les sources d'informations internes et externes de l'entreprise",
+        contexte: "Maxime fait appel à vous pour l'aider à préparer son PowerPoint en utilisant les informations qu'il a recueillies auprès de son tuteur.",
         questions: [
           { numero: 1, consigne: "Réalisez la fiche d'identité de l'entreprise Orpi Guy Môquet.", ressources: 'Consulter le document 1, compléter la diapositive 1. [3.1.2]', annexeId: 'ppt' },
           { numero: 2, consigne: "Indiquez quelle est la zone de prospection de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 2. [3.1.2]', annexeId: 'ppt' },
@@ -5244,12 +6146,14 @@ const ORPI_M1: ContenuMission = {
       },
       {
         titre: 'Activité 2 — Les sollicitations clients et leur traitement',
+        contexte: "M. Lefevre, le responsable de l'agence, vous interroge à son tour sur les demandes des clients que vous avez reçues, qu'elles aient été formulées en face-à-face, par mail ou par téléphone.",
         questions: [
           { numero: 6, consigne: "Repérez les demandes de clients les plus fréquentes et la façon dont elles sont traitées.", ressources: 'Consulter le document 1, compléter la diapositive 6. [3.1.1]', annexeId: 'ppt' },
         ],
       },
       {
         titre: 'Activité 3 — Les outils de fidélisation et/ou de développement de la relation client',
+        contexte: "Toujours dans le cadre de la constitution de son dossier pour son oral, Maxime s'intéresse à la fidélisation chez Orpi Guy Môquet.",
         questions: [
           { numero: 7, consigne: "Précisez les méthodes de fidélisation mises en place au sein de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 7. [3.1.4]', annexeId: 'ppt' },
           { numero: 8, consigne: "En vous appuyant sur les propos de M. Lefevre, identifiez le problème de fidélisation (= constat) qui existe au sein de l'agence.", ressources: 'Consulter le document 1, compléter la diapositive 8. [3.1.4]', annexeId: 'ppt' },
@@ -5506,6 +6410,7 @@ const ORPI_M2: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — Préparer l'oral de la situation 1",
+        contexte: "Afin de vous préparer à votre propre oral en entreprise qui aura lieu dans quelques semaines, votre professeur d'économie-gestion vous demande de vous exercer sur le PowerPoint de Maxime. Votre entraînement devra durer 10 minutes maximum.",
         questions: [
           { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint.', ressources: "Lire le document 1, compléter l'annexe 1. [3.1.4]", annexeId: 'annexe1' },
           { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio).', annexeId: undefined },
@@ -5801,6 +6706,7 @@ const ORPI_M3: ContenuMission = {
       },
       {
         titre: "Activité 2 — L'évaluation et le bilan de l'action",
+        contexte: "Deux semaines après la mise à jour du compte Instagram de l'agence Orpi Guy Môquet, Maxime, stagiaire, fait le bilan avec M. Lefevre sur les résultats de l'action de fidélisation. Ils analysent les premiers retours, les indicateurs de performance et envisagent des ajustements pour optimiser l'efficacité de l'action.",
         questions: [
           { numero: 7, consigne: "Évaluez l'action de fidélisation mise en place par Maxime en analysant les indicateurs quantitatifs et qualitatifs.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 7. [3.3.2]', annexeId: 'ppt' },
           { numero: 8, consigne: "Pour chaque indicateur qualitatif négatif, présentez les suggestions d'amélioration proposées par Maxime.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 8. [3.3.2 / 3.3.4]', annexeId: 'ppt' },
@@ -6034,6 +6940,7 @@ const ORPI_M4: ContenuMission = {
     activites: [
       {
         titre: "Activité 1 — Préparer l'oral de la situation 2",
+        contexte: "Afin de vous préparer à votre propre oral qui aura lieu dans quelques semaines dans votre établissement scolaire, votre professeur d'économie-gestion vous demande de vous exercer sur la 2ème partie du PowerPoint de Maxime.",
         questions: [
           { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint (2ème partie).', ressources: "Lire le document 1, compléter l'annexe 1. [3.3.2]", annexeId: 'annexe1' },
           { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio).', annexeId: undefined },
@@ -6564,6 +7471,7 @@ const FREE_M2: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La méthode C.E.R.C. en réception d\u2019appel',
+        contexte: "Avant d'analyser cet appel, votre tutrice vous donne quelques conseils et vous rappelle quelques règles.",
         questions: [
           { numero: 1, consigne: "Pour chacun des éléments d'une bonne prise de contact, retrouvez les contenus qui les constituent.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
           { numero: 2, consigne: 'Indiquez les numéros dans le dialogue qui correspondent aux différentes étapes de la méthode C.E.R.C.', ressources: "Lire les documents 2 et 3, compléter l'annexe 2.", annexeId: 'annexe2' },
@@ -6573,6 +7481,7 @@ const FREE_M2: ContenuMission = {
       },
       {
         titre: 'Activité 2 — L\u2019accueil téléphonique',
+        contexte: "Vous êtes maintenant prêt à recevoir votre premier appel en appliquant tous les conseils que vous a donné votre tutrice. Un client vous contacte au 3244.",
         questions: [
           { numero: 5, consigne: "Utilisez la méthode C.E.R.C. pour rédiger votre plan de réception d'appel en fonction de la réclamation du client.", ressources: "Lire les documents 3 à 6, compléter l'annexe 5.", annexeId: 'annexe5' },
         ],
@@ -6819,6 +7728,7 @@ const FREE_M3: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La réalisation de la fiche technique de la Freebox Pop',
+        contexte: "Votre tutrice vous demande de réaliser la fiche produit de la nouvelle Freebox Pop.",
         questions: [
           { numero: 1, consigne: 'Complétez les caractéristiques techniques en consultant les pages internet Free.', ressources: "Lire le document 1 (et le document 4), compléter l'annexe 1.", annexeId: 'annexe1', boutonLien: 'https://drive.google.com/file/d/1o2WOxZIrinhZKujwzvZn11ZZLfLJ8OnH/view', boutonLibelle: 'Ouvrir la page Freebox Pop' },
           { numero: 2, consigne: 'Complétez les caractéristiques commerciales en consultant les pages internet Free.', ressources: "Lire le document 2 (et le document 5), compléter l'annexe 2.", annexeId: 'annexe2', boutonLien: 'https://drive.google.com/file/d/1LMqNdUlRYr9jNx1qMSZWfp6YhBQeORyC/view', boutonLibelle: 'Ouvrir la page offre Freebox Pop' },
@@ -6826,12 +7736,14 @@ const FREE_M3: ContenuMission = {
       },
       {
         titre: 'Activité 2 — Les mobiles d\u2019achat',
+        contexte: "Votre tutrice vous demande maintenant de repérer à l'avance les mobiles suscités par l'achat de la nouvelle Freebox chez les clients afin de pouvoir anticiper leurs motivations d'achat profondes lorsqu'ils seront au téléphone.",
         questions: [
           { numero: 3, consigne: "À partir de l'annexe 1 « caractéristiques de base » et de l'annexe 2 « prix », cochez les mobiles SONCASE qui correspondent à la Freebox Pop puis justifiez votre réponse.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 3 — L\u2019argumentation',
+        contexte: "Désormais vous avez toutes les connaissances sur les caractéristiques de la Freebox et les mobiles d'achat qu'elle suscite, votre tutrice vous demande de construire des arguments pour convaincre les clients.",
         questions: [
           { numero: 4, consigne: "Pour chaque mobile d'achat, construisez les arguments que vous présenterez au client pour l'inciter à souscrire à la nouvelle Freebox Pop.", ressources: "Compléter l'annexe 4.", annexeId: 'annexe4' },
         ],
@@ -7136,6 +8048,7 @@ const FREE_M4: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La définition de la vente au rebond',
+        contexte: "Afin que vous compreniez ce qu'est la vente au rebond, Mme Vière vous donne quelques explications.",
         questions: [
           { numero: 1, consigne: 'Analysez la vente au rebond.', ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
           { numero: 2, consigne: 'Analysez la vente additionnelle.', ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
@@ -7144,6 +8057,7 @@ const FREE_M4: ContenuMission = {
       },
       {
         titre: 'Activité 2 — Se préparer à recevoir l\u2019appel',
+        contexte: "Avant de recevoir l'appel, votre tutrice vous transmet l'ensemble des procédures à appliquer.",
         questions: [
           { numero: 4, consigne: "Indiquez les étapes à respecter pour faire une vente au rebond lors d'une réception d'appel.", ressources: "Consulter le document 3, compléter l'annexe 4.", annexeId: 'annexe4' },
           { numero: 5, consigne: 'Rédigez la première partie (Contact) de votre plan de réception d\u2019appel.', ressources: "Consulter le document 3, compléter l'annexe 5.", annexeId: 'annexe5' },
@@ -7154,12 +8068,14 @@ const FREE_M4: ContenuMission = {
       },
       {
         titre: 'Activité 3 — La pratique de la vente au rebond',
+        contexte: "La demande du client est traitée, vous allez maintenant tenter de faire une vente au rebond en proposant la nouvelle Freebox Pop.",
         questions: [
           { numero: 9, consigne: 'Rédigez la manière dont vous allez présenter au téléphone à M. Seption la nouvelle Freebox en choisissant 3 arguments par rapport aux caractéristiques de base.', ressources: "Consulter la Mission 3 (annexe 4), compléter l'annexe 8.", annexeId: 'annexe8' },
         ],
       },
       {
         titre: 'Activité 4 — L\u2019annonce du prix et la livraison',
+        contexte: "Le client a validé votre proposition. Vous lui annoncez le prix et les modalités de livraison.",
         questions: [
           { numero: 10, consigne: "Annoncez le prix au client ainsi que sa subtilité, puis utilisez la technique de la « soustraction » pour réfuter son objection sur le prix.", ressources: "Lire le document 7 ; lire les documents 8, 9 et 10, compléter l'annexe 9.", annexeId: 'annexe9' },
           { numero: 11, consigne: 'Annoncez au client les délais de livraison de sa nouvelle Freebox en le rassurant.', ressources: "Lire le document 11, compléter l'annexe 10.", annexeId: 'annexe10' },
@@ -7513,17 +8429,19 @@ const FREE_M5: ContenuMission = {
     activites: [
       {
         titre: 'Activité 1 — La satisfaction du client',
+        contexte: "Votre tutrice vous remet le questionnaire de satisfaction qui est envoyé à chaque client après son appel. En effet, il est important que vous sachiez les points sur lesquels vous serez jugé, car la note obtenue conditionne à la fin de chaque mois le versement d'une prime.",
         questions: [
           { numero: 1, consigne: "Pour chacune des questions de l'enquête de satisfaction, indiquez le type de question dont il s'agit.", ressources: "Lire le document 1, consulter le document 2, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Calculez ce que représentent en pourcentage les avis négatifs et positifs.', ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2a' },
+          { numero: 2, consigne: 'Calculez ce que représentent en pourcentage les avis négatifs et positifs.', ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2a', contexteAvant: "Nous sommes à la fin du mois et vous avez reçu 300 appels. Vous souhaitez savoir le montant de la prime que vous allez percevoir sur votre salaire." },
           { numero: 3, consigne: 'Calculez le montant de la rémunération que vous allez percevoir ce mois-ci.', ressources: "Lire le document 4, compléter l'annexe 3.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 2 — La fidélisation du client',
+        contexte: "Mme Vière vous transmet un document qu'elle a trouvé dans la presse spécialisée et vous demande de l'étudier.",
         questions: [
           { numero: 4, consigne: 'Trouvez un titre pour chaque étape du document.', ressources: "Lire le document 5, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz, puis répondez via le lien.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5a ; compléter l'annexe 5b.", annexeId: 'annexe5a' },
+          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz, puis répondez via le lien.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5a ; compléter l'annexe 5b.", annexeId: 'annexe5a', contexteAvant: "Free est très présent sur les réseaux sociaux. Votre tutrice vous a sélectionné un certain nombre de messages de clients mécontents et elle vous demande de leur répondre consciencieusement car trouver une solution efficace fait partie du processus de fidélisation." },
           { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony, puis répondez via le lien.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6a ; compléter l'annexe 6b.", annexeId: 'annexe6a' },
           { numero: 7, consigne: "Analysez la partie II du questionnaire « FREE ET VOUS » (Instagram) et indiquez à quelle étape du document 5 elle correspond. Justifiez.", ressources: "Lire le document 9, compléter l'annexe 7.", annexeId: 'annexe7' },
         ],
@@ -7959,33 +8877,37 @@ const LEROY_MERLIN_M1: ContenuMission = {
         texte: [
           { pageWeb: true },
           { intertitre: 'Document — La concurrence' },
-          { intertitre: 'Concurrents directs' },
           {
-            paragraphes: [
-              "Un concurrent direct est une entreprise ou une organisation qui propose un produit, un service ou un prix similaire ou comparable à celui d'une autre entreprise. Elles ont la même activité principale.",
-            ],
-          },
-          {
-            paragraphes: [
-              "Exemple 1 : Un client qui veut aller à Toulouse il peut le faire avec la compagnie Air France. Ce client peut aussi voyager avec des concurrents directs d'Air France : Easy Jet, Rayan Air.",
-              "Exemple 2 : Un client veut acheter des vêtements chez H&M. Ce client peut aussi acheter des vêtements chez des concurrents directs d'H&M : Bershka, Zara. L'activité principale des deux enseignes est la vente de vêtements.",
-              "Exemple 3 : Un client veut acheter un four à micro-onde chez Darty. Ce client peut aussi acheter son four micro-onde chez des concurrents directs de Darty : Boulanger. L'activité principale des deux enseignes sont la télé, la Hi-fi et l'électroménager.",
-              "Exemple 4 : Un client cherche un appartement chez La Forêt Immobilier. Ce client peut aussi chercher son appartement chez des concurrents directs de La Forêt Immobilier : ERA Immobilier, Century 21.",
-            ],
-          },
-          { intertitre: 'Concurrents indirects' },
-          {
-            paragraphes: [
-              "Un concurrent indirect est une entreprise ou une organisation dont l'activité principale n'est pas la même ou qui propose un produit ou un service comparable ou différent, mais susceptible de répondre au même besoin du consommateur.",
-            ],
-          },
-          {
-            paragraphes: [
-              "Exemple 1 : Ce client peut aussi voyager avec des concurrents indirects d'Air France : Co-voiturage, Train SNCF.",
-              "Exemple 2 : Ce client peut aussi acheter des vêtements chez des concurrents indirects d'H&M : Louis Vuitton, Gucci. Ils ne proposent pas du tout les mêmes prix qu'H&M alors même qu'ils vendent aussi des vêtements.",
-              "Exemple 3 : Ce client peut aussi acheter des vêtements chez des concurrents indirects Darty : Carrefour. Carrefour vend certes des micro-ondes aussi mais son activité principale est l'alimentaire.",
-              "Exemple 4 : Ce client peut aussi chercher son appartement chez des concurrents indirects de La Forêt Immobilier : Agence immobilière en ligne, Magazine (ex : Particulier à Particulier).",
-            ],
+            tableau: {
+              colonnes: ['', 'Concurrents directs', 'Concurrents indirects'],
+              lignes: [
+                [
+                  'Définitions',
+                  "Un concurrent direct est une entreprise ou une organisation qui propose un produit, un service ou un prix similaire ou comparable à celui d'une autre entreprise. Elles ont la même activité principale.",
+                  "Un concurrent indirect est une entreprise ou une organisation dont l'activité principale n'est pas la même ou qui propose un produit ou un service comparable ou différent, mais susceptible de répondre au même besoin du consommateur.",
+                ],
+                [
+                  'Exemple 1 : Un client qui veut aller à Toulouse il peut le faire avec la compagnie Air France',
+                  "Ce client peut aussi voyager avec des concurrents directs d'Air France :\n- Easy Jet\n- Rayan Air",
+                  "Ce client peut aussi voyager avec des concurrents indirects d'Air France :\n- Co-voiturage\n- Train SNCF",
+                ],
+                [
+                  'Exemple 2 : Un client veut acheter des vêtements chez H&M',
+                  "Ce client peut aussi acheter des vêtements chez des concurrents directs d'H&M :\n- Bershka\n- Zara\nL'activité principale des deux enseignes est la vente de vêtements",
+                  "Ce client peut aussi acheter des vêtements chez des concurrents indirects d'H&M :\n- Louis Vuitton\n- Gucci\nIls ne proposent pas du tout les mêmes prix qu'H&M alors même qu'ils vendent aussi des vêtements.",
+                ],
+                [
+                  'Exemple 3 : Un client veut acheter un four à micro-onde chez Darty',
+                  "Ce client peut aussi acheter son four micro-onde chez des concurrents directs de Darty :\n- Boulanger\nL'activité principale des deux enseignes sont la télé, la Hi-fi et l'électroménager.",
+                  "Ce client peut aussi acheter des vêtements chez des concurrents indirects Darty :\n- Carrefour\nCarrefour vend certes des micro-ondes aussi mais son activité principale est l'alimentaire.",
+                ],
+                [
+                  'Exemple 4 : Un client cherche un appartement chez La Forêt Immobilier',
+                  "Ce client peut aussi chercher son appartement chez des concurrents directs de La Forêt Immobilier :\n- ERA Immobilier\n- Century 21",
+                  "Ce client peut aussi chercher son appartement chez des concurrents indirects de La Forêt Immobilier :\n- Agence immobilière en ligne\n- Magazine (ex : Particulier à Particulier)",
+                ],
+              ],
+            },
           },
         ],
       },
@@ -8328,6 +9250,3508 @@ const LEROY_MERLIN_M1: ContenuMission = {
 }
 
 
+
+// ---------------------------------------------------------------------------
+// CONTENU : Leroy Merlin, mission 2 - La recherche des besoins et la
+// proposition de produit
+// ---------------------------------------------------------------------------
+const LEROY_MERLIN_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Recherchez les besoins du couple Sankouraga (mobiles, motivations, freins), reformulez leurs attentes, puis proposez le produit adapté à l'aide de la méthode QQCCP et du configurateur de dressing.",
+    contexte:
+      "Un couple, Mme et M. Sankouraga, est venu se renseigner pour l'achat d'un dressing. Vous les avez accueillis en leur offrant une boisson chaude. Il est temps pour vous de vous lancer dans la recherche de leurs besoins avant de leur proposer le produit adapté à leurs critères.",
+    documents: [
+      {
+        numero: 1,
+        titre: 'Intervention du couple',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 1 — Intervention du couple' },
+          {
+            dialogue: [
+              { locuteur: 'Le commercial', texte: 'Bonjour Madame, Monsieur ! Comment puis-je vous aider ?', italique: true },
+              { locuteur: 'M. Sankouraga', texte: "Bonjour ! Nous avons emménagé dans notre nouvel appartement il y a quelques semaines et nous souhaitons faire un dressing. Les anciens propriétaires en avait laissé un, mais on a trouvé qu'il était abîmé et plus vraiment au goût du jour, donc on l'a enlevé. C'est pour cela qu'on recherche quelque chose de plus contemporain." },
+              { locuteur: 'Mme Sankouraga', texte: "Effectivement ! Du coup on a un peu regardé sur internet et on a vu que de nos jours on fait de très beaux dressings. On aimerait bien un modèle en bois recyclé et spacieux car nous sommes des fashions-addict. On a tous les deux pas mal de vêtements et pas beaucoup de place pour les ranger." },
+              { locuteur: 'Le commercial', texte: 'Je comprends tout à fait. Et vous avez déjà une idée de ce qui vous plairait ?', italique: true },
+              { locuteur: 'M. Sankouraga', texte: "Oui, on a un peu regardé ! On voudrait vraiment quelque chose de beau, avec une belle couleur naturelle… Un truc qui nous plait vraiment quoi !" },
+              { locuteur: 'Mme Sankouraga', texte: "Je suis d'accord, mais après tu sais comment est ta mère. Comme d'habitude quand elle le verra, je n'ai pas envie qu'elle nous dise qu'on a exagéré en dépensant autant pour un dressing." },
+              { locuteur: 'M. Sankouraga', texte: "C'est pas faux ! Mais bon…", italique: true },
+              { locuteur: 'Mme Sankouraga', texte: "…Bref ! après tout, je me dis que si on veut quelque chose de bien il faut y mettre le prix. Chez mes parents la cuisine et la salle de bains ont été faites par Leroy Merlin et à chaque fois qu'il y a eu un problème tout a été pris en charge par la garantie. Et ça, c'est super important pour nous !" },
+              { locuteur: 'M. Sankouraga', texte: "C'est vrai, mais tu te rappelles comment on a galéré pour monter tout ça ? On a pris presque 4 jours pour la cuisine. Plus jamais ! J'ai pas les compétences pour faire du montage ! Je préfère payer pour le faire." },
+            ],
+          },
+          { paragraphes: ['* Fashions-addict : accro à la mode'] },
+        ],
+      },
+      {
+        numero: 2,
+        titre: "Les mobiles d'achat (SONCASE)",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 2 — Les mobiles d'achat" },
+          {
+            tableau: {
+              colonnes: ['S O N C A S E', 'Typologie', 'Exemples'],
+              lignes: [
+                ['S', 'comme Sécurité', 'Produit solide, fiable, robuste, garantie, de qualité'],
+                ['O', 'comme Orgueil', 'Produit prestigieux, de marque'],
+                ['N', 'comme Nouveauté', 'Produit récent, à la mode, innovant, moderne'],
+                ['C', 'comme Confort', "Produit pratique, facile d'utilisation, efficace"],
+                ['A', 'comme Argent', 'Paiement en plusieurs fois, produit économique, en promotion'],
+                ['S', 'comme Sympathie', "Plaisir procuré par l'achat, attirance pour une couleur, forme…"],
+                ['E', 'comme Environnement', 'Produit durable, écologique'],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 3,
+        titre: "Les motivations d'achat",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 3 — Les motivations d'achat" },
+          {
+            tableau: {
+              colonnes: ['Typologies', 'Définition'],
+              lignes: [
+                ['Hédoniste ou personnelle', 'Achat pour se faire plaisir'],
+                ['Oblative ou altruiste', 'Achat pour faire plaisir aux autres'],
+                ['Auto-expression', "Achat pour s'affirmer, se démarquer des autres"],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 4,
+        titre: "Les freins à l'achat",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 4 — Les freins à l'achat" },
+          {
+            paragraphes: [
+              "Les freins d'achat sont les causes matériels ou psychologique qui empêchent ou retarde la décision d'achat.",
+              'Les freins sont de trois ordres :',
+            ],
+          },
+          { puces: ['La peur ;', "L'inhibition ;", 'Le prix.'] },
+          {
+            paragraphes: [
+              "La peur peut avoir différentes causes : la peur de ne pas savoir utiliser le produit ou la peur du danger, de l'utilisation, ou des produits chimiques.",
+              "L'inhibition elle aussi peut avoir différentes causes tels que la crainte d'être mal jugé, le ridicule, le sentiment de gêne ou de honte.",
+              'Enfin, le prix : le client trouve le produit trop cher ou pas assez cher.',
+            ],
+          },
+        ],
+      },
+      {
+        numero: 5,
+        titre: 'Reformuler les besoins des prospects',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 5 — Reformuler les besoins des prospects' },
+          { paragraphes: ['1 — Les types de reformulation :'] },
+          {
+            tableau: {
+              colonnes: ['Types de reformulation', 'Définition', 'Exemple'],
+              lignes: [
+                ['Écho ou perroquet', 'Elle consiste à répéter les paroles du client ou un terme important… comme un perroquet', "Le client : Je n'aime pas ce modèle.\nLe commercial : Vous n'aimez pas ce modèle ?"],
+                ['Miroir ou reflet', 'Vous reformulez les propos du client avec vos propres mots', "- En d'autres termes…\n- Vous voulez dire que…"],
+                ['Résumé ou synthèse', 'Vous faites une synthèse de tout ce que vous a dit le client', "Si j'ai bien compris… C'est bien cela ?"],
+              ],
+            },
+          },
+          { paragraphes: ['2 — Exemple :', 'Le client : « Un bon prix ? »'] },
+          {
+            tableau: {
+              colonnes: ['Type', 'Exemple'],
+              lignes: [
+                ['Écho ou perroquet', '« Un bon prix ? »'],
+                ['Miroir ou reflet', "« En d'autres termes, vous recherchez donc une voiture d'occasion, avec une fonction GPS simple à utiliser et à un prix raisonnable ? »"],
+                ['Résumé ou synthèse', "« Si j'ai bien compris vous en recherchez une d'occasion, qui vous permettra de calculer facilement vos trajets et à un bon prix. C'est bien cela ? »"],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 6,
+        titre: 'La présentation des produits (méthode QQCCP)',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 6 — La présentation des produits' },
+          { paragraphes: ['Lorsque vous présenterez la solution que vous avez retenue pour le client, vous appliquerez la technique QQCCP.'] },
+          {
+            tableau: {
+              colonnes: ['QQCCP', 'Caractéristiques'],
+              lignes: [
+                ['Quand ?', "Au moment où :\n- Le client le demande ;\n- Le vendeur connaît les mobiles d'achat du client/prospect"],
+                ['Quel produit ?', "Le produit :\n- Qui correspond aux mobiles d'achat du client/prospect ;\n- Qui correspond aux caractéristiques énoncées par le client/prospect."],
+                ['Combien ?', "Le commercial présente :\n- Un produit, celui qui correspond le mieux aux critères du client/prospect ;\n- Deux produits : le produit correspondant au client et un produit moins cher ;\n- Trois produits : le produit correspondant au client, plus un produit d'entrée de gamme, moins cher et enfin un produit haut de gamme, plus cher."],
+                ['Comment ?', "Il faut :\n- Faire essayer le produit ;\n- Favoriser la prise en main du produit ;\n- Inciter le client/prospect à se projeter avec le produit dans son environnement personnel (maison ou travail e fonction du produit)"],
+                ['Pourquoi ?', "Le commercial incite le client/prospect à se projeter pour lui donner le sentiment que le produit lui appartient déjà."],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 7,
+        titre: 'Les exigences de Mme et M. Sankouraga',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 7 — Les exigences de Mme et M. Sankouraga' },
+          { image: { src: '/docs/leroy-merlin-m2/dressing-situation.jpg', alt: 'Dressing en situation', largeur: 380 } },
+          {
+            puces: [
+              'On cherche des caissons standards',
+              'Des caissons couleur chêne, ça serait pas mal',
+              'Le mur de gauche fait 3m30',
+              '200cm de hauteur pour les caissons, c\'est bien !',
+              '45 cm de profondeur pour les caissons c\'est suffisant',
+              'C\'est du parquet marron',
+              'Avec des poignées en métal',
+              'Dans la chambre on a des murs gris',
+              'Une porte de H100 x L40',
+              'Le mur de droite fait 3m30',
+              '2 tiroirs chacun ça nous paraît bien !',
+              'Il y 2m de hauteur sous plafond',
+              'Non, non ! il n\'y a aucune contrainte',
+              'Je crois que le mur d\'en face fait 4m',
+              '220cm de largeur pour les caissons',
+            ],
+          },
+        ],
+      },
+    ],
+    objectifs: [
+      "Identifier les mobiles, motivations et freins d'achat d'un client.",
+      'Reformuler les besoins et proposer un produit adapté à l\'aide de la méthode QQCCP.',
+    ],
+    competence: {
+      groupe: 'Compétences travaillées',
+      intitule: 'C.1.2 — Réaliser la vente dans un cadre omnicanal',
+      detail: "Rechercher les besoins du client, reformuler et proposer une solution adaptée.",
+    },
+    activites: [
+      {
+        titre: "Activité 1 — Les mobiles, motivations et freins à l'achat des prospects",
+        questions: [
+          { numero: 1, consigne: "Retrouvez les mobiles d'achat du couple en indiquant à chaque fois le mot ou le groupe de mots permettant de justifier votre choix.", ressources: 'Consulter les documents 1 et 2, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Cochez la motivation d'achat du couple puis justifiez la en citant le texte.", ressources: 'Consulter les documents 1 et 3, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Relevez dans l'intervention du couple, les deux freins liés à l'achat puis cochez le type de frein.", ressources: 'Consulter les documents 1 et 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — La reformulation',
+        questions: [
+          { numero: 4, consigne: "Reformulez les besoins du client en utilisant la « reformulation synthèse ».", ressources: 'Consulter le document 5, compléter l\'annexe 4.', annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: "Activité 3 — La proposition d'une solution adaptée",
+        questions: [
+          { numero: 5, consigne: "Préparez la présentation du produit en utilisant la méthode « QQCCP ». Pour chaque lettre, choisissez la caractéristique qui s'applique le mieux au cas de vos clients.", ressources: 'Consulter le document 6, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Après avoir lu les réponses du couple, complétez le logiciel qui permettra de proposer le dressing leur correspondant.', ressources: 'Consulter le document 7, compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Indiquez les caractéristiques du produit proposé au couple.', ressources: 'Relire l\'annexe 6, compléter l\'annexe 7.', annexeId: 'annexe7' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'soncase',
+        id: 'annexe1',
+        titre: "Annexe 1 — Mobile(s) d'achat du couple Sankouraga",
+        colonneCoche: "Cocher le(s) mobile(s) d'achat du couple",
+        colonneJustif: 'Justification',
+        lignes: [
+          { id: 'securite', libelle: 'Sécurité' },
+          { id: 'orgueil', libelle: 'Orgueil' },
+          { id: 'nouveaute', libelle: 'Nouveauté' },
+          { id: 'confort', libelle: 'Confort' },
+          { id: 'argent', libelle: 'Argent' },
+          { id: 'sympathie', libelle: 'Sympathie' },
+          { id: 'environnement', libelle: 'Environnement' },
+        ],
+      },
+      {
+        type: 'soncase',
+        id: 'annexe2',
+        titre: "Annexe 2 — Les motivations d'achat du couple",
+        colonneCoche: 'La ou les motivation(s) du couple',
+        colonneJustif: 'Justification',
+        lignes: [
+          { id: 'hedoniste', libelle: 'Hédoniste' },
+          { id: 'oblative', libelle: 'Oblative' },
+          { id: 'autoexpression', libelle: 'Auto-expression' },
+        ],
+      },
+      {
+        type: 'freins',
+        id: 'annexe3',
+        titre: 'Annexe 3 — Les freins de M. et Mme Sankouraga',
+        entete: 'Annexe 3 — Les freins de M. et Mme Sankouraga',
+        colonnes: ['Peur', 'Inhibition', 'Prix'],
+        nbLignes: 2,
+      },
+      {
+        type: 'reformulation',
+        id: 'annexe4',
+        titre: 'Annexe 4 — La reformulation des besoins du couple Sankouraga',
+        nbLignes: 4,
+      },
+      {
+        type: 'ficheappel',
+        id: 'annexe5',
+        titre: 'Annexe 5 — La méthode QQCCP',
+        sections: [
+          { cle: 'quand', libelle: 'Quand ?', lignes: 2 },
+          { cle: 'quel', libelle: 'Quel produit ?', lignes: 3 },
+          { cle: 'combien', libelle: 'Combien ?', lignes: 2 },
+          { cle: 'comment', libelle: 'Comment ?', lignes: 2 },
+          { cle: 'pourquoi', libelle: 'Pourquoi ? (Rédiger la phrase que vous prononcerez pour inciter les clients à se projeter)', lignes: 3 },
+        ],
+      },
+      {
+        type: 'simulateur',
+        id: 'annexe6',
+        titre: 'Annexe 6 — Concevoir mon aménagement intérieur',
+        introTitre: "CONCEVOIR L'AMÉNAGEMENT DE MON DRESSING SUR MESURE",
+        introTexte: 'Reportez les réponses du couple Sankouraga (document 7) dans le configurateur. Répondez aux questions une par une : dimensions, caissons, tiroirs et accessoires, puis validez pour obtenir le produit correspondant.',
+        introBouton: 'Je conçois mon dressing',
+        enteteTitre: "Leroy Merlin — Configurateur de dressing sur mesure",
+        accrocheTitre: 'Concevez votre dressing',
+        accrocheSousTitre: '… en 15 étapes',
+        libelleEtape: 'Question',
+        libelleResultatProgression: 'PRODUIT',
+        resultatTitreOk: 'Votre dressing est prêt !',
+        nbEtapesAffiche: 15,
+        etapes: [
+          { id: 'plafond', bandeau: 'DIMENSIONS', question: '1. Hauteur plafond', options: [
+            { libelle: '150 cm', vers: 'murg' }, { libelle: '180 cm', vers: 'murg' }, { libelle: '190 cm', vers: 'murg' },
+            { libelle: '200 cm', vers: 'murg' }, { libelle: '210 cm', vers: 'murg' }, { libelle: '220 cm', vers: 'murg' }, { libelle: '250 cm', vers: 'murg' },
+          ] },
+          { id: 'murg', bandeau: 'DIMENSIONS', question: '2. Largeur du mur de gauche', options: [
+            { libelle: '250 cm', vers: 'murf' }, { libelle: '260 cm', vers: 'murf' }, { libelle: '270 cm', vers: 'murf' }, { libelle: '280 cm', vers: 'murf' },
+            { libelle: '290 cm', vers: 'murf' }, { libelle: '300 cm', vers: 'murf' }, { libelle: '310 cm', vers: 'murf' }, { libelle: '320 cm', vers: 'murf' },
+            { libelle: '330 cm', vers: 'murf' }, { libelle: '340 cm', vers: 'murf' }, { libelle: '350 cm', vers: 'murf' }, { libelle: '360 cm', vers: 'murf' },
+            { libelle: '370 cm', vers: 'murf' }, { libelle: '380 cm', vers: 'murf' }, { libelle: '390 cm', vers: 'murf' }, { libelle: '400 cm', vers: 'murf' },
+          ] },
+          { id: 'murf', bandeau: 'DIMENSIONS', question: "3. Largeur du mur d'en face", options: [
+            { libelle: '250 cm', vers: 'murd' }, { libelle: '260 cm', vers: 'murd' }, { libelle: '270 cm', vers: 'murd' }, { libelle: '280 cm', vers: 'murd' },
+            { libelle: '290 cm', vers: 'murd' }, { libelle: '300 cm', vers: 'murd' }, { libelle: '310 cm', vers: 'murd' }, { libelle: '320 cm', vers: 'murd' },
+            { libelle: '330 cm', vers: 'murd' }, { libelle: '340 cm', vers: 'murd' }, { libelle: '350 cm', vers: 'murd' }, { libelle: '360 cm', vers: 'murd' },
+            { libelle: '370 cm', vers: 'murd' }, { libelle: '380 cm', vers: 'murd' }, { libelle: '390 cm', vers: 'murd' }, { libelle: '400 cm', vers: 'murd' },
+          ] },
+          { id: 'murd', bandeau: 'DIMENSIONS', question: '4. Largeur du mur de droite', options: [
+            { libelle: '250 cm', vers: 'mursm' }, { libelle: '260 cm', vers: 'mursm' }, { libelle: '270 cm', vers: 'mursm' }, { libelle: '280 cm', vers: 'mursm' },
+            { libelle: '290 cm', vers: 'mursm' }, { libelle: '300 cm', vers: 'mursm' }, { libelle: '310 cm', vers: 'mursm' }, { libelle: '320 cm', vers: 'mursm' },
+            { libelle: '330 cm', vers: 'mursm' }, { libelle: '340 cm', vers: 'mursm' }, { libelle: '350 cm', vers: 'mursm' }, { libelle: '360 cm', vers: 'mursm' },
+            { libelle: '370 cm', vers: 'mursm' }, { libelle: '380 cm', vers: 'mursm' }, { libelle: '390 cm', vers: 'mursm' }, { libelle: '400 cm', vers: 'mursm' },
+          ] },
+          { id: 'mursm', bandeau: 'DIMENSIONS', question: '5. Couleur des murs', options: [
+            { libelle: 'Blanc', vers: 'sol' }, { libelle: 'Noir', vers: 'sol' }, { libelle: 'Beige', vers: 'sol' }, { libelle: 'Gris', vers: 'sol' },
+            { libelle: 'Marron', vers: 'sol' }, { libelle: 'Rouge', vers: 'sol' }, { libelle: 'Jaune', vers: 'sol' }, { libelle: 'Vert', vers: 'sol' },
+            { libelle: 'Bleu', vers: 'sol' }, { libelle: 'Rose', vers: 'sol' }, { libelle: 'Violet', vers: 'sol' },
+          ] },
+          { id: 'sol', bandeau: 'DIMENSIONS', question: '6. Couleur du sol', options: [
+            { libelle: 'Blanc', vers: 'contraintes' }, { libelle: 'Noir', vers: 'contraintes' }, { libelle: 'Beige', vers: 'contraintes' }, { libelle: 'Gris', vers: 'contraintes' },
+            { libelle: 'Marron', vers: 'contraintes' }, { libelle: 'Rouge', vers: 'contraintes' }, { libelle: 'Jaune', vers: 'contraintes' }, { libelle: 'Vert', vers: 'contraintes' },
+            { libelle: 'Bleu', vers: 'contraintes' }, { libelle: 'Rose', vers: 'contraintes' }, { libelle: 'Violet', vers: 'contraintes' },
+          ] },
+          { id: 'contraintes', bandeau: 'DIMENSIONS', question: '7. Contraintes', options: [
+            { libelle: 'Fenêtres', vers: 'decor' }, { libelle: 'Portes', vers: 'decor' }, { libelle: 'Escaliers', vers: 'decor' }, { libelle: 'Cheminée', vers: 'decor' }, { libelle: 'Aucune', vers: 'decor' },
+          ] },
+          { id: 'decor', bandeau: 'CAISSONS', question: '8. Choix du décor (couleur)', options: [
+            { libelle: 'Anthracite (gris)', vers: 'profondeur' }, { libelle: 'Blanc', vers: 'profondeur' }, { libelle: 'Effet chêne naturel', vers: 'profondeur' },
+          ] },
+          { id: 'profondeur', bandeau: 'CAISSONS', question: '9. Choix de la profondeur', options: [
+            { libelle: '15 cm', vers: 'hauteur' }, { libelle: '30 cm', vers: 'hauteur' }, { libelle: '45 cm', vers: 'hauteur' }, { libelle: '60 cm', vers: 'hauteur' },
+          ] },
+          { id: 'hauteur', bandeau: 'CAISSONS', question: '10. Choix de la hauteur', options: [
+            { libelle: '100 cm', vers: 'largeur' }, { libelle: '200 cm', vers: 'largeur' }, { libelle: '240 cm', vers: 'largeur' },
+          ] },
+          { id: 'largeur', bandeau: 'CAISSONS', question: '11. Choix de la largeur', options: [
+            { libelle: '120 cm', vers: 'meubles' }, { libelle: '130 cm', vers: 'meubles' }, { libelle: '140 cm', vers: 'meubles' }, { libelle: '150 cm', vers: 'meubles' },
+            { libelle: '160 cm', vers: 'meubles' }, { libelle: '170 cm', vers: 'meubles' }, { libelle: '180 cm', vers: 'meubles' }, { libelle: '190 cm', vers: 'meubles' },
+            { libelle: '200 cm', vers: 'meubles' }, { libelle: '210 cm', vers: 'meubles' }, { libelle: '220 cm', vers: 'meubles' },
+          ] },
+          { id: 'meubles', bandeau: 'CAISSONS', question: '12. Les meubles', options: [
+            { libelle: 'Caissons standars', vers: 'tiroirs' }, { libelle: "Caissons d'angle", vers: 'tiroirs' },
+          ] },
+          { id: 'tiroirs', bandeau: 'TIROIRS ET ACCESSOIRES', question: '13. Nombre de tiroirs', options: [
+            { libelle: '1', vers: 'poignees' }, { libelle: '2', vers: 'poignees' }, { libelle: '3', vers: 'poignees' }, { libelle: '4', vers: 'poignees' }, { libelle: '5', vers: 'poignees' },
+          ] },
+          { id: 'poignees', bandeau: 'TIROIRS ET ACCESSOIRES', question: '14. Types de poignées', options: [
+            { libelle: 'Standard (en métal)', vers: 'portes' }, { libelle: 'En bois', vers: 'portes' }, { libelle: 'En plastique', vers: 'portes' },
+          ] },
+          { id: 'portes', bandeau: 'TIROIRS ET ACCESSOIRES', question: '15. Portes', options: [
+            { libelle: 'H40 x L40', vers: 'resultat' }, { libelle: 'H100 x L40', vers: 'resultat' }, { libelle: 'H200 x L40', vers: 'resultat' }, { libelle: 'Aucune porte', vers: 'resultat' },
+          ] },
+        ],
+        resultats: [
+          { id: 'resultat', type: 'ok', texte: "Vu de face du dressing et des murs de votre chambre. Produit : Dressing chêne H.200 x L.240 x P.45cm Home — 1492.86 € / Lot (dont 12.04 € éco-participation). Référence : 83299641. Retrait en magasin : DISPONIBLE. Livraison chez vous : DISPONIBLE. Livraison en France hors D.O.M. et T.O.M." },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe7',
+        titre: 'Annexe 7 — Les informations sur le produit',
+        colonnes: ['Référence du produit', 'Libellé produit', 'Taille', 'Prix'],
+        nbLignes: 1,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Retrouvez les mobiles d'achat du couple en indiquant à chaque fois le mot ou le groupe de mots permettant de justifier votre choix.",
+        documents: ['Document 1', 'Document 2', 'Annexe 1'],
+        bareme: 5,
+        reponse: '',
+        tableau: {
+          colonnes: ['Typologie SONCAS', 'Coché', 'Justification'],
+          lignes: [
+            ['Sécurité', 'X', '« …tout a été pris en charge par la garantie. Et ça, c\'est super important pour nous ! »'],
+            ['Orgueil', '', ''],
+            ['Nouveauté', 'X', '« …on recherche quelque chose de plus contemporain. »'],
+            ['Confort', 'X', '« …spacieux. » / « pas beaucoup de place pour les ranger »'],
+            ['Argent', '', ''],
+            ['Sympathie', 'X', '« …on recherche quelque chose…, avec une belle couleur… »'],
+            ['Environnement', 'X', '« …un modèle en bois recyclé. »'],
+          ],
+        },
+      },
+      {
+        intitule: "Cochez la motivation d'achat du couple puis justifiez la en citant le texte.",
+        documents: ['Document 1', 'Document 3', 'Annexe 2'],
+        bareme: 3,
+        reponse: '',
+        tableau: {
+          colonnes: ['Typologie', 'Coché', 'Justification'],
+          lignes: [
+            ['Hédoniste', 'X', "« Nous avons emménagé dans notre nouvel appartement il y a quelques semaines et nous souhaitons faire un dressing. » ou « Un truc qui nous plait vraiment quoi ! » (accepter toute réponse pertinente)"],
+            ['Oblative', '', ''],
+            ['Auto-expression', '', ''],
+          ],
+        },
+      },
+      {
+        intitule: "Relevez dans l'intervention du couple, les deux freins liés à l'achat puis cochez le type de frein.",
+        documents: ['Document 1', 'Document 4', 'Annexe 3'],
+        bareme: 2,
+        reponse: "Frein relevé : « …après tu sais comment est ta mère… Quand elle verra ça… » → type : Inhibition (X).",
+      },
+      {
+        intitule: "Reformulez les besoins du client en utilisant la « reformulation synthèse ».",
+        documents: ['Document 5', 'Annexe 4'],
+        bareme: 3,
+        reponse: "« Si j'ai bien compris, vous souhaitez faire un dressing, contemporain, en bois recyclé, spacieux, avec une belle couleur naturelle et garantie, c'est bien cela ? »",
+      },
+      {
+        intitule: "Préparez la présentation du produit en utilisant la méthode « QQCCP ».",
+        documents: ['Document 6', 'Annexe 5'],
+        bareme: 5,
+        reponse: '',
+        tableau: {
+          colonnes: ['QQCCP', 'Réponse attendue'],
+          lignes: [
+            ['Quand ?', "« Le vendeur connaît les mobiles d'achat du client/prospect »"],
+            ['Quel produit ?', "Le produit : qui correspond aux mobiles d'achat du client/prospect ; qui correspond aux caractéristiques énoncées par le client/prospect."],
+            ['Combien ?', "Un produit, celui qui correspond le mieux aux critères du client/prospect."],
+            ['Comment ?', "Inciter le client/prospect à se projeter avec le produit dans son environnement personnel (maison ou travail e fonction du produit)."],
+            ['Pourquoi ?', "« C'est le dressing qu'il vous faut. Il correspond à tous vos critères. Imaginez-le dans votre chambre avec toute la place dont vous avez toujours rêvé pour ranger vos vêtements. » (accepter toute réponse pertinente)"],
+          ],
+        },
+      },
+      {
+        intitule: 'Après avoir lu les réponses du couple, complétez le logiciel qui permettra de proposer le dressing leur correspondant.',
+        documents: ['Document 7', 'Annexe 6'],
+        bareme: 4,
+        reponse: "Configuration : décor effet chêne naturel, profondeur 45 cm, hauteur 200 cm, largeur 220 cm, caissons standards, 2 tiroirs, poignées standard (métal), porte H100 x L40. Produit obtenu : Dressing chêne H.200 x L.240 x P.45cm — Référence 83299641 — 1492.86 €.",
+      },
+      {
+        intitule: 'Indiquez les caractéristiques du produit proposé au couple.',
+        documents: ['Annexe 6', 'Annexe 7'],
+        bareme: 3,
+        reponse: '',
+        tableau: {
+          colonnes: ['Référence du produit', 'Libellé produit', 'Taille', 'Prix'],
+          lignes: [
+            ['83299641', 'Dressing chêne', 'H.200 X L.240 X P.45', '1492.86 €'],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: 'La recherche des besoins et la proposition de produit',
+    proposition: [
+      'Écho ou perroquet',
+      'Nouveauté',
+      'Combien ?',
+      "Les mobiles d'achat",
+      "Les motivations d'achat",
+      'Les types de freins',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "La recherche des besoins",
+      enfants: [
+        {
+          id: 'besoins',
+          texte: "Les mobiles, motivations et freins d'achat",
+          enfants: [
+            { id: 'b-1', texte: null, reponse: "Les mobiles d'achat" },
+            { id: 'b-2', texte: null, reponse: "Les motivations d'achat" },
+            { id: 'b-3', texte: null, reponse: 'Les types de freins' },
+          ],
+        },
+        {
+          id: 'reformulation',
+          texte: 'La reformulation',
+          enfants: [
+            { id: 'r-1', texte: 'Les types de reformulation', enfants: [{ id: 'r-1-1', texte: null, reponse: 'Écho ou perroquet' }] },
+          ],
+        },
+        {
+          id: 'proposition',
+          texte: "La proposition d'une solution adaptée",
+          enfants: [
+            { id: 'p-1', texte: 'La méthode « QQCCP »', enfants: [{ id: 'p-1-1', texte: null, reponse: 'Combien ?' }] },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: "Identifier les mobiles, motivations et freins d'achat",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas distinguer mobile, motivation et frein." },
+          { niveau: 'debrouille', description: 'Je repère un mobile ou un frein sans le justifier.' },
+          { niveau: 'averti', description: "Je classe les mobiles (SONCAS) et je les justifie par le texte." },
+          { niveau: 'expert', description: "J'analyse finement mobiles, motivations et freins pour orienter la vente." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Reformuler les besoins du client',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas reformuler une demande.' },
+          { niveau: 'debrouille', description: 'Je répète les propos sans les synthétiser.' },
+          { niveau: 'averti', description: 'Je réalise une reformulation synthèse correcte.' },
+          { niveau: 'expert', description: 'Je reformule en validant tous les critères du client.' },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Proposer un produit adapté (QQCCP)',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas présenter un produit.' },
+          { niveau: 'debrouille', description: 'Je présente un produit sans méthode.' },
+          { niveau: 'averti', description: 'Je structure ma présentation avec la méthode QQCCP.' },
+          { niveau: 'expert', description: 'Je relie chaque caractéristique du produit aux besoins du client.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Mobile d'achat", definition: "Raison profonde qui pousse un client à acheter (méthode SONCASE)." },
+      { terme: 'SONCASE', definition: 'Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement.' },
+      { terme: "Motivation d'achat", definition: "Type de plaisir recherché : hédoniste (soi), oblative (les autres), auto-expression (s'affirmer)." },
+      { terme: "Frein à l'achat", definition: "Cause matérielle ou psychologique qui empêche ou retarde la décision d'achat (peur, inhibition, prix)." },
+      { terme: 'Reformulation', definition: "Technique consistant à redire les besoins du client pour vérifier sa compréhension (écho, miroir, synthèse)." },
+      { terme: 'QQCCP', definition: 'Quand, Quel produit, Combien, Comment, Pourquoi : méthode de présentation d\'un produit.' },
+      { terme: 'Caisson', definition: 'Élément modulaire de rangement composant un dressing.' },
+      { terme: 'Éco-participation', definition: 'Contribution incluse dans le prix servant à financer le recyclage du produit.' },
+    ],
+    flashcards: [
+      { recto: 'Que signifie SONCASE ?', verso: 'Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, Environnement' },
+      { recto: 'Motivation hédoniste ?', verso: 'Acheter pour se faire plaisir' },
+      { recto: 'Les 3 types de freins ?', verso: 'La peur, l\'inhibition, le prix' },
+      { recto: 'Reformulation synthèse ?', verso: '« Si j\'ai bien compris… c\'est bien cela ? »' },
+      { recto: 'Que signifie QQCCP ?', verso: 'Quand, Quel produit, Combien, Comment, Pourquoi' },
+      { recto: 'Référence du dressing proposé ?', verso: '83299641 — 1492.86 €' },
+    ],
+    quiz: [
+      { type: 'unique', question: '« Un modèle en bois recyclé » correspond à quel mobile ?', options: ['Sécurité', 'Environnement', 'Argent', 'Orgueil'], bonne: 1 },
+      { type: 'unique', question: 'La garantie évoquée par le couple relève du mobile…', options: ['Confort', 'Nouveauté', 'Sécurité', 'Sympathie'], bonne: 2 },
+      { type: 'qcm', question: 'Quels mobiles sont exprimés par le couple ?', options: ['Sécurité', 'Argent', 'Nouveauté', 'Environnement'], bonnes: [0, 2, 3] },
+      { type: 'unique', question: 'Le frein « peur du jugement de la mère » est de type…', options: ['Peur', 'Inhibition', 'Prix', 'Aucun'], bonne: 1 },
+      { type: 'trous', texte: 'La méthode {x} sert à présenter le produit ; la méthode {x} sert à identifier les mobiles.', reponses: ['QQCCP', 'SONCASE'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque citation du couple au mobile SONCASE correspondant.',
+      etiquettes: ['Bois recyclé', 'Garantie prise en charge', 'Quelque chose de plus contemporain', 'Spacieux'],
+      zones: [
+        { libelle: 'Environnement', etiquetteIndex: 0 },
+        { libelle: 'Sécurité', etiquetteIndex: 1 },
+        { libelle: 'Nouveauté', etiquetteIndex: 2 },
+        { libelle: 'Confort', etiquetteIndex: 3 },
+      ],
+    },
+  },
+}
+
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Leroy Merlin, mission 3 - S'assurer de la disponibilite du produit
+// et faire de la vente additionnelle
+// ---------------------------------------------------------------------------
+const LEROY_MERLIN_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Vérifiez la disponibilité du dressing choisi par le couple, complétez la fiche client, puis réalisez une vente additionnelle (vente complémentaire, supplémentaire, up-selling et down-selling).",
+    contexte:
+      "Le couple est conquis par votre proposition de dressing. Après avoir vérifié que le produit est bien disponible, vous en profiterez pour faire une vente additionnelle.",
+    documents: [
+      {
+        numero: 1,
+        titre: 'Coordonnées du couple',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 1 — Coordonnées du couple' },
+          {
+            tableau: {
+              colonnes: ['Coordonnées', ''],
+              lignes: [
+                ['Civilité', 'Mme Rebecca Sankouraga'],
+                ['Adresse', '7 rue Dombasle, 75015 Paris'],
+                ['Fixe', '01.02.03.04.XX'],
+                ['Portable', '07.06.05.04.XX'],
+                ['Email', 'r.sankouraga@gmail.com'],
+                ['Installation', "On doit être installé avant le 22 mai, car on part pendant 1 mois en vacances."],
+                ['Avoirs versés', '30% du montant total : 447,86 €'],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 2,
+        titre: "La vente additionnelle pour booster le chiffre d'affaires",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 2 — La vente additionnelle pour booster le chiffre d'affaires" },
+          {
+            paragraphes: [
+              "La vente additionnelle ou cross-selling, consiste à vendre un produit complémentaire ou supplémentaire (= en plus) à celui initialement acheté ou voulu par le client. La vente additionnelle peut être prise en charge par un vendeur / conseiller / commercial, se faire en magasin ou être provoquée par un système de recommandation produit en e-commerce.",
+              'Il existe deux formes de vente additionnelle.',
+              "La première qu'on appelle la vente complémentaire ou vente croisée, correspond au cas où le produit vendu en plus est un accessoire ou service lié au produit principal acheté. Il s'agit par exemple d'un tube de cirage vendu avec une paire de chaussures ou de la cravate vendue avec une chemise ou encore des extensions de garanties vendues dans le domaine de l'électro-ménager.",
+              "La deuxième forme de vente additionnelle est la vente supplémentaire. Elle consiste simplement à profiter de la présence du client pour lui proposer un autre produit qui n'est pas forcément lié au premier. Un conseiller bancaire peut par exemple vendre une carte bleue à un client venu souscrire un livret d'épargne (dans ce cas, la carte bleue n'a rien à voir avec le livret que le client est venu ouvrir).",
+              "Dans certains domaines d'activités, les ventes additionnelles peuvent représenter un CA ou une marge particulièrement importante.",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 3,
+        titre: "Le up-selling et le down-selling, qu'est-ce que c'est ?",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 3 — Le up-selling et le down-selling, qu'est-ce que c'est ? : Les explications de votre tutrice" },
+          {
+            paragraphes: [
+              "« L'up-sell ou upselling est une technique qui consiste à proposer au client un autre produit que celui qu'il avait initialement choisi.",
+              "Généralement le commercial lui proposera un article plus cher et meilleur en gamme que ce dernier. C'est comme cela que le commercial augmentera sa marge bénéficiaire.",
+              "Même si votre client n'avait pas l'intention d'acquérir un produit, le fait de lui faire la proposition lui insuffle un intérêt certain.",
+              "En pratique, le client est venu acheter un smartphone sorti l'année d'avant, et vous essayez en tant que conseiller de lui vendre le smartphone le plus récent, donc plus cher, en lui indiquant toutes les nouvelles fonctionnalités de celui-ci par rapport à l'ancien.",
+              "C'est un perfectionnement de l'expérience d'achat pour vos clients. L'avantage est multiple car vous augmentez vos ventes et bénéfices, en plus de bénéficier de recommandations de la part de vos clients sur la base de leur satisfaction.",
+              "Le down-sell ou downselling consiste, par opposition à l'up-sell, à proposer à votre client un produit moins chère suite à son refus d'acheter le produit que vous lui avez proposé.",
+              "À noter que le produit proposé peut être moins cher, mais que pour autant le commerçant fera tout de même une marge bénéficiaire important sur ce produit.",
+              "Exemple, vous pouvez proposer des baskets moins chers que celles que le client a refusé, à cause de son prix. Ou, à la place d'une paire de baskets, vous pourriez lui proposer une paire de tennis moins chère.",
+              "Dans le cadre d'une boutique en ligne par exemple, cela consistera à faire afficher une offre moins chère, si l'internaute défile sur un premier produit. »",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 4,
+        titre: 'Les autres dressings disponibles chez Leroy Merlin',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 4 — Les autres dressings disponibles chez Leroy Merlin' },
+          {
+            galerieProduits: [
+              { titre: 'Dressing blanc semi-fermé', image: '/docs/leroy-merlin-m3/dr-blanc.jpg', prix: '1490,86 €', reference: '83013039', coloris: 'anthracite (gris) – blanc – couleur chêne', dimensions: 'H 200cm – L 240cm – P 45 cm' },
+              { titre: 'Armoire dressing semi-fermé', image: '/docs/leroy-merlin-m3/dr-armoire.jpg', prix: '1580,66 €', reference: '83299656', coloris: 'anthracite (gris) – blanc – couleur chêne', dimensions: 'H 200cm – L 220cm – P 45 cm' },
+              { titre: 'Dressing chêne / miroir semi-fermé', image: '/docs/leroy-merlin-m3/dr-chene-miroir.jpg', prix: '1539,29 €', reference: '83299673', coloris: 'anthracite (gris) – blanc – couleur chêne', dimensions: 'H 200cm – L 120cm – P 45 cm' },
+              { titre: 'Dressing semi-fermé avec lumière', image: '/docs/leroy-merlin-m3/dr-lumiere.jpg', prix: '1586,66 €', reference: '83013042', coloris: 'anthracite (gris) – blanc – couleur chêne', dimensions: 'H 200cm – L 240cm – P 45 cm' },
+              { titre: 'Dressing', image: '/docs/leroy-merlin-m3/dr-dressing.jpg', prix: '1510,29 €', reference: '83299639', coloris: 'anthracite (gris) – blanc – couleur chêne', dimensions: 'H 190cm – L 240cm – P 45 cm' },
+              { titre: 'Armoire dressing ouvert', image: '/docs/leroy-merlin-m3/dr-ouvert.jpg', prix: '1219,28 €', reference: '83013039', coloris: 'anthracite (gris) – blanc – couleur chêne', dimensions: 'H 200cm – L 120cm – P 45 cm' },
+            ],
+          },
+          { paragraphes: ['* H = Hauteur  L = Largeur  P = Profondeur'] },
+        ],
+      },
+      {
+        numero: 5,
+        titre: 'Les biens ou services à proposer pour une vente additionnelle',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 5 — Les biens ou services proposés pour faire une vente additionnelle' },
+          { intertitre: 'Les services Leroy Merlin' },
+          {
+            tableau: {
+              colonnes: ['Libellé', 'Prix'],
+              lignes: [
+                ['SERVICE CLIENT — Dépannage', 'Entre 199.00 € et 198.00 €'],
+                ['Service après-vente', 'Selon appareil sous garantie ou non'],
+                ['Entretien de produits motorisés de jardin', 'Selon la panne détectée'],
+                ['Financement', 'Une solution vous sera proposée par téléphone'],
+                ['Retrait et mode de livraison', 'Petit colis à partir de 6,90€ - Gros colis à partir de 99,90€ - Très gros colis à partir de 119,90€'],
+                ["Rachat de produits d'occasion", 'Valeur en carte cadeau'],
+                ['Retour et remboursement', 'Voir conditions générales'],
+                ["LOCATION — Location d'utilitaire", 'À partir de 19.00 € / heure'],
+                ['Location de matériel', 'Entre 10.00 € et 75.00 € / jour selon le matériel'],
+                ['POSE ET INSTALLATION À DOMICILE — Chauffage', 'À partir de 149.00 € / prestation'],
+                ['Climatisation / aération', 'À partir de 119.00 €'],
+                ['Cuisine', 'À partir de 129.00 €'],
+                ['Electronique', 'À partir de 169.00 €'],
+                ['Extérieur', 'À partir de 339.00 €'],
+                ['Plomberie', 'À partir de 129.00 €'],
+                ['Portes / fenêtre', 'À partir de 189.00 €'],
+                ['Rangement / Dressing', 'À partir de 149.00 €'],
+                ['Rénovation / menuiserie', 'À partir de 129.00 €'],
+                ['Salle de bains', 'À partir de 135.00 €'],
+                ['Sol', 'À partir de 16.00 € / m2'],
+              ],
+            },
+          },
+          { intertitre: 'Les biens Leroy Merlin — Accessoires intérieurs de dressing' },
+          {
+            tableau: {
+              colonnes: ['Référence', 'Libellé', 'Taille', 'Prix'],
+              lignes: [
+                ['82336923', 'Panier à suspendre SPACEO Noir', 'H.12 x l.36 x P.26 cm', '4.99 €'],
+                ['82336904', 'Porte-pantalons SPACEO Noir 9 pantalons ss tab', 'H.8.5 x l.34.5 x P.41 cm', '26.90 €'],
+                ['82336914', 'Barre de penderie escamotable et extensible noir Spaceo', 'H.84 x l.100 x P.14 cm', '45.90 €'],
+                ['82336921', 'Panier latéral coulissant SPACEO Noir', 'H.15 x l.20.5 x P.40.2 cm', '19.90 €'],
+                ['82336908', 'Porte-pantalons SPACEO Noir 13 pantalons', 'H.5 x l.76.8 x P.41 cm', '36.90 €'],
+                ['82336909', 'Porte-pantalons SPACEO Noir 13 à 26 pantalons', 'H.5 x l.76.8 x P.56 cm', '41.90 €'],
+                ['82336913', 'Support cintres rabattable SPACEO noir 10 cintres', 'H.7.5 x l.43 x P.7.2 cm', '19.90 €'],
+                ['85202820', 'Elévateur De Penderie Acier - Boîtier Argent - Largeur Dressing', '690-920 Mm', '48.35 €'],
+                ['83356854', 'Porte-parapluie Tetris Acier Noir Vidaxl', '---', '63.99 €'],
+                ['82704672', 'Lot de 2 support de barre de penderie ovale chrome', 'D30 x 15 mm — 18 m', '3.99 €'],
+                ['61953535', 'Barre de penderie ovale chromé', 'D30 x 15 mm — 2 m', '11.90 €'],
+                ['82704641', 'Lot de 1 support de barre de penderie ovale chrome', 'D30 x 15 mm — 21.58 m', '4.99 €'],
+                ['82704679', 'Lot de 1 support de barre de penderie ronde chrome', 'D25 mm — 38 m', '3.99 €'],
+                ['82505738', 'Kit barre de penderie extensible et supports chromé', '0.6 m ovale', '26.90 €'],
+                ['82459989', 'Kit barre de penderie et supports noir', '0.56 m — Diam.30 x 15 mm ovale', '8.99 €'],
+                ['82024499', 'Support de barre de penderie rond noir', 'D28 mm', '9.99 €'],
+                ['83071058', 'Valve Mytube noir', 'D25 mm', '8.99 €'],
+                ['82061892', 'Raccord pour 4 tubes en biais penderie MyTube rond noir', 'D25 mm', '7.99 €'],
+                ['82506566', 'Kit barre de penderie et supports blanc', '1 m', '29.90 €'],
+              ],
+            },
+          },
+        ],
+      },
+    ],
+    objectifs: [
+      "Vérifier la disponibilité d'un produit et compléter une fiche client.",
+      "Distinguer vente complémentaire, supplémentaire, up-selling et down-selling, et proposer une vente additionnelle.",
+    ],
+    competence: {
+      groupe: 'Compétences travaillées',
+      intitule: 'C.1.2 — Réaliser la vente dans un cadre omnicanal',
+      detail: "S'assurer de la disponibilité du produit et réaliser une vente additionnelle.",
+    },
+    activites: [
+      {
+        titre: 'Activité 1 — La disponibilité du produit et la fiche client',
+        questions: [
+          { numero: 1, consigne: "Consultez le logiciel de l'entreprise afin de pouvoir indiquer au couple si le dressing qu'il a choisi est en stock.", ressources: 'Compléter les annexes 1a et 1b.', annexeId: 'annexe1a', annexeId2: 'annexe1b' },
+          { numero: 2, consigne: "Afin de pouvoir lancer la commande du dressing, complétez la fiche client à l'aide des réponses données par le couple.", ressources: 'Consulter le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Vente additionnelle : différencier la vente complémentaire et la vente supplémentaire',
+        questions: [
+          { numero: 3, consigne: 'Répondez aux questions de votre tutrice.', ressources: 'Consulter le document 2, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "À l'aide de vos connaissances personnelles, donnez des exemples de produits complémentaires ou supplémentaires possibles en fonction du produit principal proposé.", ressources: 'Compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "À l'aide de vos connaissances personnelles, retrouvez quel est le produit principal en fonction des exemples de produits complémentaire ou supplémentaire indiqué.", ressources: 'Compléter l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Les notions de « up-selling » et de « down-selling »',
+        contexte: "Après votre travail concluant sur la vente additionnelle, votre tutrice vous explique ce que sont les techniques de « up-selling » et de « down-selling ».",
+        questions: [
+          { numero: 6, consigne: 'Analysez les notions de « up et de down selling » en répondant aux questions.', ressources: 'Consulter le document 3, compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 7, consigne: "Indiquez le produit en « up-selling » que vous pourriez proposer au couple ; justifiez votre réponse.", ressources: 'Consulter le document 4, compléter l\'annexe 7.', annexeId: 'annexe7' },
+        ],
+      },
+      {
+        titre: "Activité 4 — La proposition d'un produit additionnel",
+        questions: [
+          { numero: 8, consigne: "Relisez la Mission 2, document 1 et retrouvez la phrase énoncée par le couple qui peut faire l'objet d'une vente additionnelle.", ressources: 'Compléter l\'annexe 8.', annexeId: 'annexe8' },
+          { numero: 9, consigne: "Indiquez le bien ou le service que vous proposerez au couple ainsi que le prix de ce dernier par rapport à la phrase qu'il a prononcé.", ressources: 'Consulter le document 5, compléter l\'annexe 9.', annexeId: 'annexe9' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'simulateur',
+        id: 'annexe1a',
+        titre: 'Annexe 1a — Logiciel de disponibilité des produits Leroy Merlin',
+        introTitre: 'Disponibilité des produits Leroy Merlin',
+        introTexte: "Renseignez les caractéristiques du dressing choisi par le couple (effet chêne, P.45, H.200, L.220) pour vérifier sa disponibilité en stock.",
+        introBouton: 'Vérifier la disponibilité',
+        enteteTitre: 'Leroy Merlin — Disponibilité des produits',
+        accrocheTitre: 'Délais de livraison',
+        accrocheSousTitre: '… en 4 étapes',
+        libelleEtape: 'Question',
+        libelleResultatProgression: 'STOCK',
+        resultatTitreOk: 'Produit disponible',
+        nbEtapesAffiche: 4,
+        etapes: [
+          { id: 'decor', bandeau: 'CARACTÉRISTIQUES', question: '1. Choix du décor (couleur)', options: [
+            { libelle: 'Anthracite (gris)', vers: 'profondeur' }, { libelle: 'Blanc', vers: 'profondeur' }, { libelle: 'Effet chêne naturel', vers: 'profondeur' },
+          ] },
+          { id: 'profondeur', bandeau: 'CARACTÉRISTIQUES', question: '2. Choix de la profondeur', options: [
+            { libelle: '15 cm', vers: 'hauteur' }, { libelle: '30 cm', vers: 'hauteur' }, { libelle: '45 cm', vers: 'hauteur' }, { libelle: '60 cm', vers: 'hauteur' },
+          ] },
+          { id: 'hauteur', bandeau: 'CARACTÉRISTIQUES', question: '3. Choix de la hauteur', options: [
+            { libelle: '100 cm', vers: 'largeur' }, { libelle: '200 cm', vers: 'largeur' }, { libelle: '240 cm', vers: 'largeur' },
+          ] },
+          { id: 'largeur', bandeau: 'CARACTÉRISTIQUES', question: '4. Choix de la largeur', options: [
+            { libelle: '120 cm', vers: 'resultat' }, { libelle: '130 cm', vers: 'resultat' }, { libelle: '140 cm', vers: 'resultat' }, { libelle: '150 cm', vers: 'resultat' },
+            { libelle: '160 cm', vers: 'resultat' }, { libelle: '170 cm', vers: 'resultat' }, { libelle: '180 cm', vers: 'resultat' }, { libelle: '190 cm', vers: 'resultat' },
+            { libelle: '200 cm', vers: 'resultat' }, { libelle: '210 cm', vers: 'resultat' }, { libelle: '220 cm', vers: 'resultat' },
+          ] },
+        ],
+        resultats: [
+          { id: 'resultat', type: 'ok', texte: "Le dressing chêne (réf. 83299641) est en stock. Il y a 3 dressing(s) en chêne disponibles. Délai fabrication + livraison : 30 jours à compter de la commande. L'installation avant le 22 mai est donc possible." },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe1b',
+        titre: 'Annexe 1b — La disponibilité du dressing du couple',
+        colonnes: ['Question', 'Réponse'],
+        nbLignes: 2,
+        prerempli: [
+          ['Le dressing choisi par le couple est-il en stock ? (Oui / Non)', ''],
+          ["S'il est disponible, combien y en a-t-il en stock ? (… dressing(s) en chêne)", ''],
+        ],
+      },
+      {
+        type: 'ficheclient',
+        id: 'annexe2',
+        titre: 'Annexe 2 — La fiche client',
+      },
+      {
+        type: 'grille',
+        id: 'annexe3',
+        titre: 'Annexe 3 — Les questions de votre tutrice',
+        colonnes: ['Questions', 'Vos réponses'],
+        nbLignes: 6,
+        prerempli: [
+          ["Expliquez ce qu'est la vente additionnelle", ''],
+          ["Comment se fait une vente additionnelle sur internet d'une enseigne ?", ''],
+          ['Quels sont les deux types de vente additionnelle ?', ''],
+          ["Donnez la définition d'une vente complémentaire.", ''],
+          ["Indiquez en quoi consiste la vente d'un produit supplémentaire.", ''],
+          ["Indiquez l'intérêt pour une entreprise de faire de la vente additionnelle.", ''],
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe4',
+        titre: 'Annexe 4 — Les produits complémentaires ou supplémentaires chez Leroy Merlin',
+        colonnes: ['Produit principal', 'Exemple de produit complémentaire', 'Exemple de produit supplémentaire'],
+        nbLignes: 4,
+        prerempli: [
+          ['Un pot de peinture', '', ''],
+          ['Une table basse de salon', '', ''],
+          ['Des rideaux', '', ''],
+          ['Une table de chevet', '', ''],
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe5',
+        titre: 'Annexe 5 — Le produit principal chez Leroy Merlin',
+        colonnes: ['Exemple de produit complémentaire', 'Exemple de produit supplémentaire', 'Produit principal'],
+        nbLignes: 4,
+        prerempli: [
+          ['Un parasol de jardin', '', ''],
+          ['', 'Des chaises', ''],
+          ['Un pot', '', ''],
+          ['', 'Des bougies', ''],
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe6',
+        titre: "Annexe 6 — L'analyse des notions de « up-selling » et de « down-selling »",
+        colonnes: ['Questions', 'Réponses'],
+        nbLignes: 6,
+        prerempli: [
+          ['Comment peut-on définir le « up-selling » ?', ''],
+          ["Quel est l'avantage pour un commercial de faire du « up-selling » ?", ''],
+          ["Donnez un exemple, qui n'est pas dans le texte, de vente en « up-selling »", ''],
+          ["Quels sont les deux avantages pour l'entreprise de faire du « up-selling » ?", ''],
+          ['Définissez le « down-selling ».', ''],
+          ["Dans le cadre du e-commerce, comment le site de l'enseigne fait-il du « down-selling » ?", ''],
+        ],
+      },
+      {
+        type: 'reformulation',
+        id: 'annexe7',
+        titre: 'Annexe 7 — Le produit proposé en « up-selling » et la justification',
+        nbLignes: 4,
+      },
+      {
+        type: 'reformulation',
+        id: 'annexe8',
+        titre: 'Annexe 8 — La phrase énoncée par le couple',
+        nbLignes: 3,
+      },
+      {
+        type: 'reformulation',
+        id: 'annexe9',
+        titre: 'Annexe 9 — Le nom du bien ou du service additionnel proposé au couple',
+        nbLignes: 3,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Consultez le logiciel de l'entreprise afin de pouvoir indiquer au couple si le dressing qu'il a choisi est en stock.",
+        documents: ['Annexe 1a', 'Annexe 1b'],
+        bareme: 3,
+        reponse: '',
+        tableau: {
+          colonnes: ['Question', 'Réponse'],
+          lignes: [
+            ['Le dressing choisi par le couple est-il en stock ?', 'Oui (X)'],
+            ["S'il est disponible, combien y en a-t-il en stock ?", 'Il y a 3 dressing(s) en chêne en stock.'],
+          ],
+        },
+      },
+      {
+        intitule: "Afin de pouvoir lancer la commande du dressing, complétez la fiche client.",
+        documents: ['Document 1', 'Annexe 2'],
+        bareme: 5,
+        reponse: '',
+        tableau: {
+          colonnes: ['Champ', 'Réponse attendue'],
+          lignes: [
+            ['Type de client', 'Particulier'],
+            ['Civilité', 'Madame'],
+            ['Nom', 'Sankouraga'],
+            ['Prénom', 'Rebecca'],
+            ['Adresse', '7 rue Dombasle, 75015 Paris'],
+            ['Téléphone fixe', '01.02.03.04.XX'],
+            ['Téléphone portable', '07.06.05.04.XX'],
+            ['Email', 'r.sankouraga@gmail.com'],
+            ['Produit acheté', 'Dressing'],
+            ['Montant avoir', '447,86 €'],
+            ['Commentaire', "L'installation doit être faite avant le 22 mai car les clients partent en vacances pendant 1 mois."],
+          ],
+        },
+      },
+      {
+        intitule: 'Répondez aux questions de votre tutrice.',
+        documents: ['Document 2', 'Annexe 3'],
+        bareme: 6,
+        reponse: '',
+        tableau: {
+          colonnes: ['Questions', 'Réponses'],
+          lignes: [
+            ["Expliquez ce qu'est la vente additionnelle", 'Elle consiste à vendre un produit complémentaire ou supplémentaire (= en plus) à celui initialement acheté ou voulu.'],
+            ["Comment se fait une vente additionnelle sur internet d'une enseigne ?", 'La vente additionnelle peut être provoquée par un système de recommandation produit en e-commerce.'],
+            ['Quels sont les deux types de vente additionnelle ?', 'La vente complémentaire ou vente croisée ; la vente supplémentaire.'],
+            ["Donnez la définition d'une vente complémentaire.", 'Le produit vendu en plus est un accessoire ou service lié au produit principal acheté.'],
+            ["Indiquez en quoi consiste la vente d'un produit supplémentaire.", "Elle consiste simplement à profiter de la présence du client pour lui proposer un autre produit qui n'est pas forcément lié au premier."],
+            ["Indiquez l'intérêt pour une entreprise de faire de la vente additionnelle.", 'Les ventes additionnelles peuvent représenter un CA ou une marge particulièrement importante.'],
+          ],
+        },
+      },
+      {
+        intitule: 'Donnez des exemples de produits complémentaires ou supplémentaires en fonction du produit principal.',
+        documents: ['Annexe 4'],
+        bareme: 4,
+        reponse: '',
+        tableau: {
+          colonnes: ['Produit principal', 'Complémentaire', 'Supplémentaire'],
+          lignes: [
+            ['Un pot de peinture', 'Un pinceau', ''],
+            ['Une table basse de salon', '', 'Des coussins, un canapé… (accepter toute réponse cohérente)'],
+            ['Des rideaux', 'Une tringle', ''],
+            ['Une table de chevet', '', 'Un tapis (accepter toute réponse cohérente)'],
+          ],
+        },
+      },
+      {
+        intitule: 'Retrouvez quel est le produit principal en fonction des exemples donnés.',
+        documents: ['Annexe 5'],
+        bareme: 4,
+        reponse: '',
+        tableau: {
+          colonnes: ['Complémentaire', 'Supplémentaire', 'Produit principal'],
+          lignes: [
+            ['Un parasol de jardin', '', 'Une table de jardin'],
+            ['', 'Des chaises', 'Une table basse'],
+            ['Un pot', '', 'Des fleurs'],
+            ['', 'Des bougies', 'Une lampe'],
+          ],
+        },
+      },
+      {
+        intitule: 'Analysez les notions de « up-selling » et de « down-selling ».',
+        documents: ['Document 3', 'Annexe 6'],
+        bareme: 6,
+        reponse: '',
+        tableau: {
+          colonnes: ['Questions', 'Réponses'],
+          lignes: [
+            ['Comment peut-on définir le « up-selling » ?', "Le « up-selling » est une technique qui consiste à proposer au client un autre produit que celui qu'il avait initialement choisi."],
+            ["Quel est l'avantage pour un commercial de faire du « up-selling » ?", 'Le commercial augmentera sa marge bénéficiaire.'],
+            ["Donnez un exemple, qui n'est pas dans le texte, de vente en « up-selling »", "Le client vient acheter un téléviseur entrée de gamme, on le dirige vers un téléviseur plus cher et avec plus de fonctionnalités. (accepter toute réponse cohérente)"],
+            ["Quels sont les deux avantages pour l'entreprise de faire du « up-selling » ?", "L'avantage est multiple car vous augmentez vos ventes et bénéfices, en plus de bénéficier de recommandations de la part de vos clients sur la base de leur satisfaction."],
+            ['Définissez le « down-selling ».', "Le downselling consiste, par opposition à l'up-sell, à proposer à votre client un produit moins chère suite à son refus d'acheter le produit que vous lui avez proposé."],
+            ["Dans le cadre du e-commerce, comment le site de l'enseigne fait-il du « down-selling » ?", "Cela consiste à faire afficher une offre moins chère si l'internaute défile sur un premier produit."],
+          ],
+        },
+      },
+      {
+        intitule: 'Indiquez le produit en « up-selling » que vous pourriez proposer au couple ; justifiez.',
+        documents: ['Document 4', 'Annexe 7'],
+        bareme: 3,
+        reponse: "On proposera la référence 83013042, Dressing semi-fermé avec lumière, H 200cm – L 240cm – P 45 cm, couleur chêne, car il a de la lumière ce que n'a pas l'autre et il est plus cher.",
+      },
+      {
+        intitule: "Retrouvez la phrase énoncée par le couple qui peut faire l'objet d'une vente additionnelle.",
+        documents: ['Mission 2 — Document 1', 'Annexe 8'],
+        bareme: 2,
+        reponse: "« Plus jamais ! J'ai pas les compétences pour faire du montage ! Je préfère payer pour le faire. »",
+      },
+      {
+        intitule: 'Indiquez le bien ou le service additionnel proposé au couple ainsi que son prix.',
+        documents: ['Document 5', 'Annexe 9'],
+        bareme: 3,
+        reponse: "Le service à proposer au couple : POSE ET INSTALLATION À DOMICILE — Rangement / dressing — À partir de 149.00 €.",
+      },
+    ],
+  },
+  synthese: {
+    titre: "S'assurer de la disponibilité du produit et faire de la vente additionnelle",
+    proposition: [
+      'La vente complémentaire',
+      'La vente supplémentaire',
+      "L'up-selling",
+      'Le down-selling',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La vente additionnelle',
+      enfants: [
+        {
+          id: 'types',
+          texte: '2 types de ventes additionnelles',
+          enfants: [
+            { id: 't-1', texte: null, reponse: 'La vente complémentaire' },
+            { id: 't-2', texte: null, reponse: 'La vente supplémentaire' },
+          ],
+        },
+        {
+          id: 'notions',
+          texte: "Les notions d'up-selling et de down-selling",
+          enfants: [
+            { id: 'n-1', texte: 'Produit plus cher', enfants: [{ id: 'n-1-1', texte: null, reponse: "L'up-selling" }] },
+            { id: 'n-2', texte: 'Produit moins cher', enfants: [{ id: 'n-2-1', texte: null, reponse: 'Le down-selling' }] },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: "Vérifier la disponibilité et compléter une fiche client",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas vérifier un stock ni remplir une fiche client." },
+          { niveau: 'debrouille', description: 'Je consulte le stock mais je remplis la fiche de façon incomplète.' },
+          { niveau: 'averti', description: 'Je vérifie la disponibilité et je complète correctement la fiche client.' },
+          { niveau: 'expert', description: "Je vérifie disponibilité et délais, et je complète la fiche sans erreur." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Distinguer les types de vente additionnelle',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je confonds vente complémentaire et supplémentaire.' },
+          { niveau: 'debrouille', description: 'Je distingue les deux types sans les illustrer.' },
+          { niveau: 'averti', description: "Je distingue et j'illustre vente complémentaire et supplémentaire." },
+          { niveau: 'expert', description: 'Je maîtrise complémentaire, supplémentaire, up-selling et down-selling.' },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Proposer une vente additionnelle pertinente',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas proposer de produit additionnel.' },
+          { niveau: 'debrouille', description: 'Je propose un produit sans le justifier.' },
+          { niveau: 'averti', description: 'Je propose un produit additionnel justifié par les propos du client.' },
+          { niveau: 'expert', description: 'Je relie ma proposition à un besoin précis et à un prix adapté.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Vente additionnelle', definition: 'Cross-selling : vendre un produit en plus de celui initialement acheté ou voulu.' },
+      { terme: 'Vente complémentaire', definition: 'Vente croisée : le produit en plus est un accessoire ou service lié au produit principal.' },
+      { terme: 'Vente supplémentaire', definition: "Profiter de la présence du client pour proposer un autre produit non lié au premier." },
+      { terme: 'Up-selling', definition: "Proposer un produit plus cher et de meilleure gamme que celui choisi pour augmenter la marge." },
+      { terme: 'Down-selling', definition: "Proposer un produit moins cher après le refus du produit initialement proposé." },
+      { terme: 'Marge bénéficiaire', definition: "Différence entre le prix de vente et le coût de revient d'un produit." },
+      { terme: 'Avoir', definition: 'Somme dont dispose le client à valoir sur un achat (ici versée à la commande).' },
+      { terme: 'Fiche client', definition: 'Document récapitulant les coordonnées et la commande du client.' },
+    ],
+    flashcards: [
+      { recto: 'Autre nom de la vente additionnelle ?', verso: 'Cross-selling' },
+      { recto: 'Vente complémentaire ?', verso: 'Produit accessoire/service lié au produit principal' },
+      { recto: 'Vente supplémentaire ?', verso: 'Produit non lié, proposé en profitant de la présence du client' },
+      { recto: 'Up-selling ?', verso: 'Proposer un produit plus cher / meilleure gamme' },
+      { recto: 'Down-selling ?', verso: 'Proposer un produit moins cher après un refus' },
+      { recto: 'Service additionnel proposé au couple ?', verso: 'Pose / installation dressing — à partir de 149 €' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Un tube de cirage vendu avec des chaussures est une vente…', options: ['supplémentaire', 'complémentaire', 'up-selling', 'down-selling'], bonne: 1 },
+      { type: 'unique', question: "Proposer un smartphone plus récent et plus cher, c'est du…", options: ['down-selling', 'up-selling', 'cross-selling', 'retour'], bonne: 1 },
+      { type: 'unique', question: 'Le dressing du couple est-il en stock ?', options: ['Non', 'Oui, 3 en chêne', 'Oui, 1 seul', 'En rupture'], bonne: 1 },
+      { type: 'qcm', question: 'Quels sont les deux types de vente additionnelle ?', options: ['Complémentaire', 'Up-selling', 'Supplémentaire', 'Down-selling'], bonnes: [0, 2] },
+      { type: 'trous', texte: "L'{x} propose plus cher, le {x} propose moins cher après un refus.", reponses: ['up-selling', 'down-selling'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque situation dans la bonne catégorie de vente.',
+      etiquettes: ['Cravate avec une chemise', 'Carte bleue avec un livret', 'Smartphone plus cher proposé', 'Baskets moins chères après refus'],
+      zones: [
+        { libelle: 'Vente complémentaire', etiquetteIndex: 0 },
+        { libelle: 'Vente supplémentaire', etiquetteIndex: 1 },
+        { libelle: 'Up-selling', etiquetteIndex: 2 },
+        { libelle: 'Down-selling', etiquetteIndex: 3 },
+      ],
+    },
+  },
+}
+
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Leroy Merlin, mission 4 - L'accord du client, les modalites de
+// livraison et la prise de conge
+// ---------------------------------------------------------------------------
+const LEROY_MERLIN_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Obtenez l'accord du client, complétez le bon de commande, planifiez et suivez la livraison, puis soignez la prise de congé.",
+    contexte:
+      "Maintenant que vous avez informé le couple de la disponibilité du dressing et du nombre de produits restants en stock, vous mettez tout en œuvre pour obtenir leur accord sur le bon de commande.",
+    documents: [
+      {
+        numero: 1,
+        titre: "Obtenir l'accord du client",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 1 — Obtenir l'accord du client" },
+          {
+            tableau: {
+              colonnes: ['Les techniques de conclusion', 'Caractéristiques', 'Exemples'],
+              lignes: [
+                ['La conclusion directe', 'Le commercial invite tout naturellement le client à finaliser la vente.', 'Alors vous la prenez ?'],
+                ["La peau de l'ours", "Le commercial se comporte comme si le client avait déjà acheté le produit alors que celui-ci ne l'a pas encore fait.", "Vous souhaitez une extension de garantie avec ? Elle n'est pas très chère."],
+                ['Le regret', "Le commercial présente au client un avantage dont celui-ci ne pourra bénéficier que s'il achète immédiatement.", 'Je peux vous faire -15% si vous le prenez !'],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 2,
+        titre: 'Le bon de commande signé vaut engagement',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 2 — Le bon de commande signé vaut engagement' },
+          {
+            paragraphes: [
+              "Selon votre secteur d'activité, l'établissement d'un bon de commande signé par vos soins constitue une obligation. En règle générale, il est toutefois recommandé de délivrer systématiquement ce document au client lorsque sa commande porte sur un montant ou des volumes importants.",
+              "Le bon de commande, une fois signé et daté par le client, implique son accord pour entamer les travaux et le prive ensuite de toute voie de recours concernant le tarif demandé. En plus de la signature, l'ajout d'une mention type comme « Lu et approuvé » ou « Bon pour accord » peut constituer une sécurité supplémentaire pour vous. Le client reste bien sûr libre de s'opposer à une prestation ou une surfacturation non prévue au devis initial, sauf s'il consent à signer un avenant au devis dans les mêmes conditions. A défaut d'une signature sur le devis lui-même, le client peut vous faire parvenir une « lettre de bon pour accord », dans laquelle il vous fait connaître explicitement son accord : ce formalisme est un peu plus lourd, et l'engage de la même façon.",
+              "Dans tous les cas, un bon de commande non signé par le client ne l'engage en rien, même s'il vous a manifesté verbalement son accord ! N'engagez pas des frais importants sans cette garantie minimale.",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 3,
+        titre: 'Note de votre tutrice',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 3 — Note de votre tutrice' },
+          { logoEntete: '/docs/leroy-merlin-m4/logo.jpg' },
+          { intertitre: 'NOTE INTERNE' },
+          { paragraphes: ['A l\'attention des conseillers de vente,', "Lorsque vous serez sur le point d'annoncer du délai de livraison au client et de compléter le planning d'intervention, suivez les étapes suivantes :"] },
+          {
+            puces: [
+              '1° - Retrouvez le délai livraison sur le logiciel ;',
+              "2° - Commencez à compter le délai à partir du jour qui suit la signature du bon de commande par le client (dans le comptage enlevez les dimanches et les jours fériés) ;",
+              "3° - Complétez le planning d'intervention avec le nom du client et le type d'intervention qui sera effectué.",
+            ],
+          },
+          { paragraphes: ['Bonnes ventes à tous,', 'Mme Annie Mâle — Responsable'] },
+        ],
+      },
+      {
+        numero: 4,
+        titre: 'Les étapes de la livraison',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 4 — Les étapes de la livraison' },
+          {
+            etapesVisuelles: [
+              'Signature du bon de commande',
+              'Préparation du produit',
+              'Une semaine avant, appel pour le choix du créneau de livraison',
+              'SMS de rappel la veille de la livraison',
+              'Livraison à domicile des articles',
+              "Réception d'un SMS pour l'évaluation de la livraison",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 5,
+        titre: "Rédaction d'un SMS de rappel",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 5 — Rédaction d'un SMS de rappel" },
+          { paragraphes: ["Lors de la rédaction d'un SMS de rappel, vous devrez faire attention à :"] },
+          {
+            puces: [
+              'Commencer par une salutation personnalisée ;',
+              "Rappeler l'article acheté ;",
+              'Rappeler le créneau de 2h de la livraison (de 9h à 11h) ;',
+              "Remercier, saluer et ajouter le site internet de l'entreprise.",
+            ],
+          },
+        ],
+      },
+      {
+        numero: 6,
+        titre: "La prise de congé : la technique des « 4 R »",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 6 — La prise de congé : la technique des « 4 R »" },
+          {
+            paragraphes: [
+              "La prise de congé est un moment aussi important que l'accueil. En partant, le client doit avoir une bonne image du commercial et/ou de l'entreprise. D'une part pour rassurer le client sur son achat en le félicitant pour sa décision ou en lui donnant des conseils supplémentaires et d'autre part pour l'inciter à revenir.",
+              "La confiance qui s'est installée au fur et à mesure des étapes de l'entretien de vente doit perdurer même quand le client a signé et que le moment est venu de se quitter.",
+              'Pour ce faire, vous pouvez utiliser les 4 R :',
+            ],
+          },
+          { puces: ['Rassurer et remercier', 'Raccompagner', 'Revoir'] },
+          { intertitre: 'Pourquoi Rassurer et Remercier ?' },
+          {
+            paragraphes: [
+              'Inscrivez la vente dans une démarche à long terme.',
+              "En cas de vente, vous devez remercier le client de la confiance qu'il vous a accordé tout au long du processus d'achat...",
+              "Vous devez également le féliciter de sa décision. Le client doit être conforté dans le choix qu'il vient de faire. Rappelez-lui votre disponibilité, votre engagement afin de pérenniser votre relation.",
+            ],
+          },
+          { intertitre: 'Comment Raccompagner ?' },
+          {
+            paragraphes: [
+              'Évitez les bavardages inutiles...mais partez sans précipitation !',
+              "Il s'agit de clore le rendez-vous en développant une relation privilégiée.",
+              "La politesse c'est l'attitude à adopter chaque fois qu'un individu veut montrer du respect à son interlocuteur. Elle doit être observée jusqu'au moment de la prise de congé, et ce même si la vente n'a pas été conclue. « Au revoir. Merci de m'avoir reçu/d'être venu ». Raccompagnez le client si c'est vous qui l'avez reçu.",
+            ],
+          },
+          { intertitre: 'Comment réussir à Revoir ?' },
+          {
+            paragraphes: [
+              "Il faut avant tout montrer que vous restez à la disposition du client, par exemple en lui remettant votre carte de visite.",
+              "Il s'agit de clore le rendez-vous en développant une relation privilégiée. Par exemple, il est de bon ton, pour un vendeur, de s'enquérir, quelques jours après la vente, de ce que pense le client de son achat : respect des délais de livraison, difficultés d'installation ou d'apprentissage.",
+              "Pour le commercial, c'est l'occasion de renforcer la qualité de la relation vendeur-client car rappelez-vous, la prise de congé est la dernière étape de la vente mais la première étape à la fidélisation.",
+            ],
+          },
+        ],
+      },
+    ],
+    objectifs: [
+      "Obtenir l'accord du client et formaliser la commande.",
+      'Planifier et suivre la livraison, puis réussir la prise de congé (4 R).',
+    ],
+    competence: {
+      groupe: 'Compétences travaillées',
+      intitule: "C.1.3 — S'assurer de l'exécution de la vente",
+      detail: "Obtenir l'accord, formaliser la commande, suivre la livraison et prendre congé.",
+    },
+    activites: [
+      {
+        titre: "Activité 1 — L'accord du client",
+        contexte: "Maintenant que vous avez informé le couple de la disponibilité du dressing et du nombre de produits restants en stock, vous mettez tout en œuvre pour obtenir leur accord sur le bon de commande.",
+        questions: [
+          { numero: 1, consigne: "Utilisez la technique de la « peau de l'ours » pour rédiger la phrase que vous allez prononcer face aux clients pour obtenir leur accord.", ressources: 'Consulter le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Analysez l'article qui vous a été remis par votre tutrice, sur la formalisation de l'accord du client.", ressources: 'Consulter le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Grâce à toutes les informations recueillies dans la Mission 3 (document 1 et annexe 1a), complétez le bon de commande.', ressources: 'Compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Les modalités et le suivi de la livraison',
+        contexte: "Nous sommes le 8 avril 202N et Mme et M. Sankouraga ont formalisé leur accord en s'engageant sur le bon de commande que vous leur avez proposé. Vous leur expliquez comment suivre l'évolution de la livraison et comment celle-ci se passera.",
+        questions: [
+          { numero: 4, consigne: "Consultez le planning d'intervention du magasin et complétez-le en indiquant, sur le jour que vous aurez choisi, le nom du client et le type d'intervention.", ressources: 'Consulter le document 3, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Reconstituez les différentes étapes entre la signature du bon de commande et la livraison.', ressources: 'Consulter le document 4, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Faites une phrase pour indiquer au couple les délais et les différentes étapes de la livraison.', ressources: 'Compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Rédigez le SMS qui sera envoyé la veille pour rappeler la livraison.', ressources: 'Consulter le document 5, compléter l\'annexe 7.', annexeId: 'annexe7' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La prise de congé',
+        contexte: "Le couple est satisfait de son achat. Il est prêt à s'en aller. Vous soignez donc la prise de congé.",
+        questions: [
+          { numero: 8, consigne: 'Votre tutrice souhaite vérifier que vous maîtrisez la prise de congé et vous interroge sur les documents qu\'elle vous a remis.', ressources: 'Consulter le document 6, compléter l\'annexe 8.', annexeId: 'annexe8' },
+          { numero: 9, consigne: 'Rédigez la phrase de la prise de congé pour le couple en respectant les 4 R.', ressources: 'Compléter l\'annexe 9.', annexeId: 'annexe9' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'bulle',
+        id: 'annexe1',
+        titre: "Annexe 1 — Technique de la « peau de l'ours » pour obtenir l'accord du couple",
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: "Rédigez ici la phrase que vous prononcerez face aux clients…",
+        nbLignes: 3,
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: "Annexe 2 — Analyse de l'article",
+        colonnes: ['Questions', 'Réponses'],
+        nbLignes: 3,
+        largeurs: ['38%', '62%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+        prerempli: [
+          ['Quelle est la conséquence une fois le bon de commande daté et signé par le client ?', ''],
+          ["Quel autre moyen que la signature le client a-t-il pour manifester son accord ?", ''],
+          ["Si le client dit oralement qu'il est d'accord, est-il engagé ? Justifiez votre réponse.", ''],
+        ],
+      },
+      {
+        type: 'boncommande',
+        id: 'annexe3',
+        titre: 'Annexe 3 — Bon de commande',
+        numero: '2535753',
+        vendeur: ['Leroy Merlin Daumesnil', '139 avenue Daumesnil', '75012 Paris', 'Téléphone : 01.33.XX.XX.XX.'],
+        nbLignesArticles: 3,
+      },
+      {
+        type: 'planning',
+        id: 'annexe4',
+        titre: "Annexe 4 — Planning d'intervention Leroy Merlin",
+        logo: '/docs/leroy-merlin-m4/logo.jpg',
+        mois: [
+          {
+            titre: 'AVRIL 202N', decalage: 0, nbJours: 30,
+            creneaux: [
+              { jour: 1, creneau: 'matin', texte: 'M. LEROY - Remplacer un chauffe-eau' },
+              { jour: 1, creneau: 'aprem', texte: "M. et Mme SIMON - Installation d'un robot tondeuse" },
+              { jour: 2, creneau: 'matin', texte: 'M. CARPENTIER - Installation WC' },
+              { jour: 2, creneau: 'aprem', texte: "M. SANCHEZ - Installation adoucisseur d'eau" },
+              { jour: 3, creneau: 'matin', texte: 'M HUET - Entretien et ramonage poêle à bois' },
+              { jour: 3, creneau: 'aprem', texte: 'M BERNARD - Pose porte de garage avec portillon intégré' },
+              { jour: 4, creneau: 'matin', texte: 'M VASSEUR - Installation climatiseur monobloc' },
+              { jour: 4, creneau: 'aprem', texte: 'M MOREL - Installation et aménagement de dressing' },
+              { jour: 5, creneau: 'matin', texte: 'M PEREZ - Installation cuisine' },
+              { jour: 5, creneau: 'aprem', texte: 'M DUPUIS - Isolation de comble' },
+              { jour: 6, creneau: 'matin', texte: 'M RICHARD - Installation alarme maison' },
+              { jour: 6, creneau: 'aprem', texte: 'M GIRARD - Pose et installation de baignoire' },
+              { jour: 8, creneau: 'aprem', texte: 'M MULLER - Pose de parquet stratifié' },
+              { jour: 9, creneau: 'matin', texte: 'M DUPONT - Pose de plan de travail cuisine' },
+              { jour: 9, creneau: 'aprem', texte: 'M LEFEVRE - Pose de bloc porte intérieur' },
+              { jour: 10, creneau: 'matin', texte: 'M LAMBERT - Pose flottante de dalles' },
+              { jour: 10, creneau: 'aprem', texte: 'M FAURE - Pose de verrière de 4 à 7 carreaux' },
+              { jour: 11, creneau: 'matin', texte: "M FONTAINE - Pose de baignoir d'angle" },
+              { jour: 11, creneau: 'aprem', texte: 'M MERCIER - Installation et aménagement de dressing' },
+              { jour: 12, creneau: 'matin', texte: 'M ROUSSEAU - Installation climatiseur monobloc' },
+              { jour: 13, creneau: 'matin', ferie: true },
+              { jour: 13, creneau: 'aprem', ferie: true },
+              { jour: 15, creneau: 'matin', texte: 'M BOYER - Installation WC' },
+              { jour: 16, creneau: 'matin', texte: 'M CHEVALIER - Remplacer un chauffe-eau' },
+              { jour: 16, creneau: 'aprem', texte: 'M GARNIER - Isolation de comble' },
+              { jour: 17, creneau: 'matin', texte: 'M LEGRAND - Installation WC' },
+              { jour: 17, creneau: 'aprem', texte: "M GAUTIER - Installation d'un robot tondeuse" },
+              { jour: 18, creneau: 'matin', texte: 'M PERRIER - Pose porte de garage avec portillon intégré' },
+              { jour: 18, creneau: 'aprem', texte: 'M GARCIAS - Pose de verrière de 4 à 7 carreaux' },
+              { jour: 19, creneau: 'aprem', texte: "M BARRE - Pose de baignoir d'angle" },
+              { jour: 22, creneau: 'matin', texte: 'M MARCHAND - Pose de verrière de 4 à 7 carreaux' },
+              { jour: 22, creneau: 'aprem', texte: 'M DUVAL - Pose de plan de travail cuisine' },
+              { jour: 24, creneau: 'matin', texte: 'M MEYER - Pose de bloc porte intérieur' },
+              { jour: 24, creneau: 'aprem', texte: 'M DUMONT - Pose porte de garage avec portillon intégré' },
+              { jour: 25, creneau: 'matin', texte: 'M DUFOUR - Pose et installation de baignoire' },
+              { jour: 25, creneau: 'aprem', texte: 'M MEUNIER - Installation WC' },
+              { jour: 26, creneau: 'matin', texte: 'M PELLETIER - Isolation de comble' },
+              { jour: 26, creneau: 'aprem', texte: 'M LE GOLF - Installation et aménagement de dressing' },
+              { jour: 27, creneau: 'matin', texte: 'M LEBRUN - Pose de parquet stratifié' },
+              { jour: 29, creneau: 'matin', texte: 'M HAMON - Remplacer un chauffe-eau' },
+              { jour: 29, creneau: 'aprem', texte: 'M MALLET - Pose flottante de dalles' },
+            ],
+          },
+          {
+            titre: 'MAI 202N', decalage: 3, nbJours: 31,
+            creneaux: [
+              { jour: 1, creneau: 'matin', ferie: true },
+              { jour: 1, creneau: 'aprem', ferie: true },
+              { jour: 3, creneau: 'matin', texte: 'M ROBERT - Installation alarme maison' },
+              { jour: 8, creneau: 'matin', ferie: true },
+              { jour: 8, creneau: 'aprem', ferie: true },
+              { jour: 9, creneau: 'matin', texte: 'M GILLET - Installation cuisine' },
+              { jour: 13, creneau: 'matin', texte: 'M PERROT' },
+              { jour: 14, creneau: 'aprem', texte: 'M LACROIX - Remplacer un chauffe-eau' },
+              { jour: 17, creneau: 'aprem', texte: 'M GUICHARD - Entretien et ramonage poêle à bois' },
+              { jour: 22, creneau: 'aprem', texte: "M CORDIER - Installation d'un robot tondeuse" },
+              { jour: 25, creneau: 'matin', ferie: true },
+              { jour: 25, creneau: 'aprem', ferie: true },
+              { jour: 27, creneau: 'matin', texte: 'M FABRE - Installation climatiseur monobloc' },
+              { jour: 27, creneau: 'aprem', texte: 'M BICHON - Remplacer un chauffe-eau' },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'etapeslivraison',
+        id: 'annexe5',
+        titre: 'Annexe 5 — Reconstitution des étapes de la livraison',
+        nbEtapes: 6,
+        schema: {
+          etiquettes: [
+            'Livraison à votre domicile des articles',
+            'Signature du bon de commande',
+            'SMS de rappel la veille de la livraison',
+            'Préparation du produit',
+            'Évaluez la livraison sur votre smartphone',
+            "Une semaine avant, appel pour le choix de l'heure du créneau de livraison",
+          ],
+          nbZones: 6,
+        },
+      },
+      {
+        type: 'bulle',
+        id: 'annexe6',
+        titre: 'Annexe 6 — Énoncé des délais et des étapes de la livraison',
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: 'Expliquez au couple le délai et les différentes étapes de la livraison…',
+        nbLignes: 6,
+      },
+      {
+        type: 'sms',
+        id: 'annexe7',
+        titre: 'Annexe 7 — SMS de rappel',
+        entete: 'Leroy Merlin',
+        date: "Aujourd'hui 08 : 43",
+      },
+      {
+        type: 'grille',
+        id: 'annexe8',
+        titre: 'Annexe 8 — Questions de votre tutrice',
+        colonnes: ['Questions', 'Réponses'],
+        nbLignes: 4,
+        largeurs: ['30%', '70%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+        prerempli: [
+          ['Résumez ce que signifie « Rassurer » dans la technique des « 4 R »', ''],
+          ['Résumez ce que signifie « Remercier » dans la technique des « 4 R »', ''],
+          ['Résumez ce que signifie « Raccompagner » dans la technique des « 4 R »', ''],
+          ['Résumez ce que signifie « Revoir » dans la technique des « 4 R »', ''],
+        ],
+      },
+      {
+        type: 'bulle',
+        id: 'annexe9',
+        titre: 'Annexe 9 — Phrase de la prise de congé',
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: 'Rédigez la phrase de prise de congé en respectant les 4 R…',
+        nbLignes: 5,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Utilisez la technique de la « peau de l'ours » pour rédiger la phrase d'accord.",
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 2,
+        reponse: "« Alors quand seriez-vous disponible pour la pose de votre dressing ? »",
+      },
+      {
+        intitule: "Analysez l'article sur la formalisation de l'accord du client.",
+        documents: ['Document 2', 'Annexe 2'],
+        bareme: 3,
+        reponse: '',
+        tableau: {
+          colonnes: ['Questions', 'Réponses'],
+          lignes: [
+            ['Conséquence une fois le bon de commande daté et signé ?', "Le bon de commande, une fois signé et daté par le client, implique son accord pour entamer les travaux et le prive ensuite de toute voie de recours concernant le tarif demandé."],
+            ["Autre moyen que la signature pour manifester son accord ?", "A défaut d'une signature sur le devis lui-même, le client peut vous faire parvenir une « lettre de bon pour accord », dans laquelle il vous fait connaître explicitement son accord…"],
+            ["Accord oral : le client est-il engagé ?", "Dans tous les cas, un bon de commande non signé par le client ne l'engage en rien, même s'il vous a manifesté verbalement son accord !"],
+          ],
+        },
+      },
+      {
+        intitule: 'Complétez le bon de commande.',
+        documents: ['Mission 3 — Document 1 et annexe 1a', 'Annexe 3'],
+        bareme: 6,
+        reponse: '',
+        tableau: {
+          colonnes: ['Champ', 'Réponse attendue'],
+          lignes: [
+            ['Coordonnées client', 'Mme Rebecca Sankouraga — 7 rue Dombasle, 75015 Paris — Tél : 07.06.05.04.XX'],
+            ['Date', '02 avril 202N'],
+            ['Référence', '83299641'],
+            ['Libellé article', 'Dressing chêne H200 x L240'],
+            ['Quantité', '1'],
+            ['Prix HT', '1244,05'],
+            ['Prix TTC', '1492,86'],
+            ['Base HT (TVA 20%)', '1244,05'],
+            ['Montant Total', '1492,86'],
+            ["Montant de l'avoir (30%)", '447,86 €'],
+            ['Délais de livraison', '30 jours'],
+          ],
+        },
+      },
+      {
+        intitule: "Complétez le planning d'intervention.",
+        documents: ['Document 3', 'Annexe 4'],
+        bareme: 4,
+        reponse: "Délai de 30 jours à compter du jour suivant la signature (02 avril 202N), hors dimanches et jours fériés. Le créneau retenu est le mardi 2 mai 202N (après-midi) : « Mme Sankouraga - Installation et aménagement de dressing ».",
+      },
+      {
+        intitule: 'Reconstituez les étapes de la livraison.',
+        documents: ['Document 4', 'Annexe 5'],
+        bareme: 6,
+        reponse: "1. Signature du bon de commande ; 2. Préparation du produit ; 3. Une semaine avant, appel pour le choix de l'heure du créneau de livraison ; 4. SMS de rappel la veille de la livraison ; 5. Livraison à votre domicile des articles ; 6. Évaluez la livraison sur votre smartphone.",
+      },
+      {
+        intitule: 'Faites une phrase indiquant les délais et étapes de la livraison.',
+        documents: ['Annexe 6'],
+        bareme: 4,
+        reponse: "« Maintenant que vous avez signé le bon de commande, je vais vous expliquer comment va se passer la suite. Votre dressing va être préparé et sera livré d'ici 30 jours. Une semaine avant la livraison, vous recevrez un appel du service client pour convenir d'un créneau (matin ou après-midi). Ensuite la veille, vous recevrez un SMS qui vous rappellera le créneau de livraison. Enfin, le lendemain, votre dressing sera livré à votre domicile et, une fois que cela sera fait, vous recevrez un SMS pour évaluer la livraison. »",
+      },
+      {
+        intitule: 'Rédigez le SMS de rappel envoyé la veille.',
+        documents: ['Document 5', 'Annexe 7'],
+        bareme: 3,
+        reponse: "« Bonjour Mme Sankouraga, votre dressing sera livré demain entre 9h et 11h. Merci et à bientôt sur www.leroymerlin.fr »",
+      },
+      {
+        intitule: 'Répondez aux questions de votre tutrice sur les 4 R.',
+        documents: ['Document 6', 'Annexe 8'],
+        bareme: 4,
+        reponse: '',
+        tableau: {
+          colonnes: ['Questions', 'Réponses'],
+          lignes: [
+            ['Rassurer', "Vous devez féliciter le client de sa décision. Le client veut être sûr d'avoir fait le bon choix… Rappelez-lui votre disponibilité, votre engagement afin de pérenniser votre relation."],
+            ['Remercier', "En cas de vente, vous devez remercier le client de la confiance qu'il vous a accordé tout au long du processus d'achat..."],
+            ['Raccompagner', "Il s'agit de clore le rendez-vous en développant une relation privilégiée. La politesse est l'attitude à adopter pour montrer du respect. Raccompagnez le client si c'est vous qui l'avez reçu."],
+            ['Revoir', "Il faut avant tout montrer que vous restez à la disposition du client, par exemple en lui remettant votre carte de visite."],
+          ],
+        },
+      },
+      {
+        intitule: 'Rédigez la phrase de prise de congé (4 R).',
+        documents: ['Annexe 9'],
+        bareme: 4,
+        reponse: "« Vous avez vraiment fait un excellent choix. C'est un très beau dressing que vous avez choisi (Rassurer) et je vous remercie d'être venu chez Leroy Merlin (Remercier). Allez-y ! Je vous raccompagne (Raccompagner). Après l'installation, je vous passerai un petit coup de fil pour savoir si tout s'est bien passé (Revoir). »",
+      },
+    ],
+  },
+  synthese: {
+    titre: "L'accord du client, les modalités de livraison et la prise de congé",
+    proposition: [
+      "La conclusion directe",
+      "La peau de l'ours",
+      'Le regret',
+      'Signature du bon de commande',
+      'Livraison à domicile des articles',
+      'Rassurer',
+      'Remercier',
+      'Raccompagner',
+      'Revoir',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "L'exécution de la vente",
+      enfants: [
+        {
+          id: 'accord',
+          texte: "L'accord du client — 3 techniques de conclusion",
+          enfants: [
+            { id: 'a-1', texte: null, reponse: 'La conclusion directe' },
+            { id: 'a-2', texte: null, reponse: "La peau de l'ours" },
+            { id: 'a-3', texte: null, reponse: 'Le regret' },
+          ],
+        },
+        {
+          id: 'commande',
+          texte: 'La formalisation',
+          enfants: [
+            { id: 'co-1', texte: "Le bon de commande signé et daté vaut engagement" },
+          ],
+        },
+        {
+          id: 'livraison',
+          texte: 'Le suivi de la livraison',
+          enfants: [
+            { id: 'l-1', texte: '1re étape', enfants: [{ id: 'l-1-1', texte: null, reponse: 'Signature du bon de commande' }] },
+            { id: 'l-2', texte: '5e étape', enfants: [{ id: 'l-2-1', texte: null, reponse: 'Livraison à domicile des articles' }] },
+          ],
+        },
+        {
+          id: 'conge',
+          texte: 'La prise de congé — La technique des 4 R',
+          enfants: [
+            { id: 'c-1', texte: null, reponse: 'Rassurer' },
+            { id: 'c-2', texte: null, reponse: 'Remercier' },
+            { id: 'c-3', texte: null, reponse: 'Raccompagner' },
+            { id: 'c-4', texte: null, reponse: 'Revoir' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: "Obtenir l'accord et formaliser la commande",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas conclure une vente ni remplir un bon de commande." },
+          { niveau: 'debrouille', description: 'Je conclus maladroitement et remplis le bon de façon incomplète.' },
+          { niveau: 'averti', description: "J'utilise une technique de conclusion et complète correctement le bon de commande." },
+          { niveau: 'expert', description: "Je conclus avec aisance et formalise une commande sans erreur." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Planifier et suivre la livraison',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas planifier une intervention.' },
+          { niveau: 'debrouille', description: 'Je place le rendez-vous sans tenir compte des délais.' },
+          { niveau: 'averti', description: 'Je calcule le délai et planifie correctement l\'intervention.' },
+          { niveau: 'expert', description: 'Je planifie et j\'explique clairement toutes les étapes de la livraison.' },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Réussir la prise de congé (4 R)',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas la technique des 4 R.' },
+          { niveau: 'debrouille', description: 'Je cite quelques R sans les appliquer.' },
+          { niveau: 'averti', description: 'Je rédige une prise de congé respectant les 4 R.' },
+          { niveau: 'expert', description: 'Je soigne la prise de congé pour fidéliser le client.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Peau de l'ours", definition: "Technique de conclusion où le commercial se comporte comme si le client avait déjà acheté." },
+      { terme: 'Conclusion directe', definition: 'Le commercial invite naturellement le client à finaliser la vente.' },
+      { terme: 'Le regret', definition: "Présenter un avantage dont le client ne profitera que s'il achète immédiatement." },
+      { terme: 'Bon de commande', definition: "Document qui, signé et daté, engage le client pour entamer les travaux." },
+      { terme: 'Bon pour accord', definition: "Mention apposée par le client valant acceptation de la commande." },
+      { terme: '4 R', definition: 'Rassurer, Remercier, Raccompagner, Revoir : technique de prise de congé.' },
+      { terme: 'Fidélisation', definition: "Ensemble d'actions visant à inciter le client à revenir." },
+      { terme: 'Avoir', definition: "Somme versée à la commande (ici 30% du montant total)." },
+    ],
+    flashcards: [
+      { recto: "Peau de l'ours ?", verso: 'Se comporter comme si le client avait déjà acheté' },
+      { recto: 'Conclusion directe ?', verso: 'Inviter naturellement le client à finaliser la vente' },
+      { recto: 'Technique du regret ?', verso: "Présenter un avantage réservé à un achat immédiat" },
+      { recto: 'Que faut-il pour engager le client ?', verso: 'Un bon de commande signé et daté' },
+      { recto: 'Mention de sécurité sur un bon de commande ?', verso: '« Lu et approuvé » ou « Bon pour accord »' },
+      { recto: 'Que signifient les 4 R ?', verso: 'Rassurer, Remercier, Raccompagner, Revoir' },
+      { recto: 'Délai de livraison du dressing ?', verso: '30 jours' },
+      { recto: 'Montant de l\'avoir (30%) ?', verso: '447,86 €' },
+      { recto: 'Dernière étape de la vente / première de la fidélisation ?', verso: 'La prise de congé' },
+      { recto: 'Comment compte-t-on le délai de livraison ?', verso: 'À partir du jour suivant la signature, hors dimanches et jours fériés' },
+    ],
+    quiz: [
+      { type: 'unique', question: "« Vous souhaitez une extension de garantie avec ? » est une technique…", options: ['Conclusion directe', "Peau de l'ours", 'Le regret', 'La relance'], bonne: 1 },
+      { type: 'unique', question: "« Alors vous la prenez ? » correspond à…", options: ['La conclusion directe', "La peau de l'ours", 'Le regret', "L'alternative"], bonne: 0 },
+      { type: 'unique', question: "« Je peux vous faire -15% si vous le prenez ! » est…", options: ['La conclusion directe', "La peau de l'ours", 'Le regret', 'La synthèse'], bonne: 2 },
+      { type: 'unique', question: "Qu'est-ce qui engage réellement le client ?", options: ['Accord oral', 'Bon de commande signé et daté', 'Un email', 'Un appel'], bonne: 1 },
+      { type: 'unique', question: 'Quelle mention renforce la sécurité du bon de commande ?', options: ['« Vu »', '« Bon pour accord »', '« Reçu »', '« Noté »'], bonne: 1 },
+      { type: 'qcm', question: 'Quels éléments composent les 4 R ?', options: ['Rassurer', 'Réduire', 'Raccompagner', 'Revoir'], bonnes: [0, 2, 3] },
+      { type: 'unique', question: 'Quel est le délai de livraison du dressing ?', options: ['15 jours', '30 jours', '45 jours', '60 jours'], bonne: 1 },
+      { type: 'unique', question: "Le montant de l'avoir versé (30%) est de…", options: ['447,86 €', '1244,05 €', '1492,86 €', '149,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Quelle est la première étape de la livraison ?', options: ['Préparation du produit', 'Signature du bon de commande', 'SMS de rappel', 'Livraison'], bonne: 1 },
+      { type: 'unique', question: "La prise de congé est la dernière étape de la vente mais la première de…", options: ['la prospection', 'la fidélisation', "l'accueil", 'la négociation'], bonne: 1 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie de la mission 4.',
+      etiquettes: [
+        "« Alors vous la prenez ? »",
+        "« Vous souhaitez une extension de garantie avec ? »",
+        '« Je peux vous faire -15% si vous le prenez ! »',
+        'Bon de commande signé et daté',
+        '« Bon pour accord »',
+        'Rassurer et Remercier',
+        'Raccompagner',
+        'Revoir',
+        '30 jours',
+        '447,86 €',
+      ],
+      zones: [
+        { libelle: 'Conclusion directe', etiquetteIndex: 0 },
+        { libelle: "Peau de l'ours", etiquetteIndex: 1 },
+        { libelle: 'Le regret', etiquetteIndex: 2 },
+        { libelle: 'Ce qui engage le client', etiquetteIndex: 3 },
+        { libelle: 'Mention de sécurité', etiquetteIndex: 4 },
+        { libelle: 'Féliciter et remercier le client', etiquetteIndex: 5 },
+        { libelle: 'Clore en relation privilégiée', etiquetteIndex: 6 },
+        { libelle: 'Remettre sa carte de visite', etiquetteIndex: 7 },
+        { libelle: 'Délai de livraison', etiquetteIndex: 8 },
+        { libelle: "Montant de l'avoir (30%)", etiquetteIndex: 9 },
+      ],
+    },
+  },
+}
+
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Leroy Merlin, mission 5 - Selectionner le prestataire le plus
+// adapte, suivre l'execution du service et rendre compte
+// ---------------------------------------------------------------------------
+const LEROY_MERLIN_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Étudiez les forfaits de pose, sélectionnez l'artisan le plus adapté selon les critères de l'enseigne, puis suivez l'exécution du service et rendez compte.",
+    contexte:
+      "Avant de vous lancer dans la sélection de l'artisan qui installera le dressing chez les clients, vous étudiez les différents forfaits qui sont proposés par l'enseigne.",
+    documents: [
+      {
+        numero: 1,
+        titre: 'Forfaits installation Leroy Merlin',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 1 — Forfaits installation Leroy Merlin' },
+          {
+            offresPrestation: [
+              {
+                titre: 'Installation de portes de placard coulissantes',
+                prix: '229.00 € / Prestation',
+                prixLibelle: 'À partir de',
+                image: '/docs/leroy-merlin-m5/forfait1.jpg',
+                note: '5', avis: '223 avis',
+                details: [
+                  "La dépose et la mise en déchetterie des éventuelles anciennes portes",
+                  'La fixation des rails',
+                  "L'installation et le réglage des deux vantaux",
+                  'La découpe de plinthes en bois si nécessaire',
+                  'En option : Pose d\'un vantail supplémentaire +49€',
+                  "En option : Pose d'une joue pour création d'une niche +85€",
+                  'En option : Découpe de vos portes de placard standards recoupables (hors miroir) +70€',
+                ],
+                conditions: [
+                  'Le lieu de pose sera accessible et dégagé',
+                  "Les dimensions de l'ouverture sont adaptées aux nouveaux vantaux",
+                ],
+                engagements: [
+                  { titre: 'Des artisans sélectionnés', texte: "Vos travaux sont réalisés par l'un de nos 6000 artisans partenaires signataires de la Charte Qualité Leroy Merlin" },
+                  { titre: 'Des travaux garantis', texte: "Nous garantissons le bon achèvement de vos travaux, les produits et la prestation de pose jusqu'à 10 ans." },
+                  { titre: 'Des prix fixes et sans surprise', texte: 'Les prix de nos forfaits de pose sont fermes et définitifs.' },
+                ],
+              },
+              {
+                titre: "Montage d'un rangement Spaceo Home jusqu'à 4 caissons",
+                prix: '149.00 €',
+                prixLibelle: "L'installation :",
+                image: '/docs/leroy-merlin-m5/forfait2.jpg',
+                note: '5', avis: '19 avis',
+                filAriane: "Accueil › Services › Bricolage pour vos travaux à domicile › Pose et installation à domicile › Tous nos forfaits de pose › Rangement / dressing",
+                details: ['Le montage des caissons et de leurs tablettes uniquement'],
+                conditions: [
+                  "Le lieu d'entretien sera accessible et dégagé",
+                  'Le montage concernera les caissons Spaceo Home',
+                ],
+                engagements: [
+                  { titre: 'Des artisans sélectionnés', texte: "Vos travaux sont réalisés par l'un de nos 6000 artisans partenaires signataires de la Charte Qualité Leroy Merlin" },
+                  { titre: 'Des travaux garantis', texte: "Nous garantissons le bon achèvement de vos travaux, les produits et la prestation de pose jusqu'à 10 ans." },
+                ],
+              },
+              {
+                titre: 'Installation et aménagement de rangement Spaceo Home, 4 caissons et accessoires',
+                prix: '289.00 € / Prestation',
+                prixLibelle: "L'installation :",
+                image: '/docs/leroy-merlin-m5/forfait3.jpg',
+                note: '5', avis: '38 avis',
+                filAriane: "Accueil › Services › Bricolage pour vos travaux à domicile › Pose et installation à domicile › Tous nos forfaits de pose › Rangement / dressing",
+                details: [
+                  "L'installation des caissons, tablettes, accessoires, portes, tiroirs, aménagements intérieurs, découpes sur plinthes bois",
+                  "L'installation des éclairages éventuels (sur alimentation électrique existante à moins d'1 mètre de l'installation), la fixation au mur",
+                ],
+                conditions: [
+                  'Le lieu de pose sera accessible et dégagé',
+                  "Les revêtements de mur et de sol ne nécessitent pas d'être repris.",
+                ],
+                engagements: [
+                  { titre: 'Des artisans sélectionnés', texte: "Vos travaux sont réalisés par l'un de nos 6000 artisans partenaires signataires de la Charte Qualité Leroy Merlin" },
+                  { titre: 'Des travaux garantis', texte: "Nous garantissons le bon achèvement de vos travaux, les produits et la prestation de pose jusqu'à 10 ans." },
+                  { titre: 'Des prix fixes et sans surprise', texte: 'Les prix de nos forfaits de pose sont fermes et définitifs.' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        numero: 2,
+        titre: "Critères de sélection de l'artisan",
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: "Document 2 — Critères de sélection de l'artisan" },
+          {
+            mailLecture: {
+              de: 'annie.male@leroymerlin.fr',
+              a: 'conseillers.vente@leroymerlin.fr',
+              objet: 'Sélectionner le meilleur artisan pour la pose de matériel',
+              corps: [
+                'Bonjour,',
+                "Pour vous aider à sélectionner le meilleur artisan pour la pose des articles achetés par nos clients, vous respecterez les critères suivants :",
+                "Pour des raisons environnementales, l'artisan devra se trouver à 10km maximum du domicile du client ;",
+                "L'artisan devra évidemment être disponible pour l'installation le lendemain du jour de la livraison ;",
+                "L'artisan devra être spécialisé dans l'installation de rangement et de dressings ;",
+                'Le coût de la prestation devra être inférieur ou égal à celui annoncé sur le site Leroy Merlin ;',
+                "L'équipe de l'artisan doit être constituée de deux professionnels minimums pour la pose ;",
+                "L'équipe doit être disponible pendant 4h pour effectuer la prestation.",
+                'Cordialement,',
+                'Annie Mâle, Responsable',
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 3,
+        titre: 'Extrait de la liste des artisans travaillant avec Leroy Merlin',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 3a — Extrait de la liste des artisans travaillant avec Leroy Merlin' },
+          {
+            tableau: {
+              colonnes: ['Entreprises', 'Localisation', "Indisponibilités (mai)", 'Services proposés', 'Nb pros', 'Heures dispo', 'Coût prestation', 'Remarques'],
+              lignes: [
+                ["Install'Tout André", '12 rue Solférino, 92 Vanves', '2 – 7 – 12 – 22 – 27 – 16/05', 'Rangements/Dressing', '2', '4', '71,25€/heure', 'R.A.S.*'],
+                ['Établissements Gaudriche', '25 av. de Lamballe, 75016 Paris', '5 – 9 – 11 – 23 – 28 – 30/05', 'Plombier/Chauffagiste', '2', '4', '73,00€/heure', 'Utilitaire de travail en réparation'],
+                ['Akus Installation', '4 rue Michelet, 92150 Suresnes', '4 – 6 – 12 – 21 – 27 – 17/05', 'Rangements/Dressing', '3', '4', '79,25€/heure', 'R.A.S.*'],
+                ['CycloInstallation', '20 rue Rambuteau, 75003 Paris', '2 – 9 – 13 – 18 – 25 – 28/05', 'Rangements/Dressing', '2', '4', '71,50€/heure', 'R.A.S.*'],
+                ['Entreprise Sanchez', '13 av. Jean Moulin, 75014 Paris', '3 – 4 – 9 – 11 – 15 – 16/05', 'Portes et fenêtres', '4', '4', '72,25€/heure', 'R.A.S.*'],
+                ['Les Installateurs du 92', '41 rue Armengaud, 92110 Saint-Cloud', '7 – 8 – 9 – 10 – 11 – 15/05', 'Rangements/Dressing', '1', '4', '68.00€/heure', 'R.A.S.*'],
+                ['Atelier Carlier', '22 rue Bonnelais, 94140 Clamart', '11 – 13 – 17 – 27 – 28 – 30/05', 'Climatisation', '2', '4', '55,00€/heure', 'R.A.S.*'],
+                ["Les artisans de l'Installation", '33 rue Blanche, 75009 Paris', '2 – 7 – 12 – 22 – 27 – 16/05', 'Rangements/Dressing', '2', '4', '72,25€/heure', 'Un salarié en arrêt maladie'],
+                ['Installateurs 2000', '7 rue Jules Ferry, 94200 Ivry sur Seine', '2 – 7 – 16 – 22 – 26 – 28/05', 'Rangements/Dressing', '3', '4', '72,25€/heure', 'R.A.S.*'],
+                ['Établissements FGT', '15 rue Danton, 93100 Montreuil', '4 – 6 – 14 – 18 – 25 – 30/05', 'Rénovation/Menuiserie', '2', '4', '72,25€/heure', 'R.A.S.*'],
+                ['Entreprise Lecomte', '22 rue Parmentier, 92200 Neuilly', '3 – 7 – 14 – 17 – 27 – 29/05', 'Rangements/Dressing', '2', '4', '70,25€/heure', 'R.A.S.*'],
+                ['Les Installateurs Parisiens', '25 rue Chanzy, 75011 Paris', '2 – 9 – 12 – 20 – 26 – 29/05', 'Rangements/Dressing', '1', '4', '69,25€/heure', 'R.A.S.*'],
+              ],
+            },
+          },
+          { paragraphes: ['R.A.S.* = Rien à signaler = Aucune remarque à faire'] },
+          { intertitre: '3b — Calcul de la distance avec Google Maps' },
+          { paragraphes: ['Cliquez sur le bouton ci-dessous pour ouvrir Google Maps et calculer la distance en voiture entre l\'entreprise et le domicile des clients.'] },
+        ],
+      },
+      {
+        numero: 4,
+        titre: 'La méthode C.R.O.C.',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 4 — La méthode C.R.O.C.' },
+          { paragraphes: ["En émission d'appel, utilisez le CROC.", "Lorsque vous appelez un client ou un prospect, vous appliquerez pendant l'appel la méthode CROC."] },
+          {
+            tableau: {
+              colonnes: ['CROC', 'Éléments de communication'],
+              lignes: [
+                ['Contact', "Saluer, se présenter, présenter l'entreprise, demander l'interlocuteur désiré"],
+                ["Raison d'appel", 'Dire le motif pour lequel vous appelez le client'],
+                ['Objectif', 'Ce que le commercial veut obtenir : une information, un rendez-vous, une vente…'],
+                ['Conclusion', "Reformuler ce qui a été dit pendant l'objectif. Prendre congé : remercier, saluer et raccrocher après l'interlocuteur"],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        numero: 5,
+        titre: 'La réponse de Mme Sankouraga',
+        images: [],
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Document 5 — La réponse de Mme Sankouraga' },
+          {
+            mailLecture: {
+              de: 'r.sankouraga@gmail.com',
+              a: 'conseillerdeventestagiaire@leroymerlin.fr',
+              objet: 'Réponse à votre appel',
+              corps: [
+                'Bonjour,',
+                "J'ai bien reçu votre appel sur mon portable il y a quelques jours, mais comme nous vous l'avions dit le jour où nous nous sommes rencontrés, nous sommes partis en vacances pour quelques semaines.",
+                "Concernant votre question sur l'installation de notre dressing, globalement, tout s'est bien passé mais je comptais tout de même vous contacter à mon retour pour vous exposer deux problèmes.",
+                "Premièrement, l'équipe de montage est arrivée avec 1h30 de retard ce qui a été problématique car j'avais un rendez-vous après que j'ai dû annuler. Enfin, l'une des portes du dressing n'a pas été correctement montée puisque le soir même en la manipulant, la charnière du haut s'est décrochée. C'est mon mari qui a été obligé de tout remettre (v. photo).",
+                "Pour autant, je vous remercie d'avoir pris de nos nouvelles.",
+                'Cordialement,',
+                'Rebecca Sankouraga',
+              ],
+            },
+          },
+        ],
+      },
+    ],
+    objectifs: [
+      "Sélectionner le prestataire le plus adapté à partir de critères précis.",
+      "Suivre l'exécution du service (appel CROC) et rendre compte par écrit.",
+    ],
+    competence: {
+      groupe: 'Compétences travaillées',
+      intitule: 'C.2.2 — Mettre en œuvre le ou les service(s) associé(s)',
+      detail: "Sélectionner le prestataire, suivre l'exécution du service et rendre compte.",
+    },
+    activites: [
+      {
+        titre: 'Activité 1 — La sélection du prestataire le plus adapté',
+        contexte: "Avant de vous lancer dans la sélection de l'artisan qui installera le dressing chez les clients, vous étudiez les différents forfaits qui sont proposés par l'enseigne.",
+        questions: [
+          { numero: 1, consigne: "Trois forfaits de pose sont proposés chez Leroy Merlin. Pour chacun d'eux, indiquez quels sont les détails de l'offre.", ressources: 'Consulter le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Relisez la Mission 2 annexe 5, puis indiquez parmi les 3 prestations laquelle choisir pour le montage et l'installation du dressing de Mme et M. Sankouraga. Justifiez.", ressources: 'Consulter le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Retrouvez l'adresse des clients et écrivez-la.", ressources: 'Consulter la Mission 3 document 1, compléter l\'annexe 3.', annexeId: 'annexe3', contexteAvant: "Nous sommes 7 jours après la signature du bon de commande et votre tutrice, Mme Annie Mâle, vous demande de sélectionner sur la liste des artisans travaillant avec Leroy Merlin, celui qui réalisera la prestation." },
+          { numero: 4, consigne: "À partir de l'adresse des clients, calculez la distance en voiture entre l'adresse de l'entreprise et le domicile des clients.", ressources: 'Consulter les documents 3a et 3b, compléter l\'annexe 4.', annexeId: 'annexe4', boutonLien: 'https://www.google.fr/maps/@46.2192649,2.0517,6z', boutonLibelle: 'Ouvrir Google Maps' },
+          { numero: 5, consigne: "Identifiez l'artisan qui ira installer le dressing chez le couple. Justifiez votre réponse en reprenant chaque critère.", ressources: 'Consulter le document 2, le document 3a et l\'annexe 4, compléter l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Suivre l'exécution du service et rendre compte",
+        contexte: "Le dressing a été installé depuis quelques jours et votre responsable vous demande de contacter Mme et M. Sankouraga par téléphone pour savoir comment s'est passée la prestation.",
+        questions: [
+          { numero: 6, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: 'Consulter le document 4, compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 7, consigne: "À partir de la réponse envoyée par Mme Sankouraga, faites un compte rendu par mail à votre responsable (annie.male@leroymerlin.fr) pour la tenir au courant.", ressources: 'Consulter le document 5, compléter l\'annexe 7.', annexeId: 'annexe7', contexteAvant: "Vous n'avez pas réussi à joindre directement le couple par téléphone. Vous avez laissé un message à Mme Sankouraga sur son smartphone et elle vous a répondu sur votre mail dont l'adresse est (conseillerventestagiaire@leroymerlin.fr)." },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'grille',
+        id: 'annexe1',
+        titre: 'Annexe 1 — Les détails des prestations',
+        colonnes: ['Nom de la prestation', 'Détails de la prestation', "Conditions d'application"],
+        nbLignes: 3,
+        largeurs: ['24%', '46%', '30%'],
+        reponseMultiligne: true,
+        lignesReponse: 5,
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: 'Annexe 2 — La prestation retenue',
+        colonnes: ['Nom de la prestation', 'Justification'],
+        nbLignes: 1,
+        largeurs: ['40%', '60%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'bulle',
+        id: 'annexe3',
+        titre: 'Annexe 3 — L\'adresse de Mme et M. Sankouraga',
+        perso: '/docs/leroy-merlin-m4/perso-conseiller.png',
+        placeholder: "Recopiez ici l'adresse des clients…",
+        nbLignes: 2,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4',
+        titre: 'Annexe 4 — La distance en km entre l\'entreprise et le domicile du couple',
+        colonnes: ['Entreprises', 'Distance (km)', 'Entreprises', 'Distance (km)'],
+        nbLignes: 6,
+        largeurs: ['30%', '20%', '30%', '20%'],
+        prerempli: [
+          ["Install'Tout André", '', 'Atelier Carlier', ''],
+          ['Établissements Gaudriche', '', "Les artisans de l'Installation", ''],
+          ['Akus Installation', '', 'Installateurs 2000', ''],
+          ['CycloInstallation', '', 'Établissements FGT', ''],
+          ['Entreprise Sanchez', '', 'Entreprise Lecomte', ''],
+          ['Les Installateurs du 92', '', 'Les Installateurs Parisiens', ''],
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe5',
+        titre: 'Annexe 5 — L\'artisan retenu',
+        colonnes: ['Critère', 'Justification'],
+        nbLignes: 7,
+        largeurs: ['40%', '60%'],
+        reponseMultiligne: true,
+        lignesReponse: 2,
+        prerempli: [
+          ["Nom de l'artisan retenu", ''],
+          ['Critère 1 : La distance (10 km maximum)', ''],
+          ["Critère 2 : La disponibilité de l'artisan", ''],
+          ["Critère 3 : La spécialisation de l'artisan", ''],
+          ['Critère 4 : Le coût de la prestation', ''],
+          ['Critère 5 : Le nombre de professionnels pour la pose', ''],
+          ['Critère 6 : Le temps de pose (4h)', ''],
+        ],
+      },
+      {
+        type: 'ficheappel',
+        id: 'annexe6',
+        titre: "Annexe 6 — Fiche d'appel CROC",
+        sections: [
+          { cle: 'contact', libelle: 'CONTACT', aide: "Saluer, se présenter, présenter l'entreprise, vérifier l'interlocuteur", lignes: 2 },
+          { cle: 'raison', libelle: "RAISON D'APPEL", aide: "Dire le motif de l'appel", lignes: 2 },
+          { cle: 'objectif', libelle: 'OBJECTIF', aide: 'Ce que vous voulez obtenir', lignes: 2 },
+          { cle: 'conclusion', libelle: 'CONCLUSION', aide: 'Reformuler, remercier, saluer, raccrocher après l\'interlocuteur', lignes: 3 },
+        ],
+      },
+      {
+        type: 'mail',
+        id: 'annexe7',
+        titre: 'Annexe 7 — Compte rendu par mail',
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Pour chaque forfait, indiquez les détails de l'offre.",
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 9,
+        reponse: '',
+        tableau: {
+          colonnes: ['Nom de la prestation', "Détails de l'offre", "Conditions d'application"],
+          lignes: [
+            ['Installation de portes de placard coulissantes', "Dépose et mise en déchetterie des anciennes portes ; fixation des rails ; installation et réglage des deux vantaux ; découpe de plinthes en bois si nécessaire (+ options).", "Le lieu de pose sera accessible et dégagé ; les dimensions de l'ouverture sont adaptées aux nouveaux vantaux."],
+            ["Montage d'un rangement Spaceo Home jusqu'à 4 caissons", 'Le montage des caissons et de leurs tablettes uniquement.', "Le lieu de pose sera accessible et dégagé ; le montage concernera les caissons Spaceo Home."],
+            ['Installation et aménagement de rangement Spaceo Home, 4 caissons et accessoires', "Installation des caissons, tablettes, accessoires, portes, tiroirs, aménagements intérieurs, découpes sur plinthes bois ; installation des éclairages éventuels, fixation au mur.", "Le lieu de pose sera accessible et dégagé ; les revêtements de mur et de sol ne nécessitent pas d'être repris."],
+          ],
+        },
+      },
+      {
+        intitule: 'Indiquez la prestation à retenir et justifiez.',
+        documents: ['Mission 2 annexe 5', 'Document 1', 'Annexe 2'],
+        bareme: 2,
+        reponse: "Installation et aménagement de rangement Spaceo Home, 4 caissons et accessoires. Cette prestation comprend le montage du dressing, des tiroirs, des portes et des accessoires contrairement aux 2 autres.",
+      },
+      {
+        intitule: "Retrouvez l'adresse des clients.",
+        documents: ['Mission 3 document 1', 'Annexe 3'],
+        bareme: 1,
+        reponse: '15 rue Dombasle, 75015 Paris.',
+      },
+      {
+        intitule: "Calculez la distance entre l'entreprise et le domicile du couple.",
+        documents: ['Documents 3a et 3b', 'Annexe 4'],
+        bareme: 6,
+        reponse: '',
+        tableau: {
+          colonnes: ['Entreprises', 'Distance', 'Entreprises', 'Distance'],
+          lignes: [
+            ["Install'Tout André", '2,1 km', 'Atelier Carlier', '5,3 km'],
+            ['Établissements Gaudriche', '3,2 km', "Les artisans de l'Installation", '7,1 km'],
+            ['Akus Installation', '9 km', 'Installateurs 2000', '8,2 km'],
+            ['CycloInstallation', '6 km', 'Établissements FGT', '19 km'],
+            ['Entreprise Sanchez', '4,2 km', 'Entreprise Lecomte', '1,5 km'],
+            ['Les Installateurs du 92', '7,5 km', 'Les Installateurs Parisiens', '7,6 km'],
+          ],
+        },
+      },
+      {
+        intitule: "Identifiez l'artisan retenu et justifiez par chaque critère.",
+        documents: ['Document 2', 'Document 3a', 'Annexe 4', 'Annexe 5'],
+        bareme: 6,
+        reponse: '',
+        tableau: {
+          colonnes: ['Critère', 'Justification'],
+          lignes: [
+            ["Nom de l'artisan retenu", 'Installateurs 2000'],
+            ['Distance (10 km max)', 'Situé à 8,2 km'],
+            ['Disponibilité (lendemain de la livraison, le 18/05)', "Rien dans son planning le 18/05"],
+            ['Spécialisation', 'Spécialisé dans le rangement/dressing'],
+            ['Coût (≤ prix du site)', '72,25 €/h × 4h = 289 € (égal au prix annoncé sur le site Leroy Merlin)'],
+            ['Nombre de professionnels (2 min)', "L'équipe est constituée de 3 professionnels"],
+            ['Temps de pose (4h)', "L'équipe est disponible 4h"],
+          ],
+        },
+      },
+      {
+        intitule: "Préparez l'appel téléphonique avec la méthode CROC.",
+        documents: ['Document 4', 'Annexe 6'],
+        bareme: 4,
+        reponse: '',
+        tableau: {
+          colonnes: ['CROC', 'Réponse attendue'],
+          lignes: [
+            ['Contact', "Bonjour, M. X de l'entreprise Leroy Merlin, c'est bien Mme Sankouraga ?"],
+            ["Raison d'appel", "Je vous appelle par rapport au dressing qui vous a été livré et installé il y a quelques jours."],
+            ['Objectif', "Je souhaiterais savoir si tout s'est bien passé lors de la pose de votre dressing."],
+            ['Conclusion', "Reformuler (selon ce qu'a dit la cliente). Je vous remercie Mme Sankouraga d'avoir répondu à mes questions. Je vous souhaite une très bonne journée. Au revoir !"],
+          ],
+        },
+      },
+      {
+        intitule: 'Rédigez le compte rendu par mail à votre responsable.',
+        documents: ['Document 5', 'Annexe 7'],
+        bareme: 5,
+        reponse: "De : conseillerdeventestagiaire@leroymerlin.fr — À : annie.male@leroymerlin.fr — Objet : Compte rendu de l'appel à Mme Sankouraga. « Bonjour Madame Mâle, comme convenu, j'ai contacté il y a quelques jours Mme Sankouraga pour savoir comment s'était déroulée la pose de son dressing. Je n'ai pas réussi à la joindre directement car elle est en vacances à l'étranger, donc je lui ai laissé un message. Elle m'a répondu par mail. Dans son message, elle explique que si globalement tout s'est bien passé, elle a rencontré deux problèmes : tout d'abord, l'équipe de montage est arrivée avec 1h30 de retard, ce qui a été problématique car elle avait un rendez-vous après qu'elle a dû annuler. Enfin, l'une des portes du dressing n'a pas été correctement montée puisque le soir même, en la manipulant, la charnière du haut s'est décrochée ; c'est son mari qui a été obligé de tout remettre. Cordialement, Conseiller de vente. »",
+      },
+    ],
+  },
+  synthese: {
+    titre: "Sélectionner le prestataire, suivre l'exécution du service et rendre compte",
+    proposition: [
+      'Contact',
+      "Raison d'appel",
+      'Objectif',
+      'Conclusion',
+      'Saluer',
+      "Se présenter",
+      "Présenter l'entreprise",
+      "Vérifier l'interlocuteur",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mettre en œuvre le service associé",
+      enfants: [
+        {
+          id: 'selection',
+          texte: "La sélection du prestataire",
+          enfants: [
+            { id: 's-1', texte: 'Critères : distance, disponibilité, spécialisation, coût, nombre de pros, temps de pose' },
+          ],
+        },
+        {
+          id: 'croc',
+          texte: "Suivre l'exécution par téléphone — La méthode C.R.O.C.",
+          enfants: [
+            { id: 'cr-1', texte: null, reponse: 'Contact' },
+            { id: 'cr-2', texte: null, reponse: "Raison d'appel" },
+            { id: 'cr-3', texte: null, reponse: 'Objectif' },
+            { id: 'cr-4', texte: null, reponse: 'Conclusion' },
+          ],
+        },
+        {
+          id: 'contact',
+          texte: 'Le Contact comprend',
+          enfants: [
+            { id: 'c-1', texte: null, reponse: 'Saluer' },
+            { id: 'c-2', texte: null, reponse: 'Se présenter' },
+            { id: 'c-3', texte: null, reponse: "Présenter l'entreprise" },
+            { id: 'c-4', texte: null, reponse: "Vérifier l'interlocuteur" },
+          ],
+        },
+        {
+          id: 'rendre',
+          texte: 'Rendre compte par e-mail',
+          enfants: [
+            { id: 'rc-1', texte: 'Expéditeur, personnalisation, fonction, mentions obligatoires' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Sélectionner un prestataire selon des critères',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas comparer des prestataires.' },
+          { niveau: 'debrouille', description: 'Je compare sur un seul critère.' },
+          { niveau: 'averti', description: 'Je croise plusieurs critères pour choisir le bon artisan.' },
+          { niveau: 'expert', description: "Je justifie le choix de l'artisan critère par critère sans erreur." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: "Préparer un appel avec la méthode CROC",
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas la méthode CROC.' },
+          { niveau: 'debrouille', description: 'Je cite les étapes sans les rédiger.' },
+          { niveau: 'averti', description: 'Je rédige une fiche d\'appel CROC complète.' },
+          { niveau: 'expert', description: 'Je mène un appel structuré et professionnel avec le CROC.' },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Rendre compte par écrit',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas rédiger un compte rendu.' },
+          { niveau: 'debrouille', description: 'Je rédige un compte rendu incomplet.' },
+          { niveau: 'averti', description: 'Je rédige un compte rendu clair reprenant les faits.' },
+          { niveau: 'expert', description: 'Je rends compte de façon professionnelle, structurée et fidèle.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Prestataire', definition: "Entreprise ou artisan qui réalise un service pour le compte de l'enseigne." },
+      { terme: 'Forfait de pose', definition: 'Prestation d\'installation à prix ferme et défini.' },
+      { terme: 'Charte Qualité', definition: 'Engagement signé par les artisans partenaires de Leroy Merlin.' },
+      { terme: 'CRM', definition: 'Outil de gestion de la relation et des données clients/partenaires.' },
+      { terme: 'Méthode CROC', definition: "Contact, Raison d'appel, Objectif, Conclusion : structure d'un appel sortant." },
+      { terme: 'Émission d\'appel', definition: "Appel sortant passé par le commercial vers un client ou prospect." },
+      { terme: 'Rendre compte', definition: "Informer sa hiérarchie du déroulement et du résultat d'une action." },
+      { terme: 'TVA à taux réduit', definition: "Taux de TVA appliqué à certains travaux dans l'habitat." },
+      { terme: 'R.A.S.', definition: 'Rien à signaler : aucune remarque à faire.' },
+      { terme: 'Prestation', definition: 'Service réalisé (ici, la pose/installation du dressing).' },
+    ],
+    flashcards: [
+      { recto: 'Que signifie CROC ?', verso: "Contact, Raison d'appel, Objectif, Conclusion" },
+      { recto: 'Distance maximale de l\'artisan ?', verso: '10 km du domicile du client' },
+      { recto: 'Quand l\'artisan doit-il être disponible ?', verso: 'Le lendemain du jour de la livraison' },
+      { recto: 'Spécialisation requise ?', verso: 'Installation de rangements et de dressings' },
+      { recto: 'Nombre minimum de professionnels ?', verso: '2 minimum' },
+      { recto: 'Durée de la prestation ?', verso: '4 heures' },
+      { recto: 'Artisan retenu pour le couple ?', verso: 'Installateurs 2000 (8,2 km, 18/05, 289 €, 3 pros)' },
+      { recto: 'Prix du forfait installation + aménagement Spaceo Home ?', verso: '289,00 € / prestation' },
+      { recto: 'Que contient le Contact (CROC) ?', verso: "Saluer, se présenter, présenter l'entreprise, vérifier l'interlocuteur" },
+      { recto: 'Deux problèmes signalés par Mme Sankouraga ?', verso: '1h30 de retard et une charnière de porte décrochée' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Que signifie le C de CROC ?', options: ['Conclusion', 'Contact', 'Coût', 'Client'], bonne: 1 },
+      { type: 'unique', question: "Distance maximale autorisée pour l'artisan ?", options: ['5 km', '10 km', '15 km', '20 km'], bonne: 1 },
+      { type: 'unique', question: 'Quand l\'artisan doit-il intervenir ?', options: ['Le jour de la livraison', 'Le lendemain de la livraison', 'La semaine suivante', 'Au choix du client'], bonne: 1 },
+      { type: 'unique', question: 'Quel artisan est retenu ?', options: ["Install'Tout André", 'Installateurs 2000', 'CycloInstallation', 'Entreprise Lecomte'], bonne: 1 },
+      { type: 'unique', question: 'Coût de la prestation retenue (4h) ?', options: ['149 €', '229 €', '289 €', '339 €'], bonne: 2 },
+      { type: 'qcm', question: 'Quels critères servent à choisir l\'artisan ?', options: ['La distance', 'La couleur du camion', 'La spécialisation', 'Le coût'], bonnes: [0, 2, 3] },
+      { type: 'unique', question: 'Nombre minimum de professionnels exigé ?', options: ['1', '2', '3', '4'], bonne: 1 },
+      { type: 'unique', question: 'Que signifie R.A.S. ?', options: ['Rangement à suivre', 'Rien à signaler', 'Réparation à suivre', 'Retard au service'], bonne: 1 },
+      { type: 'unique', question: "Le O de CROC correspond à…", options: ['Objet', 'Objectif', 'Opération', 'Origine'], bonne: 1 },
+      { type: 'qcm', question: 'Quels problèmes Mme Sankouraga signale-t-elle ?', options: ['1h30 de retard', 'Mauvaise couleur', 'Charnière décrochée', 'Prix trop élevé'], bonnes: [0, 2] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie de la mission 5.',
+      etiquettes: [
+        "Saluer, se présenter, présenter l'entreprise",
+        "Dire le motif de l'appel",
+        'Ce que le commercial veut obtenir',
+        "Reformuler, remercier, saluer",
+        '10 km maximum',
+        'Le lendemain de la livraison',
+        'Rangements/Dressing',
+        '289 € pour 4h',
+        '2 professionnels minimum',
+        'Installateurs 2000',
+      ],
+      zones: [
+        { libelle: 'Contact (CROC)', etiquetteIndex: 0 },
+        { libelle: "Raison d'appel (CROC)", etiquetteIndex: 1 },
+        { libelle: 'Objectif (CROC)', etiquetteIndex: 2 },
+        { libelle: 'Conclusion (CROC)', etiquetteIndex: 3 },
+        { libelle: 'Critère distance', etiquetteIndex: 4 },
+        { libelle: 'Critère disponibilité', etiquetteIndex: 5 },
+        { libelle: 'Critère spécialisation', etiquetteIndex: 6 },
+        { libelle: 'Critère coût', etiquetteIndex: 7 },
+        { libelle: 'Critère équipe', etiquetteIndex: 8 },
+        { libelle: 'Artisan retenu', etiquetteIndex: 9 },
+      ],
+    },
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 1 - Le secteur de l'automobile
+// ---------------------------------------------------------------------------
+const PEUGEOT_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Découvrez le secteur de la concession automobile : étudiez le marché des concessions en France, comprenez ce qu'est une concession automobile et les particularités du contrat de concession, à partir des documents remis par votre tuteur.",
+    contexte:
+      "Vous êtes en PFMP dans la concession Peugeot située dans le 17ème arrondissement. L'entreprise est spécialisée dans la vente de véhicules neufs, d'occasions et d'accessoires. L'enseigne a ouvert ses portes il y a 4 mois.\nVotre tuteur, M. Paul Auchon, est commercial à ConcessionCollet depuis l'ouverture.\nÉtant donné que vous allez passer 4 semaines dans l'entreprise, il vous a fait un planning des différents services que vous allez découvrir tout au long de la période. Il vous remet le planning dont vous prenez connaissance.\nC'est votre premier jour de PFMP à la concession et vous le passez avec le directeur, M. Collet. C'est à votre tour de poser des questions à votre tuteur pour comprendre tout ce que recouvre le terme concession automobile. Il vous donne des documents concernant le secteur de la concession automobile et il vous demande de les étudier.",
+    videoContexte: 'https://drive.google.com/file/d/1ZH-c_bdwpqT-TSZH12RmW5S6rtAYwVUt/view',
+    documents: [
+      { numero: 1, titre: 'Les chiffres sur les concessionnaires en France', texte: [
+        { pageWeb: true },
+        { intertitre: '122,604 milliards d\u2019euros de chiffre d\u2019affaires' },
+        { paragraphes: [
+          "En 2020, le chiffre d'affaires des concessionnaires français approchait les 122,604 milliards d'euros. Le secteur compte notamment 54 966 entreprises, dont plus de 6 000 concessionnaires exerçant avec les constructeurs et près de 8 000 agents de marque. Ces derniers travaillent en collaboration avec les concessionnaires.",
+          "Si le chiffre d'affaires global est élevé, il est cependant inégal dans le détail puisque certains concessionnaires en enregistrent plus que d'autres. Au premier trimestre 2022, le groupe Parot arrive ainsi à faire 91 millions d'euros contre 87,4 millions d'euros l'année précédente sur la même période.",
+        ] },
+        { intertitre: '13 536 points de vente de marques automobiles en France' },
+        { paragraphes: [
+          "Sur la base des données communiquées par les constructeurs et les concessionnaires, L'Argus affirme qu'il y a eu une baisse du nombre total de points de vente auto. Avec les réseaux de distribution des principales marques, on comptait ainsi en janvier 2021, 13 536 points de vente de marques automobiles en France, soit une baisse de 168 sites par rapport à l'année précédente.",
+          "Il est important de rappeler que certaines concessionnaires abritent parfois plusieurs marques. Aussi, le nombre de points de vente peut ne pas correspondre à 100 % au nombre de sites implantés sur tout le territoire. La baisse concerne surtout les agents de marque et les succursales des constructeurs qui ont perdu 36 sites en 2020 au profit d'opérateurs privés. Le nombre de concessions détenues par les grands groupes de distribution a, quant à lui, augmenté de 54 en 2020.",
+        ] },
+        { intertitre: '1,66 million de véhicules particuliers neufs vendus' },
+        { paragraphes: [
+          "Selon les chiffres communiqués par la PFA, l'année 2021 n'a pas été mirobolante pour le marché des automobiles. Sur l'année, 1,66 million de véhicules particuliers neufs ont été vendus, soit une hausse de 0,54 % par rapport à l'année précédente. Dans le détail, cela représente 9 000 voitures supplémentaires vendues par rapport à 2020.",
+          "Comparés aux chiffres de vente de 2019, ceux de 2021 ne sont toutefois pas très reluisants puisqu'on enregistre une baisse des ventes de près de 25 %. En ce qui concerne les voitures électriques, il semblerait que les Français soient de plus en plus intéressés. En 2021, elles ont en effet réussi à atteindre une part de marché de plus de 10 % sur les voitures particulières neuves vendues sur le territoire.",
+        ] },
+        { intertitre: 'Une part de marché de 13 % pour l\u2019électrique' },
+        { paragraphes: [
+          "En 2022, les voitures électriques confirment leur succès en captant 13 % de parts de marché, soit tout autant que le diesel. En effet, ce dernier a perdu des points en 2022 et peine à atteindre les 14 % en termes de part de marché. L'hybride affiche également une baisse notable de 9 % tandis que les voitures fonctionnant avec des carburants alternatifs comme le GPL et le bioéthanol (6 % des immatriculations) semblent tenir le cap. Elles enregistrent en effet une hausse de près de 152 %.",
+          "2022 voit par ailleurs un recul du nombre d'achats de voitures de la part des entreprises. Le marché des utilitaires accuse en effet une baisse de 28,60 % en mars et comptait ainsi seulement 34 055 immatriculations. Enfin, le marché de l'occasion affiche aussi une baisse de 14,3 % en mars avec 506 222 immatriculations enregistrées.",
+        ] },
+        { image: { src: '/docs/peugeot-m1/chiffres-concessionnaires.png', alt: 'Les chiffres sur les concessionnaires en France (page internet).', legende: 'Les chiffres sur les concessionnaires en France.' } },
+      ] },
+      { numero: 2, titre: 'Les explications du directeur M. Collet', texte: [
+        { pageWeb: true },
+        { intertitre: "Qu'est-ce qu'une concession automobile ?" },
+        { paragraphes: [
+          "Une concession automobile est une entreprise qui vend des véhicules neufs ou d'occasion. C'est un point de vente qui a signé un contrat avec une marque (le constructeur) pour distribuer ses véhicules et assurer le service après-vente.",
+        ] },
+        { intertitre: 'Les particularités du contrat de concession' },
+        { puces: [
+          "La durée : on décide de la durée pendant laquelle je pourrai vendre mes véhicules (10, 15, 20 ans…).",
+          "La zone géographique : chaque concessionnaire est affecté à une zone géographique.",
+          "L'engagement d'approvisionnement : je me suis engagé à me fournir chez la marque.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+      "Définir la concession automobile et identifier les particularités du contrat de concession.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "C.1.1 — Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: 'Activité 1 — Le marché des concessions automobiles en France',
+        contexte: "C'est votre premier jour de PFMP à la concession et vous le passez avec le directeur, M. Collet.",
+        questions: [
+          { numero: 1, consigne: 'Répondez aux questions de votre tuteur.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Qu'est-ce qu'une concession automobile ?",
+        contexte: "C'est à votre tour de poser des questions à votre tuteur pour comprendre tout ce que recouvre le terme concession automobile.",
+        questions: [
+          { numero: 2, consigne: "Expliquez avec vos propres mots ce qu'est une concession automobile.", ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Citez les 3 particularités (caractéristiques) du contrat de concession.', ressources: 'Lire le document 2, compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'tableau',
+        id: 'annexe1',
+        titre: 'Annexe 1 — Les réponses aux questions du directeur M. Collet',
+        lignes: [
+          { id: 'q1', libelle: '« Combien y avait-il de concessionnaires en France en 2020 ? »' },
+          { id: 'q2', libelle: '« Quel est le chiffre d\u2019affaires du groupe Parot en 2022 et 2021 ? Que constatez-vous ? »' },
+          { id: 'q3', libelle: '« Quelle différence peut-on constater entre le nombre de points de vente des agents de marque et de succursales d\u2019un côté et le nombre de concessions des grandes marques ? »' },
+          { id: 'q4', libelle: '« De combien a été l\u2019augmentation du nombre de véhicules vendus en 2021, en % et en nombre d\u2019unités ? »' },
+          { id: 'q5', libelle: '« Comment se porte le marché de la voiture électrique par rapport aux autres types de véhicules ? »' },
+          { id: 'q6', libelle: '« Combien d\u2019utilitaires ont été vendus en 2022 en % et en nombre d\u2019immatriculations ? »' },
+        ],
+      },
+      {
+        type: 'tableau',
+        id: 'annexe2',
+        titre: "Annexe 2 — Qu'est-ce qu'une concession automobile ?",
+        lignes: [
+          { id: 'def', libelle: 'Définition' },
+        ],
+      },
+      {
+        type: 'tableau',
+        id: 'annexe3',
+        titre: 'Annexe 3 — Le contrat de concession',
+        lignes: [
+          { id: 'p1', libelle: '', prefixe: 'Ses particularités' },
+          { id: 'p2', libelle: '', prefixe: 'Ses particularités' },
+          { id: 'p3', libelle: '', prefixe: 'Ses particularités' },
+        ],
+      },
+      {
+        type: 'planning',
+        id: 'annexe4',
+        titre: 'Le planning stagiaire — du 04/02/202N au 29/04/202N',
+        mois: [
+          {
+            titre: 'FÉVRIER 202N', decalage: 3, nbJours: 29,
+            creneaux: [
+              { jour: 5, creneau: 'matin', texte: 'Avec le directeur' },
+              { jour: 5, creneau: 'aprem', texte: 'Avec le directeur' },
+              { jour: 6, creneau: 'matin', texte: 'Service juridique' },
+              { jour: 6, creneau: 'aprem', texte: 'Service juridique' },
+              { jour: 7, creneau: 'matin', texte: 'Avec le directeur' },
+              { jour: 7, creneau: 'aprem', texte: 'Avec chef des ventes' },
+              { jour: 8, creneau: 'matin', texte: 'Avec son tuteur' },
+              { jour: 8, creneau: 'aprem', texte: 'Avec son tuteur' },
+              { jour: 9, creneau: 'matin', texte: 'Avec son tuteur' },
+              { jour: 9, creneau: 'aprem', texte: 'Avec son tuteur' },
+              { jour: 12, creneau: 'matin', texte: 'Avec chef des ventes' },
+              { jour: 12, creneau: 'aprem', texte: 'Avec Marjorie' },
+              { jour: 13, creneau: 'matin', texte: 'Avec Michel' },
+              { jour: 13, creneau: 'aprem', texte: 'Avec Michel' },
+              { jour: 14, creneau: 'matin', texte: 'Avec Michel' },
+              { jour: 14, creneau: 'aprem', texte: 'Avec Michel' },
+              { jour: 15, creneau: 'matin', texte: 'Avec son tuteur' },
+              { jour: 15, creneau: 'aprem', texte: 'Avec son tuteur' },
+              { jour: 16, creneau: 'matin', texte: 'Avec son tuteur' },
+              { jour: 16, creneau: 'aprem', texte: 'Avec son tuteur' },
+              { jour: 19, creneau: 'matin', texte: 'Service commercial' },
+              { jour: 19, creneau: 'aprem', texte: 'Service commercial' },
+              { jour: 20, creneau: 'matin', texte: 'Service commercial' },
+              { jour: 20, creneau: 'aprem', texte: 'Service commercial' },
+              { jour: 21, creneau: 'matin', texte: "Avec l'ensemble des commerciaux" },
+              { jour: 21, creneau: 'aprem', texte: "Avec l'ensemble des commerciaux" },
+              { jour: 22, creneau: 'matin', texte: "Avec l'ensemble des commerciaux" },
+              { jour: 22, creneau: 'aprem', texte: "Avec l'ensemble des commerciaux" },
+              { jour: 23, creneau: 'matin', texte: 'Avec Marjorie' },
+              { jour: 23, creneau: 'aprem', texte: 'Avec Marjorie' },
+              { jour: 26, creneau: 'matin', texte: 'Service juridique' },
+              { jour: 26, creneau: 'aprem', texte: 'Service juridique' },
+              { jour: 27, creneau: 'matin', texte: 'Service juridique' },
+              { jour: 27, creneau: 'aprem', texte: 'Service juridique' },
+              { jour: 28, creneau: 'matin', texte: 'Avec son tuteur' },
+              { jour: 28, creneau: 'aprem', texte: 'Avec son tuteur' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Répondez aux questions de votre tuteur.',
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 6,
+        reponse:
+          "En 2020 : 6 000 concessionnaires exerçant avec les constructeurs. Groupe Parot : 91 millions d'euros cette année contre 84 millions l'an dernier. On constate une baisse du nombre de points de vente de marques automobiles en France. Hausse des ventes en 2021 : 0,54 %. Le marché de l'électrique se porte bien : les voitures électriques captent 13 % de parts de marché. Utilitaires 2022 : 28,6 %, soit 34 055 utilitaires.",
+        tableau: {
+          colonnes: ['Question', 'Réponse attendue'],
+          lignes: [
+            ['Concessionnaires en 2020', '6 000 concessionnaires exerçant avec les constructeurs'],
+            ['CA groupe Parot 2022 / 2021', 'Cette année 91 millions, et l\u2019an dernier 84 millions'],
+            ['Agents/succursales vs grands groupes', 'Il y a une baisse du nombre de points de vente de marques automobiles en France'],
+            ['Hausse des ventes 2021', '0,54 %'],
+            ['Marché de l\u2019électrique', 'Elles captent 13 % de parts de marché'],
+            ['Utilitaires 2022', '28,6 %, soit 34 055 utilitaires'],
+          ],
+        },
+      },
+      {
+        intitule: "Expliquez avec vos propres mots ce qu'est une concession automobile.",
+        documents: ['Document 2', 'Annexe 2'],
+        bareme: 2,
+        reponse:
+          "C'est une entreprise qui vend des véhicules neufs ou d'occasion.",
+      },
+      {
+        intitule: 'Citez les 3 particularités (caractéristiques) du contrat de concession.',
+        documents: ['Document 2', 'Annexe 3'],
+        bareme: 3,
+        reponse:
+          "1) « On décide de la durée pendant laquelle je pourrai vendre mes véhicules (10, 15, 20 ans…). » 2) « Chaque concessionnaire est affecté à une zone géographique. » 3) « Je me suis engagé à me fournir chez la marque. »",
+        tableau: {
+          colonnes: ['Particularité', 'Explication'],
+          lignes: [
+            ['La durée', 'On décide de la durée pendant laquelle je pourrai vendre mes véhicules (10, 15, 20 ans…)'],
+            ['La zone géographique', 'Chaque concessionnaire est affecté à une zone géographique'],
+            ['L\u2019engagement d\u2019approvisionnement', 'Je me suis engagé à me fournir chez la marque'],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: 'Le secteur de la concession automobile',
+    proposition: [
+      'Vend des véhicules neufs ou d\u2019occasion',
+      'Une durée (10, 15, 20 ans…)',
+      'Une zone géographique',
+      'Se fournir chez la marque',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La concession automobile',
+      enfants: [
+        {
+          id: 'def',
+          texte: 'Définition',
+          enfants: [
+            { id: 'd-1', texte: null, reponse: 'Vend des véhicules neufs ou d\u2019occasion' },
+          ],
+        },
+        {
+          id: 'contrat',
+          texte: 'Les 3 particularités du contrat',
+          enfants: [
+            { id: 'c-1', texte: null, reponse: 'Une durée (10, 15, 20 ans…)' },
+            { id: 'c-2', texte: null, reponse: 'Une zone géographique' },
+            { id: 'c-3', texte: null, reponse: 'Se fournir chez la marque' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Analyser le marché des concessions automobiles',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas décrire le marché des concessions.' },
+          { niveau: 'debrouille', description: 'Je cite quelques chiffres sans les interpréter.' },
+          { niveau: 'averti', description: 'Je repère et j\u2019interprète les principaux chiffres du marché.' },
+          { niveau: 'expert', description: 'Je mets les chiffres en perspective (tendances, évolutions).' },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: "Définir une concession automobile",
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas ce qu\u2019est une concession automobile.' },
+          { niveau: 'debrouille', description: 'J\u2019en donne une définition approximative.' },
+          { niveau: 'averti', description: 'Je définis clairement la concession automobile.' },
+          { niveau: 'expert', description: 'Je définis la concession et je la situe dans le réseau de la marque.' },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Identifier les particularités du contrat de concession',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les particularités du contrat.' },
+          { niveau: 'debrouille', description: 'Je cite une particularité.' },
+          { niveau: 'averti', description: 'Je cite les trois particularités du contrat.' },
+          { niveau: 'expert', description: 'J\u2019explique chaque particularité avec un exemple.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Concession automobile', definition: "Entreprise qui vend des véhicules neufs ou d'occasion sous contrat avec une marque (le constructeur)." },
+      { terme: 'Contrat de concession', definition: "Contrat entre le concessionnaire et la marque : il fixe une durée, une zone géographique et l'engagement de se fournir chez la marque." },
+      { terme: 'Agent de marque', definition: "Professionnel qui vend et entretient les véhicules d'une marque, en collaboration avec le concessionnaire, mais avec moins d'engagements." },
+      { terme: 'Succursale', definition: "Point de vente détenu directement par le constructeur (et non par un concessionnaire indépendant)." },
+      { terme: 'Part de marché', definition: "Pourcentage des ventes d'un type de produit par rapport aux ventes totales du marché." },
+      { terme: 'Immatriculation', definition: "Enregistrement officiel d'un véhicule, utilisé pour mesurer les ventes du marché automobile." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une concession automobile ?", verso: "Une entreprise qui vend des véhicules neufs ou d'occasion sous contrat avec une marque." },
+      { recto: 'Citez une particularité du contrat de concession.', verso: "Au choix : une durée (10, 15, 20 ans…), une zone géographique, s'engager à se fournir chez la marque." },
+      { recto: 'Combien de concessionnaires en France en 2020 ?', verso: 'Plus de 6 000 concessionnaires (et près de 8 000 agents de marque).' },
+      { recto: "Quel était le CA des concessionnaires français en 2020 ?", verso: "Environ 122,604 milliards d'euros." },
+      { recto: 'Combien de points de vente automobiles en janvier 2021 ?', verso: '13 536 points de vente, soit 168 de moins que l\u2019année précédente.' },
+      { recto: 'Combien de véhicules particuliers neufs vendus en 2021 ?', verso: '1,66 million, soit +0,54 % par rapport à 2020.' },
+      { recto: "Quelle part de marché pour l'électrique en 2022 ?", verso: '13 %, soit autant que le diesel.' },
+      { recto: 'Quelle différence entre un agent de marque et une succursale ?', verso: "L'agent collabore avec le concessionnaire ; la succursale appartient directement au constructeur." },
+      { recto: 'Que signifie l\u2019exclusivité territoriale ?', verso: 'La concession distribue la marque sur un secteur géographique délimité.' },
+      { recto: 'Auprès de qui le concessionnaire s\u2019engage-t-il à se fournir ?', verso: 'Auprès de la marque, c\u2019est-à-dire le constructeur.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Qu'est-ce qu'une concession automobile ?", options: ["Une entreprise qui vend des véhicules neufs ou d'occasion", 'Une usine de fabrication de voitures', 'Un simple garage sans lien avec une marque'], bonne: 0 },
+      { type: 'unique', question: 'Combien de concessionnaires exerçaient avec les constructeurs en 2020 ?', options: ['6 000', '500', '50 000'], bonne: 0 },
+      { type: 'unique', question: "Quel était le CA des concessionnaires en 2020 ?", options: ['Environ 122,604 milliards d\u2019euros', 'Environ 12 milliards d\u2019euros', 'Environ 1 milliard d\u2019euros'], bonne: 0 },
+      { type: 'unique', question: 'Combien de véhicules particuliers neufs vendus en 2021 ?', options: ['1,66 million', '660 000', '16,6 millions'], bonne: 0 },
+      { type: 'unique', question: "Quelle part de marché pour l'électrique en 2022 ?", options: ['13 %', '50 %', '1 %'], bonne: 0 },
+      { type: 'qcm', question: 'Quelles sont les particularités du contrat de concession ?', options: ['Une durée déterminée', 'Une zone géographique', 'Se fournir chez la marque', 'Vente de produits alimentaires'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Que vend la concession Peugeot du scénario ?', options: ['Des véhicules neufs', "Des véhicules d'occasion", 'Des accessoires', 'Des meubles'], bonnes: [0, 1, 2] },
+      { type: 'unique', question: 'Une succursale appartient :', options: ['Au constructeur', 'À un concessionnaire indépendant', 'À la mairie'], bonne: 0 },
+      { type: 'trous', texte: 'Le concessionnaire s\u2019engage à se fournir chez la {0} sur une {1} géographique définie.', reponses: ['marque', 'zone'] },
+      { type: 'trous', texte: 'En 2022, l\u2019{0} a capté 13 % de parts de marché, autant que le {1}.', reponses: ['électrique', 'diesel'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Particularité du contrat', 'Chiffre du marché', 'Type de véhicule'],
+      zones: [
+        { libelle: 'Une zone géographique affectée', etiquetteIndex: 0 },
+        { libelle: '1,66 million de véhicules neufs vendus en 2021', etiquetteIndex: 1 },
+        { libelle: 'Se fournir chez la marque', etiquetteIndex: 0 },
+        { libelle: '13 % de parts de marché pour l\u2019électrique', etiquetteIndex: 1 },
+        { libelle: 'Un véhicule utilitaire', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 2 - La reglementation sur les concessions
+// ---------------------------------------------------------------------------
+const PEUGEOT_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Comprenez la réglementation en matière de concession automobile : étudiez le document remis par le service juridique, puis répondez aux questions d'Élise.",
+    contexte:
+      "C'est votre deuxième jour en entreprise, et vous suivez le planning qui vous a été remis le premier jour. Vous passez la journée au service juridique. Élise, l'employée qui s'occupe de vous dans le service, vous donne un document à étudier puis vous interroge pour savoir ce que vous en avez compris.",
+    videoContexte: 'https://drive.google.com/file/d/1hL8-gntOZo1VSe2EITMdp43rjT-tWaAe/view',
+    documents: [
+      { numero: 1, titre: "Les règles à respecter en matière d'achat / vente de véhicules", texte: [
+        { pageWeb: true },
+        { livreOuvert: { titre: "Les règles à respecter en matière d'achat / vente de véhicules", pages: [
+          { titre: 'Règle 1 — L\u2019investissement de départ', paragraphes: ["Pour démarrer une concession, je prévois un investissement de départ compris entre 100 000 € et 500 000 €, voire plus."] },
+          { titre: 'Règle 2 — L\u2019inscription', paragraphes: ["Je dois faire une demande d'inscription sur le registre des vendeurs mobiliers auprès de la préfecture."] },
+          { titre: 'Règle 3 — L\u2019assurance', paragraphes: ["Je dois souscrire une assurance responsabilité professionnelle spécifique à l'activité de négociation automobile (assurance du parc de véhicules)."] },
+          { titre: 'Règle 4 — La trésorerie', paragraphes: ["Je prévois également 2 000 € à 3 000 € de trésorerie pour mes charges fixes et mon local (en cas de besoin)."] },
+          { titre: 'Règle 5 — Le diplôme', paragraphes: ["Je n'ai pas à justifier de diplôme ou de certification professionnelle pour exercer cette activité."] },
+          { titre: 'Le livre de police', paragraphes: ["J'ai l'obligation d'avoir un livre de police qui permet d'enregistrer les achats et les ventes de la concession."] },
+        ] } },
+      ] },
+    ],
+    objectifs: [
+      "Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+      "Identifier les règles à respecter pour ouvrir et exercer une activité de concession automobile.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "C.1.1 — Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: 'Activité — Comprendre la réglementation en matière de concession automobile',
+        contexte: "Élise, l'employée qui s'occupe de vous dans le service juridique, vous interroge pour savoir ce que vous avez compris du document.",
+        questions: [
+          { numero: 1, consigne: "Répondez aux questions d'Élise.", ressources: 'Lire le document, compléter l\'annexe.', annexeId: 'annexe1' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'tableau',
+        id: 'annexe1',
+        titre: 'Annexe — Les réponses aux questions',
+        lignes: [
+          { id: 'q1', libelle: '1 — Quel montant faut-il pour démarrer une concession ?' },
+          { id: 'q2', libelle: "2 — Où doit-on s'inscrire pour ouvrir une concession automobile ?" },
+          { id: 'q3', libelle: '3 — Quelle assurance faut-il souscrire quand on fait de la négociation automobile comme dans une concession ?' },
+          { id: 'q4', libelle: "4 — À combien estime-t-on la somme à prévoir pour le paiement des premières charges d'une concession ?" },
+          { id: 'q5', libelle: '5 — Quel diplôme faut-il pour devenir concessionnaire automobile ?' },
+          { id: 'q6', libelle: "6 — Comment s'appelle le document pour enregistrer les achats et les ventes de véhicules dans une concession ?" },
+        ],
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: "Répondez aux questions d'Élise.",
+        documents: ['Document', 'Annexe'],
+        bareme: 6,
+        reponse:
+          "1) « Je prévois un investissement de départ compris entre 100 000 € et 500 000 €, voire plus. » 2) « Je dois faire une demande d'inscription sur le registre des vendeurs mobiliers auprès de la préfecture. » 3) « Je dois souscrire une assurance responsabilité professionnelle spécifique à l'activité de négociation auto (assurance du parc de véhicules). » 4) « Je prévois également 2 000 € à 3 000 € de trésorerie pour mes charges fixes et mon local (en cas de besoin). » 5) « Je n'ai pas à justifier de diplôme ou de certification professionnelle pour exercer cette activité. » 6) « J'ai l'obligation d'avoir un livre de police qui permet d'enregistrer les achats et les ventes de la concession. »",
+        tableau: {
+          colonnes: ['Question', 'Réponse attendue'],
+          lignes: [
+            ['1 — Montant pour démarrer', 'Un investissement de départ entre 100 000 € et 500 000 €, voire plus'],
+            ['2 — Où s\u2019inscrire', 'Sur le registre des vendeurs mobiliers auprès de la préfecture'],
+            ['3 — Assurance', 'Une assurance responsabilité professionnelle spécifique à la négociation auto (assurance du parc de véhicules)'],
+            ['4 — Premières charges', 'Entre 2 000 € et 3 000 € de trésorerie pour les charges fixes et le local'],
+            ['5 — Diplôme', "Aucun diplôme ni certification professionnelle n'est nécessaire"],
+            ['6 — Document d\u2019enregistrement', 'Le livre de police (enregistre les achats et les ventes)'],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: "Quelques règles importantes à respecter en matière d'achat / vente de véhicules",
+    proposition: [
+      'Investissement de 100 000 à 500 000 € voire plus',
+      'Inscription au registre des vendeurs mobiliers (préfecture)',
+      'Assurance responsabilité professionnelle',
+      'Trésorerie de 2 000 à 3 000 € pour les charges',
+      'Livre de police pour enregistrer les achats / ventes',
+    ],
+    racine: {
+      id: 'racine',
+      texte: '5 règles importantes',
+      enfants: [
+        {
+          id: 'regles',
+          texte: 'Les règles à respecter',
+          enfants: [
+            { id: 'r-1', texte: null, reponse: 'Investissement de 100 000 à 500 000 € voire plus' },
+            { id: 'r-2', texte: null, reponse: 'Inscription au registre des vendeurs mobiliers (préfecture)' },
+            { id: 'r-3', texte: null, reponse: 'Assurance responsabilité professionnelle' },
+            { id: 'r-4', texte: null, reponse: 'Trésorerie de 2 000 à 3 000 € pour les charges' },
+            { id: 'r-5', texte: null, reponse: 'Livre de police pour enregistrer les achats / ventes' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Identifier les règles pour ouvrir une concession',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les règles pour ouvrir une concession.' },
+          { niveau: 'debrouille', description: 'Je cite une ou deux règles.' },
+          { niveau: 'averti', description: 'Je cite la plupart des règles à respecter.' },
+          { niveau: 'expert', description: 'Je cite toutes les règles et je les explique.' },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Comprendre la réglementation de la négociation automobile',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne comprends pas la réglementation.' },
+          { niveau: 'debrouille', description: 'Je comprends quelques éléments isolés.' },
+          { niveau: 'averti', description: 'Je comprends l\u2019essentiel de la réglementation.' },
+          { niveau: 'expert', description: 'Je relie chaque règle à son intérêt pour la concession.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Registre des vendeurs mobiliers', definition: "Registre tenu par la préfecture sur lequel doit s'inscrire toute personne qui vend des biens mobiliers, comme des véhicules." },
+      { terme: 'Livre de police', definition: "Document obligatoire dans une concession qui permet d'enregistrer tous les achats et toutes les ventes de véhicules." },
+      { terme: 'Assurance responsabilité professionnelle', definition: "Assurance qui couvre les dommages liés à l'activité professionnelle ; pour une concession, elle couvre notamment le parc de véhicules." },
+      { terme: 'Trésorerie', definition: "Somme d'argent disponible pour payer les charges courantes de l'entreprise (loyer, charges fixes…)." },
+      { terme: 'Charges fixes', definition: "Dépenses régulières de l'entreprise qui ne dépendent pas du niveau d'activité (loyer, assurances…)." },
+      { terme: 'Investissement de départ', definition: "Somme nécessaire pour lancer l'activité (local, stock de véhicules, aménagement…)." },
+    ],
+    flashcards: [
+      { recto: 'Quel investissement de départ pour une concession ?', verso: 'Entre 100 000 € et 500 000 €, voire plus.' },
+      { recto: "Où s'inscrire pour ouvrir une concession ?", verso: 'Sur le registre des vendeurs mobiliers auprès de la préfecture.' },
+      { recto: 'Quelle assurance faut-il souscrire ?', verso: 'Une assurance responsabilité professionnelle spécifique à la négociation auto (assurance du parc de véhicules).' },
+      { recto: 'Combien de trésorerie prévoir pour les premières charges ?', verso: 'Entre 2 000 € et 3 000 €.' },
+      { recto: 'Quel diplôme faut-il pour devenir concessionnaire ?', verso: 'Aucun diplôme ni certification professionnelle n\u2019est exigé.' },
+      { recto: 'Comment s\u2019appelle le document qui enregistre les achats et ventes ?', verso: 'Le livre de police.' },
+      { recto: 'À quoi sert le livre de police ?', verso: 'À enregistrer tous les achats et toutes les ventes de véhicules de la concession.' },
+      { recto: 'Auprès de qui se fait l\u2019inscription au registre des vendeurs mobiliers ?', verso: 'Auprès de la préfecture.' },
+      { recto: 'Que couvre l\u2019assurance du concessionnaire ?', verso: "Sa responsabilité professionnelle et le parc de véhicules." },
+      { recto: 'Faut-il un diplôme pour être concessionnaire ?', verso: 'Non, aucun diplôme n\u2019est obligatoire.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Quel investissement de départ pour une concession ?', options: ['Entre 100 000 € et 500 000 €, voire plus', 'Entre 1 000 € et 5 000 €', 'Rien du tout'], bonne: 0 },
+      { type: 'unique', question: "Où s'inscrire pour ouvrir une concession ?", options: ['Registre des vendeurs mobiliers, à la préfecture', 'À la mairie uniquement', 'Aucune inscription nécessaire'], bonne: 0 },
+      { type: 'unique', question: 'Quelle assurance faut-il souscrire ?', options: ['Responsabilité professionnelle spécifique à la négociation auto', 'Assurance habitation', 'Aucune assurance'], bonne: 0 },
+      { type: 'unique', question: 'Combien de trésorerie pour les premières charges ?', options: ['Entre 2 000 € et 3 000 €', 'Entre 50 € et 100 €', 'Plus de 100 000 €'], bonne: 0 },
+      { type: 'unique', question: 'Quel diplôme faut-il pour devenir concessionnaire ?', options: ['Aucun diplôme obligatoire', 'Un doctorat', 'Un CAP obligatoire'], bonne: 0 },
+      { type: 'unique', question: "Comment s'appelle le document qui enregistre achats et ventes ?", options: ['Le livre de police', 'Le livre de comptes', 'Le carnet de bord'], bonne: 0 },
+      { type: 'qcm', question: 'Quelles règles faut-il respecter pour ouvrir une concession ?', options: ["S'inscrire au registre des vendeurs mobiliers", 'Souscrire une assurance responsabilité professionnelle', 'Tenir un livre de police', 'Avoir un doctorat'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Que permet le livre de police ?', options: ['Enregistrer les achats', 'Enregistrer les ventes', 'Payer les impôts à la place du concessionnaire', 'Assurer les véhicules'], bonnes: [0, 1] },
+      { type: 'trous', texte: 'Il faut s\u2019inscrire sur le registre des vendeurs {0} auprès de la {1}.', reponses: ['mobiliers', 'préfecture'] },
+      { type: 'trous', texte: 'Le {0} de {1} permet d\u2019enregistrer les achats et les ventes de la concession.', reponses: ['livre', 'police'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne règle.',
+      etiquettes: ['Investissement / trésorerie', 'Formalité administrative', 'Document obligatoire'],
+      zones: [
+        { libelle: 'Entre 100 000 € et 500 000 € pour démarrer', etiquetteIndex: 0 },
+        { libelle: 'Inscription au registre des vendeurs mobiliers', etiquetteIndex: 1 },
+        { libelle: 'Le livre de police', etiquetteIndex: 2 },
+        { libelle: 'Entre 2 000 € et 3 000 € pour les charges', etiquetteIndex: 0 },
+        { libelle: "Souscrire une assurance responsabilité professionnelle", etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 3 - Les 3 metiers de relation client
+// ---------------------------------------------------------------------------
+const PEUGEOT_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Faites le tour des trois principaux métiers de la relation client de la concession : le directeur, le chef des ventes et le commercial automobile. Interrogez chaque employé et complétez les fiches métier.",
+    contexte:
+      "Pendant cette première semaine de stage, vous faites le tour des différents métiers de la relation client de la concession et vous interrogez les différents employés.",
+    documents: [
+      { numero: 1, titre: 'Le mot du directeur de concession', texte: [
+        { pageWeb: true },
+        { bulle: { nom: 'M. Collet', role: 'Directeur de concession', initiale: 'C', videoLien: 'https://drive.google.com/file/d/1MYRDg0X7xBjKocMcob6Bu-poYFdKL_oG/view', lignes: [
+          "Je suis responsable de toutes les activités de la concession automobile. J'assure la gérance et l'animation de la concession, ainsi que la réalisation des objectifs.",
+          "J'ai un niveau Bac + 2 mais j'ai des collègues qui ont un Bac + 4. Pour occuper ce poste, il me fallait avoir cinq années d'expérience dans la vente automobile et dans le management d'équipe.",
+          "C'est moi qui définit la politique commerciale, c'est-à-dire que je gère l'organisation administrative et financière du site ; je manage l'équipe : objectifs, motivation… ; je veille à la rentabilité du site et à l'améliorer ; et enfin je fais des rapports réguliers auprès du PDG.",
+          "Les plus importantes sont pour moi : avoir de bonnes connaissances de gestion commerciale et financière et du marketing ; des connaissances approfondies des spécificités de vente du secteur automobile ; un bon esprit d'analyse et de synthèse ; des capacités d'anticipation ; de la diplomatie et un sens relationnel poussé ; un esprit gestionnaire et créatif à la fois ; de la rigueur et être organisé ; et enfin, avoir une bonne maîtrise de l'anglais.",
+        ] } },
+      ] },
+      { numero: 2, titre: 'Le mot du chef des ventes', texte: [
+        { pageWeb: true },
+        { bulle: { nom: 'Mathieu', role: 'Chef des ventes', initiale: 'M', couleurAvatar: '#0A6C4E', videoLien: 'https://drive.google.com/file/d/1bNAuc_aAfDaYnehXLj0awyfO5yqDeXeS/view', lignes: [
+          "Je suis le « trait d'union » entre la force de vente et la direction commerciale. Je suis spécialisé sur un type de produits, c'est-à-dire les véhicules.",
+          "J'ai été recruté au niveau Bac + 5, d'une école supérieure de commerce. J'avais déjà une expérience de 3 ans dans l'industrie automobile.",
+          "Mon travail est de prospecter l'ensemble du marché potentiel ; mettre à jour les fichiers clients et prospects ; répondre aux appels d'offre ; définir la politique commerciale avec la direction ; coordonner la réalisation de contrats projets ; initier des stratégies de vente avec le service marketing (distribution, promotion, packaging, campagnes de publicité) ; motiver et animer les équipes de commerciaux ; dresser des bilans pour toute opération de stimulation des ventes.",
+          "Il faut de solides compétences de gestion commerciale et financière et du marketing ; des connaissances approfondies des spécificités de vente du secteur automobile ; ou encore un bon esprit d'analyse et de synthèse pour bien réussir dans ce métier.",
+        ] } },
+      ] },
+      { numero: 3, titre: 'Le mot du commercial VN-VO', texte: [
+        { pageWeb: true },
+        { paragraphes: ['Le commercial automobile VN-VO (VN : véhicules neufs et VO : véhicules d\u2019occasion).'] },
+        { bulle: { nom: 'Paul', role: 'Commercial VN-VO (votre tuteur)', initiale: 'P', couleurAvatar: '#1565C0', videoLien: 'https://drive.google.com/file/d/1L1-GFEG-K54CsR866VtJh2eapgbUzOBG/view', lignes: [
+          "Dans le secteur de la vente automobile, les recrutements sont nombreux, et le métier peut donc être très rémunérateur.",
+          "En revanche, les horaires sont irréguliers et les week-ends et jours fériés peuvent être travaillés. L'atteinte des objectifs peut aussi entraîner du stress.",
+        ] } },
+      ] },
+    ],
+    objectifs: [
+      "Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+      "Identifier les trois principaux métiers de la relation client en concession (missions, formation, compétences).",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "C.1.1 — Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: 'Activité 1 — Le directeur de concession',
+        contexte: "Afin de créer la fiche métier du directeur de concession, vous vous rendez dans le bureau de M. Collet pour lui demander de vous expliquer sa fonction.",
+        questions: [
+          { numero: 1, consigne: 'Présentez le poste de directeur de concession.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez sa formation.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 3, consigne: 'Énumérez ses différentes missions.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 4, consigne: 'Repérez les compétences nécessaires pour exercer ce métier.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Le chef des ventes',
+        contexte: "Puis, vous vous rendez dans le bureau de Mathieu, le chef des ventes, pour qu'il vous explique à son tour son métier.",
+        questions: [
+          { numero: 1, consigne: 'Présentez le poste de chef des ventes.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 2, consigne: 'Indiquez sa formation.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Énumérez ses différentes missions.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 4, consigne: 'Repérez les compétences nécessaires pour exercer ce métier.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Le commercial automobile',
+        contexte: "Enfin, vous croisez Paul, votre tuteur, dans le showroom de la concession. Il a très peu de temps à vous consacrer mais vous en profitez tout de même pour lui demander les avantages et les inconvénients du métier de commercial automobile.",
+        questions: [
+          { numero: 1, consigne: 'Indiquez 2 avantages et 2 inconvénients du poste de commercial en concession automobile VN-VO.', ressources: 'Lire le document 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'tableau',
+        id: 'annexe1',
+        titre: 'Annexe 1 — Fiche métier du directeur de concession',
+        lignes: [
+          { id: 'poste', libelle: 'Présentation du poste' },
+          { id: 'formation', libelle: 'Formation' },
+          { id: 'missions', libelle: 'Missions' },
+          { id: 'competences', libelle: 'Compétences' },
+        ],
+      },
+      {
+        type: 'tableau',
+        id: 'annexe2',
+        titre: 'Annexe 2 — Fiche métier du chef des ventes',
+        lignes: [
+          { id: 'poste', libelle: 'Présentation du poste' },
+          { id: 'formation', libelle: 'Formation' },
+          { id: 'missions', libelle: 'Missions' },
+          { id: 'competences', libelle: 'Compétences' },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe3',
+        titre: 'Annexe 3 — Avantages et inconvénients du métier de commercial automobile',
+        colonnes: ['2 avantages', '2 inconvénients'],
+        nbLignes: 2,
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Fiche métier du directeur de concession (présentation, formation, missions, compétences).',
+        documents: ['Document 1', 'Annexe 1'],
+        bareme: 4,
+        reponse:
+          "Présentation : « Je suis responsable de toutes les activités de la concession automobile. J'assure la gérance et l'animation de la concession, ainsi que la réalisation des objectifs. » Formation : niveau Bac + 2 (des collègues ont un Bac + 4), avec cinq années d'expérience dans la vente automobile et le management d'équipe. Missions : définir la politique commerciale, gérer l'organisation administrative et financière du site, manager l'équipe (objectifs, motivation), veiller à la rentabilité du site et l'améliorer, faire des rapports réguliers auprès du PDG. Compétences : gestion commerciale et financière et marketing, connaissances des spécificités de vente du secteur automobile, esprit d'analyse et de synthèse, capacités d'anticipation, diplomatie et sens relationnel, esprit gestionnaire et créatif, rigueur et organisation, bonne maîtrise de l'anglais.",
+        tableau: {
+          colonnes: ['Rubrique', 'Réponse attendue'],
+          lignes: [
+            ['Présentation du poste', "Responsable de toutes les activités de la concession ; assure la gérance, l'animation et la réalisation des objectifs"],
+            ['Formation', 'Bac + 2 (parfois Bac + 4) et 5 ans d\u2019expérience en vente auto et management'],
+            ['Missions', "Définir la politique commerciale, gérer l'administratif et le financier, manager l'équipe, veiller à la rentabilité, faire des rapports au PDG"],
+            ['Compétences', "Gestion commerciale/financière et marketing, connaissance du secteur auto, analyse et synthèse, anticipation, diplomatie, rigueur, anglais"],
+          ],
+        },
+      },
+      {
+        intitule: 'Fiche métier du chef des ventes (présentation, formation, missions, compétences).',
+        documents: ['Document 2', 'Annexe 2'],
+        bareme: 4,
+        reponse:
+          "Présentation : « Je suis le trait d'union entre la force de vente et la direction commerciale. Je suis spécialisé sur un type de produits, les véhicules. » Formation : recruté au niveau Bac + 5, école supérieure de commerce, avec déjà 3 ans d'expérience dans l'industrie automobile. Missions : prospecter le marché potentiel, mettre à jour les fichiers clients et prospects, répondre aux appels d'offre, définir la politique commerciale avec la direction, coordonner les contrats projets, initier des stratégies de vente avec le marketing, motiver et animer les commerciaux, dresser des bilans des opérations de stimulation des ventes. Compétences : solides compétences de gestion commerciale et financière et du marketing, connaissances approfondies des spécificités de vente du secteur automobile, bon esprit d'analyse et de synthèse.",
+        tableau: {
+          colonnes: ['Rubrique', 'Réponse attendue'],
+          lignes: [
+            ['Présentation du poste', "Trait d'union entre la force de vente et la direction commerciale ; spécialisé sur les véhicules"],
+            ['Formation', 'Bac + 5, école de commerce, 3 ans d\u2019expérience dans l\u2019automobile'],
+            ['Missions', 'Prospecter, mettre à jour les fichiers, répondre aux appels d\u2019offre, définir la politique commerciale, coordonner les contrats, stratégies avec le marketing, animer les commerciaux, dresser des bilans'],
+            ['Compétences', 'Gestion commerciale/financière et marketing, connaissance du secteur auto, esprit d\u2019analyse et de synthèse'],
+          ],
+        },
+      },
+      {
+        intitule: 'Indiquez 2 avantages et 2 inconvénients du poste de commercial VN-VO.',
+        documents: ['Document 3', 'Annexe 3'],
+        bareme: 4,
+        reponse:
+          "2 avantages : dans le secteur de la vente automobile, les recrutements sont nombreux ; le métier peut donc être très rémunérateur. 2 inconvénients : les horaires sont irréguliers et les week-ends et jours fériés peuvent être travaillés ; l'atteinte des objectifs peut entraîner du stress.",
+        tableau: {
+          colonnes: ['2 avantages', '2 inconvénients'],
+          lignes: [
+            ['Les recrutements sont nombreux dans la vente automobile', 'Les horaires sont irréguliers (week-ends et jours fériés possibles)'],
+            ['Le métier peut être très rémunérateur', "L'atteinte des objectifs peut entraîner du stress"],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: 'Les 3 principaux métiers de relation client dans une concession',
+    proposition: [
+      'Manager l\u2019équipe',
+      'Veiller à la rentabilité',
+      'Connaissance de la gestion commerciale',
+      'Bon esprit d\u2019analyse',
+      'Bac + 5, école de commerce',
+      '3 ans d\u2019expérience',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Les métiers de la concession',
+      enfants: [
+        {
+          id: 'directeur',
+          texte: 'Le directeur — missions',
+          enfants: [
+            { id: 'di-1', texte: null, reponse: 'Manager l\u2019équipe' },
+            { id: 'di-2', texte: null, reponse: 'Veiller à la rentabilité' },
+          ],
+        },
+        {
+          id: 'dircomp',
+          texte: 'Le directeur — compétences',
+          enfants: [
+            { id: 'dc-1', texte: null, reponse: 'Connaissance de la gestion commerciale' },
+            { id: 'dc-2', texte: null, reponse: 'Bon esprit d\u2019analyse' },
+          ],
+        },
+        {
+          id: 'chef',
+          texte: 'Le chef des ventes — formation',
+          enfants: [
+            { id: 'ch-1', texte: null, reponse: 'Bac + 5, école de commerce' },
+            { id: 'ch-2', texte: null, reponse: '3 ans d\u2019expérience' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Décrire le métier de directeur de concession',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas décrire le métier de directeur.' },
+          { niveau: 'debrouille', description: 'Je cite une ou deux missions.' },
+          { niveau: 'averti', description: 'Je décris le poste, la formation, les missions et les compétences.' },
+          { niveau: 'expert', description: 'Je décris le métier et je le compare aux autres postes.' },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Décrire le métier de chef des ventes',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas décrire le métier de chef des ventes.' },
+          { niveau: 'debrouille', description: 'Je cite une ou deux missions.' },
+          { niveau: 'averti', description: 'Je décris le poste, la formation, les missions et les compétences.' },
+          { niveau: 'expert', description: 'Je situe le chef des ventes entre la force de vente et la direction.' },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Identifier avantages et inconvénients du commercial automobile',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les avantages ni les inconvénients.' },
+          { niveau: 'debrouille', description: 'Je cite un avantage ou un inconvénient.' },
+          { niveau: 'averti', description: 'Je cite 2 avantages et 2 inconvénients.' },
+          { niveau: 'expert', description: 'Je nuance selon le profil et les conditions de travail.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Directeur de concession', definition: "Responsable de toutes les activités de la concession : gérance, animation et réalisation des objectifs." },
+      { terme: 'Chef des ventes', definition: "Trait d'union entre la force de vente et la direction commerciale, spécialisé sur un type de produits (les véhicules)." },
+      { terme: 'Commercial VN-VO', definition: "Commercial qui vend des véhicules neufs (VN) et des véhicules d'occasion (VO)." },
+      { terme: 'Politique commerciale', definition: "Ensemble des décisions qui orientent l'activité de vente d'une entreprise (objectifs, prix, promotions…)." },
+      { terme: 'Prospection', definition: "Action de rechercher de nouveaux clients (prospects) pour développer les ventes." },
+      { terme: 'Force de vente', definition: "Ensemble des commerciaux d'une entreprise chargés de vendre ses produits." },
+    ],
+    flashcards: [
+      { recto: 'Que fait le directeur de concession ?', verso: 'Il est responsable de toutes les activités : gérance, animation et réalisation des objectifs.' },
+      { recto: 'Quelle formation pour le directeur de concession ?', verso: 'Bac + 2 (parfois Bac + 4) et 5 ans d\u2019expérience en vente auto et management.' },
+      { recto: 'Citez 2 missions du directeur.', verso: 'Définir la politique commerciale, manager l\u2019équipe, veiller à la rentabilité, faire des rapports au PDG (2 au choix).' },
+      { recto: 'Qui est le chef des ventes ?', verso: 'Le trait d\u2019union entre la force de vente et la direction commerciale, spécialisé sur les véhicules.' },
+      { recto: 'Quelle formation pour le chef des ventes ?', verso: 'Bac + 5, école de commerce, avec 3 ans d\u2019expérience dans l\u2019automobile.' },
+      { recto: 'Citez 2 missions du chef des ventes.', verso: 'Prospecter, mettre à jour les fichiers clients, définir la politique commerciale, animer les commerciaux (2 au choix).' },
+      { recto: 'Que veut dire VN-VO ?', verso: 'VN : véhicules neufs ; VO : véhicules d\u2019occasion.' },
+      { recto: 'Citez 2 avantages du commercial automobile.', verso: 'Recrutements nombreux ; métier qui peut être très rémunérateur.' },
+      { recto: 'Citez 2 inconvénients du commercial automobile.', verso: 'Horaires irréguliers (week-ends, jours fériés) ; stress lié aux objectifs.' },
+      { recto: 'Citez 2 compétences du directeur.', verso: 'Gestion commerciale/financière et marketing ; esprit d\u2019analyse et de synthèse (2 au choix).' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Quelle formation pour le directeur de concession ?', options: ['Bac + 2 (parfois Bac + 4) et 5 ans d\u2019expérience', 'Aucun diplôme', 'CAP obligatoire'], bonne: 0 },
+      { type: 'unique', question: 'Quelle formation pour le chef des ventes ?', options: ['Bac + 5, école de commerce, 3 ans d\u2019expérience', 'Bac uniquement', 'Aucune expérience'], bonne: 0 },
+      { type: 'unique', question: 'Que veut dire VN-VO ?', options: ['Véhicules neufs et véhicules d\u2019occasion', 'Ventes nationales et ventes ouvertes', 'Véhicules noirs et blancs'], bonne: 0 },
+      { type: 'unique', question: 'Le chef des ventes est le trait d\u2019union entre :', options: ['La force de vente et la direction commerciale', 'Les clients et la banque', 'Les fournisseurs et la préfecture'], bonne: 0 },
+      { type: 'unique', question: 'Un avantage du métier de commercial automobile :', options: ['Les recrutements sont nombreux', 'Les horaires sont fixes', 'Aucun objectif'], bonne: 0 },
+      { type: 'unique', question: 'Un inconvénient du métier de commercial automobile :', options: ['Horaires irréguliers (week-ends, jours fériés)', 'Salaire toujours faible', 'Aucun contact client'], bonne: 0 },
+      { type: 'qcm', question: 'Quelles sont des missions du directeur de concession ?', options: ['Définir la politique commerciale', "Manager l'équipe", 'Veiller à la rentabilité', 'Réparer les moteurs'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Quelles sont des missions du chef des ventes ?', options: ['Prospecter le marché', 'Mettre à jour les fichiers clients', 'Animer les commerciaux', 'Fixer les impôts'], bonnes: [0, 1, 2] },
+      { type: 'trous', texte: 'Le chef des ventes est le trait d\u2019union entre la force de {0} et la {1} commerciale.', reponses: ['vente', 'direction'] },
+      { type: 'trous', texte: 'VN signifie véhicules {0} et VO véhicules d\u2019{1}.', reponses: ['neufs', 'occasion'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément au bon métier.',
+      etiquettes: ['Directeur de concession', 'Chef des ventes', 'Commercial VN-VO'],
+      zones: [
+        { libelle: 'Responsable de toutes les activités de la concession', etiquetteIndex: 0 },
+        { libelle: 'Trait d\u2019union entre la force de vente et la direction', etiquetteIndex: 1 },
+        { libelle: 'Vend des véhicules neufs et d\u2019occasion', etiquetteIndex: 2 },
+        { libelle: 'Bac + 5, école de commerce', etiquetteIndex: 1 },
+        { libelle: 'Veille à la rentabilité du site', etiquetteIndex: 0 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 4 - Le commercial en concession auto
+// ---------------------------------------------------------------------------
+const PEUGEOT_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Découvrez les différents aspects du métier de commercial automobile : lisez (ou écoutez) l'entretien avec votre tuteur Paul, puis complétez sa fiche métier et le tableau des qualités.",
+    contexte:
+      "Vous retrouvez Paul, votre tuteur, à un moment plus calme de la journée et il prend le temps de vous expliquer plus en détail son métier.",
+    documents: [
+      { numero: 1, titre: 'Entretien avec votre tuteur', texte: [
+        { pageWeb: true },
+        { paragraphes: ["Vous pouvez lire l'entretien ci-dessous ou l'écouter grâce au bouton discret situé sous le dialogue."] },
+        { dialogue: [
+          { locuteur: 'Paul (le commercial, votre tuteur)', texte: "Re-bonjour ! Je suis désolé pour tout à l'heure, mais j'étais un peu pris. Maintenant c'est plus calme, je peux répondre à toutes tes questions. Dis-moi tout !" },
+          { locuteur: 'Vous', texte: "Merci Paul ! En fait je voulais que tu me parles de ton métier de commercial en concession." },
+          { locuteur: 'Paul (le commercial, votre tuteur)', texte: "Avec plaisir ! Par contre n'hésite pas à me couper si tu souhaites des précisions. En fait, être commercial en concession c'est être représentant d'une grande marque. Je suis en contact avec la clientèle, que je prospecte par téléphone ou que je conseille sur le lieu de vente. Je connais parfaitement les modèles neufs et d'occasion et je sais trouver les arguments qui séduiront le client. Après avoir bichonné le futur acheteur dans le showroom, je l'emmène faire quelques kilomètres sur route. Pour conseiller au mieux mes clients, je dois être à l'affût des nouveautés commerciales et des tendances du marché. Je dois accompagner les clients pour les documents nécessaires à l'achat du véhicule (contrat de vente, demande de financement, immatriculation, etc.). Je travaille en étroite collaboration avec les autres vendeurs, car mon but est d'atteindre les objectifs de vente fixés par l'entreprise." },
+          { locuteur: 'Vous', texte: "Ton métier est vraiment intéressant ! Il est très varié. Selon toi, quelles sont les qualités nécessaires pour être bon dans ce métier ?" },
+          { locuteur: 'Paul (le commercial, votre tuteur)', texte: "C'est une excellente question ! Je dirais premièrement qu'il faut avoir une très bonne connaissance du secteur de l'automobile. Tu dois aussi avoir la fibre commerciale et une bonne communication. Tu dois avoir un bon relationnel et être à l'aise avec les clients. Comme tu as pu l'observer, les ventes ne se font pas dès le premier contact. Acheter un véhicule demande d'être sûr de son choix, du modèle… donc il faut forcément que tu sois persévérant. Dans ce métier, on est amené à rencontrer des clients très différents. Certains sont très souriants alors que d'autres peuvent être désagréables. Mais dis-toi une chose, quelle que soit l'attitude qu'ils peuvent avoir tu dois faire preuve de « maîtrise de soi ». Enfin, pour faire ce métier tu dois faire preuve de motivation parce que c'est toi qui fait le salaire que tu gagneras à la fin de chaque mois." },
+          { locuteur: 'Vous', texte: "Je comprends mieux maintenant. Je te remercie Paul de m'avoir accordé du temps pour répondre à mes questions." },
+        ] },
+        { bulle: { nom: 'Paul', role: 'Commercial (votre tuteur)', initiale: 'P', couleurAvatar: '#0A6C4E', videoLien: 'https://drive.google.com/file/d/11Gi81cKvsiujUtPbu32fin7yxYRDzF3z/view', lignes: [
+          "Tu préfères écouter l'entretien ? Clique sur le bouton ci-dessous pour lancer la vidéo.",
+        ] } },
+      ] },
+    ],
+    objectifs: [
+      "Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+      "Décrire le métier de commercial automobile, ses missions et les qualités attendues.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "C.1.1 — Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: 'Activité — Les différents aspects du métier de commercial automobile',
+        contexte: "Vous posez des questions à Paul pour en savoir davantage sur le métier de commercial.",
+        questions: [
+          { numero: 1, consigne: 'Expliquez en quoi consiste le métier de vendeur automobile et ses missions.', ressources: 'Lire le document, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Listez les qualités d'un bon commercial puis expliquez avec vos propres mots chacune d'elle.", ressources: 'Lire le document, compléter l\'annexe 2.', annexeId: 'annexe2' },
+        ],
+      },
+    ],
+    annexes: [
+      {
+        type: 'tableau',
+        id: 'annexe1',
+        titre: 'Annexe 1 — La fiche métier du commercial automobile',
+        lignes: [
+          { id: 'def', libelle: "Expliquez ce qu'est un vendeur automobile ?" },
+          { id: 'm1', libelle: 'Mission 1', prefixe: 'Les missions' },
+          { id: 'm2', libelle: 'Mission 2', prefixe: 'Les missions' },
+          { id: 'm3', libelle: 'Mission 3', prefixe: 'Les missions' },
+          { id: 'm4', libelle: 'Mission 4', prefixe: 'Les missions' },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: 'Annexe 2 — Les qualités du commercial automobile VN-VO',
+        colonnes: ['Liste des qualités', 'Explications des qualités (avec vos propres mots)'],
+        nbLignes: 6,
+        prerempli: [
+          ['', ''],
+          ['', ''],
+          ['« Avoir la fibre commerciale… »', "Le commercial automobile est, dans un premier temps, à l'écoute du client afin de cerner son besoin. Pour finaliser l'acte d'achat, il devra délivrer un argumentaire de vente parfaitement construit et adapté au client."],
+          ['', ''],
+          ['', ''],
+          ['', ''],
+        ],
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      {
+        intitule: 'Expliquez en quoi consiste le métier de vendeur automobile et ses missions.',
+        documents: ['Document', 'Annexe 1'],
+        bareme: 5,
+        reponse:
+          "Définition : « Être commercial en concession c'est être représentant d'une grande marque. Je suis en contact avec la clientèle, que je prospecte par téléphone ou que je conseille sur le lieu de vente. Je connais parfaitement les modèles neufs et d'occasion et je sais trouver les arguments qui séduiront le client. Après avoir bichonné le futur acheteur dans le showroom, je l'emmène faire quelques kilomètres sur route. Pour conseiller au mieux mes clients, je dois être à l'affût des nouveautés commerciales et des tendances du marché. » Missions : prospecter par téléphone ; conseiller sur le lieu de vente ; connaître parfaitement les modèles neufs et d'occasion ; savoir trouver les arguments qui séduiront le client ; emmener le client faire quelques kilomètres sur route ; être à l'affût des nouveautés commerciales et des tendances du marché ; accompagner les clients pour les documents nécessaires à l'achat du véhicule.",
+        tableau: {
+          colonnes: ['Rubrique', 'Réponse attendue'],
+          lignes: [
+            ["Qu'est-ce qu'un vendeur automobile ?", "Représentant d'une grande marque, en contact avec la clientèle (prospection téléphonique, conseil sur le lieu de vente), qui connaît les modèles neufs et d'occasion et trouve les arguments pour séduire le client"],
+            ['Mission 1', 'Je prospecte par téléphone'],
+            ['Mission 2', 'Je conseille sur le lieu de vente'],
+            ['Mission 3', "Je l'emmène faire quelques kilomètres sur route"],
+            ['Mission 4', "Je dois accompagner les clients pour les documents nécessaires à l'achat du véhicule"],
+          ],
+        },
+      },
+      {
+        intitule: "Listez les qualités d'un bon commercial puis expliquez chacune avec vos propres mots.",
+        documents: ['Document', 'Annexe 2'],
+        bareme: 6,
+        reponse:
+          "Avoir une très bonne connaissance du secteur de l'automobile : se tenir informé des nouveaux modèles, de leurs caractéristiques et des pratiques de la concurrence (prix, modèles…). Avoir une bonne communication : anticiper et rechercher les besoins, faire preuve d'empathie, pratiquer l'écoute active. Avoir la fibre commerciale : être à l'écoute du client pour cerner son besoin puis délivrer un argumentaire de vente adapté. Avoir un bon relationnel et être à l'aise avec les clients : vaincre son stress, nouer et entretenir de bonnes relations. Faire preuve de maîtrise de soi : contrôler ses émotions face à un problème, une parole ou un comportement déplaisant. Faire preuve de motivation : ensemble des actions mises en œuvre pour atteindre un objectif ou réaliser une tâche.",
+        tableau: {
+          colonnes: ['Qualité', 'Explication (avec vos propres mots)'],
+          lignes: [
+            ["Avoir une très bonne connaissance du secteur de l'automobile", 'Se tenir régulièrement informé des nouveaux modèles, de leurs caractéristiques et des pratiques de la concurrence (prix, modèles…)'],
+            ['Avoir une bonne communication', "Anticiper et rechercher les besoins, faire preuve d'empathie, pratiquer l'écoute active"],
+            ['Avoir la fibre commerciale', "Être à l'écoute du client pour cerner son besoin puis délivrer un argumentaire de vente construit et adapté"],
+            ["Avoir un bon relationnel et être à l'aise avec les clients", 'Vaincre son stress face aux clients ; nouer et entretenir de bonnes relations'],
+            ['Faire preuve de maîtrise de soi', "Contrôler ou réguler ses émotions face à un problème, une parole ou un comportement qui déplaît ou paraît anormal"],
+            ['Faire preuve de motivation', "Ensemble des actions ou comportements mis en œuvre pour atteindre un objectif ou réaliser une tâche"],
+          ],
+        },
+      },
+    ],
+  },
+  synthese: {
+    titre: 'Le commercial en concession automobile',
+    proposition: [
+      'Prospecter par téléphone',
+      'Connaître parfaitement les modèles',
+      'Trouver les arguments qui séduiront les clients',
+      'Avoir une très bonne connaissance du secteur de l\u2019automobile',
+      'Avoir une bonne communication',
+      'Avoir la fibre commerciale',
+      'Faire preuve de maîtrise de soi',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le commercial automobile',
+      enfants: [
+        {
+          id: 'missions',
+          texte: 'Les missions (3)',
+          enfants: [
+            { id: 'mi-1', texte: null, reponse: 'Prospecter par téléphone' },
+            { id: 'mi-2', texte: null, reponse: 'Connaître parfaitement les modèles' },
+            { id: 'mi-3', texte: null, reponse: 'Trouver les arguments qui séduiront les clients' },
+          ],
+        },
+        {
+          id: 'qualites',
+          texte: 'Les qualités (4)',
+          enfants: [
+            { id: 'qu-1', texte: null, reponse: 'Avoir une très bonne connaissance du secteur de l\u2019automobile' },
+            { id: 'qu-2', texte: null, reponse: 'Avoir une bonne communication' },
+            { id: 'qu-3', texte: null, reponse: 'Avoir la fibre commerciale' },
+            { id: 'qu-4', texte: null, reponse: 'Faire preuve de maîtrise de soi' },
+          ],
+        },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Décrire le métier et les missions du commercial automobile',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne sais pas décrire le métier de commercial automobile.' },
+          { niveau: 'debrouille', description: 'Je cite une ou deux missions.' },
+          { niveau: 'averti', description: 'Je décris le métier et ses principales missions.' },
+          { niveau: 'expert', description: 'Je décris le métier, ses missions et leur enchaînement dans la vente.' },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Identifier et expliquer les qualités du bon commercial',
+        indicateurs: [
+          { niveau: 'novice', description: 'Je ne connais pas les qualités attendues.' },
+          { niveau: 'debrouille', description: 'Je cite une ou deux qualités.' },
+          { niveau: 'averti', description: 'Je cite les qualités et je les explique.' },
+          { niveau: 'expert', description: 'J\u2019explique chaque qualité et je l\u2019illustre par un exemple.' },
+        ],
+      },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Commercial automobile', definition: "Représentant d'une grande marque qui vend des véhicules neufs et d'occasion et accompagne le client jusqu'à l'achat." },
+      { terme: 'Prospection', definition: "Action de rechercher de nouveaux clients, par exemple par téléphone." },
+      { terme: 'Fibre commerciale', definition: "Aptitude naturelle à écouter le client, cerner son besoin et le convaincre avec un argumentaire adapté." },
+      { terme: 'Maîtrise de soi', definition: "Capacité à contrôler ses émotions face à un problème, une parole ou un comportement déplaisant." },
+      { terme: 'Écoute active', definition: "Technique qui consiste à écouter attentivement le client pour comprendre et reformuler son besoin." },
+      { terme: 'Showroom', definition: "Espace d'exposition de la concession où sont présentés les véhicules aux clients." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'un commercial en concession ?", verso: "Le représentant d'une grande marque, en contact avec la clientèle, qui vend des véhicules neufs et d'occasion." },
+      { recto: 'Citez une mission du commercial automobile.', verso: 'Au choix : prospecter par téléphone, conseiller sur le lieu de vente, accompagner le client pour les documents d\u2019achat…' },
+      { recto: 'Comment le commercial prospecte-t-il ?', verso: 'Notamment par téléphone.' },
+      { recto: 'Que fait le commercial après avoir accueilli le client au showroom ?', verso: "Il l'emmène faire quelques kilomètres sur route (essai)." },
+      { recto: 'Pourquoi le commercial doit-il connaître les nouveautés du marché ?', verso: 'Pour conseiller au mieux ses clients (être à l\u2019affût des tendances).' },
+      { recto: 'Citez une qualité du bon commercial.', verso: 'Au choix : connaissance du secteur auto, bonne communication, fibre commerciale, maîtrise de soi, motivation…' },
+      { recto: "Que signifie « avoir la fibre commerciale » ?", verso: "Être à l'écoute du client pour cerner son besoin puis délivrer un argumentaire adapté." },
+      { recto: "Qu'est-ce que la maîtrise de soi ?", verso: "Contrôler ses émotions face à un client ou une situation désagréable." },
+      { recto: 'Pourquoi la motivation est-elle importante pour le commercial ?', verso: "Parce que c'est lui qui fait le salaire qu'il gagnera à la fin du mois." },
+      { recto: 'Avec qui le commercial travaille-t-il en collaboration ?', verso: 'Avec les autres vendeurs, pour atteindre les objectifs de vente de l\u2019entreprise.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Qu'est-ce qu'un commercial en concession ?", options: ["Le représentant d'une grande marque", 'Un mécanicien', 'Un comptable', 'Un livreur'], bonne: 0 },
+      { type: 'unique', question: 'Comment le commercial prospecte-t-il principalement ?', options: ['Par téléphone', 'Par la poste uniquement', 'En porte-à-porte uniquement', 'Il ne prospecte jamais'], bonne: 0 },
+      { type: 'unique', question: 'Que fait le commercial pour faire essayer le véhicule ?', options: ['Il emmène le client faire quelques kilomètres sur route', 'Il envoie une photo', 'Il refuse tout essai', 'Il prête la voiture une semaine'], bonne: 0 },
+      { type: 'unique', question: 'Pourquoi le commercial suit-il les nouveautés du marché ?', options: ['Pour conseiller au mieux ses clients', 'Pour changer de métier', 'Pour fixer les impôts', 'Ce n\u2019est pas utile'], bonne: 0 },
+      { type: 'unique', question: 'Que veut dire « avoir la fibre commerciale » ?', options: ["Écouter le client et délivrer un argumentaire adapté", 'Aimer la mécanique', 'Savoir réparer', 'Travailler seul'], bonne: 0 },
+      { type: 'unique', question: "Qu'est-ce que la maîtrise de soi ?", options: ['Contrôler ses émotions face à un client désagréable', 'Conduire vite', 'Vendre au plus cher', 'Ignorer le client'], bonne: 0 },
+      { type: 'unique', question: 'Pourquoi la motivation est-elle essentielle ?', options: ["C'est le commercial qui fait son propre salaire", 'Elle ne sert à rien', 'Pour partir plus tôt', "Pour éviter les clients"], bonne: 0 },
+      { type: 'unique', question: 'Avec qui le commercial collabore-t-il ?', options: ['Les autres vendeurs', 'Personne', 'Uniquement la préfecture', 'Les concurrents'], bonne: 0 },
+      { type: 'qcm', question: 'Quelles sont des missions du commercial automobile ?', options: ['Prospecter par téléphone', 'Conseiller sur le lieu de vente', "Accompagner le client pour les documents d'achat", 'Fabriquer les voitures'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Quelles sont des qualités du bon commercial ?', options: ['Connaissance du secteur auto', 'Bonne communication', 'Maîtrise de soi', 'Indifférence au client'], bonnes: [0, 1, 2] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Mission', 'Qualité'],
+      zones: [
+        { libelle: 'Prospecter par téléphone', etiquetteIndex: 0 },
+        { libelle: 'Conseiller sur le lieu de vente', etiquetteIndex: 0 },
+        { libelle: 'Connaître parfaitement les modèles', etiquetteIndex: 0 },
+        { libelle: "Accompagner le client pour les documents d'achat", etiquetteIndex: 0 },
+        { libelle: 'Emmener le client faire un essai sur route', etiquetteIndex: 0 },
+        { libelle: "Avoir une très bonne connaissance du secteur automobile", etiquetteIndex: 1 },
+        { libelle: 'Avoir une bonne communication', etiquetteIndex: 1 },
+        { libelle: 'Avoir la fibre commerciale', etiquetteIndex: 1 },
+        { libelle: 'Faire preuve de maîtrise de soi', etiquetteIndex: 1 },
+        { libelle: 'Faire preuve de motivation', etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 5 - L'analyse du CV du commercial automobile
+// ---------------------------------------------------------------------------
+const PEUGEOT_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Analysez les CV de trois candidats au poste de commercial, étudiez un profil atypique, puis travaillez sur la féminisation du secteur automobile et rédigez une note de synthèse pour Marjorie.",
+    contexte:
+      "Depuis ce matin, vous êtes dans le bureau de Mathieu, le chef des ventes. Il vous informe qu'il leur manque un commercial dans la concession pour que l'équipe de commerciaux soit complète.",
+    documents: [
+      { numero: 1, titre: 'C.V. 1 — Mme MARCIA', texte: [
+        { pageWeb: true },
+        { paragraphes: ['Consultez le CV de la candidate directement dans l\u2019outil de recrutement.'] },
+        { image: { src: '/docs/peugeot-m5/cv1-marcia.png', alt: 'CV 1 — Mme Marcia (BTS NDRC, 3 ans d\u2019expérience, centre d\u2019intérêt sports mécaniques).', legende: 'C.V. 1 — Mme Marcia' } },
+      ] },
+      { numero: 2, titre: 'C.V. 2 — M. MARTIN', texte: [
+        { pageWeb: true },
+        { image: { src: '/docs/peugeot-m5/cv2-martin.png', alt: 'CV 2 — M. Martin (licence, 5 ans d\u2019expérience).', legende: 'C.V. 2 — M. Martin' } },
+      ] },
+      { numero: 3, titre: 'C.V. 3 — Mme Aurore BADI', texte: [
+        { pageWeb: true },
+        { image: { src: '/docs/peugeot-m5/cv3-badi.jpg', alt: 'CV 3 — Mme Aurore Badi (profil atypique, actuellement vendeuse).', legende: 'C.V. 3 — Mme Aurore Badi' } },
+      ] },
+      { numero: 4, titre: 'La féminisation du métier de commercial automobile', texte: [
+        { pageWeb: true },
+        { image: { src: '/docs/peugeot-m5/anfa-couverture.png', alt: 'Autofocus n°88 — La mixité femmes/hommes dans la branche des services de l\u2019automobile (ANFA, février 2021).', legende: 'Autofocus n°88 (ANFA, février 2021) — La mixité femmes/hommes dans la branche des services de l\u2019automobile.' } },
+        { intertitre: 'La mixité femmes / hommes dans la branche des services de l\u2019automobile' },
+        { paragraphes: [
+          "Ce document décrit les spécificités des métiers par genre au sein de la branche des services de l'automobile, aussi bien au niveau de l'emploi, du recrutement que de la formation et de l'insertion professionnelle. Traditionnellement masculins, les métiers de l'automobile interrogent la place des femmes, leur posture et leur intégration parmi ces professions.",
+        ] },
+        { intertitre: 'Données générales' },
+        { paragraphes: [
+          "Plus de 107 600 femmes actives, salariées ou indépendantes, au sein de la branche (source : ANFA). Sur l'ensemble de la branche, les femmes représentent 22,7 % des emplois salariés, soit 95 400 personnes. À ce chiffre, il convient d'ajouter les emplois féminins non-salariés (principalement des artisans-commerçants) qui sont au nombre de 12 200. Soit 107 600 emplois féminins au total.",
+          "402 969 hommes sont en emploi au sein de la branche.",
+        ] },
+        { intertitre: 'Répartition des salariés par genre, selon le secteur d\u2019activité' },
+        { tableau: { colonnes: ['Secteur', 'Hommes', 'Femmes', 'Effectif'], lignes: [
+          ['Commerce automobile', '80,0 %', '20,0 %', '155 782'],
+          ['Réparation automobile', '81,4 %', '18,6 %', '116 838'],
+          ['Commerce et réparation de véhicules industriels', '83,9 %', '16,1 %', '26 058'],
+          ["Commerce de détail d'équipements automobiles", '82,3 %', '17,7 %', '28 631'],
+          ['Commerce de détail de carburants', '51,6 %', '48,4 %', '16 997'],
+          ['Contrôle technique', '85,6 %', '14,4 %', '11 874'],
+          ['Écoles de conduite', '51,6 %', '48,4 %', '24 862'],
+          ['TOTAL', '77,3 %', '22,7 %', '420 421'],
+        ] } },
+        { intertitre: 'Répartition des salariés par genre, selon le métier' },
+        { tableau: { colonnes: ['Métier', 'Hommes', 'Femmes'], lignes: [
+          ['Mécaniciens', '99,1 %', '0,9 %'],
+          ['Carrossiers / Peintres', '99,2 %', '0,8 %'],
+          ['Agents de maîtrise maintenance', '97,6 %', '2,4 %'],
+          ['Magasiniers', '90,7 %', '9,3 %'],
+          ['Vendeurs / Chefs des ventes auto', '77,3 %', '22,7 %'],
+          ['Enseignants de la conduite', '57,7 %', '42,3 %'],
+          ['Secrétaires (y c. comptables et administratives)', '11,8 %', '88,2 %'],
+          ['Gérants station-service', '43,7 %', '56,3 %'],
+        ] } },
+        { paragraphes: [
+          "La part des femmes dans les métiers de la vente est passée de 17,4 % en 2007 à 22,7 % en 2017. À volume global constant, le nombre de femmes a progressé de 40 % en 10 ans (de 7 300 à 9 600 entre 2007 et 2017), alors que le nombre d'hommes exerçant le métier de vendeur a baissé (−1 900 sur la même période).",
+        ] },
+      ] },
+      { numero: 5, titre: 'Méthodologie pour la rédaction de la note', texte: [
+        { pageWeb: true },
+        { bulle: { nom: 'Marjorie', role: 'Commerciale', initiale: 'M', couleurAvatar: '#0A6C4E', videoLien: 'https://drive.google.com/file/d/1B59s9wkFml51yXl1s50QelL3-pxBm3fd/view', lignes: [
+          "Pour rédiger une note professionnelle, respecte la méthode « D.A.D.O. » : indique d'abord De (l'expéditeur), À (le destinataire), la Date et l'Objet.",
+          "Ensuite, rédige le corps : va à l'essentiel, présente les informations chiffrées, puis conclus. Termine par ta signature (nom de l'élève stagiaire).",
+        ] } },
+      ] },
+    ],
+    objectifs: [
+      "Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+      "Analyser des CV, comparer des profils et rédiger une note professionnelle.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "C.1.1 — Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: 'Activité 1 — Comparaison des profils des candidats',
+        contexte: "Mathieu a reçu de nombreuses candidatures et en a sélectionné 3. Il vous demande de les étudier et de lui dire ce que vous en pensez.",
+        questions: [
+          { numero: 1, consigne: "Selon vous, pourquoi le salarié du C.V. 2 doit certainement avoir une rémunération plus importante que celui du C.V. 1 ?", ressources: 'Lire les documents 1 et 2, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez quel centre d'intérêt du C.V. 1 montre que ce commercial travaille dans le secteur automobile de façon cohérente. Justifiez votre réponse.", ressources: 'Lire le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Expliquez en quoi le fait d'avoir un BTS NRC (= NDRC) pourrait permettre à Mme Marcia d'occuper le métier de commerciale automobile avec efficacité.", ressources: 'Lire le document 1, compléter l\'annexe 3.', annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Étude d\u2019un profil atypique',
+        contexte: "Parmi les 3 candidatures, Mathieu a sélectionné un C.V. un peu atypique par rapport aux deux autres et vous demande de l'étudier.",
+        questions: [
+          { numero: 4, consigne: "Observez le C.V. 3, puis indiquez le métier actuel de cette candidate. Puis, selon vous, pourquoi Aurore Badi pourrait-elle tout de même être une bonne candidate malgré son parcours un peu différent ?", ressources: 'Lire le document 3, compléter l\'annexe 4.', annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — La féminisation du secteur automobile',
+        contexte: "Après avoir passé la matinée avec Mathieu, vous passez l'après-midi avec Marjorie, commerciale dans l'entreprise. Surpris par le fait qu'elle soit la seule femme, vous l'interrogez sur la place de ces dernières dans le milieu de la vente automobile. Elle vous transmet un article qu'elle a trouvé dernièrement sur le sujet mais qu'elle n'a pas eu le temps de lire.",
+        questions: [
+          { numero: 5, consigne: 'Répondez aux questions de Marjorie.', ressources: 'Lire le document 4, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez à l'attention de Marjorie une note récapitulative sur l'état de féminisation du secteur commercial de l'automobile.", ressources: 'Lire le document 5, compléter l\'annexe 6.', annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'tableau', id: 'annexe1', titre: "Annexe 1 — Justification d'une rémunération plus élevée", lignes: [{ id: 'r', libelle: 'Votre justification' }] },
+      { type: 'tableau', id: 'annexe2', titre: "Annexe 2 — Le centre d'intérêt du C.V. 1", lignes: [{ id: 'r', libelle: "Centre d'intérêt et justification" }] },
+      { type: 'tableau', id: 'annexe3', titre: 'Annexe 3 — BTS NDRC de Mme Marcia', lignes: [{ id: 'r', libelle: 'Votre explication' }] },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 — L'analyse de la candidature de Mme Badi", colonnes: ['Profession', 'Les raisons pour lesquelles elle peut être une bonne commerciale automobile malgré son parcours atypique'], nbLignes: 1 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Réponses aux questions de Marjorie', colonnes: ['Questions', 'Femmes', 'Hommes'], nbLignes: 4, prerempli: [
+        ['Combien de femmes salariées ou indépendantes trouve-t-on dans la branche automobile ?', '', ''],
+        ['Quelle est la répartition par genre dans le secteur du commerce automobile ?', '', ''],
+        ['Quel % représentaient les femmes dans les métiers de la vente en 2007 ?', '', ''],
+        ['Quelle est la répartition par genre selon les métiers de vendeurs / chefs des ventes auto ?', '', ''],
+      ] },
+      { type: 'note', id: 'annexe6', titre: 'Annexe 6 — Rédaction de la note' },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: 'Pourquoi le C.V. 2 doit-il avoir une rémunération plus importante que le C.V. 1 ?', documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 2,
+        reponse: "Parce qu'il a plus d'expérience (5 ans contre 3 pour le CV 1) et il est plus diplômé (il a une licence alors que le CV 1 n'a qu'un BTS)." },
+      { intitule: "Quel centre d'intérêt du C.V. 1 est cohérent avec le secteur automobile ? Justifiez.", documents: ['Document 1', 'Annexe 2'], bareme: 2,
+        reponse: "Sports mécaniques : cela montre qu'à la base il aime les sports qui nécessitent l'emploi de voitures. Donc il a déjà la passion des voitures." },
+      { intitule: "En quoi le BTS NDRC permet-il à Mme Marcia d'être une commerciale efficace ?", documents: ['Document 1', 'Annexe 3'], bareme: 2,
+        reponse: "Parce qu'elle a un baccalauréat et un BTS qui lui ont permis de développer des compétences nécessaires pour être commercial (prospection, négociation, maîtrise des techniques de négociation, gestion de la relation client…)." },
+      { intitule: "Métier actuel de Mme Badi et raisons d'être une bonne candidate malgré son parcours atypique.", documents: ['Document 3', 'Annexe 4'], bareme: 3,
+        reponse: "Profession : vendeuse. Dans son profil, c'est elle qui dit qu'elle est à la recherche d'une expérience nouvelle. Elle a des compétences mobilisables dans le métier de commercial : accueil et conseil client, respect de l'image de marque, opérations de fidélisation, suivi des procédures opérationnelles.",
+        tableau: { colonnes: ['Profession', 'Raisons'], lignes: [
+          ['Vendeuse', "Elle recherche une expérience nouvelle ; compétences mobilisables : accueil et conseil client, respect de l'image de marque, opérations de fidélisation, suivi des procédures opérationnelles"],
+        ] } },
+      { intitule: 'Répondez aux questions de Marjorie (article ANFA).', documents: ['Document 4', 'Annexe 5'], bareme: 4,
+        reponse: "107 600 femmes salariées ou indépendantes dans la branche. Répartition dans le commerce automobile : 20 % de femmes / 80 % d'hommes. En 2007, les femmes représentaient 22,7 % des métiers de la vente. Répartition vendeurs / chefs des ventes auto : 22,7 % de femmes / 77,3 % d'hommes.",
+        tableau: { colonnes: ['Question', 'Femmes', 'Hommes'], lignes: [
+          ['Femmes salariées ou indépendantes dans la branche', '107 600', '—'],
+          ['Répartition dans le commerce automobile', '20 %', '80 %'],
+          ['Part des femmes dans la vente en 2007', '22,7 %', '—'],
+          ['Répartition vendeurs / chefs des ventes auto', '22,7 %', '77,3 %'],
+        ] } },
+      { intitule: 'Rédigez la note récapitulative pour Marjorie.', documents: ['Document 5', 'Annexe 6'], bareme: 4,
+        reponse: "NOTE — De : (nom de l'élève). À : Marjorie. Date : mardi 11 avril (jour où l'élève est avec Marjorie d'après le planning). Objet : compte rendu sur la féminisation du métier de commercial automobile. « Madame, les femmes salariées ou indépendantes représentent 107 600 personnes. Elles représentent 20 % du secteur automobile. Enfin, en 2007 elles représentaient 22,7 % des métiers de la vente (vendeurs, chefs des ventes auto). » Signature : nom de l'élève stagiaire." },
+    ],
+  },
+  synthese: {
+    titre: "L'analyse du CV du commercial automobile",
+    proposition: [
+      'Bac pro vente',
+      'BTS NRC',
+      'Licence pro commerce',
+      '107 600',
+      '22,7 %',
+      'Objet',
+      'Date',
+      'Lieu',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Mission 5',
+      enfants: [
+        { id: 'formation', texte: 'La formation du commercial (3 diplômes)', enfants: [
+          { id: 'f-1', texte: null, reponse: 'Bac pro vente' },
+          { id: 'f-2', texte: null, reponse: 'BTS NRC' },
+          { id: 'f-3', texte: null, reponse: 'Licence pro commerce' },
+        ] },
+        { id: 'fem', texte: 'La féminisation dans l\u2019automobile', enfants: [
+          { id: 'fe-1', texte: 'Nombre', reponse: '107 600' },
+          { id: 'fe-2', texte: 'Pourcentage', reponse: '22,7 %' },
+        ] },
+        { id: 'note', texte: 'La méthodologie du compte rendu (D.A.D.O.)', enfants: [
+          { id: 'n-1', texte: null, reponse: 'Objet' },
+          { id: 'n-2', texte: null, reponse: 'Date' },
+          { id: 'n-3', texte: null, reponse: 'Lieu' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: 'Analyser et comparer des CV de candidats', indicateurs: [
+        { niveau: 'novice', description: 'Je ne sais pas analyser un CV.' },
+        { niveau: 'debrouille', description: 'Je repère quelques éléments (expérience, diplôme).' },
+        { niveau: 'averti', description: 'Je compare les profils et je justifie mon analyse.' },
+        { niveau: 'expert', description: 'Je hiérarchise les candidatures selon le poste visé.' },
+      ] },
+      { id: 'c2', intitule: 'Exploiter des données sur la féminisation du secteur', indicateurs: [
+        { niveau: 'novice', description: 'Je ne sais pas lire les données de l\u2019article.' },
+        { niveau: 'debrouille', description: 'Je relève quelques chiffres.' },
+        { niveau: 'averti', description: 'Je réponds précisément aux questions à partir de l\u2019article.' },
+        { niveau: 'expert', description: 'Je mets les chiffres en perspective (évolution 2007-2017).' },
+      ] },
+      { id: 'c3', intitule: 'Rédiger une note professionnelle (D.A.D.O.)', indicateurs: [
+        { niveau: 'novice', description: 'Je ne connais pas la structure d\u2019une note.' },
+        { niveau: 'debrouille', description: 'Je remplis quelques champs (De, À…).' },
+        { niveau: 'averti', description: 'Je rédige une note complète et structurée.' },
+        { niveau: 'expert', description: 'Je rédige une note claire, chiffrée et professionnelle.' },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Curriculum Vitae (CV)', definition: "Document qui présente le parcours d'un candidat : état civil, formation, expériences, compétences et centres d'intérêt." },
+      { terme: 'BTS NDRC', definition: "Brevet de Technicien Supérieur Négociation et Digitalisation de la Relation Client (ex-NRC), formation aux métiers commerciaux." },
+      { terme: 'Profil atypique', definition: "Candidat dont le parcours diffère du profil habituellement attendu pour le poste." },
+      { terme: 'Féminisation', definition: "Augmentation de la part des femmes dans un métier ou un secteur d'activité." },
+      { terme: 'Note (D.A.D.O.)', definition: "Document professionnel court structuré par : De, À, Date, Objet, puis le corps du message." },
+      { terme: 'Fidélisation', definition: "Ensemble des actions visant à conserver ses clients dans la durée." },
+    ],
+    flashcards: [
+      { recto: 'Pourquoi le CV 2 est-il mieux rémunéré que le CV 1 ?', verso: 'Plus d\u2019expérience (5 ans contre 3) et plus diplômé (licence contre BTS).' },
+      { recto: 'Quel centre d\u2019intérêt du CV 1 est cohérent avec l\u2019automobile ?', verso: 'Les sports mécaniques (passion des voitures).' },
+      { recto: 'Que signifie BTS NDRC ?', verso: 'Négociation et Digitalisation de la Relation Client (ex-NRC).' },
+      { recto: 'Quel est le métier actuel de Mme Badi ?', verso: 'Vendeuse.' },
+      { recto: 'Pourquoi Mme Badi peut être une bonne commerciale ?', verso: "Compétences mobilisables : accueil/conseil client, image de marque, fidélisation, procédures." },
+      { recto: 'Combien de femmes dans la branche automobile ?', verso: '107 600 (salariées ou indépendantes).' },
+      { recto: 'Part des femmes dans le commerce automobile ?', verso: '20 % (contre 80 % d\u2019hommes).' },
+      { recto: 'Part des femmes dans la vente en 2007 ?', verso: '22,7 %.' },
+      { recto: 'Répartition vendeurs / chefs des ventes auto ?', verso: '22,7 % de femmes / 77,3 % d\u2019hommes.' },
+      { recto: 'Quelle est la structure d\u2019une note (D.A.D.O.) ?', verso: 'De, À, Date, Objet, puis le corps et la signature.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Pourquoi le CV 2 est-il mieux rémunéré que le CV 1 ?', options: ['Plus d\u2019expérience et plus diplômé', 'Il est plus jeune', 'Il habite plus loin', 'Aucune raison'], bonne: 0 },
+      { type: 'unique', question: 'Quel centre d\u2019intérêt du CV 1 est cohérent avec l\u2019automobile ?', options: ['Sports mécaniques', 'Cuisine', 'Peinture', 'Jardinage'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie NDRC ?', options: ['Négociation et Digitalisation de la Relation Client', 'Nouvelle Direction Régionale Commerciale', 'Norme De Réparation Commerciale', 'Néant'], bonne: 0 },
+      { type: 'unique', question: 'Quel est le métier actuel de Mme Badi ?', options: ['Vendeuse', 'Mécanicienne', 'Comptable', 'Enseignante'], bonne: 0 },
+      { type: 'unique', question: 'Combien de femmes dans la branche automobile ?', options: ['107 600', '10 760', '1 076', '1 million'], bonne: 0 },
+      { type: 'unique', question: 'Part des femmes dans le commerce automobile ?', options: ['20 %', '50 %', '80 %', '5 %'], bonne: 0 },
+      { type: 'unique', question: 'Part des femmes dans la vente en 2007 ?', options: ['22,7 %', '40 %', '10 %', '77,3 %'], bonne: 0 },
+      { type: 'unique', question: 'Répartition vendeurs / chefs des ventes auto (femmes) ?', options: ['22,7 %', '77,3 %', '50 %', '0,9 %'], bonne: 0 },
+      { type: 'qcm', question: 'Que doit contenir une note professionnelle (D.A.D.O.) ?', options: ['De (expéditeur)', 'À (destinataire)', 'Date et Objet', 'Le code de la route'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Quelles compétences de Mme Badi sont utiles pour la vente auto ?', options: ['Accueil et conseil client', 'Fidélisation', "Respect de l'image de marque", 'Réparation moteur'], bonnes: [0, 1, 2] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Analyse de CV', 'Féminisation (chiffre)', 'Note D.A.D.O.'],
+      zones: [
+        { libelle: 'Le CV 2 a 5 ans d\u2019expérience', etiquetteIndex: 0 },
+        { libelle: 'Centre d\u2019intérêt : sports mécaniques', etiquetteIndex: 0 },
+        { libelle: 'Mme Badi est actuellement vendeuse', etiquetteIndex: 0 },
+        { libelle: '107 600 femmes dans la branche', etiquetteIndex: 1 },
+        { libelle: '20 % de femmes dans le commerce automobile', etiquetteIndex: 1 },
+        { libelle: '22,7 % des vendeurs sont des femmes', etiquetteIndex: 1 },
+        { libelle: 'De (expéditeur)', etiquetteIndex: 2 },
+        { libelle: 'À (destinataire)', etiquetteIndex: 2 },
+        { libelle: 'Objet', etiquetteIndex: 2 },
+        { libelle: 'Date', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
 const CONTENUS: Record<string, ContenuMission> = {
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
@@ -8354,6 +12778,15 @@ const CONTENUS: Record<string, ContenuMission> = {
   'free-m4': FREE_M4,
   'free-m5': FREE_M5,
   'leroy-merlin-m1': LEROY_MERLIN_M1,
+  'leroy-merlin-m2': LEROY_MERLIN_M2,
+  'leroy-merlin-m3': LEROY_MERLIN_M3,
+  'leroy-merlin-m4': LEROY_MERLIN_M4,
+  'leroy-merlin-m5': LEROY_MERLIN_M5,
+  'peugeot-m1': PEUGEOT_M1,
+  'peugeot-m2': PEUGEOT_M2,
+  'peugeot-m3': PEUGEOT_M3,
+  'peugeot-m4': PEUGEOT_M4,
+  'peugeot-m5': PEUGEOT_M5,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.

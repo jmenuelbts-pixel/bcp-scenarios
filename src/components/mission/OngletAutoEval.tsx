@@ -2,10 +2,11 @@
 // Onglet Auto-évaluation : l'eleve choisit son niveau pour chaque competence,
 // puis envoie. Une fois envoye, les choix sont verrouilles.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ContenuAutoEval } from '../../data/contenus'
 import type { NiveauCompetence } from '../../data/schema'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
+import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon } from '../../lib/brouillon'
 
 interface Props {
   contenu: ContenuAutoEval
@@ -29,18 +30,30 @@ export function OngletAutoEval({ contenu, couleur, etudiantId, missionId }: Prop
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
 
+  const brouillon = useRef(creerEnregistreurBrouillon<Record<string, NiveauCompetence>>(etudiantId ?? 'anon', missionId, 'autoeval'))
+  useEffect(() => {
+    brouillon.current = creerEnregistreurBrouillon<Record<string, NiveauCompetence>>(etudiantId ?? 'anon', missionId, 'autoeval')
+  }, [etudiantId, missionId])
+
   useEffect(() => {
     let actif = true
     if (!etudiantId) return
-    chargerQuiz(etudiantId, missionId, 'autoeval').then((s) => {
-      if (!actif || !s) return
-      if (s.reponses && typeof s.reponses === 'object') {
-        setChoix(s.reponses as Record<string, NiveauCompetence>)
+    chargerQuiz(etudiantId, missionId, 'autoeval').then(async (s) => {
+      if (!actif) return
+      if (s) {
+        if (s.reponses && typeof s.reponses === 'object') {
+          setChoix(s.reponses as Record<string, NiveauCompetence>)
+        }
+        setVerrouille(true)
+        void effacerBrouillon(etudiantId, missionId, 'autoeval')
+        return
       }
-      setVerrouille(true)
+      const b = await chargerBrouillon<Record<string, NiveauCompetence>>(etudiantId, missionId, 'autoeval')
+      if (actif && b && typeof b === 'object') setChoix(b)
     })
     return () => {
       actif = false
+      brouillon.current.flush()
     }
   }, [etudiantId, missionId])
 
@@ -56,7 +69,11 @@ export function OngletAutoEval({ contenu, couleur, etudiantId, missionId }: Prop
     setErreur(null)
     const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'autoeval', choix, 0)
     if (erreur) setErreur('L envoi a echoue. Veuillez reessayer.')
-    else setVerrouille(true)
+    else {
+      brouillon.current.annuler()
+      void effacerBrouillon(etudiantId, missionId, 'autoeval')
+      setVerrouille(true)
+    }
     setEnCours(false)
   }
 
@@ -92,7 +109,11 @@ export function OngletAutoEval({ contenu, couleur, etudiantId, missionId }: Prop
                     disabled={verrouille}
                     onClick={() => {
                       if (verrouille) return
-                      setChoix((c) => ({ ...c, [comp.id]: niveau }))
+                      setChoix((c) => {
+                        const maj = { ...c, [comp.id]: niveau }
+                        brouillon.current.sauver(maj)
+                        return maj
+                      })
                     }}
                     style={{
                       fontFamily: 'Arial, sans-serif',

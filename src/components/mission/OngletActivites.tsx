@@ -3,9 +3,10 @@
 // trous, appariement) et glisser-deposer. Le quiz capture les reponses de
 // l'eleve, calcule un score a l'envoi et l'enregistre dans Supabase.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ContenuActivites, Flashcard, QuestionQuiz } from '../../data/contenus'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
+import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon } from '../../lib/brouillon'
 import { definirSousOngletCourant } from '../../lib/useBattementPresence'
 
 interface Props {
@@ -220,28 +221,44 @@ function VueQuiz({
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
 
+  const brouillon = useRef(creerEnregistreurBrouillon<ReponsesEleve>(etudiantId ?? 'anon', missionId, 'activites'))
+  useEffect(() => {
+    brouillon.current = creerEnregistreurBrouillon<ReponsesEleve>(etudiantId ?? 'anon', missionId, 'activites')
+  }, [etudiantId, missionId])
+
   // Au montage : si l'eleve a deja envoye ce quiz, restaurer ses reponses et
-  // son score, et verrouiller toute modification.
+  // son score, et verrouiller toute modification. Sinon, restaurer le brouillon.
   useEffect(() => {
     let actif = true
     if (!etudiantId) return
-    chargerQuiz(etudiantId, missionId, 'quiz').then((soumission) => {
-      if (!actif || !soumission) return
-      if (soumission.reponses && typeof soumission.reponses === 'object') {
-        setReponses(soumission.reponses as ReponsesEleve)
+    chargerQuiz(etudiantId, missionId, 'quiz').then(async (soumission) => {
+      if (!actif) return
+      if (soumission) {
+        if (soumission.reponses && typeof soumission.reponses === 'object') {
+          setReponses(soumission.reponses as ReponsesEleve)
+        }
+        setScore(soumission.score)
+        setEnvoye(true)
+        setVerrouille(true)
+        void effacerBrouillon(etudiantId, missionId, 'activites')
+        return
       }
-      setScore(soumission.score)
-      setEnvoye(true)
-      setVerrouille(true)
+      const b = await chargerBrouillon<ReponsesEleve>(etudiantId, missionId, 'activites')
+      if (actif && b && typeof b === 'object') setReponses(b)
     })
     return () => {
       actif = false
+      brouillon.current.flush()
     }
   }, [etudiantId, missionId])
 
   function definir(i: number, valeur: number[] | string[]) {
     if (verrouille) return
-    setReponses((r) => ({ ...r, [i]: valeur }))
+    setReponses((r) => {
+      const maj = { ...r, [i]: valeur }
+      brouillon.current.sauver(maj)
+      return maj
+    })
     setEnvoye(false)
   }
 
@@ -277,7 +294,11 @@ function VueQuiz({
       setErreur(null)
       const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'quiz', reponses, s)
       if (erreur) setErreur('L enregistrement du resultat a echoue.')
-      else setVerrouille(true)
+      else {
+        brouillon.current.annuler()
+        void effacerBrouillon(etudiantId, missionId, 'activites')
+        setVerrouille(true)
+      }
       setEnCours(false)
     }
   }

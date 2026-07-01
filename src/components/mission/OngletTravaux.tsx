@@ -4,7 +4,7 @@
 // sont serialisees en JSON dans le champ travail unique de la mission, puis
 // verrouillees apres envoi.
 
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { VisionneuseDocument } from '../ui/VisionneuseDocument'
 import type {
   ContenuTravaux,
@@ -51,11 +51,20 @@ import type {
   AnnexeClientele,
   AnnexeConcurrents,
   AnnexeQuestionsReponses,
+  AnnexeFreins,
+  AnnexeFicheClient,
+  AnnexePlanning,
+  CreneauPlanning,
+  AnnexeBonCommande,
+  AnnexeEtapesLivraison,
+  AnnexeBulle,
+  AnnexeMailLecture,
   ProduitCatalogue,
   VehiculeCatalogue,
   BlocDocumentTexte,
 } from '../../data/contenus'
 import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
+import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon } from '../../lib/brouillon'
 
 interface Props {
   contenu: ContenuTravaux
@@ -90,10 +99,19 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
   // Fiche technique de vehicule ouverte en plein ecran (catalogue Document 5).
   const [ficheVehicule, setFicheVehicule] = useState<VehiculeCatalogue | null>(null)
 
+  // Enregistreur de brouillon (autosave). Recree si l'eleve ou la mission change.
+  const brouillon = useRef(creerEnregistreurBrouillon<Saisies>(etudiantId ?? 'anon', missionId, 'travaux'))
+  useEffect(() => {
+    brouillon.current = creerEnregistreurBrouillon<Saisies>(etudiantId ?? 'anon', missionId, 'travaux')
+  }, [etudiantId, missionId])
+
   useEffect(() => {
     if (!etudiantId) return
-    chargerTravail(etudiantId, missionId).then((c) => {
+    let actif = true
+    chargerTravail(etudiantId, missionId).then(async (c) => {
+      if (!actif) return
       if (c && c.trim().length > 0) {
+        // Travail deja envoye : il prime, on l'affiche verrouille et on nettoie tout brouillon.
         try {
           const obj = JSON.parse(c)
           if (obj && typeof obj === 'object') setSaisies(obj as Saisies)
@@ -102,14 +120,28 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
           setSaisies({ _texte: c })
         }
         setVerrouille(true)
+        void effacerBrouillon(etudiantId, missionId, 'travaux')
+        return
       }
+      // Pas de travail envoye : on restaure le brouillon en cours s'il existe.
+      const b = await chargerBrouillon<Saisies>(etudiantId, missionId, 'travaux')
+      if (actif && b && typeof b === 'object') setSaisies(b)
     })
-    chargerRetourTravail(etudiantId, missionId).then(setRetour)
+    chargerRetourTravail(etudiantId, missionId).then((r) => { if (actif) setRetour(r) })
+    // Au demontage (changement d'onglet/page) : on force l'ecriture distante du brouillon.
+    return () => {
+      actif = false
+      brouillon.current.flush()
+    }
   }, [etudiantId, missionId])
 
   function set(id: string, val: string) {
     if (verrouille) return
-    setSaisies((s) => ({ ...s, [id]: val }))
+    setSaisies((s) => {
+      const maj = { ...s, [id]: val }
+      brouillon.current.sauver(maj)
+      return maj
+    })
   }
 
   // Liste des champs requis (annexes) pour valider la completude.
@@ -135,7 +167,11 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     setErreur(null)
     const { erreur } = await enregistrerTravail(etudiantId, missionId, JSON.stringify(saisies))
     if (erreur) setErreur('L envoi a echoue. Veuillez reessayer.')
-    else setVerrouille(true)
+    else {
+      brouillon.current.annuler()
+      void effacerBrouillon(etudiantId, missionId, 'travaux')
+      setVerrouille(true)
+    }
     setEnCours(false)
   }
 
@@ -150,6 +186,11 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     width: '100%',
     boxSizing: 'border-box',
   }
+
+  // Suit les annexes deja rendues : une annexe partagee par plusieurs
+  // questions ne s'affiche qu'une seule fois (a la premiere question qui la
+  // reference). Reinitialise au debut du rendu des activites.
+  const annexesRendues = new Set<string>()
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', color: '#1F2933' }}>
@@ -216,7 +257,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                           <span style={{ display: 'inline-flex', width: 18, height: 18, alignItems: 'center', justifyContent: 'center', borderRadius: 4, background: '#EEF3F8', color: '#16456E', fontWeight: 700 }}>+</span>
                           Cliquez sur le document pour l'agrandir.
                         </div>
-                        {docCourant.images.map((src, i) => (
+                        {(docCourant.images ?? []).map((src, i) => (
                           <button
                             key={i}
                             type="button"
@@ -260,6 +301,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       )}
 
       {/* Activites et questions */}
+      {(() => { annexesRendues.clear(); return null })()}
       {contenu.activites?.map((act, ai) => (
         <div key={ai} style={{ marginBottom: 18 }}>
           <h3
@@ -274,10 +316,25 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
           >
             {act.titre}
           </h3>
+          {act.contexte && (
+            <div style={{ border: `2px solid ${couleur}`, borderRadius: 12, padding: '12px 16px', margin: '0 0 14px', background: `${couleur}14` }}>
+              <span style={{ fontSize: 14, fontStyle: 'italic', color: '#374151', lineHeight: 1.5 }}>{act.contexte}</span>
+            </div>
+          )}
           {act.questions.map((q) => {
             const annexe = contenu.annexes?.find((a) => a.id === q.annexeId)
+            const annexe2 = q.annexeId2 ? contenu.annexes?.find((a) => a.id === q.annexeId2) : undefined
+            const montrerAnnexe = annexe && annexe.type !== 'powerpoint' && !annexesRendues.has(annexe.id)
+            if (montrerAnnexe) annexesRendues.add(annexe!.id)
+            const montrerAnnexe2 = annexe2 && annexe2.type !== 'powerpoint' && !annexesRendues.has(annexe2.id)
+            if (montrerAnnexe2) annexesRendues.add(annexe2!.id)
             return (
               <div key={q.numero} style={{ marginBottom: 16 }}>
+                {q.contexteAvant && (
+                  <div style={{ border: `2px solid ${couleur}`, borderRadius: 12, padding: '12px 16px', marginBottom: 12, background: `${couleur}14` }}>
+                    <span style={{ fontSize: 14, fontStyle: 'italic', color: '#374151', lineHeight: 1.5 }}>{q.contexteAvant}</span>
+                  </div>
+                )}
                 <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', marginBottom: 4 }}>
                   <span style={{ fontWeight: 700, color: couleur }}>{q.numero}.</span>
                   <span style={{ fontSize: 14, fontWeight: 600 }}>{q.consigne}</span>
@@ -299,9 +356,14 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
                     </a>
                   </div>
                 )}
-                {annexe && annexe.type !== 'powerpoint' && (
+                {montrerAnnexe && (
                   <div style={{ marginLeft: 18 }}>
                     {rendreAnnexe(annexe, saisies, set, champStyle, verrouille, couleur)}
+                  </div>
+                )}
+                {montrerAnnexe2 && (
+                  <div style={{ marginLeft: 18, marginTop: 12 }}>
+                    {rendreAnnexe(annexe2, saisies, set, champStyle, verrouille, couleur)}
                   </div>
                 )}
               </div>
@@ -474,7 +536,7 @@ function CrmConsultable({ crm, couleur }: {
 
 function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte[]; couleur: string; marque: { nom: string; url: string } }) {
   const estPageWeb = blocs.some((b) => b.pageWeb)
-  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone && !b.image))
+  const contenu = blocs.filter((b) => !(b.pageWeb && !b.intertitre && !b.paragraphes && !b.puces && !b.dialogue && !b.tableau && !b.crm && !b.organigramme && !b.procedure && !b.transcription && !b.journalAppels && !b.mailLecture && !b.offrePrix && !b.cartesTechniques && !b.offreFlash && !b.bareme && !b.articleEtapes && !b.reseauSocial && !b.jaugeSatisfaction && !b.questionnaire && !b.instagramTelephone && !b.image && !b.galerieProduits && !b.etapesVisuelles && !b.logoEntete && !b.offresPrestation && !b.cheques && !b.postits && !b.ribs && !b.configurateurVehicule && !b.fichesVehicule && !b.formulaireInteractif && !b.catalogueAccessoires && !b.livreOuvert && !b.bulle && !b.note))
   // Premier intertitre = titre de la page (sert au bandeau hero).
   const titrePage = contenu.find((b) => b.intertitre)?.intertitre
   return (
@@ -549,12 +611,95 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
                 {b.tableau.lignes.map((ligne, li) => (
                   <tr key={li}>
                     {ligne.map((c, cj) => (
-                      <td key={cj} style={{ padding: '8px 10px', fontSize: 14, color: '#1F2933', border: '1px solid #DCE8F4', fontWeight: cj === 0 ? 700 : 400, verticalAlign: 'top', width: cj === 0 ? '22%' : undefined }}>{c}</td>
+                      <td key={cj} style={{ padding: '8px 10px', fontSize: 14, color: '#1F2933', border: '1px solid #DCE8F4', fontWeight: cj === 0 ? 700 : 400, verticalAlign: 'top', width: cj === 0 ? '22%' : undefined, whiteSpace: 'pre-line' }}>{c}</td>
                     ))}
                   </tr>
                 ))}
               </tbody>
             </table>
+          )}
+          {b.logoEntete && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 6 }}>
+              <img src={b.logoEntete} alt="Leroy Merlin" style={{ height: 40 }} />
+            </div>
+          )}
+          {b.etapesVisuelles && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'stretch', margin: '12px 0' }}>
+              {b.etapesVisuelles.map((e, ei) => (
+                <Fragment key={ei}>
+                  <div style={{ flex: '1 1 150px', minWidth: 140, background: '#FFFFFF', border: `2px solid ${couleur}`, borderRadius: 10, padding: '12px 12px 14px', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+                    <span style={{ width: 30, height: 30, borderRadius: '50%', background: couleur, color: '#FFFFFF', fontSize: 15, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{ei + 1}</span>
+                    <span style={{ fontSize: 13, color: '#1F2933', fontWeight: 600, lineHeight: 1.3 }}>{e}</span>
+                  </div>
+                  {ei < b.etapesVisuelles!.length - 1 && <div style={{ alignSelf: 'center', color: couleur, fontSize: 24, fontWeight: 800 }}>→</div>}
+                </Fragment>
+              ))}
+            </div>
+          )}
+          {b.offresPrestation && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '12px 0' }}>
+              {b.offresPrestation.map((o, oi) => (
+                <div key={oi} style={{ border: '1px solid #E2E8F0', borderRadius: 12, overflow: 'hidden', background: '#FFFFFF', boxShadow: '0 1px 5px rgba(0,0,0,0.07)' }}>
+                  {o.filAriane && <div style={{ fontSize: 11, color: '#6B7280', padding: '8px 14px', borderBottom: '1px solid #F1F3F5', background: '#FAFBFC' }}>{o.filAriane}</div>}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, padding: 14 }}>
+                    {o.image && <img src={o.image} alt={o.titre} style={{ width: 240, maxWidth: '100%', height: 170, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />}
+                    <div style={{ flex: '1 1 260px', minWidth: 240 }}>
+                      <div style={{ fontSize: 17, fontWeight: 800, color: '#1F2933', marginBottom: 4 }}>{o.titre}</div>
+                      {o.note && <div style={{ fontSize: 12.5, color: '#E8A100', marginBottom: 8 }}>{'★'.repeat(5)} <span style={{ color: '#6B7280' }}>{o.avis}</span></div>}
+                      <div style={{ display: 'inline-block', borderTop: `3px solid ${couleur}`, paddingTop: 8 }}>
+                        <span style={{ fontSize: 13, color: '#4B5563' }}>{o.prixLibelle ?? 'À partir de'}</span>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: couleur }}>{o.prix}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding: '0 14px 14px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933', margin: '6px 0' }}>✓ Détails de la prestation — L'offre comprend</div>
+                    <ul style={{ margin: '0 0 10px', paddingLeft: 20, fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
+                      {o.details.map((d, di) => <li key={di}>{d}</li>)}
+                    </ul>
+                    {o.conditions && o.conditions.length > 0 && (
+                      <>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933', margin: '6px 0' }}>Conditions d'application</div>
+                        <ul style={{ margin: '0 0 10px', paddingLeft: 20, fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
+                          {o.conditions.map((c, ci) => <li key={ci}>{c}</li>)}
+                        </ul>
+                      </>
+                    )}
+                    {o.engagements && o.engagements.length > 0 && (
+                      <>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933', margin: '6px 0' }}>Nos engagements</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                          {o.engagements.map((e, ei) => (
+                            <div key={ei} style={{ flex: '1 1 200px', background: '#F4F8EE', borderRadius: 8, padding: '8px 12px' }}>
+                              <div style={{ fontSize: 12.5, fontWeight: 700, color: '#3A5A1A' }}>{e.titre}</div>
+                              <div style={{ fontSize: 12, color: '#4B5563' }}>{e.texte}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {b.galerieProduits && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14, margin: '10px 0' }}>
+              {b.galerieProduits.map((p, gi) => (
+                <div key={gi} style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ position: 'relative', background: '#F4F6F8' }}>
+                    <img src={p.image} alt={p.titre} style={{ width: '100%', height: 170, objectFit: 'cover', display: 'block' }} />
+                    <span style={{ position: 'absolute', top: 10, right: 10, background: couleur, color: '#FFFFFF', fontSize: 14, fontWeight: 800, padding: '4px 10px', borderRadius: 20 }}>{p.prix}</span>
+                  </div>
+                  <div style={{ padding: '10px 12px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2933', lineHeight: 1.3 }}>{p.titre}</div>
+                    <div style={{ fontSize: 12, color: '#4B5563' }}>{p.dimensions}</div>
+                    <div style={{ fontSize: 12, color: '#6B7280' }}>Réf. {p.reference}</div>
+                    <div style={{ fontSize: 11.5, color: '#6B7280', marginTop: 2 }}><span style={{ fontWeight: 700 }}>Coloris :</span> {p.coloris}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
           {b.image && (
             <figure style={{ margin: '8px 0', textAlign: 'center' }}>
@@ -577,8 +722,438 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
           {b.reseauSocial && <ReseauSocialVue post={b.reseauSocial} />}
           {b.questionnaire && !b.instagramTelephone && <QuestionnaireVue q={b.questionnaire} couleur={couleur} />}
           {b.instagramTelephone && <InstagramTelephoneVue data={b.instagramTelephone} questionnaire={b.questionnaire} couleur={couleur} />}
+          {b.cheques && <ChequesVue cheques={b.cheques} />}
+          {b.ribs && <RibsVue ribs={b.ribs} />}
+          {b.postits && <PostitsVue postits={b.postits} />}
+          {b.configurateurVehicule && <ConfigurateurVehiculeVue config={b.configurateurVehicule} couleur={couleur} />}
+          {b.fichesVehicule && <FichesVehiculeVue data={b.fichesVehicule} couleur={couleur} />}
+          {b.formulaireInteractif && <FormulaireInteractifVue form={b.formulaireInteractif} />}
+          {b.catalogueAccessoires && <CatalogueAccessoiresVue data={b.catalogueAccessoires} couleur={couleur} />}
+          {b.livreOuvert && <LivreOuvertVue livre={b.livreOuvert} couleur={couleur} />}
+          {b.bulle && <BulleVue bulle={b.bulle} couleur={couleur} />}
+          {b.note && <NoteVue note={b.note} couleur={couleur} />}
         </div>
       ))}
+      </div>
+    </div>
+  )
+}
+
+// Chèques bancaires réalistes : en-tête banque (couleur + logo), agence, montant
+// chiffres + lettres, bénéficiaire, titulaire, lieu/date, ligne MICR. Le post-it
+// (année + accessoire) est placé AU-DESSUS du chèque, sans recouvrir aucune info.
+function ChequesVue({ cheques }: { cheques: NonNullable<BlocDocumentTexte['cheques']> }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18, margin: '10px 0' }}>
+      {cheques.map((c, i) => {
+        const initiales = c.banque.split(' ').map((m) => m.charAt(0)).join('').slice(0, 3).toUpperCase()
+        const aPostit = !!(c.postitAnnee || c.postitAccessoire)
+        return (
+          <div key={i}>
+            {aPostit && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -6, paddingRight: 18 }}>
+                <div style={{ background: '#FFF7B0', padding: '8px 12px', boxShadow: '0 3px 7px rgba(0,0,0,0.22)', transform: 'rotate(-2deg)', fontFamily: '"Bradley Hand","Segoe Print","Comic Sans MS",cursive', fontSize: 13, color: '#3A3A1E', lineHeight: 1.4, borderRadius: 2 }}>
+                  {c.postitAnnee && <div style={{ fontWeight: 700 }}>Véhicule acheté en {c.postitAnnee}</div>}
+                  {c.postitAccessoire && <div>{c.postitAccessoire}</div>}
+                </div>
+              </div>
+            )}
+            <div style={{ position: 'relative', background: '#FBFCFB', border: `1px solid ${c.couleur}33`, borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 5px rgba(0,0,0,0.13)' }}>
+              <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(115deg, ${c.couleur}0C 0 10px, transparent 10px 20px)`, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', right: 14, top: 10, fontSize: 44, fontWeight: 800, color: `${c.couleur}12`, transform: 'rotate(-8deg)', letterSpacing: 1, pointerEvents: 'none' }}>{initiales}</div>
+              <div style={{ position: 'relative', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+                    <span style={{ width: 32, height: 30, borderRadius: 4, background: c.couleur, color: '#FFFFFF', fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{initiales}</span>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 800, fontSize: 14, color: c.couleur }}>{c.banque}</div>
+                      {c.agence && <div style={{ fontSize: 10, color: '#6B7280' }}>{c.agence}</div>}
+                      {c.telephone && <div style={{ fontSize: 10, color: '#6B7280' }}>Tél : {c.telephone}</div>}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 8.5, color: '#7A7A7A', letterSpacing: 0.5 }}>B.P.F.</div>
+                    {c.montant && <div style={{ border: `1.5px solid ${c.couleur}`, borderRadius: 3, padding: '4px 12px', fontWeight: 700, fontSize: 14, marginTop: 2, color: '#1F2933', background: '#FFFFFF' }}>{c.montant}</div>}
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: '#222', lineHeight: 1.7 }}>
+                  <div style={{ borderBottom: '1px dotted #BBBBBB', paddingBottom: 2 }}>Payez contre ce chèque non endossable : <span style={{ fontStyle: 'italic', color: '#555' }}>{c.montantLettres ?? '\u2026'}</span></div>
+                  <div style={{ borderBottom: '1px dotted #BBBBBB', paddingTop: 4, paddingBottom: 2 }}>à : <span style={{ fontWeight: 700 }}>{c.beneficiaire ?? 'RENAULT RETAIL GROUP — Championnet'}</span></div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 10 }}>
+                  <div style={{ fontSize: 11, lineHeight: 1.45 }}>
+                    <div style={{ fontWeight: 700, textTransform: 'uppercase' }}>{c.titulaire}</div>
+                    {c.adresse && <div style={{ color: '#444' }}>{c.adresse}</div>}
+                  </div>
+                  <div style={{ textAlign: 'right', fontSize: 10, color: '#555', flexShrink: 0 }}>
+                    {c.lieu && <div>à {c.lieu}</div>}
+                    {c.date && <div>le {c.date}</div>}
+                  </div>
+                </div>
+                <div style={{ fontFamily: '"Courier New", monospace', fontSize: 11, letterSpacing: 1, color: '#222', borderTop: '1px solid #DDD', paddingTop: 6, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                  <span>{c.micr ?? '\u2448 0000000 \u2448   00000 \u2446 00000 \u2446 00000000000 \u2448'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// RIB facon document bancaire : entete coloree + titulaire + IBAN/BIC. Post-it
+// (annee + accessoire) place au-dessus, sans recouvrir aucune information.
+function RibsVue({ ribs }: { ribs: NonNullable<BlocDocumentTexte['ribs']> }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '10px 0' }}>
+      {ribs.map((r, i) => {
+        const initiales = r.banque.split(' ').map((m) => m.charAt(0)).join('').slice(0, 3).toUpperCase()
+        const aPostit = !!(r.postitAnnee || r.postitAccessoire)
+        return (
+          <div key={i}>
+            {aPostit && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -6, paddingRight: 16 }}>
+                <div style={{ background: '#FFF7B0', padding: '8px 12px', boxShadow: '0 3px 7px rgba(0,0,0,0.22)', transform: 'rotate(-2deg)', fontFamily: '"Bradley Hand","Segoe Print","Comic Sans MS",cursive', fontSize: 13, color: '#3A3A1E', lineHeight: 1.4, borderRadius: 2 }}>
+                  {r.postitAnnee && <div style={{ fontWeight: 700 }}>Véhicule acheté en {r.postitAnnee}</div>}
+                  {r.postitAccessoire && <div>{r.postitAccessoire}</div>}
+                </div>
+              </div>
+            )}
+            <div style={{ border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 5px rgba(0,0,0,0.07)' }}>
+              <div style={{ background: r.couleur, color: '#FFFFFF', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 30, height: 30, borderRadius: 6, background: 'rgba(255,255,255,0.22)', fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{initiales}</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 14 }}>{r.banque}</div>
+                  <div style={{ fontSize: 11, opacity: 0.9 }}>Relevé d\u2019Identité Bancaire (RIB)</div>
+                </div>
+              </div>
+              <div style={{ padding: '12px 14px', fontSize: 13, color: '#1F2933', lineHeight: 1.6 }}>
+                <div style={{ fontWeight: 700 }}>{r.titulaire}</div>
+                {r.adresse && <div style={{ color: '#4B5563' }}>{r.adresse}</div>}
+                {r.iban && <div style={{ marginTop: 6, fontFamily: 'monospace', fontSize: 13, letterSpacing: 0.5 }}><span style={{ color: '#6B7280', fontFamily: 'Arial' }}>IBAN </span>{r.iban}</div>}
+                {r.bic && <div style={{ fontFamily: 'monospace', fontSize: 13 }}><span style={{ color: '#6B7280', fontFamily: 'Arial' }}>BIC </span>{r.bic}</div>}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Post-it de suggestions : papier jaune, coin corné, écriture façon note.
+function PostitsVue({ postits }: { postits: NonNullable<BlocDocumentTexte['postits']> }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, margin: '10px 0' }}>
+      {postits.map((p, i) => {
+        const fond = p.couleur ?? '#FFF7B0'
+        return (
+          <div key={i} style={{ position: 'relative', flex: '1 1 240px', minWidth: 220, maxWidth: 320, background: fond, padding: '14px 16px 18px', boxShadow: '0 3px 8px rgba(0,0,0,0.18)', transform: i % 2 === 0 ? 'rotate(-1.4deg)' : 'rotate(1.2deg)', borderRadius: 2 }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderStyle: 'solid', borderWidth: '0 22px 22px 0', borderColor: `transparent rgba(0,0,0,0.10) transparent transparent` }} />
+            <div style={{ fontFamily: '"Bradley Hand","Segoe Print","Comic Sans MS",cursive', fontSize: 14, color: '#3A3A1E', lineHeight: 1.55 }}>
+              {p.prenom != null && <div><strong>Prénom :</strong> {p.prenom}</div>}
+              {p.nom != null && <div><strong>Nom :</strong> {p.nom}</div>}
+              {p.adresse && <div><strong>Adresse :</strong> {p.adresse}</div>}
+              {p.telephone && <div><strong>Téléphone :</strong> {p.telephone}</div>}
+              {p.suggestion && <div style={{ marginTop: 8 }}><strong>Suggestions :</strong> {p.suggestion}</div>}
+              {p.date && <div style={{ marginTop: 8, textAlign: 'right', fontSize: 12, fontStyle: 'italic' }}>{p.date}</div>}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Gabarit de note professionnelle editable (De / A / Date / Objet + corps).
+function NoteVue({ note, couleur }: { note: NonNullable<BlocDocumentTexte['note']>; couleur: string }) {
+  const accent = couleur === '#FFCC00' ? '#1F2933' : couleur
+  const [champs, setChamps] = useState<Record<string, string>>({
+    de: note.de ?? '', a: note.a ?? '', date: note.date ?? '', objet: note.objet ?? '',
+    corps: (note.corps ?? []).join('\n'), signature: note.signature ?? '',
+  })
+  const set = (k: string, v: string) => setChamps((c) => ({ ...c, [k]: v }))
+  const ligne = (label: string, k: string) => (
+    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #E6E9ED', padding: '8px 0' }}>
+      <span style={{ width: 70, fontWeight: 700, fontSize: 13, color: accent }}>{label}</span>
+      <input value={champs[k]} onChange={(e) => set(k, e.target.value)} style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13.5, color: '#1F2933', background: 'transparent' }} />
+    </div>
+  )
+  return (
+    <div style={{ maxWidth: 620, margin: '10px 0', border: '1px solid #D8DEE5', borderRadius: 8, background: '#FFFFFF', boxShadow: '0 2px 10px rgba(0,0,0,0.10)', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px', borderBottom: `3px solid ${accent}` }}>
+        {note.logo ? <img src={note.logo} alt="" style={{ height: 34 }} /> : <div style={{ width: 34, height: 34, borderRadius: 6, background: accent, color: '#FFF', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>N</div>}
+        <div style={{ fontWeight: 800, fontSize: 20, letterSpacing: 3, color: accent }}>NOTE</div>
+      </div>
+      <div style={{ padding: '10px 18px' }}>
+        {ligne('De', 'de')}
+        {ligne('À', 'a')}
+        {ligne('Date', 'date')}
+        {ligne('Objet', 'objet')}
+        <div style={{ padding: '12px 0' }}>
+          <textarea value={champs.corps} onChange={(e) => set('corps', e.target.value)} rows={7} placeholder="Rédigez votre note ici…" style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6E9ED', borderRadius: 6, padding: '10px 12px', fontSize: 13.5, lineHeight: 1.6, color: '#1F2933', resize: 'vertical', fontFamily: 'inherit' }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 4 }}>
+          <input value={champs.signature} onChange={(e) => set('signature', e.target.value)} placeholder="Signature (nom de l'élève stagiaire)" style={{ width: 260, border: 'none', borderBottom: '1px solid #C9D0D8', outline: 'none', fontSize: 13, fontStyle: 'italic', textAlign: 'right', color: '#374151', paddingBottom: 4 }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Temoignage : personnage (avatar) + bulle de dialogue + bouton video discret.
+function BulleVue({ bulle, couleur }: { bulle: NonNullable<BlocDocumentTexte['bulle']>; couleur: string }) {
+  const c = bulle.couleurAvatar ?? (couleur === '#FFCC00' ? '#1F2933' : couleur)
+  return (
+    <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', margin: '12px 0' }}>
+      <div style={{ flexShrink: 0, textAlign: 'center', width: 84 }}>
+        {bulle.avatar
+          ? <img src={bulle.avatar} alt={bulle.nom ?? ''} style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${c}` }} />
+          : <div style={{ width: 72, height: 72, borderRadius: '50%', background: c, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 800, margin: '0 auto' }}>{bulle.initiale ?? (bulle.nom ? bulle.nom.charAt(0) : '?')}</div>}
+        {bulle.nom && <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2933', marginTop: 6, lineHeight: 1.2 }}>{bulle.nom}</div>}
+        {bulle.role && <div style={{ fontSize: 10.5, color: '#6B7280', lineHeight: 1.2 }}>{bulle.role}</div>}
+      </div>
+      <div style={{ position: 'relative', flex: 1, background: '#FFFFFF', border: `1.5px solid ${c}33`, borderRadius: 14, padding: '14px 16px', boxShadow: '0 1px 5px rgba(0,0,0,0.08)' }}>
+        <div style={{ position: 'absolute', left: -9, top: 24, width: 0, height: 0, borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderRight: `9px solid ${c}33` }} />
+        <div style={{ position: 'absolute', left: -7, top: 24, width: 0, height: 0, borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderRight: '9px solid #FFFFFF' }} />
+        {bulle.lignes.map((l, i) => <p key={i} style={{ fontSize: 13.5, color: '#1F2933', lineHeight: 1.65, margin: i === 0 ? '0 0 8px' : '0 0 8px', fontStyle: 'italic' }}>« {l} »</p>)}
+        {bulle.videoLien && (
+          <a href={bulle.videoLien} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: c, textDecoration: 'none', marginTop: 2, opacity: 0.85 }}>
+            <span style={{ display: 'inline-flex', width: 18, height: 18, borderRadius: '50%', background: c, color: '#FFFFFF', alignItems: 'center', justifyContent: 'center', fontSize: 9 }}>&#9654;</span>
+            Écouter / regarder la vidéo
+          </a>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Document facon livre ouvert : navigation page precedente / suivante.
+function LivreOuvertVue({ livre, couleur }: { livre: NonNullable<BlocDocumentTexte['livreOuvert']>; couleur: string }) {
+  const [page, setPage] = useState(0)
+  const total = livre.pages.length
+  const p = livre.pages[page]
+  const accent = couleur === '#FFCC00' ? '#1F2933' : couleur
+  return (
+    <div style={{ margin: '10px 0' }}>
+      {livre.titre && <div style={{ textAlign: 'center', fontWeight: 700, fontSize: 15, color: '#1F2933', marginBottom: 8 }}>{livre.titre}</div>}
+      <div style={{ position: 'relative', maxWidth: 620, margin: '0 auto', background: 'linear-gradient(90deg,#F3ECDD 0%, #FBF7EE 6%, #FFFDF8 50%, #FBF7EE 94%, #F3ECDD 100%)', border: '1px solid #E0D6C2', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.14)', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 2, background: 'linear-gradient(180deg, transparent, rgba(0,0,0,0.10), transparent)', transform: 'translateX(-1px)' }} />
+        <div style={{ padding: '26px 30px', minHeight: 220 }}>
+          {p.titre && <div style={{ fontWeight: 800, fontSize: 15, color: accent, marginBottom: 12, borderBottom: `2px solid ${accent}22`, paddingBottom: 6 }}>{p.titre}</div>}
+          {p.paragraphes?.map((par, i) => <p key={i} style={{ fontSize: 13.5, color: '#3A3A2E', lineHeight: 1.7, margin: '0 0 10px' }}>{par}</p>)}
+          {p.puces && (
+            <ul style={{ margin: '4px 0', paddingLeft: 20 }}>
+              {p.puces.map((pu, i) => <li key={i} style={{ fontSize: 13.5, color: '#3A3A2E', lineHeight: 1.6, marginBottom: 6 }}>{pu}</li>)}
+            </ul>
+          )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderTop: '1px solid #EADFCB', background: 'rgba(255,255,255,0.4)' }}>
+          <button onClick={() => setPage((n) => Math.max(0, n - 1))} disabled={page === 0} style={{ padding: '6px 14px', border: `1px solid ${accent}`, borderRadius: 6, background: page === 0 ? '#EDEDED' : '#FFFFFF', color: page === 0 ? '#AAA' : accent, cursor: page === 0 ? 'default' : 'pointer', fontSize: 13, fontWeight: 600 }}>‹ Page précédente</button>
+          <span style={{ fontSize: 12.5, color: '#8A7F6B' }}>Page {page + 1} / {total}</span>
+          <button onClick={() => setPage((n) => Math.min(total - 1, n + 1))} disabled={page === total - 1} style={{ padding: '6px 14px', border: `1px solid ${accent}`, borderRadius: 6, background: page === total - 1 ? '#EDEDED' : '#FFFFFF', color: page === total - 1 ? '#AAA' : accent, cursor: page === total - 1 ? 'default' : 'pointer', fontSize: 13, fontWeight: 600 }}>Page suivante ›</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Catalogue d'accessoires facon boutique en ligne : filtres par categorie + grille.
+function CatalogueAccessoiresVue({ data, couleur }: { data: NonNullable<BlocDocumentTexte['catalogueAccessoires']>; couleur: string }) {
+  const cats = data.categories ?? Array.from(new Set(data.produits.map((p) => p.categorie).filter(Boolean) as string[]))
+  const [filtre, setFiltre] = useState<string | null>(null)
+  const [recherche, setRecherche] = useState('')
+  const liste = data.produits.filter((p) => (!filtre || p.categorie === filtre) && (!recherche || p.nom.toLowerCase().includes(recherche.toLowerCase())))
+  const jaune = couleur === '#FFCC00' ? '#FFCC00' : couleur
+  return (
+    <div style={{ border: '1px solid #E6E9ED', borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.08)', margin: '10px 0', background: '#FFFFFF' }}>
+      <div style={{ padding: '14px 16px', borderBottom: '1px solid #EEF1F4', textAlign: 'center' }}>
+        <div style={{ fontSize: 18, color: '#1F2933', fontWeight: 600 }}>{data.titre ?? 'Trouver mes accessoires'}</div>
+        <div style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}><strong>{data.nbTotal ?? data.produits.length}</strong> accessoires disponibles</div>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, padding: 16 }}>
+        <div style={{ flex: '0 0 200px', minWidth: 180 }}>
+          <div style={{ background: '#3A3F45', color: '#FFFFFF', padding: '8px 12px', borderRadius: 6, fontWeight: 700, fontSize: 13, marginBottom: 8 }}>Filtres</div>
+          <input value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher mon accessoire" style={{ width: '100%', boxSizing: 'border-box', padding: '7px 9px', border: '1px solid #D6DBE1', borderRadius: 6, fontSize: 12.5, marginBottom: 10 }} />
+          <button onClick={() => setFiltre(null)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '7px 10px', border: 'none', borderRadius: 6, background: filtre === null ? `${jaune}33` : 'transparent', cursor: 'pointer', fontSize: 12.5, fontWeight: filtre === null ? 700 : 500, color: '#1F2933', marginBottom: 3 }}>Tous les accessoires</button>
+          {cats.map((c) => {
+            const n = data.produits.filter((p) => p.categorie === c).length
+            return <button key={c} onClick={() => setFiltre(c)} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', textAlign: 'left', padding: '7px 10px', border: 'none', borderRadius: 6, background: filtre === c ? `${jaune}33` : 'transparent', cursor: 'pointer', fontSize: 12.5, fontWeight: filtre === c ? 700 : 500, color: '#1F2933', marginBottom: 3 }}><span>{c}</span><span style={{ color: '#9AA3AC' }}>({n})</span></button>
+          })}
+        </div>
+        <div style={{ flex: '1 1 340px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12, alignContent: 'start' }}>
+          {liste.map((p, i) => (
+            <div key={i} style={{ border: '1px solid #EEF1F4', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: 90, background: '#F5F6F8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {p.image ? <img src={p.image} alt={p.nom} style={{ maxWidth: '100%', maxHeight: '100%' }} /> : <span style={{ color: '#C2C8CF', fontSize: 24 }}>&#128247;</span>}
+              </div>
+              <div style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1F2933', lineHeight: 1.25 }}>{p.nom}</div>
+                {p.sousTitre && <div style={{ fontSize: 11, color: '#9AA3AC' }}>{p.sousTitre}</div>}
+                <div style={{ marginTop: 'auto', fontSize: 14, fontWeight: 800, color: couleur === '#FFCC00' ? '#E6A800' : jaune }}>{p.prix} <span style={{ fontSize: 10, color: '#9AA3AC', fontWeight: 600 }}>TTC</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Simulateur/formulaire professionnel : etapes a choix (avec branchement) ou saisie.
+function FormulaireInteractifVue({ form }: { form: NonNullable<BlocDocumentTexte['formulaireInteractif']> }) {
+  const accent = form.accent ?? '#3FA69A'
+  const [choix, setChoix] = useState<Record<number, string>>({})
+  const [saisies, setSaisies] = useState<Record<string, string>>({})
+  return (
+    <div style={{ border: '1px solid #E6E9ED', borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.08)', margin: '10px 0', background: '#FFFFFF' }}>
+      <div style={{ background: accent, color: '#FFFFFF', padding: '14px 16px', fontWeight: 800, fontSize: 16 }}>{form.titre ?? 'Simulateur'}</div>
+      {form.logo && <div style={{ textAlign: 'center', padding: '12px 0', borderBottom: '1px solid #EEF1F4' }}><img src={form.logo} alt="" style={{ maxHeight: 60 }} /></div>}
+      {form.intro && form.intro.length > 0 && (
+        <div style={{ padding: '12px 16px', background: '#F7FBFA', fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
+          {form.intro.map((p, i) => <p key={i} style={{ margin: '4px 0' }}>{p}</p>)}
+        </div>
+      )}
+      <div style={{ padding: '4px 16px 16px' }}>
+        {form.etapes.map((e, i) => (
+          <div key={i}>
+            {e.section && <div style={{ background: accent, color: '#FFFFFF', textAlign: 'center', fontWeight: 700, fontSize: 13, padding: '6px 10px', margin: '14px -16px 10px', letterSpacing: 0.4 }}>{e.section}</div>}
+            <div style={{ padding: '12px 0', borderBottom: i < form.etapes.length - 1 ? '1px solid #EEF1F4' : 'none' }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: '#1F2933', marginBottom: 2 }}>{i + 1}. {e.titre} {e.obligatoire && <span style={{ color: '#E2241A' }}>*</span>}</div>
+              {e.aide && <div style={{ fontSize: 12, color: '#8A94A0', fontStyle: 'italic', marginBottom: 8 }}>{e.aide}</div>}
+              {e.options && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {e.options.map((o, j) => {
+                    const actif = choix[i] === o.label
+                    return (
+                      <button key={j} onClick={() => setChoix((c) => ({ ...c, [i]: o.label }))} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', border: `1.5px solid ${actif ? accent : '#D6DBE1'}`, borderRadius: 8, background: actif ? `${accent}18` : '#FFFFFF', cursor: 'pointer', fontSize: 13, color: '#1F2933', textAlign: 'left' }}>
+                        <span style={{ width: 15, height: 15, borderRadius: '50%', border: `2px solid ${actif ? accent : '#B9C0C8'}`, background: actif ? accent : '#FFFFFF', flexShrink: 0 }} />
+                        <span style={{ flex: 1 }}>{o.label}</span>
+                        {o.suite && <span style={{ fontSize: 11, color: '#9AA3AC', fontStyle: 'italic', flexShrink: 0 }}>{o.suite}</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+              {e.champs && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {e.champs.map((ch, j) => {
+                    const key = `${i}-${j}`
+                    return (
+                      <label key={j} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151' }}>
+                        <span style={{ flex: 1 }}>{ch.label}</span>
+                        <input value={saisies[key] ?? ''} onChange={(ev) => setSaisies((s) => ({ ...s, [key]: ev.target.value }))} style={{ width: 120, padding: '6px 8px', border: '1px solid #D6DBE1', borderRadius: 6, fontSize: 13 }} />
+                        {ch.suffixe && <span style={{ color: '#8A94A0', fontSize: 12 }}>{ch.suffixe}</span>}
+                      </label>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Configurateur de recherche vehicule facon formulaire concession : etapes a choix.
+function ConfigurateurVehiculeVue({ config, couleur }: { config: NonNullable<BlocDocumentTexte['configurateurVehicule']>; couleur: string }) {
+  const [choix, setChoix] = useState<Record<number, string>>({})
+  return (
+    <div style={{ border: '1px solid #E6E9ED', borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.08)', margin: '10px 0', background: '#FFFFFF' }}>
+      <div style={{ background: couleur, color: '#1F2933', padding: '12px 16px', fontWeight: 800, fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span>Nos offres véhicules — {config.marque ?? 'Renault'} Championnet</span>
+      </div>
+      <div style={{ padding: '8px 16px 16px' }}>
+        {config.etapes.map((e, i) => (
+          <div key={i} style={{ padding: '14px 0', borderBottom: i < config.etapes.length - 1 ? '1px solid #EEF1F4' : 'none' }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: '#1F2933', marginBottom: 2 }}>{i + 1}. {e.titre} {e.obligatoire && <span style={{ color: '#E2241A' }}>*</span>}</div>
+            <div style={{ fontSize: 12, color: '#8A94A0', fontStyle: 'italic', marginBottom: 8 }}>{e.aide ?? 'Une seule réponse possible.'}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {e.options.map((o, j) => {
+                const actif = choix[i] === o
+                return (
+                  <button key={j} onClick={() => setChoix((c) => ({ ...c, [i]: o }))} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', border: `1.5px solid ${actif ? couleur : '#D6DBE1'}`, borderRadius: 8, background: actif ? `${couleur}22` : '#FFFFFF', cursor: 'pointer', fontSize: 13, color: '#1F2933', textAlign: 'left' }}>
+                    <span style={{ width: 15, height: 15, borderRadius: '50%', border: `2px solid ${actif ? couleur : '#B9C0C8'}`, background: actif ? couleur : '#FFFFFF', flexShrink: 0 }} />
+                    {o}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Fiches produit vehicule facon logiciel de concession : carte + onglets cliquables.
+function FichesVehiculeVue({ data, couleur }: { data: NonNullable<BlocDocumentTexte['fichesVehicule']>; couleur: string }) {
+  return (
+    <div style={{ margin: '10px 0' }}>
+      {data.titre && <div style={{ fontWeight: 700, fontSize: 14, color: '#1F2933', marginBottom: 10 }}>{data.titre}</div>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+        {data.vehicules.map((v, i) => <FicheVehiculeCarte key={i} v={v} couleur={couleur} />)}
+      </div>
+    </div>
+  )
+}
+
+function FicheVehiculeCarte({ v, couleur }: { v: NonNullable<BlocDocumentTexte['fichesVehicule']>['vehicules'][number]; couleur: string }) {
+  const onglets: string[] = ['Fiche technique', 'Équipements'].filter((o) => (o === 'Équipements' ? (v.equipements && v.equipements.length) : true)) as string[]
+  const [onglet, setOnglet] = useState(onglets[0])
+  return (
+    <div style={{ flex: '1 1 320px', minWidth: 300, maxWidth: 460, border: '1px solid #E2E8F0', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.10)', background: '#FFFFFF' }}>
+      <div style={{ position: 'relative', background: '#EDEFF2' }}>
+        {v.image
+          ? <img src={v.image} alt={v.modele} style={{ width: '100%', display: 'block' }} />
+          : <div style={{ height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA3AC', fontSize: 13 }}>Photo du véhicule</div>}
+        {v.bandeau && <div style={{ position: 'absolute', left: 0, bottom: 12, background: '#F08000', color: '#FFFFFF', fontWeight: 700, fontSize: 12, padding: '5px 12px' }}>{v.bandeau}</div>}
+      </div>
+      <div style={{ padding: '12px 14px 4px' }}>
+        <div style={{ fontSize: 16, color: '#1F2933', fontWeight: 700 }}>{v.modele}</div>
+        {v.version && <div style={{ fontWeight: 700, color: '#374151' }}>{v.version}</div>}
+        {v.resume && <div style={{ fontSize: 12.5, color: '#6B7280', marginTop: 2 }}>{v.resume}</div>}
+        {v.prix && <div style={{ fontSize: 22, color: couleur === '#FFCC00' ? '#1F2933' : couleur, fontWeight: 800, marginTop: 8 }}>{v.prix} <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 600 }}>TTC</span></div>}
+        <div style={{ display: 'flex', gap: 10, fontSize: 12, color: '#6B7280', marginTop: 6 }}>
+          {v.etat && <span style={{ background: '#F1F3F5', padding: '2px 10px', borderRadius: 4 }}>{v.etat}</span>}
+          {v.lieu && <span>{v.lieu}</span>}
+        </div>
+        {v.garantie && <div style={{ fontSize: 11.5, color: '#8A94A0', marginTop: 6 }}>{v.garantie}</div>}
+      </div>
+      <div style={{ display: 'flex', borderBottom: '1px solid #EEF1F4', marginTop: 8 }}>
+        {onglets.map((o) => (
+          <button key={o} onClick={() => setOnglet(o)} style={{ flex: 1, padding: '9px 6px', border: 'none', background: onglet === o ? '#F7F8FA' : '#FFFFFF', borderBottom: onglet === o ? `2px solid ${couleur === '#FFCC00' ? '#1F2933' : couleur}` : '2px solid transparent', cursor: 'pointer', fontSize: 12.5, fontWeight: onglet === o ? 700 : 500, color: '#1F2933' }}>{o}</button>
+        ))}
+      </div>
+      <div style={{ padding: '12px 14px 16px' }}>
+        {onglet === 'Fiche technique' && (
+          <div>
+            {v.essentiel && v.essentiel.length > 0 && (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontWeight: 700, fontSize: 13, color: '#1F2933', marginBottom: 6 }}>L'essentiel</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 14px' }}>
+                  {v.essentiel.map((c, k) => <div key={k} style={{ fontSize: 12.5, color: '#374151' }}><span style={{ color: '#8A94A0' }}>{c.label} : </span><strong>{c.valeur}</strong></div>)}
+                </div>
+              </div>
+            )}
+            {v.caracteristiques && v.caracteristiques.length > 0 && (
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: couleur === '#FFCC00' ? '#1F2933' : couleur, marginBottom: 6 }}>Caractéristiques</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 14px' }}>
+                  {v.caracteristiques.map((c, k) => <div key={k} style={{ fontSize: 12.5, color: '#374151' }}><span style={{ color: '#8A94A0' }}>{c.label} : </span><strong>{c.valeur}</strong></div>)}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {onglet === 'Équipements' && v.equipements && (
+          <ul style={{ margin: 0, paddingLeft: 18, columns: 1 }}>
+            {v.equipements.map((e, k) => <li key={k} style={{ fontSize: 12.5, color: '#374151', marginBottom: 3 }}>{e}</li>)}
+          </ul>
+        )}
       </div>
     </div>
   )
@@ -1268,6 +1843,14 @@ function rendreAnnexe(
   if (annexe.type === 'clientele') return rendreClientele(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'concurrents') return rendreConcurrents(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'questionsreponses') return rendreQuestionsReponses(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'freins') return rendreFreins(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'ficheclient') return rendreFicheClient(annexe, saisies, set, verrouille)
+  if (annexe.type === 'planning') return rendrePlanning(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'boncommande') return rendreBonCommande(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'etapeslivraison') return rendreEtapesLivraison(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'bulle') return rendreBulle(annexe, saisies, set, verrouille, couleur)
+  if (annexe.type === 'maillecture') return rendreMailLecture(annexe)
+  if (annexe.type === 'note') return <NoteVue note={annexe} couleur={couleur} />
   if (annexe.type === 'critereseg') return rendreCritereSeg(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'courrier') return rendreCourrier(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'croc') return rendreCroc(annexe, saisies, set, verrouille, couleur)
@@ -1750,14 +2333,14 @@ function BlocSimulateur({ a, set, verrouille, couleur, plein }: {
     <div style={{ border: '1px solid #C9D6E3', borderRadius: 12, overflow: 'hidden', background: '#FFFFFF', maxWidth: plein ? 480 : '100%', margin: plein ? '0 auto' : undefined }}>
       <div style={{ background: '#16456E', color: '#FFFFFF', padding: '11px 14px', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFCC00' }} />
-        Prime à la conversion — Test d'éligibilité
+        {a.enteteTitre ?? "Prime à la conversion — Test d'éligibilité"}
       </div>
 
       {showProg && (
         <div style={{ padding: '11px 14px', borderBottom: '1px solid #EEF2F5', background: '#F8FAFC' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B7280', marginBottom: 6 }}>
-            <span>{resultat ? 'Résultat' : `Étape ${numEtape} sur ${a.nbEtapesAffiche}`}</span>
-            <span>{resultat ? 'ÉLIGIBILITÉ' : etape?.bandeau}</span>
+            <span>{resultat ? (a.libelleResultatProgression ?? 'Résultat') : `${a.libelleEtape ?? 'Étape'} ${numEtape} sur ${a.nbEtapesAffiche}`}</span>
+            <span>{resultat ? (a.libelleResultatProgression ?? 'ÉLIGIBILITÉ') : etape?.bandeau}</span>
           </div>
           <div style={{ height: 6, background: '#E3ECF4', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ width: resultat ? '100%' : `${Math.min(100, (numEtape / a.nbEtapesAffiche) * 100)}%`, height: '100%', background: couleur }} />
@@ -1770,8 +2353,8 @@ function BlocSimulateur({ a, set, verrouille, couleur, plein }: {
         {ecran === 'intro' && (
           <div>
             <div style={{ background: 'linear-gradient(135deg,#3FA9E0,#2E8BC0)', borderRadius: 10, padding: 22, textAlign: 'center', color: '#FFFFFF', marginBottom: 14 }}>
-              <div style={{ fontSize: 18, fontWeight: 800 }}>Testez votre éligibilité</div>
-              <div style={{ fontSize: 15, fontStyle: 'italic' }}>… en {a.nbEtapesAffiche} étapes maximum</div>
+              <div style={{ fontSize: 18, fontWeight: 800 }}>{a.accrocheTitre ?? 'Testez votre éligibilité'}</div>
+              <div style={{ fontSize: 15, fontStyle: 'italic' }}>{a.accrocheSousTitre ?? `… en ${a.nbEtapesAffiche} étapes maximum`}</div>
             </div>
             <h3 style={{ fontSize: 19, color: '#16456E', margin: '0 0 10px' }}>{a.introTitre}</h3>
             <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 14 }}>{a.introTexte}</p>
@@ -1805,7 +2388,7 @@ function BlocSimulateur({ a, set, verrouille, couleur, plein }: {
               {resultat.type === 'ok' ? '✓' : '!'}
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: resultat.type === 'ok' ? '#1B7F4B' : '#9B2C2C', marginBottom: 6 }}>
-              {resultat.type === 'ok' ? 'Bonne nouvelle !' : 'Non éligible'}
+              {resultat.type === 'ok' ? (a.resultatTitreOk ?? 'Bonne nouvelle !') : 'Non éligible'}
             </div>
             <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6 }}>{resultat.texte}</div>
             <button type="button" disabled={verrouille} onClick={recommencer} style={{ marginTop: 14, background: '#FFFFFF', color: '#16456E', border: '1px solid #C9D6E3', borderRadius: 8, padding: '9px 16px', fontSize: 13, fontWeight: 700, cursor: verrouille ? 'not-allowed' : 'pointer', fontFamily: 'Arial, sans-serif' }}>↻ Recommencer le test</button>
@@ -2008,11 +2591,11 @@ function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: st
     <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
       <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: a.colonnes.length > 2 ? 640 : undefined }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: a.largeurs ? 'fixed' : undefined, minWidth: a.colonnes.length > 2 ? 640 : undefined }}>
           <thead>
             <tr>
               {a.colonnes.map((c, ci) => (
-                <th key={ci} style={{ padding: '6px 8px', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #ECEFF2', textAlign: 'left', whiteSpace: 'nowrap' }}>{c}</th>
+                <th key={ci} style={{ padding: '6px 8px', fontSize: 12, fontWeight: 700, color: '#374151', borderBottom: '1px solid #ECEFF2', textAlign: 'left', width: a.largeurs?.[ci], whiteSpace: a.largeurs ? 'normal' : 'nowrap' }}>{c}</th>
               ))}
             </tr>
           </thead>
@@ -2022,11 +2605,13 @@ function rendreGrille(a: AnnexeGrille, saisies: Saisies, set: (id: string, v: st
                 {a.colonnes.map((_, ci) => {
                   const fixe = a.prerempli?.[r]?.[ci]
                   if (fixe) {
-                    return <td key={ci} style={{ padding: '8px 8px', fontSize: 13, fontWeight: 700, color: '#1F2933', background: '#F7F9FB' }}>{fixe}</td>
+                    return <td key={ci} style={{ padding: '8px 8px', fontSize: 13, fontWeight: 600, color: '#1F2933', background: '#F7F9FB', verticalAlign: 'top', width: a.largeurs?.[ci] }}>{fixe}</td>
                   }
                   return (
-                    <td key={ci} style={{ padding: '4px 6px' }}>
-                      <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />
+                    <td key={ci} style={{ padding: '4px 6px', verticalAlign: 'top', width: a.largeurs?.[ci] }}>
+                      {a.reponseMultiligne
+                        ? <textarea value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} rows={a.lignesReponse ?? 3} style={{ ...champStyle, width: '100%', minWidth: 120, resize: 'vertical' }} />
+                        : <input type="text" value={saisies[`${a.id}.r${r}.c${ci}`] ?? ''} onChange={(e) => set(`${a.id}.r${r}.c${ci}`, e.target.value)} style={{ ...champStyle, minWidth: 100 }} />}
                     </td>
                   )
                 })}
@@ -2850,6 +3435,342 @@ function rendreQuestionsReponses(a: AnnexeQuestionsReponses, saisies: Saisies, s
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Tableau de freins : citation du frein + cases a cocher exclusives.
+function rendreFreins(a: AnnexeFreins, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 14, padding: '8px 10px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const setExcl = (i: number, cj: number) => a.colonnes.forEach((_, k) => set(`${a.id}.l${i}.c${k}`, k === cj ? '1' : ''))
+  const coche = (cle: string) => (saisies[cle] ?? '') === '1'
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>🚧 {a.entete ?? a.titre}</div>
+      <div style={{ padding: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `1fr ${a.colonnes.map(() => '110px').join(' ')}`, gap: 8, marginBottom: 8, fontSize: 12, fontWeight: 700, color: '#4B5563' }}>
+          <div>Les freins liés à l'achat</div>
+          {a.colonnes.map((c) => <div key={c} style={{ textAlign: 'center' }}>{c}</div>)}
+        </div>
+        {Array.from({ length: a.nbLignes }).map((_, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: `1fr ${a.colonnes.map(() => '110px').join(' ')}`, gap: 8, marginBottom: 6, alignItems: 'center' }}>
+            <input value={saisies[`${a.id}.l${i}.frein`] ?? ''} onChange={(e) => set(`${a.id}.l${i}.frein`, e.target.value)} disabled={verrouille} placeholder="Citez le frein relevé dans le texte" style={champ} />
+            {a.colonnes.map((_, cj) => (
+              <div key={cj} style={{ display: 'flex', justifyContent: 'center' }}>
+                <input type="checkbox" checked={coche(`${a.id}.l${i}.c${cj}`)} disabled={verrouille} onChange={() => setExcl(i, cj)} style={{ width: 18, height: 18, cursor: verrouille ? 'default' : 'pointer', accentColor: couleur }} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Fiche client facon logiciel de gestion commerciale (fenetre, sections, boutons).
+function rendreFicheClient(a: AnnexeFicheClient, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '5px 8px', borderRadius: 3, border: '1px solid #9FB0C4', background: verrouille ? '#EFF2F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1F2933', outline: 'none' }
+  const v = (k: string) => saisies[`${a.id}.${k}`] ?? ''
+  const set2 = (k: string, val: string) => set(`${a.id}.${k}`, val)
+  const label: React.CSSProperties = { fontSize: 12.5, fontWeight: 700, color: '#2A3A53', marginBottom: 3, display: 'block' }
+  const fieldset: React.CSSProperties = { border: '1px solid #B7C4D6', borderRadius: 4, padding: '14px 14px 16px', position: 'relative', marginTop: 10 }
+  const legend: React.CSSProperties = { position: 'absolute', top: -10, left: 12, background: '#DCE4EF', padding: '0 8px', fontSize: 12.5, fontWeight: 700, color: '#2A3A53' }
+  const select = (k: string, opts: string[]) => (
+    <select value={v(k)} disabled={verrouille} onChange={(e) => set2(k, e.target.value)} style={{ ...champ, appearance: 'auto' }}>
+      <option value="">—</option>
+      {opts.map((o) => <option key={o} value={o}>{o}</option>)}
+    </select>
+  )
+  return (
+    <div style={{ border: '2px solid #1F3A6E', borderRadius: 6, overflow: 'hidden', background: '#DCE4EF', fontFamily: 'Arial, sans-serif', maxWidth: 720 }}>
+      <div style={{ background: 'linear-gradient(#2E4A86,#1F3A6E)', color: '#FFFFFF', padding: '9px 14px', fontSize: 15, fontWeight: 800, letterSpacing: 1, textAlign: 'center' }}>FICHE CLIENT</div>
+      <div style={{ padding: 16, display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 16 }}>
+        <div>
+          <div style={fieldset}>
+            <span style={legend}>Identité</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div><span style={label}>Statut : *</span>{select('statut', ['Particulier', 'Professionnel'])}</div>
+              <div><span style={label}>Civilité : *</span>{select('civilite', ['Madame', 'Monsieur'])}</div>
+            </div>
+            <div style={{ marginTop: 8 }}><span style={label}>Nom : *</span><input value={v('nom')} disabled={verrouille} onChange={(e) => set2('nom', e.target.value)} style={champ} /></div>
+            <div style={{ marginTop: 8 }}><span style={label}>Prénom :</span><input value={v('prenom')} disabled={verrouille} onChange={(e) => set2('prenom', e.target.value)} style={champ} /></div>
+          </div>
+          <div style={fieldset}>
+            <span style={legend}>Coordonnées</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', gap: 10 }}>
+              <div><span style={label}>N° rue :</span><input value={v('numrue')} disabled={verrouille} onChange={(e) => set2('numrue', e.target.value)} style={champ} /></div>
+              <div><span style={label}>Nom de rue :</span><input value={v('rue')} disabled={verrouille} onChange={(e) => set2('rue', e.target.value)} style={champ} /></div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 10, marginTop: 8 }}>
+              <div><span style={label}>Code Postal :</span><input value={v('cp')} disabled={verrouille} onChange={(e) => set2('cp', e.target.value)} style={champ} /></div>
+              <div><span style={label}>Ville :</span><input value={v('ville')} disabled={verrouille} onChange={(e) => set2('ville', e.target.value)} style={champ} /></div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 8 }}>
+              <div><span style={label}>Téléphone :</span><input value={v('tel')} disabled={verrouille} onChange={(e) => set2('tel', e.target.value)} style={champ} /></div>
+              <div><span style={label}>Portable :</span><input value={v('portable')} disabled={verrouille} onChange={(e) => set2('portable', e.target.value)} style={champ} /></div>
+            </div>
+            <div style={{ marginTop: 8 }}><span style={label}>Email :</span><input value={v('email')} disabled={verrouille} onChange={(e) => set2('email', e.target.value)} style={champ} /></div>
+          </div>
+        </div>
+        <div style={fieldset}>
+          <span style={legend}>Divers</span>
+          <div><span style={label}>Montant avoir :</span><input value={v('avoir')} disabled={verrouille} onChange={(e) => set2('avoir', e.target.value)} style={champ} /></div>
+          <div style={{ marginTop: 8 }}><span style={label}>Produit acheté :</span><input value={v('produit')} disabled={verrouille} onChange={(e) => set2('produit', e.target.value)} style={champ} /></div>
+          <div style={{ marginTop: 8 }}><span style={label}>Commentaire :</span><textarea value={v('commentaire')} disabled={verrouille} onChange={(e) => set2('commentaire', e.target.value)} rows={7} style={{ ...champ, resize: 'vertical' }} /></div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderTop: '1px solid #B7C4D6', background: '#D2DBE9' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #9FB0C4', background: '#EEF2F7', borderRadius: 5, padding: '6px 12px', fontSize: 12.5, color: '#3A4A63', fontWeight: 700 }}>🧹 Nettoyer</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #9FB0C4', background: '#EEF2F7', borderRadius: 5, padding: '6px 12px', fontSize: 12.5, color: '#9AA7B8', fontWeight: 700 }}>🗄 Historique</span>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #2E7D46', background: '#E4F6EC', borderRadius: 5, padding: '6px 14px', fontSize: 12.5, color: '#1B7F4B', fontWeight: 800 }}>✓ Valider</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid #B23B3B', background: '#FBEAEA', borderRadius: 5, padding: '6px 14px', fontSize: 12.5, color: '#9B2C2C', fontWeight: 800 }}>✕ Quitter</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Planning d'interventions facon logiciel de prise de rendez-vous.
+function rendrePlanning(a: AnnexePlanning, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 11, padding: '4px 5px', borderRadius: 3, border: '1px dashed #C9A227', background: verrouille ? '#FBF6E5' : '#FFFBEA', color: '#1F2933', outline: 'none', resize: 'vertical' }
+  return (
+    <div style={{ border: '1px solid #C9D6E3', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+      <div style={{ background: '#F2F6F9', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid #E2E8F0' }}>
+        {a.logo && <img src={a.logo} alt="Leroy Merlin" style={{ height: 26 }} />}
+        <span style={{ fontSize: 13, fontWeight: 800, color: '#3A4A63' }}>PLANNING DES INTERVENTIONS</span>
+      </div>
+      <div style={{ padding: 10, overflowX: 'auto' }}>
+        {a.mois.map((m, mi) => {
+          const cellules: (CreneauPlanning | null)[] = []
+          for (let i = 0; i < m.decalage; i++) cellules.push(null)
+          // construit la liste jour par jour
+          return (
+            <div key={mi} style={{ marginBottom: 18 }}>
+              <div style={{ background: couleur, color: '#FFFFFF', fontWeight: 800, fontSize: 13, padding: '6px 10px', borderRadius: 4, textAlign: 'center', marginBottom: 6 }}>{m.titre}</div>
+              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 760 }}>
+                <thead>
+                  <tr>{jours.map((j) => <th key={j} style={{ background: '#2E6DB4', color: '#FFFFFF', fontSize: 11, fontWeight: 700, padding: '4px 2px', border: '1px solid #B7C4D6' }}>{j}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const lignes: React.ReactNode[] = []
+                    const total = m.decalage + m.nbJours
+                    const semaines = Math.ceil(total / 7)
+                    for (let s = 0; s < semaines; s++) {
+                      const jourCells = []
+                      const matinCells = []
+                      const apremCells = []
+                      for (let d = 0; d < 7; d++) {
+                        const idx = s * 7 + d
+                        const jourNum = idx - m.decalage + 1
+                        const valide = jourNum >= 1 && jourNum <= m.nbJours
+                        const matin = valide ? m.creneaux.find((c) => c.jour === jourNum && c.creneau === 'matin') : undefined
+                        const aprem = valide ? m.creneaux.find((c) => c.jour === jourNum && c.creneau === 'aprem') : undefined
+                        jourCells.push(<td key={d} style={{ border: '1px solid #B7C4D6', background: '#EAF1F8', fontSize: 11, fontWeight: 800, color: '#2E6DB4', textAlign: 'right', padding: '2px 5px' }}>{valide ? jourNum : ''}</td>)
+                        const cellStyle: React.CSSProperties = { border: '1px solid #B7C4D6', verticalAlign: 'top', padding: 3, fontSize: 10.5, height: 46, background: valide ? '#FFFFFF' : '#F4F6F8' }
+                        const renderCreneau = (c: CreneauPlanning | undefined, cle: string) => {
+                          if (!valide) return null
+                          if (c?.ferie) return <span style={{ color: '#9B2C2C', fontWeight: 700 }}>JOUR FERIE</span>
+                          if (c?.texte) return <span style={{ color: '#374151', lineHeight: 1.25 }}>{c.texte}</span>
+                          return <textarea value={saisies[`${a.id}.${cle}`] ?? ''} onChange={(e) => set(`${a.id}.${cle}`, e.target.value)} disabled={verrouille} rows={2} placeholder="…" style={champ} />
+                        }
+                        matinCells.push(<td key={d} style={cellStyle}>{renderCreneau(matin, `m${mi}j${jourNum}matin`)}</td>)
+                        apremCells.push(<td key={d} style={cellStyle}>{renderCreneau(aprem, `m${mi}j${jourNum}aprem`)}</td>)
+                      }
+                      lignes.push(<tr key={`j${s}`}>{jourCells}</tr>)
+                      lignes.push(<tr key={`m${s}`}>{matinCells}</tr>)
+                      lignes.push(<tr key={`a${s}`}>{apremCells}</tr>)
+                    }
+                    return lignes
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          )
+        })}
+      </div>
+      <div style={{ padding: '6px 12px', fontSize: 11, color: '#6B7280', borderTop: '1px solid #EEF2F5' }}>Matin à partir de 8h · Après-midi à partir de 14h. Complétez la case jaune du créneau choisi (nom du client + intervention).</div>
+    </div>
+  )
+}
+
+// Bon de commande facon logiciel professionnel.
+function rendreBonCommande(a: AnnexeBonCommande, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 12.5, padding: '5px 7px', borderRadius: 3, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: '#1F2933', outline: 'none' }
+  const v = (k: string) => saisies[`${a.id}.${k}`] ?? ''
+  const set2 = (k: string, val: string) => set(`${a.id}.${k}`, val)
+  const colW = ['18%', '34%', '10%', '19%', '19%']
+  return (
+    <div style={{ border: '1px solid #C9D6E3', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF', maxWidth: 740 }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 15, fontWeight: 800 }}>BON DE COMMANDE</span>
+        <span style={{ fontSize: 13, fontWeight: 700 }}>N° {a.numero}</span>
+      </div>
+      <div style={{ padding: 14 }}>
+        <div style={{ textAlign: 'center', fontSize: 11, letterSpacing: 1, color: '#6B7280', fontWeight: 700, marginBottom: 12 }}>BRICOLAGE – CONSTRUCTION – DECORATION – ENTRETIEN</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 12 }}>
+          <div style={{ border: '1px solid #E2E8F0', borderRadius: 6, padding: 10, fontSize: 12, color: '#374151', lineHeight: 1.5 }}>
+            <div style={{ fontWeight: 700, color: '#1F2933', marginBottom: 4 }}>Vendeur</div>
+            {a.vendeur.map((l, i) => <div key={i}>{l}</div>)}
+          </div>
+          <div style={{ border: '1px solid #E2E8F0', borderRadius: 6, padding: 10 }}>
+            <div style={{ fontWeight: 700, color: '#1F2933', marginBottom: 6, fontSize: 12 }}>Coordonnées client</div>
+            <textarea value={v('client')} onChange={(e) => set2('client', e.target.value)} disabled={verrouille} rows={4} placeholder="Nom, adresse, téléphone du client…" style={{ ...champ, resize: 'vertical' }} />
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 12 }}>
+          <div><span style={{ fontSize: 12, fontWeight: 700, color: '#4B5563' }}>Date :</span><input value={v('date')} onChange={(e) => set2('date', e.target.value)} disabled={verrouille} style={champ} /></div>
+          <div><span style={{ fontSize: 12, fontWeight: 700, color: '#4B5563' }}>Délais de livraison (jours) :</span><input value={v('delai')} onChange={(e) => set2('delai', e.target.value)} disabled={verrouille} style={champ} /></div>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 10 }}>
+          <thead><tr>{['Référence', 'Libellé article', 'Quantité', 'Prix HT', 'Prix TTC'].map((h, i) => <th key={h} style={{ background: couleur, color: '#FFFFFF', fontSize: 11.5, padding: '6px 5px', border: '1px solid #B7C4D6', width: colW[i] }}>{h}</th>)}</tr></thead>
+          <tbody>
+            {Array.from({ length: a.nbLignesArticles }).map((_, i) => {
+              const pre = a.preLignes?.[i]
+              return (
+                <tr key={i}>
+                  {(['reference', 'libelle', 'quantite', 'prixHT', 'prixTTC'] as const).map((f) => (
+                    <td key={f} style={{ border: '1px solid #DCE8F4', padding: 3 }}>
+                      <input value={v(`l${i}_${f}`)} onChange={(e) => set2(`l${i}_${f}`, e.target.value)} disabled={verrouille} placeholder={pre?.[f] ? '' : ''} style={{ ...champ, border: 'none', fontSize: 12 }} />
+                    </td>
+                  ))}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        <div style={{ fontSize: 11.5, color: '#6B7280', fontStyle: 'italic', marginBottom: 12 }}>Livraison : offerte pour les articles de plus de 1000€</div>
+        <table style={{ width: '60%', borderCollapse: 'collapse', marginLeft: 'auto', marginBottom: 14 }}>
+          <thead><tr>{['Taux TVA', 'Base HT', 'Montant Total'].map((h) => <th key={h} style={{ background: '#F3F6F9', color: '#4B5563', fontSize: 11.5, padding: '5px', border: '1px solid #DCE8F4' }}>{h}</th>)}</tr></thead>
+          <tbody><tr>
+            <td style={{ border: '1px solid #DCE8F4', padding: '5px', textAlign: 'center', fontSize: 12, fontWeight: 700 }}>20.00 %</td>
+            <td style={{ border: '1px solid #DCE8F4', padding: 3 }}><input value={v('baseHT')} onChange={(e) => set2('baseHT', e.target.value)} disabled={verrouille} style={{ ...champ, border: 'none', textAlign: 'center' }} /></td>
+            <td style={{ border: '1px solid #DCE8F4', padding: 3 }}><input value={v('total')} onChange={(e) => set2('total', e.target.value)} disabled={verrouille} style={{ ...champ, border: 'none', textAlign: 'center' }} /></td>
+          </tr></tbody>
+        </table>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: '#4B5563' }}>Montant de l'avoir (30%) :</span>
+          <input value={v('avoir')} onChange={(e) => set2('avoir', e.target.value)} disabled={verrouille} style={{ ...champ, width: 140 }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, alignItems: 'end' }}>
+          <div><span style={{ fontSize: 12, fontWeight: 700, color: '#4B5563' }}>Délais de livraison :</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input value={v('delaiBas')} onChange={(e) => set2('delaiBas', e.target.value)} disabled={verrouille} style={{ ...champ, width: 90 }} />
+              <span style={{ fontSize: 13, color: '#374151' }}>jours</span>
+            </div>
+          </div>
+          <div style={{ border: '1px dashed #B7C4D6', borderRadius: 6, padding: '12px 10px', textAlign: 'center', color: '#6B7280', fontSize: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>Bon pour accord — Signature client</div>
+            <input value={v('signature')} onChange={(e) => set2('signature', e.target.value)} disabled={verrouille} placeholder="Mention + signature" style={champ} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Personnage + bulle de dialogue : l'eleve ecrit dans la bulle.
+function rendreBulle(a: AnnexeBulle, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  return (
+    <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, background: '#F8FBF3', padding: 18, display: 'flex', alignItems: 'flex-end', gap: 14 }}>
+      <img src={a.perso ?? '/docs/leroy-merlin-m4/perso-conseiller.png'} alt="Conseiller" style={{ width: 110, flexShrink: 0, alignSelf: 'flex-end' }} />
+      <div style={{ position: 'relative', flex: 1, marginBottom: 18 }}>
+        <div style={{ position: 'relative', background: '#FFFFFF', border: `2px solid ${couleur}`, borderRadius: 16, padding: 14 }}>
+          <textarea
+            value={saisies[`${a.id}.bulle`] ?? ''}
+            onChange={(e) => set(`${a.id}.bulle`, e.target.value)}
+            disabled={verrouille}
+            rows={a.nbLignes ?? 3}
+            placeholder={a.placeholder ?? 'Écrivez votre phrase ici…'}
+            style={{ width: '100%', boxSizing: 'border-box', border: 'none', outline: 'none', resize: 'vertical', fontFamily: 'Arial, sans-serif', fontSize: 14, color: verrouille ? '#6B7280' : '#1F2933', background: 'transparent', fontStyle: 'italic' }}
+          />
+          {/* queue de la bulle vers le personnage */}
+          <div style={{ position: 'absolute', left: -14, bottom: 16, width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderRight: `14px solid ${couleur}` }} />
+          <div style={{ position: 'absolute', left: -10, bottom: 18, width: 0, height: 0, borderTop: '7px solid transparent', borderBottom: '7px solid transparent', borderRight: '11px solid #FFFFFF' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Frise des etapes de la livraison : schema non lineaire (etiquettes a placer
+// dans des cases numerotees) ou frise simple a completer.
+function rendreEtapesLivraison(a: AnnexeEtapesLivraison, saisies: Saisies, set: (id: string, v: string) => void, verrouille: boolean, couleur: string) {
+  const champ: React.CSSProperties = { width: '100%', boxSizing: 'border-box', fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '8px 10px', borderRadius: 6, border: '1px dashed #C9A227', background: verrouille ? '#FBF6E5' : '#FFFBEA', color: '#1F2933', outline: 'none', resize: 'vertical' }
+  // Mode schema : banque d'etiquettes en desordre + cases numerotees a remplir
+  if (a.schema) {
+    return (
+      <div style={{ border: '1px solid #C9D6E3', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+        <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.titre}</div>
+        <div style={{ padding: 16 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 700, color: '#4B5563', marginBottom: 8 }}>Étiquettes à replacer dans le bon ordre :</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
+            {a.schema.etiquettes.map((e, i) => (
+              <span key={i} style={{ background: '#EAF1F8', border: '1px solid #B7C4D6', borderRadius: 20, padding: '6px 14px', fontSize: 12.5, color: '#2A3A53', fontWeight: 600 }}>{e}</span>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 8, flexWrap: 'wrap' }}>
+            {Array.from({ length: a.schema.nbZones }).map((_, i) => (
+              <Fragment key={i}>
+                <div style={{ flex: '1 1 150px', minWidth: 150, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <span style={{ width: 26, height: 26, borderRadius: '50%', background: couleur, color: '#FFFFFF', fontSize: 13, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                  <textarea value={saisies[`${a.id}.z${i}`] ?? ''} onChange={(e) => set(`${a.id}.z${i}`, e.target.value)} disabled={verrouille} rows={3} placeholder="Étape…" style={{ ...champ, flex: 1 }} />
+                </div>
+                {i < a.schema!.nbZones - 1 && <div style={{ alignSelf: 'center', color: couleur, fontSize: 22, fontWeight: 800 }}>→</div>}
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+  // Mode frise simple
+  return (
+    <div style={{ border: '1px solid #C9D6E3', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+      <div style={{ background: couleur, color: '#FFFFFF', padding: '9px 12px', fontSize: 13, fontWeight: 700 }}>{a.titre}</div>
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {Array.from({ length: a.nbEtapes }).map((_, i) => {
+          const pre = a.preEtapes?.[i] ?? ''
+          return (
+            <div key={i}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ flexShrink: 0, width: 30, height: 30, borderRadius: '50%', background: couleur, color: '#FFFFFF', fontSize: 14, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                {pre
+                  ? <div style={{ flex: 1, background: '#F3F6F9', border: '1px solid #E2E8F0', borderRadius: 6, padding: '8px 12px', fontSize: 13, color: '#374151', fontWeight: 600 }}>{pre}</div>
+                  : <textarea value={saisies[`${a.id}.e${i}`] ?? ''} onChange={(e) => set(`${a.id}.e${i}`, e.target.value)} disabled={verrouille} rows={1} placeholder="À compléter…" style={champ} />}
+              </div>
+              {i < a.nbEtapes - 1 && <div style={{ marginLeft: 14, height: 16, borderLeft: '2px solid #C9D6E3' }} />}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Mail en lecture seule (annexe) facon Gmail.
+function rendreMailLecture(a: AnnexeMailLecture) {
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 12 }}>
+        <div style={{ border: '1px solid #C9D1D9', borderRadius: 8, overflow: 'hidden', background: '#FFFFFF' }}>
+          <div style={{ background: '#F1F1F1', borderBottom: '1px solid #E1E4E8', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#2C2C2A' }}>Nouveau message</span>
+            <span style={{ color: '#9AA5B1', fontSize: 14 }}>—  ?  ✕</span>
+          </div>
+          <div style={{ padding: '6px 12px', borderBottom: '1px solid #ECEFF2', fontSize: 13.5 }}><b>De :</b> {a.de}</div>
+          <div style={{ padding: '6px 12px', borderBottom: '1px solid #ECEFF2', fontSize: 13.5 }}><b>À :</b> {a.a}</div>
+          <div style={{ padding: '6px 12px', borderBottom: '1px solid #ECEFF2', fontSize: 13.5 }}><b>Objet :</b> {a.objet}</div>
+          <div style={{ padding: 14, fontSize: 13.5, color: '#1F2933', lineHeight: 1.6 }}>
+            {a.corps.map((p, pi) => <p key={pi} style={{ margin: '0 0 10px' }}>{p}</p>)}
+          </div>
+        </div>
       </div>
     </div>
   )
