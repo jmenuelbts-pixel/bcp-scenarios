@@ -230,6 +230,24 @@ const AMPARIS: Scenario = {
 }
 
 // Liste ordonnee des 9 scenarios.
+// --- Chausson Materiaux : Premiere Bac Pro MCV option B --------------------
+// Negoce de materiaux de construction en B to B.
+// Sept missions, dont six sur le bloc 2 "Suivre les ventes".
+const CHAUSSON: Scenario = {
+  id: 'chausson',
+  nom: 'Chausson Matériaux',
+  couleur: '#005CA9',
+  missions: construireMissions('chausson', [
+    "L'agence et sa clientèle professionnelle",
+    "Le suivi de la commande de l'artisan",
+    'Informer le client des délais et des modalités',
+    "Le prestataire de livraison et le suivi de son exécution",
+    'La relance et le suivi du règlement',
+    'La livraison non conforme : identifier et résoudre',
+    'Collecter, mesurer et transmettre la satisfaction',
+  ]),
+}
+
 export const SCENARIOS: Scenario[] = [
   RENAULT,
   PEUGEOT,
@@ -240,6 +258,7 @@ export const SCENARIOS: Scenario[] = [
   FREE,
   CITROEN,
   AMPARIS,
+  CHAUSSON,
 ]
 
 // ---------------------------------------------------------------------------
