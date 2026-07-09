@@ -994,7 +994,30 @@ export interface AnnexeFaqReponses {
   clients: { id: string; numero: string; question: string }[]
 }
 
-export type Annexe = AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
+// Ecran de suivi de commande facon ERP : lignes de commande avec quantite
+// commandee, quantite disponible, et pour chaque ligne un statut a choisir
+// dans une liste, plus une case "anomalie" a cocher et un commentaire.
+// L'eleve doit reperer seul la ligne en rupture : rien ne la signale.
+export interface LigneSuiviCommande {
+  id: string
+  reference: string
+  designation: string
+  quantiteCommandee: string
+  quantiteDisponible: string
+  dateReappro?: string
+}
+export interface AnnexeSuiviCommande {
+  type: 'suivicommande'
+  id: string
+  titre: string
+  entete: string
+  numeroCommande: string
+  client: string
+  statuts: string[] // options du menu deroulant
+  lignes: LigneSuiviCommande[]
+}
+
+export type Annexe = AnnexeSuiviCommande | AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
 
 export interface QuestionTravaux {
   numero: number
@@ -2958,6 +2981,1728 @@ const CHAUSSON_M1: ContenuMission = {
         bareme: 4,
         complement:
           "Barème total de la mission : 32 points. Pénaliser la synthèse qui dépasse cinq lignes. Valoriser l'élève qui relie l'exigence du client à une attente de fiabilité plutôt qu'à un trait de caractère.",
+      },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 2 - Le suivi de la commande de
+// l'artisan
+// Bloc 2 - Suivre les ventes : assurer le suivi de la commande du produit.
+// Source : chausson.fr (CGV, FAQ, modes de retrait et de livraison, document
+// d'ouverture de compte professionnel), consultes le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, prenez en main la commande BATIRENOV dans le logiciel de suivi, contrôlez sa conformité avec le devis signé, puis rendez compte par écrit de l'anomalie que vous aurez identifiée.",
+    contexte:
+      "Deuxième semaine de PFMP à l'agence Chausson Matériaux de Gennevilliers. Votre tuteur M. Ferreira vous confie le suivi d'une commande passée hier par la SARL BATIRENOV, l'entreprise de maçonnerie de M. Kadri, pour le chantier de rénovation d'une maison à Colombes. La livraison est annoncée au client pour le lundi 16 mars, à 7 heures, sur le chantier. M. Ferreira est en rendez-vous extérieur toute la journée. Il vous a dit une seule phrase avant de partir : « Regarde ligne par ligne, et ne me dis pas que tout va bien avant d'avoir vérifié. »",
+    documents: [
+      // ---- Document 1 : la procedure interne -----------------------------
+      {
+        numero: 1,
+        titre: "La procédure interne de suivi d'une commande professionnelle",
+        texte: [
+          {
+            procedure: {
+              titre1: 'Suivi de commande : les quatre étapes obligatoires',
+              intro:
+                "Toute commande enregistrée à l'agence fait l'objet d'un suivi par le commercial sédentaire qui en a la charge. Aucune commande ne part en livraison sans que les quatre étapes ci-dessous aient été effectuées et tracées dans le logiciel.",
+              etapes: [
+                {
+                  icone: 'box',
+                  titre: '1. Contrôler la disponibilité, ligne par ligne',
+                  texte:
+                    "Comparer, pour chaque ligne, la quantité commandée et la quantité disponible en stock. Le contrôle se fait ligne par ligne, jamais sur le total de la commande. Une commande peut afficher un stock suffisant au global et comporter une ligne en rupture.",
+                },
+                {
+                  icone: 'box',
+                  titre: '2. Vérifier la conformité avec le devis signé',
+                  texte:
+                    "Contrôler que les références, les quantités, les prix unitaires et les remises portés sur le bon de commande correspondent exactement au devis accepté par le client. Tout écart doit être signalé avant préparation.",
+                },
+                {
+                  icone: 'mail',
+                  titre: '3. Signaler toute anomalie au responsable logistique',
+                  texte:
+                    "Toute rupture, tout écart de prix, toute incohérence de quantité est signalée par écrit au responsable logistique, avant la préparation de la commande. Le message précise le numéro de commande, la ligne concernée, la nature de l'anomalie.",
+                },
+                {
+                  icone: 'tel',
+                  titre: '4. Informer le client avant la date annoncée',
+                  texte:
+                    "Le client est informé de toute modification de délai ou de contenu avant la date de livraison initialement annoncée, et jamais le jour même. L'information se fait par téléphone, puis est confirmée par écrit.",
+                },
+              ],
+              alerte: [
+                "Ne jamais valider une commande dont une ligne est en rupture sans avoir informé le responsable logistique et le client.",
+                "Ne jamais annoncer au client une date que le dépôt n'a pas confirmée.",
+              ],
+              titre2: 'Ce que dit la FAQ du site sur les commandes incomplètes',
+              section2: [
+                "Un bon de livraison est sorti pour les produits en stocks afin de réserver la marchandise, mais si tout n'est pas disponible et que vous n'avez pas coché « J'accepte la livraison partielle des produits » au moment de la validation de votre commande, nous attendons d'avoir tous les produits pour vous livrer.",
+                "Si vous souhaitez recevoir le disponible de votre commande avant que celle-ci ne soit soldée, veuillez nous contacter.",
+                "Il faut contrôler la disponibilité des produits au moment de la commande, ni avant, ni après.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 2 : le devis signe ------------------------------------
+      {
+        numero: 2,
+        titre: 'Le devis DV-2026-1187 accepté et signé par M. Kadri le 11 mars',
+        texte: [
+          {
+            paragraphes: [
+              "Devis établi par Bruno Ferreira, commercial sédentaire. Accepté et signé par M. Rachid Kadri, gérant de la SARL BATIRENOV, le 11 mars 2026. Chantier : 14 rue des Vallées, 92700 Colombes. Livraison souhaitée le lundi 16 mars à 7 heures.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Référence', 'Désignation', 'Quantité', 'Prix unitaire HT', 'Remise', 'Total HT'],
+              lignes: [
+                ['OBR-PAR20', 'Parpaing creux 20x20x50 (palette de 60)', '12 palettes', '148,00 €', '8 %', '1 634,88 €'],
+                ['OBR-CIM35', 'Ciment CEM II 32,5 R, sac de 35 kg', '80 sacs', '7,90 €', '8 %', '581,44 €'],
+                ['OBR-SAB01', 'Sable à maçonner 0/4, big bag 1 tonne', '6 big bags', '62,00 €', '8 %', '342,24 €'],
+                ['OBR-GRA02', 'Gravier 4/20, big bag 1 tonne', '4 big bags', '58,00 €', '8 %', '213,44 €'],
+                ['ELO-CHV14', 'Chevron sapin 63x75 mm, longueur 4 m', '30 unités', '18,40 €', '8 %', '507,84 €'],
+                ['OBR-TRE10', 'Treillis soudé ST25C, panneau 6x2,40 m', '10 panneaux', '41,50 €', '8 %', '381,80 €'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Récapitulatif du devis',
+          },
+          {
+            tableau: {
+              colonnes: ['Libellé', 'Montant'],
+              lignes: [
+                ['Total HT après remise', '3 661,64 €'],
+                ['TVA 20 %', '732,33 €'],
+                ['Total TTC', '4 393,97 €'],
+                ['Encours autorisé du compte BATIRENOV', '15 000,00 €'],
+                ['Encours déjà utilisé au 12 mars', '2 180,00 €'],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "La remise de 8 % est celle qui figure au contrat du compte BATIRENOV. Elle s'applique à toutes les lignes, sans exception. Vérifiez qu'elle a bien été reportée sur le bon de commande.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : le bon de commande, avec deux ecarts --------------
+      {
+        numero: 3,
+        titre: "Le bon de commande n° 2026-4471, tel qu'il a été saisi dans le logiciel",
+        texte: [
+          {
+            paragraphes: [
+              "Bon de commande généré automatiquement à partir de la saisie effectuée au comptoir le 12 mars 2026 à 17 h 42. Saisie réalisée par un intérimaire en fin de journée.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Ligne', 'Référence', 'Désignation', 'Quantité', 'Prix unitaire HT', 'Remise', 'Total HT'],
+              lignes: [
+                ['1', 'OBR-PAR20', 'Parpaing creux 20x20x50 (palette de 60)', '12 palettes', '148,00 €', '8 %', '1 634,88 €'],
+                ['2', 'OBR-CIM35', 'Ciment CEM II 32,5 R, sac de 35 kg', '80 sacs', '7,90 €', '8 %', '581,44 €'],
+                ['3', 'OBR-SAB01', 'Sable à maçonner 0/4, big bag 1 tonne', '6 big bags', '62,00 €', '8 %', '342,24 €'],
+                ['4', 'OBR-GRA02', 'Gravier 4/20, big bag 1 tonne', '4 big bags', '58,00 €', '0 %', '232,00 €'],
+                ['5', 'ELO-CHV14', 'Chevron sapin 63x75 mm, longueur 4 m', '30 unités', '18,40 €', '8 %', '507,84 €'],
+                ['6', 'OBR-TRE10', 'Treillis soudé ST25C, panneau 6x2,40 m', '100 panneaux', '41,50 €', '8 %', '3 818,00 €'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Récapitulatif du bon de commande',
+          },
+          {
+            tableau: {
+              colonnes: ['Libellé', 'Montant'],
+              lignes: [
+                ['Total HT après remise', '7 116,40 €'],
+                ['TVA 20 %', '1 423,28 €'],
+                ['Total TTC', '8 539,68 €'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Mentions figurant au bas du bon de commande',
+          },
+          {
+            puces: [
+              "Livraison prévue : lundi 16 mars 2026, 7 h 00, chantier 14 rue des Vallées, 92700 Colombes.",
+              "Mode de livraison : camion grue de l'agence.",
+              "Case « J'accepte la livraison partielle des produits » : non cochée.",
+              "Règlement : à terme, imputation sur l'encours du compte client.",
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 4 : l'etat des stocks du depot ------------------------
+      {
+        numero: 4,
+        titre: "L'état des stocks du dépôt de Gennevilliers au vendredi 13 mars, 8 heures",
+        texte: [
+          {
+            paragraphes: [
+              "Extraction du logiciel de gestion des stocks. La colonne « Disponible » indique la quantité physiquement présente sur le parc et non réservée par une autre commande. La colonne « Réapprovisionnement » indique la date de réception attendue de la prochaine livraison fournisseur.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Référence', 'Désignation', 'Disponible', 'Réapprovisionnement'],
+              lignes: [
+                ['OBR-PAR20', 'Parpaing creux 20x20x50 (palette de 60)', '31 palettes', '-'],
+                ['OBR-CIM35', 'Ciment CEM II 32,5 R, sac de 35 kg', '240 sacs', '-'],
+                ['OBR-SAB01', 'Sable à maçonner 0/4, big bag 1 tonne', '18 big bags', '-'],
+                ['OBR-GRA02', 'Gravier 4/20, big bag 1 tonne', '11 big bags', '-'],
+                ['ELO-CHV14', 'Chevron sapin 63x75 mm, longueur 4 m', '4 unités', 'Mercredi 18 mars'],
+                ['OBR-TRE10', 'Treillis soudé ST25C, panneau 6x2,40 m', '46 panneaux', 'Jeudi 19 mars'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Note du responsable logistique affichée au dépôt',
+          },
+          {
+            paragraphes: [
+              "Le stock affiché est celui du parc à l'instant de l'extraction. Il ne tient pas compte des commandes enregistrées après l'extraction. Toute ligne dont la quantité commandée dépasse la quantité disponible est une ligne en rupture, quelle que soit l'importance de l'écart. Une ligne en rupture bloque la totalité de la commande lorsque le client n'a pas accepté la livraison partielle.",
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 5 : les statuts d'une commande dans l'ERP -------------
+      {
+        numero: 5,
+        titre: "Les statuts d'une commande dans le logiciel de suivi",
+        texte: [
+          {
+            paragraphes: [
+              "Chaque ligne d'une commande porte un statut. Le statut de la commande est celui de sa ligne la moins avancée. Une commande n'est expédiée que lorsque toutes ses lignes sont au statut Préparée, sauf accord écrit du client sur la livraison partielle.",
+            ],
+          },
+          {
+            etapesVisuelles: [
+              'Enregistrée',
+              'Disponible',
+              'Préparée',
+              'Expédiée',
+              'Livrée',
+            ],
+          },
+          {
+            intertitre: 'Les deux statuts qui sortent du parcours normal',
+          },
+          {
+            encadresListes: [
+              {
+                titre: 'En rupture',
+                lignes: [
+                  "La quantité commandée dépasse la quantité disponible en stock.",
+                  "La ligne ne peut pas être préparée. Elle bloque la commande si la livraison partielle n'a pas été acceptée.",
+                  "Action attendue : signaler au responsable logistique, puis informer le client.",
+                ],
+              },
+              {
+                titre: 'À vérifier',
+                lignes: [
+                  "La ligne présente une incohérence : quantité inhabituelle, prix ou remise non conforme au devis, référence douteuse.",
+                  "La ligne n'est pas nécessairement en rupture, mais elle ne doit pas être préparée en l'état.",
+                  "Action attendue : contrôler la ligne contre le devis signé, corriger ou faire corriger avant préparation.",
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 6 : les CGV, article livraison, en livre ouvert -------
+      {
+        numero: 6,
+        titre: "Les conditions générales de vente : commande, livraison, réclamation",
+        texte: [
+          {
+            livreOuvert: {
+              titre: 'Conditions générales de vente Chausson Matériaux (extraits)',
+              pages: [
+                {
+                  titre: 'La commande et son enregistrement',
+                  paragraphes: [
+                    "Toute remise de commande ou de service implique de la part de l'acheteur l'acceptation sans réserve des présentes conditions.",
+                    "Les offres faites par nos agences ou téléphoniquement ne constituent engagement de notre part qu'autant qu'elles auront été confirmées.",
+                    "L'acheteur est réputé d'accord avec le contenu de notre confirmation si, dans les huit jours et en tous cas avant la livraison, il ne nous a pas fait connaître par écrit ses observations éventuelles.",
+                  ],
+                  puces: [
+                    "Le Vendeur se réserve le droit de contrôler et limiter pour raisons objectives l'encours de ses comptes clients.",
+                    "Le Vendeur peut refuser d'enregistrer une commande ou annuler une commande en cours, sauf règlement comptant.",
+                    "L'Acheteur doit vérifier l'exhaustivité et la conformité des renseignements qu'il fournit lors de la commande, notamment concernant l'adresse de livraison.",
+                  ],
+                },
+                {
+                  titre: 'La livraison sur chantier',
+                  paragraphes: [
+                    "Livraison sur le chantier de votre choix par un camion grue de votre agence Chausson.",
+                    "L'agence vous informera de la date de livraison.",
+                  ],
+                  rubriques: [
+                    {
+                      titre: 'Les limites du camion grue',
+                      puces: [
+                        { texte: "Dans un rayon de 50 kilomètres à vol d'oiseau autour de l'agence sélectionnée." },
+                        { texte: 'Limité à 10 palettes ou 12 tonnes maximum par livraison.' },
+                        { texte: "Pour les professionnels, la livraison se fait aux heures habituelles de bureaux." },
+                      ],
+                    },
+                    {
+                      titre: "En cas d'absence du client",
+                      puces: [
+                        { texte: "Un avis de passage vous indiquera la démarche à suivre : relivraison, ou retrait en agence." },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  titre: 'La réception de la marchandise',
+                  paragraphes: [
+                    "En présence du livreur, vérifiez bien l'état et le contenu de votre colis.",
+                  ],
+                  puces: [
+                    "Notifiez précisément sur le bordereau du transporteur toute anomalie : ouvert, endommagé, mouillé, re-scotché, produit manquant.",
+                    "La mention « Sous réserve de déballage » n'est pas suffisante.",
+                    "Si vous refusez la marchandise, notez la mention « refusé pour avarie » sur le bon du transporteur.",
+                    "Les réserves prises par le destinataire à la livraison constituent des moyens de preuve de l'existence et de l'importance du dommage.",
+                    "Faire co-signer les éventuelles réserves par le transporteur.",
+                  ],
+                },
+                {
+                  titre: 'La réclamation du client professionnel',
+                  paragraphes: [
+                    "En cas de livraison non conforme ou sujette à litige, les réclamations doivent nous être adressées par écrit dans les huit jours qui suivent la réception de la marchandise et avant toute mise en œuvre.",
+                    "Les matériaux devront être employés conformément aux instructions du fabricant et plus généralement aux règles de l'art. Nous déclinons toute responsabilité s'il n'en est pas ainsi.",
+                  ],
+                  rubriques: [
+                    {
+                      titre: 'La réserve de propriété',
+                      puces: [
+                        {
+                          texte:
+                            "Le client reconnaît que toutes les ventes sont conclues avec réserve de propriété.",
+                          sous: [
+                            "Le transfert de la propriété des marchandises vendues est subordonné au paiement intégral du prix.",
+                            "Les risques de dégradation, destruction ou perte de marchandises lui sont transférés dès la livraison.",
+                          ],
+                        },
+                        {
+                          texte:
+                            "Les litiges sur la livraison, les délais ou la qualité ne sauraient justifier un quelconque retard de règlement et le non-paiement de la facture.",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 7 : le mail de M. Kadri --------------------------------
+      {
+        numero: 7,
+        titre: 'Le mail de M. Kadri, reçu le vendredi 13 mars à 7 h 12',
+        texte: [
+          {
+            mailLecture: {
+              de: 'r.kadri@batirenov.fr',
+              a: 'b.ferreira@chausson.fr',
+              objet: 'Commande 2026-4471 - livraison lundi',
+              corps: [
+                'Bonjour Bruno,',
+                "Je confirme pour lundi 16 à 7 h sur le chantier de Colombes. J'ai six compagnons qui montent le mur porteur ce jour-là, et une grue de location que je paie à la journée.",
+                "Je te le dis franchement : si les parpaings et le ciment ne sont pas là à 7 h, je perds la journée et la grue. Ça me coûte environ 1 400 euros. Le reste peut suivre dans la semaine, je n'en ai pas besoin tout de suite pour le treillis et les chevrons.",
+                "Tu me confirmes que tout est bon ?",
+                'Rachid Kadri',
+                'SARL BATIRENOV',
+                '06 12 44 87 03',
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Relisez la troisième phrase de ce mail. M. Kadri distingue ce dont il a besoin lundi et ce qui peut attendre. Cette information ne figure nulle part sur le bon de commande, où la case de livraison partielle n'est pas cochée.",
+              ],
+            },
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: 'Activité 1 - Prendre en main la commande',
+        contexte:
+          "Vous ouvrez le logiciel de suivi. La commande 2026-4471 apparaît à l'écran, ligne par ligne. Aucune ligne n'est signalée en rouge : le logiciel affiche les quantités, il ne les compare pas. C'est votre travail.",
+        questions: [
+          {
+            numero: 1,
+            consigne:
+              "Pour chaque ligne de la commande, comparez la quantité commandée et la quantité disponible, attribuez le statut qui convient, cochez la case anomalie si nécessaire et justifiez en une phrase.",
+            ressources: "Lire les documents 3, 4 et 5, compléter l'annexe 1.",
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Indiquez quelle est la seule ligne réellement en rupture, puis expliquez pourquoi le statut de la commande dans son ensemble n'est pas Disponible.",
+            ressources: "Lire les documents 3, 4 et 5, compléter l'annexe 2.",
+            annexeId: 'annexe2',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 2 - Contrôler la conformité au devis',
+        contexte:
+          "La saisie du bon de commande a été effectuée au comptoir le 12 mars à 17 h 42 par un intérimaire, en fin de journée. Le devis signé par M. Kadri est dans le dossier. M. Ferreira vous demande de les comparer ligne à ligne avant toute préparation.",
+        questions: [
+          {
+            numero: 3,
+            consigne:
+              "Comparez le devis signé et le bon de commande. Relevez les deux écarts, indiquez pour chacun la ligne concernée, la valeur du devis, la valeur du bon de commande et la conséquence financière.",
+            ressources: "Lire les documents 2 et 3, compléter l'annexe 3.",
+            annexeId: 'annexe3',
+          },
+          {
+            numero: 4,
+            consigne:
+              "Calculez l'écart total en euros HT entre le devis signé et le bon de commande, puis indiquez si la commande, telle qu'elle est saisie, reste compatible avec l'encours autorisé du compte BATIRENOV.",
+            ressources: "Lire les documents 2, 3 et 6, compléter l'annexe 4.",
+            annexeId: 'annexe4',
+          },
+          {
+            numero: 5,
+            consigne:
+              "Un des deux écarts était détectable sans le devis, par le seul bon de sens professionnel. Indiquez lequel et expliquez pourquoi.",
+            ressources: "Lire les documents 2 et 3, compléter l'annexe 5.",
+            annexeId: 'annexe5',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 3 - Rendre compte et alerter',
+        contexte:
+          "Il est 9 heures, vendredi 13 mars. La livraison est annoncée lundi 16 à 7 heures. M. Ferreira est absent jusqu'à ce soir. La procédure interne prévoit un signalement écrit au responsable logistique avant préparation. M. Kadri attend une réponse à son mail.",
+        questions: [
+          {
+            numero: 6,
+            consigne:
+              "Rédigez le mail de signalement au responsable logistique. Objet, destinataire, et cinq lignes maximum : numéro de commande, ligne concernée, nature de l'anomalie, conséquence, question posée.",
+            ressources: "Lire les documents 1, 3, 4 et 5, compléter l'annexe 6.",
+            annexeId: 'annexe6',
+          },
+          {
+            numero: 7,
+            consigne:
+              "En vous appuyant sur le mail de M. Kadri et sur les conditions générales de vente, indiquez la solution que vous proposez pour que le chantier de lundi ne soit pas bloqué. Précisez ce qui doit être obtenu du client, sous quelle forme, et avant quand.",
+            ressources: "Lire les documents 1, 3, 6 et 7, compléter l'annexe 7.",
+            annexeId: 'annexe7',
+          },
+          {
+            numero: 8,
+            consigne:
+              "M. Ferreira vous a dit : « Ne me dis pas que tout va bien avant d'avoir vérifié. » Rédigez en cinq lignes maximum le compte rendu que vous lui laissez sur son bureau.",
+            ressources: "Lire l'ensemble des documents, compléter l'annexe 8.",
+            annexeId: 'annexe8',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'suivicommande',
+        id: 'annexe1',
+        titre: "Annexe 1 - Écran de suivi de la commande",
+        entete: 'CHAUSSON GESCOM - Suivi de commande - Agence de Gennevilliers',
+        numeroCommande: '2026-4471',
+        client: 'SARL BATIRENOV',
+        statuts: ['Enregistrée', 'Disponible', 'Préparée', 'En rupture', 'À vérifier'],
+        lignes: [
+          { id: 'l1', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50 (palette de 60)', quantiteCommandee: '12 palettes', quantiteDisponible: '31 palettes' },
+          { id: 'l2', reference: 'OBR-CIM35', designation: 'Ciment CEM II 32,5 R, sac de 35 kg', quantiteCommandee: '80 sacs', quantiteDisponible: '240 sacs' },
+          { id: 'l3', reference: 'OBR-SAB01', designation: 'Sable à maçonner 0/4, big bag 1 tonne', quantiteCommandee: '6 big bags', quantiteDisponible: '18 big bags' },
+          { id: 'l4', reference: 'OBR-GRA02', designation: 'Gravier 4/20, big bag 1 tonne', quantiteCommandee: '4 big bags', quantiteDisponible: '11 big bags' },
+          { id: 'l5', reference: 'ELO-CHV14', designation: 'Chevron sapin 63x75 mm, longueur 4 m', quantiteCommandee: '30 unités', quantiteDisponible: '4 unités', dateReappro: 'Mer. 18 mars' },
+          { id: 'l6', reference: 'OBR-TRE10', designation: 'Treillis soudé ST25C, panneau 6x2,40 m', quantiteCommandee: '100 panneaux', quantiteDisponible: '46 panneaux', dateReappro: 'Jeu. 19 mars' },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: 'Annexe 2 - La ligne en rupture et le statut de la commande',
+        colonnes: ['Question', 'Votre réponse'],
+        nbLignes: 4,
+        prerempli: [
+          ["Quelle est la seule ligne réellement en rupture ? Donnez sa référence et justifiez par le calcul.", ''],
+          ["La ligne 6 est-elle en rupture ? Expliquez pourquoi la réponse n'est pas immédiate.", ''],
+          ["Quel est le statut de la commande dans son ensemble ? Justifiez par la règle du document 5.", ''],
+          ["Pourquoi une seule ligne bloque-t-elle la totalité de la livraison ?", ''],
+        ],
+        largeurs: ['42%', '58%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe3',
+        titre: 'Annexe 3 - Contrôle de conformité entre le devis et le bon de commande',
+        colonnes: ['Écart', 'Ligne concernée', 'Valeur au devis signé', 'Valeur au bon de commande', 'Conséquence financière'],
+        nbLignes: 2,
+        prerempli: [
+          ['Écart n° 1', '', '', '', ''],
+          ['Écart n° 2', '', '', '', ''],
+        ],
+        largeurs: ['12%', '20%', '22%', '22%', '24%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4',
+        titre: "Annexe 4 - Écart total et compatibilité avec l'encours",
+        colonnes: ['Libellé', 'Montant ou réponse'],
+        nbLignes: 6,
+        prerempli: [
+          ['Total HT du devis signé', ''],
+          ['Total HT du bon de commande', ''],
+          ['Écart en euros HT', ''],
+          ["Encours autorisé du compte BATIRENOV", ''],
+          ["Encours déjà utilisé au 12 mars", ''],
+          ["La commande telle qu'elle est saisie tient-elle dans l'encours disponible ? Justifiez par le calcul et citez la règle des CGV qui s'applique.", ''],
+        ],
+        largeurs: ['45%', '55%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'texte',
+        id: 'annexe5',
+        titre: "Annexe 5 - L'écart détectable sans le devis",
+        lignes: 6,
+      },
+      {
+        type: 'mail',
+        id: 'annexe6',
+        titre: 'Annexe 6 - Mail de signalement au responsable logistique',
+        deParDefaut: 'stagiaire@chausson.fr',
+        aParDefaut: 'k.zemmouri@chausson.fr',
+      },
+      {
+        type: 'grille',
+        id: 'annexe7',
+        titre: 'Annexe 7 - La solution proposée pour débloquer le chantier',
+        colonnes: ['Élément de la solution', 'Votre réponse'],
+        nbLignes: 5,
+        prerempli: [
+          ["Quelles lignes peuvent partir lundi 16 mars à 7 heures ? Justifiez.", ''],
+          ["Quelles lignes doivent être différées ? À quelle date au plus tôt ?", ''],
+          ["Que faut-il obtenir de M. Kadri pour que cette solution soit possible ? Citez la mention exacte du bon de commande et la phrase de la FAQ qui l'exige.", ''],
+          ["Sous quelle forme cet accord doit-il être obtenu, et pourquoi un accord téléphonique ne suffit-il pas ?", ''],
+          ["Avant quelle date et quelle heure cet accord doit-il être obtenu ? Justifiez par la procédure interne.", ''],
+        ],
+        largeurs: ['42%', '58%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'compterendu',
+        id: 'annexe8',
+        titre: 'Annexe 8 - Compte rendu à M. Ferreira',
+        entete: 'Note interne - Agence de Gennevilliers',
+        champsEntete: [
+          { id: 'objet', label: 'Objet' },
+          { id: 'date', label: 'Date' },
+          { id: 'redacteur', label: 'Rédacteur' },
+        ],
+        sections: [
+          { id: 'constat', titre: "Ce que j'ai vérifié et ce que j'ai trouvé", indice: 'Cinq lignes maximum. Chiffrez.' },
+          { id: 'actions', titre: "Ce que j'ai fait", indice: 'À qui, quand, sous quelle forme.' },
+          { id: 'attente', titre: 'Ce qui reste à décider et par qui', indice: "Précisez ce que vous n'avez pas fait, et pourquoi." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: "Le suivi de la commande du client professionnel",
+    proposition: [
+      'Ligne par ligne',
+      'Quantité disponible',
+      'Rupture',
+      'Devis signé',
+      'Écart de prix',
+      'Écart de quantité',
+      'Signalement écrit',
+      'Livraison partielle',
+      'Accord du client',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le suivi de la commande 2026-4471',
+      enfants: [
+        {
+          id: 'controle',
+          texte: 'Contrôler la disponibilité',
+          enfants: [
+            { id: 'ct-1', texte: null, reponse: 'Ligne par ligne' },
+            { id: 'ct-2', texte: null, reponse: 'Quantité disponible' },
+            { id: 'ct-3', texte: null, reponse: 'Rupture' },
+          ],
+        },
+        {
+          id: 'conformite',
+          texte: 'Contrôler la conformité',
+          enfants: [
+            { id: 'cf-1', texte: null, reponse: 'Devis signé' },
+            { id: 'cf-2', texte: null, reponse: 'Écart de prix' },
+            { id: 'cf-3', texte: null, reponse: 'Écart de quantité' },
+          ],
+        },
+        {
+          id: 'rendrecompte',
+          texte: 'Rendre compte et débloquer',
+          enfants: [
+            { id: 'rc-1', texte: null, reponse: 'Signalement écrit' },
+            { id: 'rc-2', texte: null, reponse: 'Livraison partielle' },
+            { id: 'rc-3', texte: null, reponse: 'Accord du client' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: "Suivre l'évolution d'une commande dans un logiciel de gestion",
+        indicateurs: [
+          { niveau: 'novice', description: "Je lis le total de la commande sans regarder les lignes." },
+          { niveau: 'debrouille', description: "Je regarde les lignes mais je ne compare pas les quantités." },
+          { niveau: 'averti', description: "Je compare ligne par ligne la quantité commandée et la quantité disponible, et j'attribue le bon statut." },
+          { niveau: 'expert', description: "Je repère une rupture que rien ne signale et j'en déduis le statut de la commande entière." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Contrôler la conformité entre un devis signé et un bon de commande',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne pense pas à comparer les deux documents." },
+          { niveau: 'debrouille', description: "Je compare les totaux sans identifier la ligne en cause." },
+          { niveau: 'averti', description: "Je relève chaque écart, je le localise et je le chiffre." },
+          { niveau: 'expert', description: "Je distingue l'erreur de saisie de l'erreur de droit, et j'en mesure la conséquence sur l'encours." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Informer par écrit le service concerné et la hiérarchie',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne signale rien, ou je signale oralement." },
+          { niveau: 'debrouille', description: "J'écris un message, mais il manque le numéro de commande ou la ligne concernée." },
+          { niveau: 'averti', description: "Mon message est daté, précis, adressé au bon interlocuteur, et il pose une question claire." },
+          { niveau: 'expert', description: "Mon message anticipe la décision à prendre et propose une solution argumentée." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: "Mobiliser les conditions générales de vente pour sécuriser une commande",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne consulte pas les conditions générales de vente." },
+          { niveau: 'debrouille', description: "Je cite les CGV sans les appliquer à la situation." },
+          { niveau: 'averti', description: "Je trouve la clause applicable et je l'utilise pour justifier ma décision." },
+          { niveau: 'expert', description: "J'identifie qu'un accord écrit du client est indispensable et j'explique pourquoi l'oral ne suffit pas." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Bon de commande', definition: "Document commercial qui reprend les références, quantités et prix acceptés par le client, et déclenche la préparation." },
+      { terme: 'Devis', definition: "Proposition chiffrée adressée au client avant la vente. Une fois signé, il engage les deux parties." },
+      { terme: 'Rupture de stock', definition: "Situation dans laquelle la quantité commandée dépasse la quantité disponible en stock." },
+      { terme: 'Reliquat', definition: "Partie d'une commande qui n'a pas pu être livrée et qui reste due au client." },
+      { terme: 'Livraison partielle', definition: "Livraison d'une partie seulement de la commande, qui suppose l'accord préalable du client." },
+      { terme: 'Encours autorisé', definition: "Montant maximum qu'un client en compte peut devoir à l'entreprise à un instant donné." },
+      { terme: 'Réserve de propriété', definition: "Clause par laquelle le vendeur reste propriétaire de la marchandise jusqu'au paiement intégral du prix." },
+      { terme: 'Statut de commande', definition: "État d'avancement d'une ligne dans le logiciel : enregistrée, disponible, préparée, expédiée, livrée." },
+      { terme: 'Camion grue', definition: "Véhicule de livraison équipé d'une grue, utilisé pour décharger des matériaux lourds sur un chantier." },
+      { terme: 'Traçabilité', definition: "Possibilité de retrouver par écrit qui a fait quoi, quand, et sur quelle décision." },
+    ],
+    flashcards: [
+      { recto: 'Sur quoi porte le contrôle de disponibilité : sur le total ou sur chaque ligne ?', verso: "Sur chaque ligne. Une commande peut afficher un stock suffisant au global et comporter une ligne en rupture." },
+      { recto: "Qu'est-ce qui définit une ligne en rupture ?", verso: 'La quantité commandée dépasse la quantité disponible, quelle que soit l\u2019importance de l\u2019écart.' },
+      { recto: "Quel est le statut d'une commande dont une ligne est en rupture ?", verso: "Celui de sa ligne la moins avancée, donc En rupture." },
+      { recto: 'Une ligne en rupture bloque-t-elle toute la commande ?', verso: "Oui, si le client n'a pas accepté la livraison partielle." },
+      { recto: "Que faut-il pour livrer une partie seulement de la commande ?", verso: "L'accord du client sur la livraison partielle, coché au moment de la validation ou obtenu par écrit ensuite." },
+      { recto: 'À qui signale-t-on une anomalie de stock, et sous quelle forme ?', verso: 'Au responsable logistique, par écrit, avant la préparation de la commande.' },
+      { recto: 'Quand informe-t-on le client d\u2019un changement de délai ?', verso: "Avant la date de livraison annoncée, jamais le jour même." },
+      { recto: 'Dans quel délai un client professionnel doit-il réclamer par écrit une livraison non conforme ?', verso: "Dans les huit jours qui suivent la réception, et avant toute mise en œuvre." },
+      { recto: "La mention « sous réserve de déballage » suffit-elle sur le bordereau du transporteur ?", verso: "Non. Elle est considérée comme trop générale et imprécise." },
+      { recto: 'Quelles sont les limites du camion grue de l\u2019agence ?', verso: "50 kilomètres à vol d'oiseau, 10 palettes ou 12 tonnes maximum par livraison." },
+      { recto: "Un litige sur la livraison autorise-t-il le client à ne pas payer sa facture ?", verso: "Non. Les litiges sur la livraison, les délais ou la qualité ne justifient aucun retard de règlement." },
+      { recto: "Que signifie la réserve de propriété ?", verso: "Le vendeur reste propriétaire de la marchandise jusqu'au paiement intégral, mais les risques passent au client dès la livraison." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le contrôle de disponibilité se fait :', options: ['Ligne par ligne', 'Sur le total de la commande', "Sur le montant TTC"], bonne: 0 },
+      { type: 'unique', question: "Une ligne est en rupture lorsque :", options: ['La quantité commandée dépasse la quantité disponible', 'Le prix est erroné', 'Le client est en retard de paiement'], bonne: 0 },
+      { type: 'unique', question: "Le statut d'une commande est celui :", options: ['De sa ligne la moins avancée', 'De sa ligne la plus avancée', 'De sa première ligne'], bonne: 0 },
+      { type: 'unique', question: "Pour livrer une partie seulement de la commande, il faut :", options: ["L'accord du client", "L'accord du transporteur", 'Aucune autorisation'], bonne: 0 },
+      { type: 'unique', question: "Une anomalie de stock se signale :", options: ['Par écrit, au responsable logistique, avant préparation', 'Oralement, au chef d\u2019agence, après livraison', 'Au client directement'], bonne: 0 },
+      { type: 'unique', question: 'Le client professionnel doit réclamer par écrit dans un délai de :', options: ['8 jours après réception', '14 jours après réception', '30 jours après réception'], bonne: 0 },
+      { type: 'unique', question: "Sur le bordereau du transporteur, la mention « sous réserve de déballage » est :", options: ['Trop générale et imprécise', 'Suffisante', 'Obligatoire'], bonne: 0 },
+      { type: 'qcm', question: 'Quelles sont les limites du camion grue ?', options: ["50 km à vol d'oiseau", '10 palettes maximum', '12 tonnes maximum', '3 tonnes maximum'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: "Que doit contenir un signalement d'anomalie au responsable logistique ?", options: ['Le numéro de commande', 'La ligne concernée', "La nature de l'anomalie", 'Le nom du client final'], bonnes: [0, 1, 2] },
+      { type: 'unique', question: "Un litige sur la livraison permet au client de suspendre le paiement de sa facture :", options: ['Faux, les litiges ne justifient aucun retard de règlement', 'Vrai, tant que le litige n\u2019est pas résolu', 'Vrai, dans la limite de 30 jours'], bonne: 0 },
+      { type: 'trous', texte: 'Une ligne est en {0} lorsque la quantité commandée dépasse la quantité {1}.', reponses: ['rupture', 'disponible'] },
+      { type: 'trous', texte: "La partie d'une commande qui n'a pas pu être livrée s'appelle le {0}. Pour livrer le reste plus tard, il faut l'accord du client sur la livraison {1}.", reponses: ['reliquat', 'partielle'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Attribuez à chaque ligne de la commande 2026-4471 le statut qui convient.',
+      etiquettes: ['Disponible', 'En rupture', 'À vérifier'],
+      zones: [
+        { libelle: 'OBR-PAR20 : 12 palettes commandées, 31 disponibles', etiquetteIndex: 0 },
+        { libelle: 'OBR-CIM35 : 80 sacs commandés, 240 disponibles', etiquetteIndex: 0 },
+        { libelle: 'ELO-CHV14 : 30 chevrons commandés, 4 disponibles', etiquetteIndex: 1 },
+        { libelle: 'OBR-TRE10 : 100 panneaux saisis, 10 au devis signé', etiquetteIndex: 2 },
+        { libelle: 'OBR-GRA02 : remise de 0 % saisie, 8 % au devis signé', etiquetteIndex: 2 },
+        { libelle: 'OBR-SAB01 : 6 big bags commandés, 18 disponibles', etiquetteIndex: 0 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule:
+          "Pour chaque ligne de la commande, comparez la quantité commandée et la quantité disponible, attribuez le statut qui convient, cochez la case anomalie si nécessaire et justifiez.",
+        documents: ['Documents 3, 4 et 5', 'Annexe 1'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Ligne', 'Commandé', 'Disponible', 'Statut attendu', 'Anomalie', 'Justification'],
+          lignes: [
+            ['OBR-PAR20', '12 palettes', '31 palettes', 'Disponible', 'Non', 'Stock suffisant.'],
+            ['OBR-CIM35', '80 sacs', '240 sacs', 'Disponible', 'Non', 'Stock suffisant.'],
+            ['OBR-SAB01', '6 big bags', '18 big bags', 'Disponible', 'Non', 'Stock suffisant.'],
+            ['OBR-GRA02', '4 big bags', '11 big bags', 'À vérifier', 'Oui', "Le stock suffit, mais la remise saisie est de 0 % alors que le devis signé porte 8 %. Ce n'est pas une rupture, c'est une erreur de saisie."],
+            ['ELO-CHV14', '30 unités', '4 unités', 'En rupture', 'Oui', "26 unités manquantes. Réapprovisionnement annoncé au mercredi 18 mars, soit après la date de livraison du lundi 16."],
+            ['OBR-TRE10', '100 panneaux', '46 panneaux', 'À vérifier', 'Oui', "Le devis signé porte 10 panneaux, pas 100. La quantité saisie est erronée. Sur la base du devis, 10 panneaux sont disponibles sur 46 : la ligne n'est donc pas en rupture."],
+          ],
+        },
+        complement:
+          "Piège central de la mission. Un élève qui compare 100 et 46 conclut à une seconde rupture. C'est faux : la quantité de 100 est elle-même une erreur de saisie. La bonne démarche est de vérifier d'abord la conformité au devis, puis la disponibilité. Accepter « En rupture » pour la ligne OBR-TRE10 à condition que l'élève précise « si la quantité de 100 était exacte ». Refuser la réponse qui ne mentionne pas le devis.",
+      },
+      {
+        intitule:
+          "Indiquez quelle est la seule ligne réellement en rupture, puis expliquez pourquoi le statut de la commande dans son ensemble n'est pas Disponible.",
+        documents: ['Documents 3, 4 et 5', 'Annexe 2'],
+        reponse:
+          "La seule ligne réellement en rupture : ELO-CHV14, chevron sapin 63x75 mm. 30 unités commandées, 4 disponibles. Il manque 26 unités. Le réapprovisionnement est annoncé au mercredi 18 mars, postérieur à la livraison prévue le lundi 16.\n\nLa ligne 6 n'est pas en rupture, et la réponse n'est pas immédiate : le bon de commande porte 100 panneaux de treillis, le stock en compte 46. La comparaison brute conclut à une rupture. Mais le devis signé par M. Kadri porte 10 panneaux. La quantité de 100 est une erreur de saisie : un zéro de trop. Sur la base de la commande réelle, 10 panneaux sont demandés et 46 sont disponibles. La ligne est donc disponible. C'est la conformité au devis qui tranche, pas l'état du stock.\n\nStatut de la commande : En rupture. La règle du document 5 est explicite : le statut de la commande est celui de sa ligne la moins avancée. Une seule ligne au statut En rupture suffit à donner ce statut à l'ensemble.\n\nPourquoi une seule ligne bloque toute la livraison : parce que la case « J'accepte la livraison partielle des produits » n'a pas été cochée sur le bon de commande. Selon la FAQ de l'entreprise, lorsque cette case n'est pas cochée, l'agence attend d'avoir tous les produits pour livrer. La commande entière reste donc immobilisée à cause de 26 chevrons.",
+        bareme: 4,
+        complement:
+          "C'est la question qui sépare l'élève qui compare des nombres de l'élève qui comprend un processus. Le point clé : une erreur de saisie peut fabriquer une fausse rupture. Vérifier la conformité avant de conclure à l'indisponibilité.",
+      },
+      {
+        intitule:
+          "Comparez le devis signé et le bon de commande. Relevez les deux écarts, indiquez pour chacun la ligne concernée, la valeur du devis, la valeur du bon de commande et la conséquence financière.",
+        documents: ['Documents 2 et 3', 'Annexe 3'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Écart', 'Ligne', 'Devis signé', 'Bon de commande', 'Conséquence financière'],
+          lignes: [
+            [
+              "n° 1\nRemise non appliquée",
+              'Ligne 4, OBR-GRA02, gravier',
+              'Remise 8 %, total 213,44 €',
+              'Remise 0 %, total 232,00 €',
+              "Le client est surfacturé de 18,56 € HT. Il paie une remise à laquelle il a droit par contrat.",
+            ],
+            [
+              "n° 2\nQuantité erronée",
+              'Ligne 6, OBR-TRE10, treillis soudé',
+              '10 panneaux, total 381,80 €',
+              '100 panneaux, total 3 818,00 €',
+              "La commande est gonflée de 3 436,20 € HT. 90 panneaux non commandés seraient livrés et facturés.",
+            ],
+          ],
+        },
+        complement:
+          "Les deux écarts sont de nature différente, et il faut le faire dire aux élèves. Le premier est un manquement contractuel : la remise de 8 % est acquise au compte BATIRENOV. Le second est une faute de frappe, un zéro de trop, commise en fin de journée par un intérimaire. Le premier lèse le client, le second lèse le client et l'agence.",
+      },
+      {
+        intitule:
+          "Calculez l'écart total en euros HT, puis indiquez si la commande reste compatible avec l'encours autorisé du compte BATIRENOV.",
+        documents: ['Documents 2, 3 et 6', 'Annexe 4'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Libellé', 'Montant', 'Détail'],
+          lignes: [
+            ['Total HT du devis signé', '3 661,64 €', 'Document 2'],
+            ['Total HT du bon de commande', '7 116,40 €', 'Document 3'],
+            ['Écart en euros HT', '3 454,76 €', '7 116,40 - 3 661,64'],
+            ['Encours autorisé', '15 000,00 €', 'Document 2'],
+            ['Encours déjà utilisé au 12 mars', '2 180,00 €', 'Document 2'],
+            ['Encours disponible', '12 820,00 €', '15 000 - 2 180'],
+            ['Commande saisie, TTC', '8 539,68 €', 'Document 3'],
+            ['Commande conforme au devis, TTC', '4 393,97 €', 'Document 2'],
+          ],
+        },
+        complement:
+          "Réponse attendue : oui, la commande telle qu'elle est saisie tient dans l'encours disponible. 8 539,68 € TTC sont inférieurs aux 12 820 € restants. C'est précisément ce qui rend l'erreur dangereuse : rien ne l'arrête. Aucun blocage automatique ne se déclenche, la commande passe, les 90 panneaux excédentaires partent en livraison.\n\nLa règle des CGV à citer : « Le Vendeur se réserve le droit de contrôler et limiter pour raisons objectives l'encours de ses comptes clients et par voie de conséquence de refuser d'enregistrer une commande ou d'annuler une commande en cours, sauf règlement comptant. » Le contrôle de l'encours est un droit du vendeur, il n'est pas automatique.\n\nValoriser l'élève qui observe que si l'encours avait été plus faible, l'erreur aurait été détectée par le logiciel. Ici, c'est la vigilance humaine qui est le seul filet.",
+      },
+      {
+        intitule:
+          "Un des deux écarts était détectable sans le devis, par le seul bon de sens professionnel. Indiquez lequel et expliquez pourquoi.",
+        documents: ['Documents 2 et 3', 'Annexe 5'],
+        reponse:
+          "L'écart détectable sans le devis est celui de la ligne 6 : 100 panneaux de treillis soudé.\n\nPlusieurs indices convergent, et un seul suffit à alerter.\n\nLa cohérence du chantier. Il s'agit de la rénovation d'une maison. Douze palettes de parpaings, 80 sacs de ciment, 6 tonnes de sable : les quantités des autres lignes dessinent un chantier de taille moyenne. Cent panneaux de treillis soudé de 6 mètres sur 2,40 mètres représentent 1 440 mètres carrés de ferraillage. C'est sans rapport avec le reste de la commande.\n\nLa cohérence des montants. La ligne 6 représenterait à elle seule 3 818 € HT, soit plus de la moitié de la commande, alors que le treillis est un poste secondaire d'un chantier de maçonnerie.\n\nLa cohérence de la livraison. Cent panneaux de 6 mètres ne tiennent pas dans un camion grue limité à 10 palettes ou 12 tonnes. La livraison annoncée serait matériellement impossible.\n\nLa forme du nombre. Toutes les autres quantités sont des nombres ronds et plausibles. 100 est un multiple exact de 10, ce qui est la signature d'un zéro saisi en trop.",
+        bareme: 3,
+        complement:
+          "Accepter une seule de ces justifications si elle est correctement argumentée. Refuser la réponse qui se contente d'affirmer que « c'est beaucoup ». L'objectif de la question est d'installer le contrôle de vraisemblance, qui ne demande aucun document et qui est le premier réflexe du professionnel.",
+      },
+      {
+        intitule:
+          "Rédigez le mail de signalement au responsable logistique. Objet, destinataire, et cinq lignes maximum.",
+        documents: ['Documents 1, 3, 4 et 5', 'Annexe 6'],
+        reponse:
+          "Destinataire : k.zemmouri@chausson.fr\nObjet : Commande 2026-4471 BATIRENOV - rupture ligne 5 et deux écarts de saisie\n\nCorps attendu, cinq lignes maximum :\n\nBonjour Karim,\nLa commande 2026-4471 (SARL BATIRENOV, livraison lundi 16 mars 7 h à Colombes) présente une rupture sur la ligne 5, ELO-CHV14 : 30 chevrons commandés, 4 disponibles, réappro annoncé mercredi 18.\nDeux écarts de saisie par rapport au devis DV-2026-1187 : ligne 4, remise 0 % au lieu de 8 % ; ligne 6, 100 panneaux au lieu de 10.\nLa case livraison partielle n'est pas cochée : la commande est bloquée en totalité.\nPeux-tu confirmer le réappro du 18 et bloquer la préparation en attendant l'accord écrit du client ?\n\nStagiaire, agence de Gennevilliers",
+        bareme: 4,
+        complement:
+          "Grille de correction. Un point pour le destinataire exact et un objet qui contient le numéro de commande. Un point pour la mention de la ligne en rupture, chiffrée. Un point pour les deux écarts de saisie. Un point pour la question posée, qui doit être une question, et non un simple constat. Pénaliser le message qui dépasse cinq lignes, qui oublie le numéro de commande, ou qui ne demande rien.",
+      },
+      {
+        intitule:
+          "Indiquez la solution que vous proposez pour que le chantier de lundi ne soit pas bloqué. Précisez ce qui doit être obtenu du client, sous quelle forme, et avant quand.",
+        documents: ['Documents 1, 3, 6 et 7', 'Annexe 7'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Élément', 'Réponse attendue'],
+          lignes: [
+            [
+              'Lignes livrables lundi 16 mars',
+              "Lignes 1 à 4 : parpaings, ciment, sable, gravier. Toutes disponibles en stock. Ce sont précisément celles dont M. Kadri a besoin pour monter le mur porteur. La ligne 6, une fois corrigée à 10 panneaux, est également disponible.",
+            ],
+            [
+              'Lignes à différer',
+              "Ligne 5, les 30 chevrons. Réapprovisionnement annoncé au mercredi 18 mars. Livraison possible au plus tôt le mercredi 18, à confirmer par le dépôt. M. Kadri écrit lui-même que les chevrons et le treillis peuvent suivre dans la semaine.",
+            ],
+            [
+              'Ce qu\u2019il faut obtenir de M. Kadri',
+              "Son accord sur la livraison partielle. La case « J'accepte la livraison partielle des produits » n'est pas cochée sur le bon de commande. La FAQ précise : « si tout n'est pas disponible et que vous n'avez pas coché J'accepte la livraison partielle des produits, nous attendons d'avoir tous les produits pour vous livrer ». Il faut également son accord sur la correction de la ligne 6, ramenée de 100 à 10 panneaux.",
+            ],
+            [
+              'Sous quelle forme',
+              "Par écrit. Un mail de M. Kadri suffit. Les CGV disposent que « l'acheteur est réputé d'accord avec le contenu de notre confirmation si, dans les huit jours et en tous cas avant la livraison, il ne nous a pas fait connaître par écrit ses observations éventuelles ». L'écrit est la preuve. Un accord téléphonique ne laisse aucune trace opposable si le client conteste ensuite la facture ou la livraison incomplète.",
+            ],
+            [
+              'Avant quand',
+              "Avant la date de livraison annoncée, donc avant le lundi 16 mars à 7 heures. La procédure interne impose d'informer le client avant la date annoncée, et jamais le jour même. En pratique, l'appel doit être passé ce vendredi 13 dans la journée, pour laisser au dépôt le temps de préparer la livraison partielle.",
+            ],
+          ],
+        },
+        complement:
+          "La question évalue la capacité à transformer un blocage en solution. L'élève dispose de toutes les pièces : le mail de M. Kadri dit ce dont il a besoin lundi, les CGV disent ce qu'il faut pour livrer partiellement, la procédure dit quand informer. Valoriser celui qui remarque que M. Kadri a déjà, dans son mail, donné son accord de principe sur le fond, mais que cet accord ne porte pas sur la case du bon de commande et ne vaut donc pas acceptation de la livraison partielle.",
+      },
+      {
+        intitule:
+          "Rédigez en cinq lignes maximum le compte rendu que vous laissez à M. Ferreira.",
+        documents: ['Ensemble des documents', 'Annexe 8'],
+        reponse:
+          "Objet : Commande 2026-4471 BATIRENOV, vérifiée le 13 mars.\n\nCe que j'ai vérifié et ce que j'ai trouvé : contrôle ligne par ligne de la disponibilité et de la conformité au devis DV-2026-1187. Une rupture réelle, ligne 5, 30 chevrons commandés pour 4 disponibles, réappro le 18 mars. Deux erreurs de saisie : ligne 4, remise 0 % au lieu de 8 %, soit 18,56 € HT surfacturés au client ; ligne 6, 100 panneaux de treillis au lieu de 10, soit 3 436,20 € HT en trop. La case livraison partielle n'est pas cochée : la commande entière est bloquée.\n\nCe que j'ai fait : signalé les trois points par mail à Karim Zemmouri à 9 h 15, demandé le blocage de la préparation et la confirmation du réapprovisionnement du 18.\n\nCe qui reste à décider et par qui : l'accord écrit de M. Kadri sur la livraison partielle et sur la correction de la ligne 6 doit être obtenu avant lundi 7 heures. M. Kadri a écrit qu'il n'avait besoin lundi que des parpaings et du ciment. La correction des deux lignes de saisie relève de vous ou de M. Vallois. Je n'ai rien modifié dans le logiciel.",
+        bareme: 3,
+        complement:
+          "Barème total de la mission : 32 points.\n\nLe dernier paragraphe est le plus important, et c'est celui que les élèves oublient. « Je n'ai rien modifié dans le logiciel » : le stagiaire signale, il ne corrige pas. Il agit dans les limites de ses prérogatives, comme le prévoit le référentiel au groupe de compétences 2. Valoriser fortement l'élève qui écrit cette phrase ou son équivalent.\n\nCe qui se joue en mission 3 : le délai à annoncer à M. Kadri, et l'appel téléphonique à préparer.",
+      },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 3 - Informer le client des delais et
+// des modalites de mise a disposition
+// Bloc 2 - Suivre les ventes : assurer le suivi de la commande du produit.
+// Suite directe de la mission 2 : la rupture de la ligne 5 (chevrons) doit
+// maintenant etre annoncee a M. Kadri.
+// Source : chausson.fr (FAQ, modes de retrait et de livraison, CGV, fiches
+// produits bois), consultes le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, déterminez la date de livraison réaliste des chevrons, préparez l'appel téléphonique à M. Kadri, puis complétez la transcription de cet appel et confirmez par écrit.",
+    contexte:
+      "Vendredi 13 mars, 10 h 30. Vous avez signalé hier la rupture de la ligne 5 au responsable logistique. Karim Zemmouri vous a répondu par mail. M. Ferreira est toujours en rendez-vous extérieur, il vous a envoyé un message : « Tu appelles Kadri toi-même. Tu prépares avant. Tu ne raccroches pas sans une date et sans son accord écrit. » La livraison est annoncée au client pour lundi 16 mars à 7 heures. Il est encore temps de l'informer avant la date annoncée, comme l'exige la procédure interne.",
+    documents: [
+      // ---- Document 1 : la reponse du service logistique ------------------
+      {
+        numero: 1,
+        titre: 'La réponse de Karim Zemmouri, responsable logistique',
+        texte: [
+          {
+            mailLecture: {
+              de: 'k.zemmouri@chausson.fr',
+              a: 'stagiaire@chausson.fr',
+              objet: 'RE : Commande 2026-4471 BATIRENOV - rupture ligne 5 et deux écarts de saisie',
+              corps: [
+                'Bien vu pour le treillis. Cent panneaux, on aurait rigolé au chargement.',
+                "Sur les chevrons ELO-CHV14 : la commande fournisseur est bien partie. Réception annoncée au dépôt le mercredi 18 mars dans la matinée. Le fournisseur ne s'engage jamais sur l'heure, seulement sur la matinée.",
+                "Il faut compter la réception, le contrôle et la mise en stock. Ce n'est pas disponible à la vente le jour même de la réception. Compte une journée pleine.",
+                "Ensuite il faut une tournée. Les tournées de livraison chantier partent le matin, jamais l'après-midi. Regarde le planning du dépôt, il est à jour.",
+                "J'ai bloqué la préparation de la commande. Rien ne part tant que je n'ai pas l'accord écrit du client sur la livraison partielle.",
+                "Attention à ce que tu promets. Si tu annonces une date que le dépôt ne peut pas tenir, c'est moi qui prends l'appel du client, et c'est toi qui expliques à Vallois.",
+                'Karim',
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 2 : le planning du depot ------------------------------
+      {
+        numero: 2,
+        titre: "Le planning des tournées de livraison chantier du dépôt de Gennevilliers",
+        texte: [
+          {
+            paragraphes: [
+              "Extrait du planning de mars 2026. Les tournées de livraison sur chantier partent uniquement le matin. Chaque case indique le nombre de créneaux encore libres sur la tournée. Les créneaux se réservent au plus tard la veille à 16 heures.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Jour', 'Date', 'Tournée du matin', 'Après-midi'],
+              lignes: [
+                ['Vendredi', '13 mars', 'Tournée partie à 6 h 30', 'Pas de tournée chantier'],
+                ['Samedi', '14 mars', 'Dépôt fermé', 'Dépôt fermé'],
+                ['Dimanche', '15 mars', 'Dépôt fermé', 'Dépôt fermé'],
+                ['Lundi', '16 mars', '2 créneaux libres', 'Pas de tournée chantier'],
+                ['Mardi', '17 mars', '3 créneaux libres', 'Pas de tournée chantier'],
+                ['Mercredi', '18 mars', '1 créneau libre', 'Pas de tournée chantier'],
+                ['Jeudi', '19 mars', '4 créneaux libres', 'Pas de tournée chantier'],
+                ['Vendredi', '20 mars', '2 créneaux libres', 'Pas de tournée chantier'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Les trois règles du dépôt affichées au-dessus du planning',
+          },
+          {
+            puces: [
+              "Une marchandise reçue le jour J est disponible à la vente le jour J plus un, après réception, contrôle et mise en stock.",
+              "Les tournées de livraison sur chantier partent le matin uniquement.",
+              "Le dépôt est fermé le samedi et le dimanche. Ces jours ne comptent pas comme des jours ouvrés.",
+            ],
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Un jour ouvré est un jour travaillé par l'entreprise. Ici, du lundi au vendredi. Un jour calendaire est un jour du calendrier, week-end compris. Une date annoncée en jours calendaires est presque toujours fausse.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : les trois solutions de substitution ---------------
+      {
+        numero: 3,
+        titre: "Les produits de substitution disponibles en stock",
+        texte: [
+          {
+            paragraphes: [
+              "Le chevron commandé par M. Kadri est le ELO-CHV14, sapin 63x75 mm en longueur de 4 mètres, au prix unitaire de 18,40 euros HT. Trente unités sont nécessaires. Quatre sont en stock. Le dépôt propose trois produits disponibles immédiatement, en quantité suffisante.",
+            ],
+          },
+          {
+            catalogueProduits: {
+              intro: 'Cliquez sur un produit pour consulter sa fiche complète.',
+              produits: [
+                {
+                  ref: 'ELO-CHV18',
+                  nom: 'Chevron sapin 63x75 mm, longueur 4 m, classe 2 traité',
+                  prix: '23,60 € HT',
+                  ancienPrix: '18,40 € HT',
+                  badge: '42 en stock',
+                  accroche: 'Même section, même longueur, traitement classe 2 en supplément.',
+                  description: [
+                    "Chevron en sapin du Nord, section 63x75 mm, longueur 4 mètres.",
+                    "Traitement autoclave classe d'emploi 2 : usage en intérieur ou sous abri, protection contre les insectes et les champignons.",
+                    "Section et longueur strictement identiques au ELO-CHV14 commandé.",
+                  ],
+                  composition: [
+                    { titre: 'Essence', texte: 'Sapin du Nord' },
+                    { titre: 'Section', texte: '63 x 75 mm' },
+                    { titre: 'Longueur', texte: '4 mètres' },
+                    { titre: "Classe d'emploi", texte: 'Classe 2, traité autoclave' },
+                  ],
+                  infos: [
+                    'Disponible immédiatement, 42 unités en stock.',
+                    'Écart de prix : 5,20 € HT par unité, soit 156,00 € HT pour 30 unités avant remise.',
+                    "Le traitement classe 2 n'était pas demandé au devis.",
+                  ],
+                },
+                {
+                  ref: 'ELO-CHV12',
+                  nom: 'Chevron sapin 50x75 mm, longueur 4 m',
+                  prix: '15,10 € HT',
+                  ancienPrix: '18,40 € HT',
+                  badge: '68 en stock',
+                  accroche: 'Longueur identique, section réduite.',
+                  description: [
+                    "Chevron en sapin, section 50x75 mm, longueur 4 mètres.",
+                    "La section est inférieure de 13 millimètres en épaisseur au produit commandé.",
+                    "La résistance mécanique et la portée admissible sont réduites en conséquence.",
+                  ],
+                  composition: [
+                    { titre: 'Essence', texte: 'Sapin' },
+                    { titre: 'Section', texte: '50 x 75 mm' },
+                    { titre: 'Longueur', texte: '4 mètres' },
+                    { titre: "Classe d'emploi", texte: 'Classe 1, non traité' },
+                  ],
+                  infos: [
+                    'Disponible immédiatement, 68 unités en stock.',
+                    'Écart de prix : 3,30 € HT de moins par unité.',
+                    "La section n'est pas celle du devis. Toute substitution de section engage la responsabilité de celui qui la propose.",
+                  ],
+                },
+                {
+                  ref: 'ELO-CHV14',
+                  nom: 'Chevron sapin 63x75 mm, longueur 3 m',
+                  prix: '13,80 € HT',
+                  ancienPrix: '18,40 € HT',
+                  badge: '55 en stock',
+                  accroche: 'Section identique, longueur réduite à 3 mètres.',
+                  description: [
+                    "Chevron en sapin, section 63x75 mm, longueur 3 mètres.",
+                    "Section strictement identique au produit commandé, longueur inférieure d'un mètre.",
+                    "Trente chevrons de 3 mètres représentent 90 mètres linéaires, contre 120 mètres pour trente chevrons de 4 mètres.",
+                  ],
+                  composition: [
+                    { titre: 'Essence', texte: 'Sapin' },
+                    { titre: 'Section', texte: '63 x 75 mm' },
+                    { titre: 'Longueur', texte: '3 mètres' },
+                    { titre: "Classe d'emploi", texte: 'Classe 1, non traité' },
+                  ],
+                  infos: [
+                    'Disponible immédiatement, 55 unités en stock.',
+                    'Écart de prix : 4,60 € HT de moins par unité.',
+                    "Pour obtenir 120 mètres linéaires, il faudrait 40 chevrons de 3 mètres au lieu de 30.",
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 4 : la note de la direction ---------------------------
+      {
+        numero: 4,
+        titre: "Ce qu'on a le droit de promettre : note de la direction régionale",
+        texte: [
+          {
+            noteDirection: {
+              titre: "Engagements pris auprès des clients professionnels",
+              intro:
+                "Note à l'attention des commerciaux sédentaires et itinérants. Applicable à toutes les agences de la région Île-de-France.",
+              paragraphe:
+                "Un engagement pris oralement au téléphone engage l'agence au même titre qu'un engagement écrit. Le client ne fait pas la différence, et le juge non plus. Les règles ci-dessous ne sont pas des recommandations.",
+              puces: [
+                "Ne jamais annoncer une date de livraison qui n'a pas été confirmée par le dépôt. Le commercial ne dispose pas du planning des tournées.",
+                "Ne jamais annoncer une date fournisseur comme une date de disponibilité. Entre la réception et la mise en stock, il s'écoule au minimum une journée.",
+                "Ne jamais proposer un produit de substitution de section, de longueur ou de résistance différente sans l'accord écrit du client. La substitution engage la responsabilité de l'agence en cas de sinistre.",
+                "Ne jamais accorder un geste commercial supérieur à 500 euros hors taxes sans validation du responsable commercial.",
+                "Toujours annoncer la mauvaise nouvelle avant que le client ne la découvre. Un client informé la veille est un client mécontent. Un client informé le matin même est un client perdu.",
+                "Toujours confirmer par écrit, le jour même, ce qui a été convenu par téléphone.",
+              ],
+              conclusion:
+                "En cas de doute sur ce que vous pouvez promettre, ne promettez rien et rappelez le client dans l'heure. Un rappel est toujours moins coûteux qu'un engagement non tenu.",
+              signature: 'Direction régionale Île-de-France',
+            },
+          },
+        ],
+      },
+
+      // ---- Document 5 : la structure d'un appel difficile -----------------
+      {
+        numero: 5,
+        titre: "La méthode de l'appel sortant en cas de mauvaise nouvelle",
+        texte: [
+          {
+            parcours: {
+              etapes: [
+                {
+                  numero: '1',
+                  symbole: 'personnes',
+                  titre: 'Se présenter et vérifier la disponibilité',
+                  contenu: [
+                    "Nom, fonction, agence. Le client doit savoir immédiatement qui l'appelle et pourquoi.",
+                    "Demander s'il peut parler maintenant. Un artisan sur un chantier n'est pas toujours disponible.",
+                  ],
+                },
+                {
+                  numero: '2',
+                  symbole: 'cible',
+                  titre: "Annoncer l'objet de l'appel sans détour",
+                  contenu: [
+                    "Dire le problème dans la première minute. Ne pas le noyer dans des formules de politesse.",
+                    "Nommer précisément ce qui est concerné : le numéro de commande, la ligne, le produit.",
+                  ],
+                },
+                {
+                  numero: '3',
+                  symbole: 'interdit',
+                  titre: 'Assumer, sans se justifier ni accuser',
+                  contenu: [
+                    "Ne pas rejeter la faute sur le fournisseur, sur l'intérimaire, sur le logiciel. Le client a un contrat avec l'agence.",
+                    "Ne pas s'excuser trois fois. Une fois suffit, si elle est suivie d'une solution.",
+                  ],
+                },
+                {
+                  numero: '4',
+                  symbole: 'ampoule',
+                  titre: 'Proposer une solution, pas un choix vide',
+                  contenu: [
+                    "Arriver avec une solution construite et une alternative, pas avec une question ouverte.",
+                    "Chiffrer et dater. Une solution sans date n'est pas une solution.",
+                  ],
+                },
+                {
+                  numero: '5',
+                  symbole: 'coche',
+                  titre: "Obtenir un accord explicite et le tracer",
+                  contenu: [
+                    "Faire reformuler l'accord par le client, ou le reformuler soi-même et le faire confirmer.",
+                    "Annoncer l'écrit de confirmation avant de raccrocher, et l'envoyer le jour même.",
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 6 : la transcription de l'appel, avec trous -----------
+      {
+        numero: 6,
+        titre: "La transcription de l'appel, telle qu'enregistrée par le standard",
+        texte: [
+          {
+            paragraphes: [
+              "L'agence enregistre les appels sortants à des fins de formation. Voici la transcription de l'appel passé à M. Kadri le vendredi 13 mars à 11 h 04. Quatre répliques du commercial ont été effacées : ce sont celles que vous devrez rédiger.",
+            ],
+          },
+          {
+            transcription: {
+              entete: 'Appel sortant - Vendredi 13 mars 2026, 11 h 04 - Durée 4 min 12',
+              echanges: [
+                { numero: '1', locuteur: 'Vous', texte: '[Réplique 1 à rédiger : présentation, vérification de la disponibilité, objet de l\u2019appel]' },
+                { numero: '2', locuteur: 'M. Kadri', texte: "Allez-y, je vous écoute, je suis dans la voiture. Qu'est-ce qui se passe ?", entrant: true },
+                { numero: '3', locuteur: 'Vous', texte: "[Réplique 2 à rédiger : annonce du problème, précise et chiffrée]" },
+                { numero: '4', locuteur: 'M. Kadri', texte: "Attendez. Vous me dites ça un vendredi à 11 heures pour une livraison lundi matin ? J'ai six gars et une grue à 7 heures.", entrant: true },
+                { numero: '5', locuteur: 'Vous', texte: "Je vous le dis maintenant, monsieur Kadri, justement pour que vous ayez le temps. Rien de ce que vous attendez lundi matin n'est concerné." },
+                { numero: '6', locuteur: 'M. Kadri', texte: "Les parpaings ? Le ciment ?", entrant: true },
+                { numero: '7', locuteur: 'Vous', texte: "En stock, les deux. Le sable et le gravier aussi. Ce sont les chevrons qui manquent, et vous m'avez écrit vous-même qu'ils pouvaient suivre." },
+                { numero: '8', locuteur: 'M. Kadri', texte: "Bon. Ça, c'est vrai. Les chevrons, c'est pour la charpente, je n'y touche pas avant la semaine prochaine. Vous me les livrez quand ?", entrant: true },
+                { numero: '9', locuteur: 'Vous', texte: "[Réplique 3 à rédiger : la date de livraison des chevrons, justifiée]" },
+                { numero: '10', locuteur: 'M. Kadri', texte: "Et vous ne pouvez pas me trouver autre chose ? Vous devez bien avoir du chevron en stock, vous êtes un négoce de matériaux.", entrant: true },
+                { numero: '11', locuteur: 'Vous', texte: "[Réplique 4 à rédiger : réponse sur la substitution, conforme à la note de la direction]" },
+                { numero: '12', locuteur: 'M. Kadri', texte: "D'accord. Alors on fait comme ça : parpaings, ciment, sable, gravier lundi 7 heures. Les chevrons quand vous pourrez, dans la semaine.", entrant: true },
+                { numero: '13', locuteur: 'Vous', texte: "Je vous confirme tout ça par mail avant midi. Il me faut votre réponse écrite sur deux points : votre accord pour la livraison partielle, et la correction de la quantité de treillis, dix panneaux et non cent." },
+                { numero: '14', locuteur: 'M. Kadri', texte: "Cent panneaux ? Je n'ai jamais commandé cent panneaux.", entrant: true },
+                { numero: '15', locuteur: 'Vous', texte: "Je sais. C'est une erreur de saisie que nous avons détectée avant préparation. Le devis que vous avez signé porte bien dix panneaux. Rien ne partira avant votre réponse." },
+                { numero: '16', locuteur: 'M. Kadri', texte: "Très bien. Envoyez, je réponds ce soir.", entrant: true },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 7 : le rappel des faits de la mission 2 ---------------
+      {
+        numero: 7,
+        titre: 'Rappel de la situation de la commande 2026-4471',
+        texte: [
+          {
+            encadresListes: [
+              {
+                titre: "Ce qui est disponible en stock et peut partir lundi 16 mars",
+                lignes: [
+                  'OBR-PAR20, parpaing creux : 12 palettes commandées, 31 disponibles.',
+                  'OBR-CIM35, ciment CEM II : 80 sacs commandés, 240 disponibles.',
+                  'OBR-SAB01, sable à maçonner : 6 big bags commandés, 18 disponibles.',
+                  'OBR-GRA02, gravier 4/20 : 4 big bags commandés, 11 disponibles.',
+                  'OBR-TRE10, treillis soudé : 10 panneaux au devis signé, 46 disponibles.',
+                ],
+              },
+              {
+                titre: "Ce qui est en rupture",
+                lignes: [
+                  'ELO-CHV14, chevron sapin 63x75 mm longueur 4 m : 30 unités commandées, 4 disponibles.',
+                  'Il manque 26 unités.',
+                  'Commande fournisseur passée. Réception annoncée au dépôt le mercredi 18 mars, dans la matinée.',
+                ],
+              },
+              {
+                titre: 'Ce qui reste à obtenir du client',
+                lignes: [
+                  "Son accord écrit sur la livraison partielle. La case n'est pas cochée sur le bon de commande.",
+                  'Son accord écrit sur la correction de la ligne 6 : dix panneaux de treillis, et non cent.',
+                  "Ces deux accords doivent être obtenus avant le lundi 16 mars à 7 heures.",
+                ],
+              },
+            ],
+          },
+          {
+            intertitre: 'Ce que M. Kadri a écrit dans son mail du 13 mars à 7 h 12',
+          },
+          {
+            paragraphes: [
+              "« Je te le dis franchement : si les parpaings et le ciment ne sont pas là à 7 h, je perds la journée et la grue. Ça me coûte environ 1 400 euros. Le reste peut suivre dans la semaine, je n'en ai pas besoin tout de suite pour le treillis et les chevrons. »",
+            ],
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: 'Activité 1 - Déterminer la date réaliste',
+        contexte:
+          "Avant de décrocher le téléphone, vous devez savoir quelle date vous pouvez annoncer. Le fournisseur livre le dépôt le mercredi 18 mars dans la matinée. Ce n'est pas une date de livraison client. Le planning du dépôt et les trois règles affichées vous donnent tout ce qu'il faut.",
+        questions: [
+          {
+            numero: 1,
+            consigne:
+              "Reconstituez le raisonnement qui conduit de la date de réception fournisseur à la date de livraison chantier. Renseignez chaque étape et justifiez-la par la règle qui s'applique.",
+            ressources: "Lire les documents 1 et 2, compléter l'annexe 1.",
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Positionnez la livraison des chevrons sur le planning du dépôt, sur le créneau qui convient. Puis indiquez pourquoi les journées du samedi 14 et du dimanche 15 mars ne peuvent pas être comptées.",
+            ressources: "Lire le document 2, compléter l'annexe 2.",
+            annexeId: 'annexe2',
+          },
+          {
+            numero: 3,
+            consigne:
+              "Un collègue affirme : « Le fournisseur livre le 18, donc on peut livrer le client le 18. » Expliquez en trois lignes maximum pourquoi ce raisonnement est faux, et ce qu'il risque de coûter.",
+            ressources: "Lire les documents 1, 2 et 4, compléter l'annexe 3.",
+            annexeId: 'annexe3',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 2 - Traiter la question de la substitution',
+        contexte:
+          "M. Kadri va vous demander un produit de remplacement. Trois références sont disponibles en stock. Aucune n'est identique à celle qu'il a commandée. La note de la direction est formelle sur ce point.",
+        questions: [
+          {
+            numero: 4,
+            consigne:
+              "Pour chacun des trois produits de substitution, indiquez ce qui diffère du produit commandé, l'écart de prix unitaire, et si vous pouvez le proposer seul au client. Justifiez par la note de la direction.",
+            ressources: "Lire les documents 3 et 4, compléter l'annexe 4.",
+            annexeId: 'annexe4',
+          },
+          {
+            numero: 5,
+            consigne:
+              "Un seul des trois produits pourrait être proposé sans engager la responsabilité technique de l'agence, sous une condition. Indiquez lequel, la condition, et calculez le surcoût total pour 30 unités, remise de 8 % comprise.",
+            ressources: "Lire les documents 3 et 4, compléter l'annexe 5.",
+            annexeId: 'annexe5',
+          },
+        ],
+      },
+      {
+        titre: "Activité 3 - Préparer, mener et tracer l'appel",
+        contexte:
+          "Il est 10 h 55. Vous avez votre date, vous avez votre position sur la substitution. M. Ferreira a été clair : « Tu ne raccroches pas sans une date et sans son accord écrit. » Vous préparez votre appel, vous le passez, vous le confirmez.",
+        questions: [
+          {
+            numero: 6,
+            consigne:
+              "Préparez votre appel en renseignant la fiche d'appel : objectif, accroche, annonce du problème, solution proposée, objection anticipée, engagement obtenu.",
+            ressources: "Lire les documents 4, 5 et 7, compléter l'annexe 6.",
+            annexeId: 'annexe6',
+          },
+          {
+            numero: 7,
+            consigne:
+              "Rédigez les quatre répliques manquantes de la transcription. Respectez la méthode de l'appel sortant et la note de la direction.",
+            ressources: "Lire les documents 4, 5 et 6, compléter l'annexe 7.",
+            annexeId: 'annexe7',
+          },
+          {
+            numero: 8,
+            consigne:
+              "Rédigez le mail de confirmation envoyé à M. Kadri avant midi. Il doit contenir ce qui a été convenu, les deux accords écrits demandés, et la date limite de réponse.",
+            ressources: "Lire les documents 4, 6 et 7, compléter l'annexe 8.",
+            annexeId: 'annexe8',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'grille',
+        id: 'annexe1',
+        titre: "Annexe 1 - De la date fournisseur à la date de livraison chantier",
+        colonnes: ['Étape', 'Date ou créneau', "Règle qui s'applique"],
+        nbLignes: 5,
+        prerempli: [
+          ['Réception de la marchandise au dépôt', '', ''],
+          ['Réception, contrôle et mise en stock', '', ''],
+          ['Marchandise disponible à la vente', '', ''],
+          ['Première tournée de livraison chantier possible', '', ''],
+          ['Date et créneau annoncés au client', '', ''],
+        ],
+        largeurs: ['32%', '24%', '44%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'planning',
+        id: 'annexe2',
+        titre: 'Annexe 2 - Positionner la livraison des chevrons sur le planning du dépôt',
+        mois: [
+          {
+            titre: 'MARS 2026',
+            decalage: 6,
+            nbJours: 31,
+            creneaux: [
+              { jour: 13, creneau: 'matin', texte: 'Tournée partie 6 h 30' },
+              { jour: 13, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 14, creneau: 'matin', texte: 'Fermé', ferie: true },
+              { jour: 14, creneau: 'aprem', texte: 'Fermé', ferie: true },
+              { jour: 15, creneau: 'matin', texte: 'Fermé', ferie: true },
+              { jour: 15, creneau: 'aprem', texte: 'Fermé', ferie: true },
+              { jour: 16, creneau: 'matin', texte: '2 créneaux libres' },
+              { jour: 16, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 17, creneau: 'matin', texte: '3 créneaux libres' },
+              { jour: 17, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 18, creneau: 'matin', texte: '1 créneau libre' },
+              { jour: 18, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 19, creneau: 'matin' },
+              { jour: 19, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 20, creneau: 'matin', texte: '2 créneaux libres' },
+              { jour: 20, creneau: 'aprem', texte: 'Pas de tournée' },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'texte',
+        id: 'annexe3',
+        titre: 'Annexe 3 - Le raisonnement du collègue',
+        lignes: 5,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4',
+        titre: 'Annexe 4 - Analyse des trois produits de substitution',
+        colonnes: ['Référence', 'Ce qui diffère du produit commandé', 'Écart de prix unitaire HT', 'Peut-il être proposé seul ? Justifiez.'],
+        nbLignes: 3,
+        prerempli: [
+          ['ELO-CHV18\n63x75, 4 m, classe 2', '', '', ''],
+          ['ELO-CHV12\n50x75, 4 m', '', '', ''],
+          ['ELO-CHV14\n63x75, 3 m', '', '', ''],
+        ],
+        largeurs: ['18%', '28%', '18%', '36%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe5',
+        titre: 'Annexe 5 - Le seul produit proposable et son surcoût',
+        colonnes: ['Question', 'Votre réponse'],
+        nbLignes: 6,
+        prerempli: [
+          ['Quel produit peut être proposé sans modifier la performance technique attendue ?', ''],
+          ['Sous quelle condition impérative ? Citez la note de la direction.', ''],
+          ['Prix unitaire HT du produit commandé, remise 8 % déduite', ''],
+          ['Prix unitaire HT du produit de substitution, remise 8 % déduite', ''],
+          ['Surcoût unitaire HT', ''],
+          ['Surcoût total HT pour 30 unités. Ce montant nécessite-t-il une validation hiérarchique ?', ''],
+        ],
+        largeurs: ['48%', '52%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'ficheappel',
+        id: 'annexe6',
+        titre: "Annexe 6 - Fiche de préparation de l'appel à M. Kadri",
+        sections: [
+          { cle: 'objectif', libelle: "Objectif de l'appel", aide: "Une phrase. Que dois-je avoir obtenu en raccrochant ?", lignes: 2 },
+          { cle: 'accroche', libelle: 'Accroche et vérification de disponibilité', aide: 'Nom, fonction, agence. Le client peut-il parler ?', lignes: 3 },
+          { cle: 'annonce', libelle: 'Annonce du problème', aide: 'Numéro de commande, ligne, produit, quantité manquante. Chiffrez.', lignes: 3 },
+          { cle: 'rassurance', libelle: 'Ce qui rassure immédiatement le client', aide: "Qu'est-ce qui n'est PAS concerné par la rupture ?", lignes: 3 },
+          { cle: 'solution', libelle: 'Solution proposée, datée', aide: 'La date de livraison des chevrons, et la livraison partielle de lundi.', lignes: 3 },
+          { cle: 'objection', libelle: 'Objection anticipée et réponse préparée', aide: "Il va demander un produit de remplacement. Que répondez-vous ?", lignes: 4 },
+          { cle: 'engagement', libelle: 'Engagement à obtenir avant de raccrocher', aide: 'Deux accords écrits. Lesquels, et pour quand ?', lignes: 3 },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe7',
+        titre: "Annexe 7 - Les quatre répliques manquantes de l'appel",
+        colonnes: ['Réplique', 'Ce que vous dites'],
+        nbLignes: 4,
+        prerempli: [
+          ["Réplique 1\nPrésentation, disponibilité, objet", ''],
+          ["Réplique 2\nAnnonce du problème, précise et chiffrée", ''],
+          ["Réplique 3\nLa date de livraison des chevrons, justifiée", ''],
+          ["Réplique 4\nLa réponse sur la substitution", ''],
+        ],
+        largeurs: ['30%', '70%'],
+        reponseMultiligne: true,
+        lignesReponse: 5,
+      },
+      {
+        type: 'mail',
+        id: 'annexe8',
+        titre: 'Annexe 8 - Mail de confirmation à M. Kadri',
+        deParDefaut: 'stagiaire@chausson.fr',
+        aParDefaut: 'r.kadri@batirenov.fr',
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: "Informer le client des délais et des modalités",
+    proposition: [
+      'Jours ouvrés',
+      'Mise en stock',
+      'Tournée du matin',
+      'Avant la date annoncée',
+      'Solution datée',
+      'Accord explicite',
+      'Section identique',
+      'Accord écrit du client',
+      'Confirmation le jour même',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Annoncer un délai à un client professionnel',
+      enfants: [
+        {
+          id: 'calculer',
+          texte: 'Calculer la date réelle',
+          enfants: [
+            { id: 'ca-1', texte: null, reponse: 'Jours ouvrés' },
+            { id: 'ca-2', texte: null, reponse: 'Mise en stock' },
+            { id: 'ca-3', texte: null, reponse: 'Tournée du matin' },
+          ],
+        },
+        {
+          id: 'annoncer',
+          texte: "Mener l'appel",
+          enfants: [
+            { id: 'an-1', texte: null, reponse: 'Avant la date annoncée' },
+            { id: 'an-2', texte: null, reponse: 'Solution datée' },
+            { id: 'an-3', texte: null, reponse: 'Accord explicite' },
+          ],
+        },
+        {
+          id: 'securiser',
+          texte: 'Sécuriser la substitution',
+          enfants: [
+            { id: 'se-1', texte: null, reponse: 'Section identique' },
+            { id: 'se-2', texte: null, reponse: 'Accord écrit du client' },
+            { id: 'se-3', texte: null, reponse: 'Confirmation le jour même' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Déterminer un délai réaliste de mise à disposition',
+        indicateurs: [
+          { niveau: 'novice', description: "Je reprends la date annoncée par le fournisseur." },
+          { niveau: 'debrouille', description: "J'ajoute un délai, mais je compte en jours calendaires." },
+          { niveau: 'averti', description: "Je compte en jours ouvrés et j'intègre le délai de mise en stock." },
+          { niveau: 'expert', description: "J'intègre également la contrainte des tournées et je vérifie la disponibilité du créneau." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Informer le client des délais et des modalités',
+        indicateurs: [
+          { niveau: 'novice', description: "J'attends que le client appelle, ou je préviens le jour de la livraison." },
+          { niveau: 'debrouille', description: "Je préviens à l'avance, mais je ne propose pas de solution." },
+          { niveau: 'averti', description: "Je préviens avant la date annoncée, j'annonce le problème et je propose une solution datée." },
+          { niveau: 'expert', description: "J'anticipe l'objection du client, je le rassure sur ce qui n'est pas concerné, et j'obtiens un accord explicite." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Agir dans les limites de mes prérogatives',
+        indicateurs: [
+          { niveau: 'novice', description: "Je promets pour rassurer le client sur le moment." },
+          { niveau: 'debrouille', description: "Je sais qu'il existe des limites, mais je ne sais pas où elles sont." },
+          { niveau: 'averti', description: "Je connais les seuils et je ne m'engage pas au-delà." },
+          { niveau: 'expert', description: "Je préfère rappeler le client dans l'heure plutôt que de prendre un engagement que je ne peux pas tenir." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: 'Tracer par écrit ce qui a été convenu oralement',
+        indicateurs: [
+          { niveau: 'novice', description: "Un accord téléphonique me suffit." },
+          { niveau: 'debrouille', description: "J'envoie un écrit, mais après plusieurs jours et sans reprendre les termes de l'accord." },
+          { niveau: 'averti', description: "Je confirme par écrit le jour même, en reprenant précisément ce qui a été convenu." },
+          { niveau: 'expert', description: "J'identifie ce qui doit être signé par le client, je le demande explicitement et je fixe une date limite." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Jour ouvré', definition: "Jour effectivement travaillé par l'entreprise, du lundi au vendredi. Le week-end n'est pas compté." },
+      { terme: 'Jour calendaire', definition: "Jour du calendrier, week-end et jours fériés inclus." },
+      { terme: 'Mise en stock', definition: "Opération de réception, de contrôle et d'enregistrement d'une marchandise, qui la rend disponible à la vente." },
+      { terme: 'Tournée de livraison', definition: "Circuit de livraison organisé par le dépôt, avec un nombre limité de créneaux, généralement le matin." },
+      { terme: 'Produit de substitution', definition: "Produit proposé en remplacement de celui qui a été commandé et qui n'est pas disponible." },
+      { terme: 'Section', definition: "Dimensions de la coupe transversale d'une pièce de bois, exprimée en millimètres. Elle détermine la résistance mécanique." },
+      { terme: 'Appel sortant', definition: "Appel passé par l'entreprise vers le client, par opposition à l'appel entrant." },
+      { terme: 'Reformulation', definition: "Fait de redire avec ses propres mots ce que l'interlocuteur a exprimé, pour vérifier la compréhension." },
+      { terme: 'Engagement', definition: "Promesse faite au client, qui lie l'entreprise, qu'elle soit écrite ou orale." },
+      { terme: 'Prérogative', definition: "Ce qu'un salarié a le droit de décider seul, dans les limites fixées par sa hiérarchie." },
+    ],
+    flashcards: [
+      { recto: 'Une marchandise reçue le mercredi est disponible à la vente quand ?', verso: 'Le jeudi. Il faut compter une journée pleine pour la réception, le contrôle et la mise en stock.' },
+      { recto: 'Les tournées de livraison chantier partent quand ?', verso: 'Le matin uniquement. Jamais l\u2019après-midi.' },
+      { recto: 'Le samedi et le dimanche comptent-ils comme des jours ouvrés ?', verso: 'Non. Le dépôt est fermé, ces jours ne sont pas comptés.' },
+      { recto: 'Peut-on annoncer au client la date de réception fournisseur ?', verso: "Non. Une date fournisseur n'est pas une date de disponibilité, et encore moins une date de livraison." },
+      { recto: 'Quand faut-il informer le client d\u2019un retard ?', verso: "Avant la date annoncée, jamais le matin même. Un client informé la veille est mécontent, un client informé le jour même est perdu." },
+      { recto: 'Un engagement oral au téléphone engage-t-il l\u2019agence ?', verso: "Oui, au même titre qu'un engagement écrit." },
+      { recto: "Peut-on proposer seul un produit de section différente ?", verso: "Non. Toute substitution de section, de longueur ou de résistance exige l'accord écrit du client." },
+      { recto: 'Au-delà de quel montant un geste commercial doit-il être validé ?', verso: '500 euros hors taxes, par le responsable commercial.' },
+      { recto: 'Que fait-on quand on ne sait pas ce qu\u2019on peut promettre ?', verso: "On ne promet rien et on rappelle le client dans l'heure." },
+      { recto: 'Dans quel délai confirme-t-on par écrit ce qui a été convenu par téléphone ?', verso: 'Le jour même.' },
+      { recto: 'Quelles sont les cinq étapes d\u2019un appel de mauvaise nouvelle ?', verso: "Se présenter, annoncer sans détour, assumer sans se justifier, proposer une solution datée, obtenir un accord explicite et le tracer." },
+      { recto: "Pourquoi ne faut-il pas rejeter la faute sur le fournisseur ?", verso: "Parce que le client a un contrat avec l'agence, pas avec le fournisseur." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Une marchandise reçue le mercredi 18 mars est disponible à la vente :', options: ['Le jeudi 19 mars', 'Le mercredi 18 mars', 'Le vendredi 20 mars'], bonne: 0 },
+      { type: 'unique', question: 'Les tournées de livraison sur chantier partent :', options: ['Le matin uniquement', "L'après-midi uniquement", 'À toute heure'], bonne: 0 },
+      { type: 'unique', question: 'La première livraison chantier possible pour les chevrons est :', options: ['Le jeudi 19 mars au matin', 'Le mercredi 18 mars au matin', 'Le mercredi 18 mars après-midi'], bonne: 0 },
+      { type: 'unique', question: 'Un engagement pris oralement au téléphone :', options: ["Engage l'agence comme un écrit", "N'engage à rien", 'Engage seulement le commercial'], bonne: 0 },
+      { type: 'unique', question: 'On informe le client d\u2019un retard :', options: ['Avant la date annoncée', 'Le matin de la livraison', 'Après la livraison'], bonne: 0 },
+      { type: 'unique', question: "Proposer un chevron de section 50x75 au lieu de 63x75 :", options: ["Exige l'accord écrit du client", 'Est sans conséquence', 'Relève du seul commercial'], bonne: 0 },
+      { type: 'unique', question: 'Un geste commercial supérieur à 500 € HT doit être validé par :', options: ['Le responsable commercial', 'Le magasinier', 'Personne'], bonne: 0 },
+      { type: 'qcm', question: "Quelles sont les étapes d'un appel de mauvaise nouvelle ?", options: ['Annoncer sans détour', 'Proposer une solution datée', 'Obtenir un accord explicite', 'Noyer le problème dans les politesses'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Que doit contenir la confirmation écrite ?', options: ['Ce qui a été convenu', 'Les accords écrits demandés', 'La date limite de réponse', "Le nom du fournisseur défaillant"], bonnes: [0, 1, 2] },
+      { type: 'unique', question: "Face à un client qui demande un produit de remplacement, le bon réflexe est :", options: ["Vérifier ce que j'ai le droit de proposer avant de répondre", 'Proposer le moins cher', "Dire qu'il n'y a rien"], bonne: 0 },
+      { type: 'trous', texte: "Un jour {0} est un jour travaillé par l'entreprise. Une date annoncée en jours {1} est presque toujours fausse.", reponses: ['ouvré', 'calendaires'] },
+      { type: 'trous', texte: "On confirme par {0} le jour même ce qui a été convenu par téléphone. Une solution sans {1} n'est pas une solution.", reponses: ['écrit', 'date'] },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque phrase du commercial à l'étape de l'appel à laquelle elle appartient.",
+      etiquettes: ['Annoncer sans détour', 'Proposer une solution datée', 'Obtenir un accord et le tracer'],
+      zones: [
+        { libelle: "« Il manque 26 chevrons sur les 30 de la ligne 5. »", etiquetteIndex: 0 },
+        { libelle: "« Je vous les livre jeudi 19 mars au matin. »", etiquetteIndex: 1 },
+        { libelle: "« Je vous confirme tout ça par mail avant midi. »", etiquetteIndex: 2 },
+        { libelle: "« Rien de ce que vous attendez lundi matin n'est concerné. »", etiquetteIndex: 1 },
+        { libelle: "« Il me faut votre réponse écrite sur deux points. »", etiquetteIndex: 2 },
+        { libelle: "« Je vous appelle au sujet de la commande 2026-4471. »", etiquetteIndex: 0 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule:
+          "Reconstituez le raisonnement qui conduit de la date de réception fournisseur à la date de livraison chantier.",
+        documents: ['Documents 1 et 2', 'Annexe 1'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Étape', 'Date ou créneau', "Règle qui s'applique"],
+          lignes: [
+            ['Réception de la marchandise au dépôt', 'Mercredi 18 mars, matinée', "Mail de K. Zemmouri. Le fournisseur ne s'engage que sur la matinée, jamais sur l'heure."],
+            ['Réception, contrôle et mise en stock', 'Mercredi 18 mars, journée complète', "Règle du dépôt : compter une journée pleine. Ce n'est pas disponible à la vente le jour de la réception."],
+            ['Marchandise disponible à la vente', 'Jeudi 19 mars', "Une marchandise reçue le jour J est disponible le jour J plus un."],
+            ['Première tournée de livraison chantier possible', 'Jeudi 19 mars, matin', 'Les tournées chantier partent le matin uniquement. Le jeudi 19 au matin, 4 créneaux sont libres.'],
+            ['Date et créneau annoncés au client', 'Jeudi 19 mars, tournée du matin', 'Créneau à réserver au plus tard le mercredi 18 à 16 heures.'],
+          ],
+        },
+        complement:
+          "Trois pièges se succèdent, et chacun coûte une journée. Le premier : croire que la date fournisseur est la date de disponibilité. Le deuxième : oublier la journée de mise en stock. Le troisième : proposer une livraison l'après-midi, alors qu'aucune tournée chantier ne part l'après-midi.\n\nL'élève qui annonce le mercredi 18 a commis les trois erreurs. L'élève qui annonce le jeudi 19 après-midi n'en a commis qu'une. Seul le jeudi 19 au matin est juste.",
+      },
+      {
+        intitule:
+          "Positionnez la livraison des chevrons sur le planning, puis expliquez pourquoi les 14 et 15 mars ne comptent pas.",
+        documents: ['Document 2', 'Annexe 2'],
+        reponse:
+          "Positionnement attendu : jeudi 19 mars, créneau du matin. C'est la seule case du planning qui satisfasse les trois règles simultanément. Le mercredi 18 au matin ne convient pas : la marchandise arrive dans la matinée, elle n'est pas encore en stock. Le jeudi 19 est le premier jour de disponibilité, et le matin est le seul créneau de tournée chantier.\n\nPourquoi le samedi 14 et le dimanche 15 mars ne comptent pas : le dépôt est fermé ces deux jours. Aucune réception, aucune mise en stock, aucune tournée. Ces journées ne sont pas des jours ouvrés. Un délai exprimé en jours ouvrés ne les intègre pas.\n\nConséquence pratique : entre le vendredi 13 et le jeudi 19 mars, il s'écoule six jours calendaires mais seulement quatre jours ouvrés. Un commercial qui compte en jours calendaires annonce le mardi 17 au lieu du jeudi 19, et se trompe de deux jours.",
+        bareme: 4,
+        complement:
+          "Vérifier que l'élève a bien placé la livraison sur la ligne « matin » du jeudi 19, et non l'après-midi. Le planning ne propose aucune tournée l'après-midi : la case existe, mais elle porte la mention « Pas de tournée ».",
+      },
+      {
+        intitule:
+          "Un collègue affirme : « Le fournisseur livre le 18, donc on peut livrer le client le 18. » Expliquez pourquoi ce raisonnement est faux, et ce qu'il risque de coûter.",
+        documents: ['Documents 1, 2 et 4', 'Annexe 3'],
+        reponse:
+          "Pourquoi c'est faux : la date de réception au dépôt n'est pas une date de disponibilité à la vente. Entre les deux, il y a la réception, le contrôle et la mise en stock, soit une journée pleine. De plus, la marchandise arrive dans la matinée du 18, or les tournées chantier partent le matin. Le camion serait parti avant que le fournisseur ne livre. Enfin, le mercredi 18 au matin ne compte qu'un seul créneau libre.\n\nCe que ça coûte : la note de la direction est explicite, un engagement oral engage l'agence comme un écrit. Le mercredi 18, M. Kadri attend ses chevrons sur le chantier, avec les compagnons prévus pour la charpente. Rien n'arrive. Il perd une journée, et l'agence perd un client de quatre ans, qui parlera de l'incident aux autres maçons du secteur.\n\nLa faute sera imputée au commercial qui a annoncé la date, et non au dépôt qui ne l'a jamais confirmée. Karim Zemmouri l'écrit d'ailleurs dans son mail : « c'est moi qui prends l'appel du client, et c'est toi qui expliques à Vallois ».",
+        bareme: 3,
+        complement:
+          "Trois lignes maximum étaient demandées. Pénaliser la réponse trop longue. Accepter toute réponse qui identifie au moins deux des trois obstacles : la mise en stock, l'horaire de la tournée, la saturation du créneau du 18. Valoriser l'élève qui cite la note de la direction sur la valeur de l'engagement oral.",
+      },
+      {
+        intitule:
+          "Pour chacun des trois produits de substitution, indiquez ce qui diffère, l'écart de prix, et s'il peut être proposé seul.",
+        documents: ['Documents 3 et 4', 'Annexe 4'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Référence', 'Ce qui diffère', 'Écart de prix unitaire HT', 'Proposable seul ?'],
+          lignes: [
+            [
+              'ELO-CHV18\n63x75, 4 m, classe 2',
+              "Section identique, longueur identique. Ajout d'un traitement autoclave classe 2, non demandé au devis.",
+              '+ 5,20 € HT\n(23,60 au lieu de 18,40)',
+              "Oui, sous condition. La performance mécanique attendue est identique, puisque la section et la longueur ne changent pas. Le traitement est un supplément, pas un affaiblissement. Il reste à faire accepter le surcoût au client, ou à le prendre en charge dans la limite des 500 € HT de délégation.",
+            ],
+            [
+              'ELO-CHV12\n50x75, 4 m',
+              "Section réduite de 13 mm en épaisseur. La résistance mécanique et la portée admissible sont réduites.",
+              '- 3,30 € HT\n(15,10 au lieu de 18,40)',
+              "Non. La note de la direction interdit de proposer un produit de section différente sans accord écrit du client. La substitution engage la responsabilité de l'agence en cas de sinistre. Une charpente qui cède, c'est un accident, pas un litige commercial.",
+            ],
+            [
+              'ELO-CHV14\n63x75, 3 m',
+              "Section identique, longueur réduite d'un mètre. Trente chevrons donnent 90 mètres linéaires au lieu de 120.",
+              '- 4,60 € HT\n(13,80 au lieu de 18,40)',
+              "Non. La longueur diffère, donc accord écrit obligatoire. De plus, la quantité ne couvre pas le besoin : il faudrait 40 unités pour retrouver 120 mètres linéaires. Proposer 30 unités reviendrait à livrer un quart de bois en moins sans le dire.",
+            ],
+          ],
+        },
+        complement:
+          "L'erreur attendue : choisir le moins cher. Deux des trois produits sont moins chers que celui qui a été commandé, et les deux sont interdits. Le seul acceptable est le plus cher.\n\nFaire dire aux élèves que le prix n'est jamais le premier critère d'une substitution technique. Le premier critère est : est-ce que le produit fait le même travail ?",
+      },
+      {
+        intitule:
+          "Indiquez le seul produit proposable, sa condition, et calculez le surcoût total pour 30 unités, remise de 8 % comprise.",
+        documents: ['Documents 3 et 4', 'Annexe 5'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Question', 'Réponse attendue'],
+          lignes: [
+            ['Produit proposable', "ELO-CHV18, chevron sapin 63x75 mm, longueur 4 m, classe 2 traité. Section et longueur strictement identiques au produit commandé. La performance mécanique attendue n'est pas modifiée."],
+            [
+              'Condition impérative',
+              "L'accord écrit du client. La note de la direction dispose : « Ne jamais proposer un produit de substitution de section, de longueur ou de résistance différente sans l'accord écrit du client. » Ici, ni la section ni la longueur ne changent, mais le produit change de référence et de prix. L'accord écrit reste requis, ne serait-ce que pour le surcoût.",
+            ],
+            ['Prix unitaire du produit commandé, remise 8 % déduite', '18,40 × 0,92 = 16,928 €, soit 16,93 € HT'],
+            ['Prix unitaire du produit de substitution, remise 8 % déduite', '23,60 × 0,92 = 21,712 €, soit 21,71 € HT'],
+            ['Surcoût unitaire HT', '21,71 - 16,93 = 4,78 € HT'],
+            [
+              'Surcoût total HT pour 30 unités',
+              "4,78 × 30 = 143,40 € HT.\n\nCe montant est inférieur au seuil de 500 € HT. Le geste commercial consistant à prendre en charge ce surcoût relève donc de la délégation du commercial, sans validation du responsable commercial. Un stagiaire, en revanche, ne dispose d'aucune délégation propre : il propose, M. Ferreira ou M. Vallois décide.",
+            ],
+          ],
+        },
+        complement:
+          "Calcul de contrôle par un autre chemin : surcoût unitaire brut de 5,20 €, remise de 8 % appliquée, soit 5,20 × 0,92 = 4,784 €, arrondi à 4,78 €. Pour 30 unités, 143,52 €. L'écart de 12 centimes avec le calcul principal vient des arrondis intermédiaires. Accepter les deux résultats, entre 143,40 € et 143,52 €.\n\nLe piège du barème : un élève peut calculer un surcoût juste et conclure qu'il peut l'accorder seul. Il est stagiaire. La délégation de 500 € appartient au commercial, pas à lui. Valoriser fortement celui qui fait cette distinction.",
+      },
+      {
+        intitule:
+          "Préparez votre appel en renseignant la fiche d'appel.",
+        documents: ['Documents 4, 5 et 7', 'Annexe 6'],
+        reponse:
+          "Objectif de l'appel : obtenir l'accord de M. Kadri sur la livraison partielle du lundi 16 et sur la correction de la ligne 6, et lui annoncer la livraison des chevrons au jeudi 19 mars au matin.\n\nAccroche et vérification de disponibilité : « Bonjour monsieur Kadri, [prénom nom], je suis en stage à l'agence Chausson de Gennevilliers, je travaille avec Bruno Ferreira. Est-ce que vous pouvez me parler deux minutes ? Je vous appelle au sujet de votre commande 2026-4471 pour le chantier de Colombes. »\n\nAnnonce du problème : « Sur la ligne 5, les chevrons ELO-CHV14 de 4 mètres, nous avons 4 unités en stock sur les 30 que vous avez commandées. Il en manque 26. »\n\nCe qui rassure immédiatement : les parpaings, le ciment, le sable et le gravier sont tous en stock. Rien de ce dont il a besoin lundi matin pour le mur porteur n'est concerné.\n\nSolution proposée, datée : livraison partielle lundi 16 mars à 7 heures des lignes 1 à 4 et du treillis. Livraison des chevrons le jeudi 19 mars au matin, marchandise reçue le 18 et mise en stock le jour même.\n\nObjection anticipée : « Vous ne pouvez pas me trouver autre chose ? » Réponse préparée : trois références sont en stock, deux ont une section ou une longueur différente et je n'ai pas le droit de les proposer sans son accord écrit. La troisième est identique en section et en longueur mais coûte 5,20 € de plus l'unité. Je peux la lui soumettre, mais le surcoût doit être tranché par M. Ferreira.\n\nEngagement à obtenir avant de raccrocher : son accord écrit sur la livraison partielle, et son accord écrit sur la correction de la quantité de treillis, dix panneaux et non cent. Réponse attendue avant le lundi 16 mars à 7 heures.",
+        bareme: 4,
+        complement:
+          "La rubrique la plus discriminante est « ce qui rassure immédiatement ». Un élève qui l'oublie annonce une rupture à un artisan sans lui dire tout de suite que son chantier de lundi n'est pas menacé. C'est l'erreur qui transforme un appel maîtrisé en conflit. La méthode du document 5 le dit à l'étape 4 : arriver avec une solution construite, pas avec une question ouverte.",
+      },
+      {
+        intitule: "Rédigez les quatre répliques manquantes de la transcription.",
+        documents: ['Documents 4, 5 et 6', 'Annexe 7'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Réplique', 'Formulation attendue'],
+          lignes: [
+            [
+              'Réplique 1\nPrésentation, disponibilité, objet',
+              "« Bonjour monsieur Kadri, [prénom nom], je suis en stage à l'agence Chausson Matériaux de Gennevilliers, je travaille avec Bruno Ferreira. Est-ce que vous avez deux minutes ? Je vous appelle au sujet de votre commande 2026-4471, pour le chantier de Colombes. »",
+            ],
+            [
+              'Réplique 2\nAnnonce du problème',
+              "« Sur votre commande, la ligne 5, les chevrons sapin 63x75 en 4 mètres : nous en avons 4 en stock sur les 30 que vous avez commandés. Il en manque 26. Le fournisseur nous les livre le mercredi 18. »",
+            ],
+            [
+              'Réplique 3\nLa date, justifiée',
+              "« Le fournisseur livre le dépôt mercredi 18 dans la matinée. Il faut une journée pour la réception et la mise en stock. La marchandise est disponible jeudi 19. Nos tournées chantier partent le matin. Je vous les livre donc le jeudi 19 mars au matin. C'est une date que le dépôt m'a confirmée, pas une estimation. »",
+            ],
+            [
+              'Réplique 4\nLa substitution',
+              "« J'ai bien du chevron en stock, monsieur Kadri, mais pas le vôtre. J'ai du 50x75, et j'ai du 63x75 en 3 mètres. Dans les deux cas, ce n'est pas la même pièce que celle de votre devis, et je ne vous proposerai pas de changer une section de charpente au téléphone. J'ai une troisième référence, du 63x75 en 4 mètres, exactement votre section et votre longueur, mais avec un traitement classe 2 et 5,20 euros de plus l'unité. Si vous la voulez, je fais valider le surcoût par Bruno Ferreira et je vous rappelle avant midi. »",
+            ],
+          ],
+        },
+        complement:
+          "Grille de correction, un point par réplique.\n\nRéplique 1 : la présentation doit contenir le nom, l'agence, et la vérification de disponibilité. M. Kadri est en voiture.\n\nRéplique 2 : la quantité manquante doit être chiffrée. « Il n'y en a pas assez » ne vaut aucun point.\n\nRéplique 3 : la date doit être le jeudi 19 au matin, et elle doit être justifiée par la mise en stock et la tournée. Une date juste sans justification vaut un demi-point. Une date fausse ne vaut rien, même bien justifiée.\n\nRéplique 4 : le refus de substituer une section au téléphone doit être explicite. L'élève qui propose le 50x75 parce qu'il est moins cher a échoué à la question, quelle que soit la qualité de sa formulation. Valoriser celui qui annonce qu'il fait valider le surcoût plutôt que de l'accorder seul.",
+      },
+      {
+        intitule: "Rédigez le mail de confirmation envoyé à M. Kadri avant midi.",
+        documents: ['Documents 4, 6 et 7', 'Annexe 8'],
+        reponse:
+          "Destinataire : r.kadri@batirenov.fr\nObjet : Commande 2026-4471 - confirmation de notre échange du 13 mars et accords demandés\n\nBonjour monsieur Kadri,\n\nJe vous confirme par écrit ce que nous avons convenu ce matin par téléphone.\n\nLivraison du lundi 16 mars, 7 heures, chantier 14 rue des Vallées à Colombes : parpaings creux, ciment, sable, gravier et treillis soudé. L'ensemble est en stock.\n\nLes 30 chevrons sapin 63x75 en 4 mètres vous seront livrés le jeudi 19 mars au matin, sur le même chantier. Le fournisseur nous livre le 18, la mise en stock est faite le jour même.\n\nDeux points nécessitent votre accord écrit avant le lundi 16 mars à 7 heures. Sans cet accord, aucune livraison ne pourra partir.\n\nPremièrement, votre acceptation de la livraison partielle. La case correspondante n'a pas été cochée lors de la saisie de votre commande. Sans votre accord, nos conditions générales nous imposent d'attendre la disponibilité de la totalité des produits avant de livrer.\n\nDeuxièmement, la correction de la ligne 6. Votre devis DV-2026-1187, que vous avez signé le 11 mars, porte 10 panneaux de treillis soudé ST25C. Le bon de commande en indique 100. Nous avons détecté cette erreur de saisie avant préparation. Merci de confirmer la quantité de 10 panneaux.\n\nUn simple retour de ce message vaudra accord.\n\nJe reste à votre disposition.\n\n[Prénom Nom]\nAgence Chausson Matériaux de Gennevilliers",
+        bareme: 2,
+        complement:
+          "Barème total de la mission : 32 points.\n\nQuatre éléments sont exigibles. Le rappel de ce qui a été convenu. Les deux accords écrits demandés, distinctement. La date limite de réponse. La conséquence de l'absence de réponse.\n\nPénaliser le mail qui demande un accord sans dire ce qui se passe si le client ne répond pas. « Sans cet accord, aucune livraison ne pourra partir » n'est pas une menace, c'est une information. Le client doit pouvoir mesurer l'enjeu de sa réponse.\n\nCe qui se joue en mission 4 : la livraison partielle du lundi 16 mars, le choix du transporteur, et la palette de parpaings cassée à l'arrivée.",
       },
     ],
   },
@@ -21070,6 +22815,8 @@ const CONTENUS: Record<string, ContenuMission> = {
   'mamie-and-co-m7': MAMIE_CO_M7,
   'mamie-and-co-m8': MAMIE_CO_M8,
   'chausson-m1': CHAUSSON_M1,
+  'chausson-m2': CHAUSSON_M2,
+  'chausson-m3': CHAUSSON_M3,
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,
