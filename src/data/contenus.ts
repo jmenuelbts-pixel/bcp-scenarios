@@ -94,6 +94,29 @@ export interface AnnexeSaisieGeo {
   nbLignesInitiales?: number
 }
 
+// Tableau de classement des pratiques commerciales : chaque ligne = un client,
+// deux cases a cocher (trompeuse / agressive) + une justification a saisir.
+// Rendu facon grille d'analyse d'un logiciel.
+// Questionnaire de satisfaction multi-pages facon Google Form : une question par
+// page, navigation Suivant / Retour. L'eleve saisit l'intitule et choisit le type.
+export interface AnnexeQuestionnaire {
+  type: 'questionnaire'
+  id: string
+  titre: string
+  nbPages: number
+  themes?: string[] // theme impose par page (optionnel)
+  typesQuestion?: string[] // liste des types proposes dans le menu deroulant
+}
+
+export interface AnnexePratiques {
+  type: 'pratiques'
+  id: string
+  titre: string
+  clients: { numero: number; nom?: string }[]
+  colonnes?: [string, string] // libelles des 2 cases (defaut Trompeuse / Agressive)
+  nomsAremplir?: boolean // si vrai, le nom du client est a saisir par l'eleve
+}
+
 // Tableau de criteres de segmentation : case a cocher + justification, facon
 // grille d'analyse d'un logiciel commercial.
 export interface AnnexeCritereSeg {
@@ -148,6 +171,44 @@ export interface AnnexeModeOperatoire {
 
 // Gabarit de courrier postal (publipostage) facon traitement de texte : zones
 // expediteur, destinataire, date, objet, corps, signature, a remplir.
+// CRM fichier clients facon vrai logiciel : tableau pro avec en-tete colore,
+// barre de recherche, lignes pre-remplies. Deux modes :
+// - 'selection' : l'eleve clique la ligne concernee (ex : client en impaye),
+//   qui se surligne (case a cocher). Cle : `${id}.sel.<index>` = "1".
+// - 'cochage' : colonne cochable a droite (ex : "Proposer les nouveaux
+//   produits") ; l'eleve coche les lignes voulues. Compteur de selection.
+export interface ClientCrm {
+  nom: string
+  prenom: string
+  adresse: string
+  telephone: string
+  mail: string
+  facture?: string
+  dateFacture?: string
+  dateEcheance?: string
+  montantImpaye?: string
+}
+export interface AnnexeCrmClients {
+  type: 'crmclients'
+  id: string
+  titre: string
+  entete?: string // ex : "Fichier clients - Mamie & Co"
+  clients: ClientCrm[]
+  mode: 'selection' | 'cochage'
+  colonnesEtendues?: boolean // afficher facture/dates/montant
+  libelleColonneCoche?: string // ex : "Proposer les nouveaux produits"
+  libelleSelection?: string // ex : "Client en impaye a relancer"
+}
+
+// Etat des frais professionnels facon logiciel (Quiziniere) : 6 sections
+// (dates, nuits d'hotel, repas, transport coche, detail avion/voiture/train,
+// total). Tout en champs saisissables. Reproduit le document 9 d'Hydrao.
+export interface AnnexeEtatFrais {
+  type: 'etatFrais'
+  id: string
+  titre: string
+}
+
 export interface AnnexeCourrier {
   type: 'courrier'
   id: string
@@ -219,6 +280,18 @@ export interface AnnexeFicheSignaletique {
   champs: { cle: string; libelle: string; lignes?: number }[]
 }
 
+// Carte d'identite d'entreprise facon logiciel de fiche societe : une colonne
+// de champs libres (raison sociale, adresse, capital...) et une serie de blocs
+// de qualification a choix unique (type d'organisation, but, nature de
+// l'activite) presentes comme des groupes de boutons radio pro.
+export interface AnnexeIdentiteEntreprise {
+  type: 'identiteentreprise'
+  id: string
+  titre: string
+  champs: { cle: string; libelle: string; lignes?: number; placeholder?: string }[]
+  qualifications: { cle: string; libelle: string; options: string[] }[]
+}
+
 // Grille tarifaire facon comparateur de forfaits : colonnes = offres (prix).
 export interface AnnexeGrilleTarifaire {
   type: 'grilletarifaire'
@@ -234,6 +307,115 @@ export interface NoeudOrgaVide {
   cle: string
   enfants?: NoeudOrgaVide[]
 }
+// Carte de visite classique moderne facon logiciel de creation : l'eleve
+// saisit ses coordonnees (nom, fonction, tel, mail, adresse, site) et obtient
+// en direct le rendu final d'une vraie carte pro aux couleurs Mamie & Co.
+// Document/annexe interactif : plusieurs categories, chacune avec des photos
+// numerotees. L'eleve clique la bonne photo par categorie ; la selection passe
+// en surbrillance (couleur du scenario) avec une coche. Une seule photo active
+// par categorie. Chaque categorie stocke le numero choisi : `${a.id}.${cle}`.
+// Parcours : chemin vertical a etapes relie par une ligne, facon itineraire.
+// Chaque etape a une pastille numerotee, un symbole (icone), un titre et un
+// contenu. Effet parcours : les cartes alternent gauche/droite. Document de
+// lecture (non saisissable).
+// Catalogue produits facon tablette e-commerce : grille de vignettes
+// (photo, nom, prix, badge). Au clic sur un produit, une fiche detaillee
+// s'ouvre (description, composition, mode d'emploi, prix). Bouton retour.
+export interface ProduitFicheCatalogue {
+  ref?: string
+  nom: string
+  prix: string
+  ancienPrix?: string
+  badge?: string
+  image?: string
+  accroche?: string
+  description?: string[]
+  composition?: { titre: string; texte: string }[]
+  modeEmploi?: string[]
+  infos?: string[]
+}
+export interface AnnexeCatalogueFiches {
+  type: 'catalogueproduits'
+  id: string
+  titre?: string
+  intro?: string
+  produits: ProduitFicheCatalogue[]
+}
+
+// Roue des methodes (facon schema circulaire) : secteurs centraux (familles),
+// chacun avec des techniques, chaque technique ayant une definition affichee
+// au survol/clic. Document de lecture interactif.
+export interface SecteurRoue {
+  nom: string
+  couleur: string
+  techniques: { nom: string; definition: string }[]
+}
+export interface AnnexeRoue {
+  type: 'roue'
+  id: string
+  titre?: string
+  secteurs: SecteurRoue[]
+}
+
+// Tour de table : image/zone centrale entouree de bulles de dialogue (facon
+// reunion). Chaque bulle = un locuteur + son propos, reliee au centre.
+export interface AnnexeTourDeTable {
+  type: 'tourdetable'
+  id: string
+  titre?: string
+  image?: string
+  bulles: { locuteur: string; texte: string }[]
+}
+
+export interface EtapeParcours {
+  numero: string // ex : "1", "2", "5"
+  symbole: 'etincelle' | 'trophee' | 'personnes' | 'interdit' | 'volant' | 'cible' | 'ampoule' | 'coche'
+  titre: string
+  contenu: string[]
+}
+export interface AnnexeParcours {
+  type: 'parcours'
+  id: string
+  titre: string
+  etapes: EtapeParcours[]
+}
+
+export interface CategoriePhotos {
+  cle: string
+  libelle: string
+  photos: { src: string; alt?: string }[]
+}
+export interface AnnexeChoixPhotos {
+  type: 'choixphotos'
+  id: string
+  titre: string
+  consigne?: string
+  categories: CategoriePhotos[]
+}
+
+export interface AnnexeCarteVisite {
+  type: 'cartevisite'
+  id: string
+  titre: string
+  entreprise?: string // nom affiche sur la carte (defaut Mamie & Co)
+  slogan?: string
+  logo?: string
+  couleur?: string // couleur dominante de la carte
+}
+
+// E-carte de visite digitale : meme principe que la carte classique, avec en
+// plus un vrai QR code (vCard) genere en interne. Scanne, le QR enregistre le
+// contact dans le telephone. Aucun service externe.
+export interface AnnexeECarte {
+  type: 'ecarte'
+  id: string
+  titre: string
+  entreprise?: string
+  slogan?: string
+  logo?: string
+  couleur?: string
+}
+
 export interface AnnexeOrganigrammeAremplir {
   type: 'organigrammearemplir'
   id: string
@@ -241,6 +423,27 @@ export interface AnnexeOrganigrammeAremplir {
   noms: string[]
   fonctions: string[]
   tete: NoeudOrgaVide
+}
+
+// Histogramme a construire par l'eleve, facon tableur/logiciel de graphique.
+// L'eleve fixe la hauteur de chaque barre (0 a max %) a la souris (poignee que
+// l'on tire), au clavier (barre selectionnee + fleches haut/bas) ou par saisie
+// directe du pourcentage. Les axes, le quadrillage et les categories sont deja
+// traces. Chaque barre porte un id : `${a.id}.${categorie.cle}`.
+export interface BarreHistogramme {
+  cle: string
+  categorie: string // libelle sous l'axe (ex : Sexe)
+  sousLibelle?: string // precision affichee au-dessus une fois saisie (ex : Femmes)
+}
+export interface AnnexeHistogramme {
+  type: 'histogramme'
+  id: string
+  titre: string
+  consigne?: string[] // mode d'emploi affiche au-dessus du graphique
+  uniteMax?: number // borne haute de l'axe, defaut 100
+  pas?: number // pas des graduations, defaut 10
+  suffixe?: string // suffixe des valeurs, defaut '%'
+  barres: BarreHistogramme[]
 }
 
 // Fiche contact / prospect facon CRM : sections coordonnees organisation,
@@ -296,6 +499,8 @@ export interface AnnexeMail {
   type: 'mail'
   id: string
   titre: string
+  deParDefaut?: string
+  aParDefaut?: string
 }
 
 // Mail en lecture seule facon Gmail/Yahoo : en-tete fenetre, De/A/Objet figes,
@@ -543,6 +748,30 @@ export interface AnnexePlanning {
 
 // Bon de commande facon logiciel professionnel : en-tete enseigne, coordonnees
 // client, lignes d'articles, totaux TVA, zone signature. Champs saisissables.
+// Bon de commande complet facon logiciel de caisse : lignes articles
+// (reference, designation, PU HT, quantite, total), sous-total, puis bloc de
+// totaux calcules a saisir (reduction, TVA, TTC, livraison, total) et bloc
+// paiement en 2 fois (a la commande / a 30 jours). Chaque case a saisir a un id.
+export interface LigneArticleBon {
+  ref?: string
+  designation?: string
+  prixHT?: string
+  quantite?: string
+  // le total ligne est saisi par l'eleve (cle : `${id}.l{n}.total`)
+}
+export interface AnnexeBonCommandeCalcule {
+  type: 'boncommandecalcule'
+  id: string
+  titre: string
+  vendeur?: string[]
+  client?: string
+  lignes: LigneArticleBon[] // lignes pre-remplies (articles a commander)
+  nbLignesVides?: number // lignes vides supplementaires
+  reduction?: boolean
+  livraison?: boolean
+  paiement2fois?: boolean
+}
+
 export interface LigneBonCommande {
   reference?: string
   libelle?: string
@@ -583,6 +812,9 @@ export interface AnnexeBulle {
   perso?: string // image du personnage
   placeholder?: string
   nbLignes?: number
+  // Cas clients : chaque cas a une image d'entretien, un temoignage (bulle du
+  // client, non editable), une zone de saisie eleve, et un lien video optionnel.
+  cas?: { id: string; nom: string; image?: string; temoignage: string[]; videoLien?: string }[]
 }
 
 export interface AnnexeNote {
@@ -598,7 +830,171 @@ export interface AnnexeNote {
   signature?: string
 }
 
-export type Annexe = AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote
+// Logiciel "fiche produit" a onglets, generique (non lie a l'automobile).
+// Chaque onglet a un titre et une liste de lignes. Deux modes :
+//  - 'saisie' (defaut) : libelle fixe + champ texte a completer.
+//  - 'soncas' : affirmation fixe + menu deroulant (options) + note optionnelle.
+export interface OngletFicheProduitPro {
+  id: string
+  label: string
+  mode?: 'saisie' | 'soncas'
+  options?: string[] // valeurs du menu (mode 'soncas')
+  colonneMenu?: string // libelle affiche devant le menu (mode 'soncas')
+  lignes: { id: string; libelle: string }[]
+}
+export interface AnnexeFicheProduitPro {
+  type: 'ficheproduitpro'
+  id: string
+  titre: string
+  entete: string // titre affiche dans la barre du logiciel (ex : "Logiciel PIM - Fiche produit")
+  produit?: string // nom du produit affiche sous la barre (ex : "Pommeau Aloe")
+  reference?: string // reference affichee (ex : "REF. ALOE-001")
+  image?: string // vignette produit optionnelle
+  onglets: OngletFicheProduitPro[]
+}
+
+// Analyseur SONCAS : chaque affirmation (fixe) est qualifiee par un menu
+// deroulant (typologie SONCAS) + un champ note optionnel.
+export interface AnnexeSoncasPro {
+  type: 'soncaspro'
+  id: string
+  titre: string
+  entete: string // barre du logiciel
+  options: string[] // valeurs du menu (Securite, Orgueil...)
+  colonneNote?: string // en-tete de la colonne note (optionnel)
+  lignes: { id: string; affirmation: string }[]
+}
+
+// Panneau "image de marque + mobiles d'achat" facon fiche logiciel :
+// un champ image de marque (menu ou texte) + N lignes mobile (menu SONCAS + justification).
+export interface AnnexeMobilesPro {
+  type: 'mobilespro'
+  id: string
+  titre: string
+  entete: string
+  imageLabel: string // libelle du champ image de marque
+  imageOptions?: string[] // si fourni, menu deroulant ; sinon champ texte
+  optionsMobile: string[] // valeurs du menu SONCAS pour chaque mobile
+  nbMobiles: number
+}
+
+// Base de connaissances "questions du tuteur" facon logiciel : sections
+// (garantie legale / conventionnelle) avec cartes question + reponse a saisir.
+export interface AnnexeFaqPro {
+  type: 'faqpro'
+  id: string
+  titre: string
+  entete: string
+  sections: { id: string; titre: string; questions: { id: string; question: string }[] }[]
+}
+
+// Outil de validation "Vrai / Faux" facon logiciel : chaque affirmation est
+// une carte avec deux boutons radio (Vrai / Faux) + zone justification.
+export interface AnnexeVraiFaux {
+  type: 'vraifaux'
+  id: string
+  titre: string
+  entete: string
+  lignes: { id: string; affirmation: string }[]
+}
+
+// Logiciel CRM "traitement d'objections" (Hydrao M5) : liste de fiches
+// prospect (numero, objection citee, technique imposee) + reponse a saisir.
+export interface AnnexeObjectionsCrm {
+  type: 'objectionscrm'
+  id: string
+  titre: string
+  entete: string
+  clients: { id: string; numero: string; objection: string; technique: string }[]
+}
+
+// Constructeur de questionnaire facon logiciel d'enquete (Sphinx) : parties
+// avec, pour chaque item, une carte question (type impose) ou l'eleve saisit
+// l'intitule et les modalites de reponse.
+export interface AnnexeQuestionnaireBuilder {
+  type: 'questionnairebuilder'
+  id: string
+  titre: string
+  entete: string
+  parties: { id: string; titre: string; typeQuestion: string; items: { id: string; libelle: string }[] }[]
+}
+
+// Editeur de compte-rendu facon traitement de texte pro : en-tete (Date, Lieu,
+// Emetteur, Destinataire) puis sections titrees a rediger.
+export interface AnnexeCompteRendu {
+  type: 'compterendu'
+  id: string
+  titre: string
+  entete: string
+  champsEntete: { id: string; label: string }[]
+  sections: { id: string; titre: string; indice?: string }[]
+}
+
+// Annexe lien / QR Code facon carte simple (Hydrao M7 annexe 2b).
+export interface AnnexeLienQr {
+  type: 'lienqr'
+  id: string
+  titre: string
+  entete: string
+  consigne?: string
+  lien: string
+  boutonLibelle?: string
+}
+
+// Tableau de calcul de % par etapes (Precedent/Suivant), un theme par etape
+// (Hydrao M7 annexe 3). L'eleve ne saisit que la colonne %.
+export interface AnnexePourcentageStepper {
+  type: 'pourcentagestepper'
+  id: string
+  titre: string
+  entete: string
+  colonnes: [string, string, string] // Themes / Element / %
+  etapes: { theme: string; lignes: string[] }[]
+}
+
+// Tableau a libelles fixes + une colonne a saisir, vue deroulante complete
+// (Hydrao M7 annexes 4 et 5). Colonne theme fusionnee a gauche.
+export interface AnnexeTableauPct {
+  type: 'tableaupct'
+  id: string
+  titre: string
+  entete: string
+  colonnes: [string, string, string]
+  groupes: { theme: string; lignes: string[] }[]
+}
+
+// FAQ a onglets (consultation) facon logiciel SAV : plusieurs rubriques,
+// chacune avec des questions/reponses depliables (Hydrao M6 document 2).
+export interface AnnexeFaqOnglets {
+  type: 'faqonglets'
+  id: string
+  titre: string
+  entete: string
+  rubriques: { id: string; nom: string; qr: { q: string; r: string }[] }[]
+}
+
+// Logiciel SAV "prise en charge" a completer (Hydrao M6 annexe 2) : entete
+// client + lignes produit avec cases Garantie/Type/Probleme/Reparable + solution.
+export interface AnnexeSavPriseEnCharge {
+  type: 'savprisencharge'
+  id: string
+  titre: string
+  entete: string
+  lignes: { id: string; produit: string; probleme: string }[]
+}
+
+// Annexe "reponses apportees" facon logiciel SAV (Hydrao M6 annexe 1) :
+// pour chaque client, un menu deroulant Rubrique + une reponse a rediger.
+export interface AnnexeFaqReponses {
+  type: 'faqreponses'
+  id: string
+  titre: string
+  entete: string
+  rubriques: string[]
+  clients: { id: string; numero: string; question: string }[]
+}
+
+export type Annexe = AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
 
 export interface QuestionTravaux {
   numero: number
@@ -685,6 +1081,57 @@ export interface BlocDocumentTexte {
   bareme?: { intro?: string[]; colonnes: [string, string]; lignes: [string, string][] }
   // Article a etapes facon blog pro : intro + etapes numerotees avec puce.
   articleEtapes?: { etapes: { numero: string; texte: string[] }[] }
+  // Chemin/parcours vertical a etapes (facon itineraire) avec symboles.
+  parcours?: { etapes: { numero: string; symbole: 'etincelle' | 'trophee' | 'personnes' | 'interdit' | 'volant' | 'cible' | 'ampoule' | 'coche'; titre: string; contenu: string[] }[] }
+  // Roue des methodes : secteurs (familles) -> techniques -> definitions.
+  roue?: { secteurs: { nom: string; couleur: string; techniques: { nom: string; definition: string }[] }[] }
+  // Tour de table : zone centrale + bulles de dialogue autour.
+  tourDeTable?: { image?: string; bulles: { locuteur: string; texte: string }[] }
+  // Document facon vraie page web riche (barre navigateur, en-tete de marque,
+  // sections avec images/icones, grilles de produits ou de personnes).
+  docRiche?: {
+    site?: string
+    marque?: string
+    logo?: string
+    couleurHeader?: string
+    menu?: string[]
+    sections: Array<
+      | { type: 'faqOnglets'; rubriques: { id: string; nom: string; qr: { q: string; r: string }[] }[] }
+      | { type: 'citation'; texte: string; auteur?: string }
+      | { type: 'procedureEtapes'; etapes: { titre: string; detail: string }[] }
+      | { type: 'titre'; texte: string }
+      | { type: 'sousTitre'; texte: string }
+      | { type: 'paragraphe'; texte: string }
+      | { type: 'paragraphes'; textes: string[] }
+      | { type: 'puces'; items: string[] }
+      | { type: 'image'; src: string; alt?: string; largeur?: number; legende?: string }
+      | { type: 'fiche'; lignes: { label: string; valeur: string }[] }
+      | { type: 'chiffres'; items: { valeur: string; libelle: string }[] }
+      | { type: 'servicesIcones'; services: { icone: string; titre: string; detail?: string }[] }
+      | { type: 'grilleProduits'; produits: { image?: string; nom: string; prix: string; ancienPrix?: string; badge?: string }[] }
+      | { type: 'grillePersonnes'; personnes: { photo?: string; nom: string; fonction: string }[] }
+      | { type: 'partenaires'; logos: { image?: string; nom: string }[] }
+      | { type: 'article'; titre?: string; paragraphes: string[]; image?: string }
+      | { type: 'tableau'; entetes: string[]; lignes: string[][] }
+      | { type: 'billetTrain'; prix: string; passagers: string; co2?: string; segments: { depart: string; arrivee: string; villeDepart: string; villeArrivee: string; operateur: string; numero: string; classe: string }[]; correspondance?: string; passagerLignes: { titre: string; prix: string; conditions: { label: string; texte: string }[] } }
+      | { type: 'resaHotel'; bandeau?: string; photo?: string; nom: string; capacite: string; surface: string; tarifMembreLabel?: string; tarifMembre: string; tarifPublicLabel?: string; tarifPublic: string }
+      | { type: 'itineraire'; depart: string; arrivee: string; modes: { icone: string; duree: string }[]; dureeKm: string; note?: string; carte?: string }
+      | { type: 'ficheProduitWeb'; badge?: string; nom: string; accroche?: string; prix: string; prixDetail?: string; image?: string; couleurs?: string[]; note?: string; avis?: string; arguments: string[] }
+      | { type: 'bulles'; bulles: { numero: string; texte: string }[] }
+      | { type: 'packProduit'; badges?: string[]; image?: string; nom: string; prix: string; ancienPrix?: string; economie?: string; auLieuDe?: string; mentionTtc?: string; contient: { image?: string; nom: string; prix: string; quantite: string }[]; stock?: string } 
+    >
+  }
+  // Catalogue produits facon tablette : grille + fiche produit au clic.
+  catalogueProduits?: { intro?: string; produits: ProduitFicheCatalogue[] }
+  // Note/charte de la direction facon post-it vert avec titre calligraphie et
+  // signature (ex : charte de gestion des reclamations).
+  noteDirection?: { titre: string; signature?: string; intro?: string; paragraphe?: string; puces: string[]; conclusion?: string }
+  // CRM fichier clients (consultation avec selection de ligne).
+  crmClients?: { entete?: string; mode: 'selection' | 'cochage'; colonnesEtendues?: boolean; libelleColonneCoche?: string; libelleSelection?: string; clients: ClientCrm[] }
+  // Etat des frais professionnels (formulaire logiciel) rendu dans un document.
+  etatFrais?: Record<string, never>
+  // Bulle de conseil (parole du tuteur) facon bulle de BD bleue.
+  bulleConseil?: { texte: string[] }
   // Post de reseau social realiste (X, Facebook, Instagram) facon application.
   reseauSocial?: {
     plateforme: 'x' | 'facebook' | 'instagram'
@@ -745,6 +1192,19 @@ export interface BlocDocumentTexte {
   // Galerie de produits facon site marchand : cartes avec photo, titre, prix,
   // reference, coloris, dimensions. Reproduit une page catalogue riche.
   galerieProduits?: { titre: string; image: string; prix: string; reference: string; coloris: string; dimensions: string }[]
+  // Carrousel de fiches (ex : affiches vehicules) : une fiche par page,
+  // navigation Suivant / Retour. Chaque page a une image et un texte optionnel.
+  carrousel?: { titre?: string; pages: { image: string; alt?: string; legende?: string; texte?: string[] }[] }
+  // Bon de commande officiel Peugeot ConcessionCollet (reproduction fidele du
+  // document de la concession). Le contenu est fixe dans le composant de rendu ;
+  // seules l'image du vehicule et le logo sont parametrables.
+  bonCommandePeugeot?: { logo?: string; image?: string }
+  // Doc "Les differents types de questions" : tableau Type / Definition / Exemple,
+  // avec exemples visuels (liste, matrice a ronds, etoiles).
+  typesQuestions?: boolean
+  // Doc "Les themes des questions a poser" : liste de themes avec, en rouge, le
+  // type de question a creer pour chacun.
+  themesQuestions?: { theme: string; type: string }[]
   // Suite d'etapes visuelles (cartes numerotees reliees par des fleches) facon
   // schema de processus. Plus dynamique qu'une simple liste a puces.
   etapesVisuelles?: string[]
@@ -825,6 +1285,7 @@ export interface BlocDocumentTexte {
   // photo, des caracteristiques cle. L'eleve clique pour explorer chaque vehicule.
   fichesVehicule?: {
     titre?: string
+    carrousel?: boolean // si vrai : une fiche a la fois, navigation Suivant / Retour
     vehicules: {
       modele: string
       version?: string
@@ -866,9 +1327,55 @@ export interface BlocDocumentTexte {
   }
   // Document facon livre ouvert a pages tournables : chaque page a un titre et du
   // contenu (paragraphes/puces). L'eleve tourne les pages comme dans un vrai support.
+  // CV reproduit en HTML (pas une image) : colonne gauche + colonne droite,
+  // sections d'experiences / formations, barres de competences.
+  cvVisuel?: {
+    couleur: string
+    nom: string
+    titrePoste: string
+    photo?: string
+    infos?: string[]
+    aPropos?: { titre: string; texte: string }
+    sections?: { titre: string; entrees: { intitule: string; lieu?: string; date?: string; puces?: string[] }[] }[]
+    competences?: { libelle: string; niveau: number }[]
+    langues?: { libelle: string; niveau?: number; mention?: string }[]
+    interets?: string[]
+  }
+  // Encadres type post-it avec titre + liste de lignes (reproduit un document
+  // papier decoupe en plusieurs encadres).
+  encadresListes?: { titre: string; lignes: string[] }[]
+  // Chiffres cles facon infographie (pas une image).
+  chiffresCles?: {
+    titre?: string
+    items: { valeur: string; libelle: string }[]
+  }
+  // Emailing reproduit en HTML : en-tete du mail, corps, lien de desabonnement,
+  // et formulaire de desabonnement.
+  emailingWeb?: {
+    de: string
+    a: string
+    repondreA?: string
+    titre: string
+    lienVersionEnLigne?: string
+    image?: string
+    lienDesabo: string
+    formulaire?: {
+      titre: string
+      champs: { label: string; valeur: string; aide?: string }[]
+      mentionPrix?: string
+      moyensPaiement?: string[]
+    }
+  }
   livreOuvert?: {
     titre?: string
-    pages: { titre?: string; paragraphes?: string[]; puces?: string[] }[]
+    pages: {
+      titre?: string
+      paragraphes?: string[]
+      puces?: string[]
+      // Rubriques numerotees avec puces et sous-puces (niveau 2).
+      rubriques?: { titre: string; puces?: { texte: string; sous?: string[] }[] }[]
+    }[]
+    audioLien?: string
   }
   // Temoignage facon personnage + bulle de dialogue : avatar a gauche, bulle a droite
   // avec le texte, et un bouton discret pour regarder la video (accessibilite).
@@ -910,6 +1417,18 @@ export interface ContenuTravaux {
   consigne: string // resume court de la mission a realiser
   contexte?: string // contexte professionnel
   videoContexte?: string // lien video pour ecouter le contexte (bouton discret)
+  // Planning affiche directement dans le contexte professionnel (consultation),
+  // reproduit sous forme de calendrier comme le document d'origine.
+  planningContexte?: {
+    titre: string
+    jours: string[] // Lundi..Dimanche
+    semaines: { numero: string; cases: { jour?: string; matin?: string; apresMidi?: string; journee?: string; weekend?: boolean }[] }[]
+  }
+  audioLien?: string // lien audio pour ecouter le contexte (bouton discret)
+  // Video d'introduction revelable : masquee d'emblee, l'eleve clique pour
+  // l'afficher. Lecteur integre (voir la video) + transcription depliable
+  // (lire la video) pour les eleves a besoins particuliers.
+  videoIntro?: { titre?: string; embedUrl: string; transcription?: string[] }
   documents?: DocumentRessource[] // bibliotheque de documents a lire (depliables)
   objectifs?: string[] // objectifs de la mission
   competence?: {
@@ -1450,6 +1969,997 @@ const RENAULT_M1: ContenuMission = {
         { libelle: 'Un Captur neuf commandé sur catalogue', etiquetteIndex: 0 },
       ],
     },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 1 - L'agence et sa clientele
+// professionnelle
+// Bloc 1 - Conseiller et vendre : assurer la veille commerciale.
+// Source : chausson.fr (page d'accueil, CGV professionnels, notre histoire),
+// consultees le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, complétez l'identité de l'entreprise, comparez les sources chiffrées et déterminez celle qui est fiable, reconstituez l'organigramme de l'agence, puis segmentez le fichier client.",
+    contexte:
+      "Vous êtes en PFMP à l'agence Chausson Matériaux de Gennevilliers (92230), spécialisée dans le négoce de matériaux de construction auprès des professionnels du bâtiment. C'est votre premier stage dans l'enseigne. Le chef d'agence, M. Dessaint, souhaite que vous connaissiez l'entreprise, son organisation et ses clients avant de prendre en main le suivi des commandes, sous la responsabilité de votre tuteur M. Ferreira, commercial sédentaire.",
+    documents: [
+      // ---- Document 1 : identite corporate (docRiche + chiffresCles) -------
+      {
+        numero: 1,
+        titre: "L'entreprise Chausson Matériaux (site chausson.fr, rubrique Qui sommes-nous)",
+        texte: [
+          { pageWeb: true },
+          {
+            docRiche: {
+              site: 'www.chausson.fr/pages/entreprise/notre-histoire',
+              marque: 'Chausson Matériaux',
+              couleurHeader: '#005CA9',
+              menu: ['Mes produits', 'Nos agences', 'Me connecter'],
+              sections: [
+                { type: 'titre', texte: "Notre histoire" },
+                {
+                  type: 'paragraphe',
+                  texte:
+                    "Chausson est une entreprise familiale née à Toulouse en 1921, spécialisée dans le négoce de matériaux.",
+                },
+                { type: 'sousTitre', texte: "Une entreprise indépendante" },
+                {
+                  type: 'paragraphes',
+                  textes: [
+                    "La société CHAUSSON MATERIAUX est une société par action simplifiée au capital social de 279 560 879,78 euros, dont le siège social est à SAINT ALBAN (31142), 60 rue de Fenouillet, Centre commercial hexagone, immatriculée sous le numéro 528 648 892 RCS TOULOUSE.",
+                    "Numéro de TVA intracommunautaire : FR83528648892.",
+                    "Toujours tenue par la famille Chausson, l'entreprise est le premier indépendant français du négoce de matériaux de construction.",
+                  ],
+                },
+                { type: 'sousTitre', texte: "L'offre" },
+                {
+                  type: 'puces',
+                  items: [
+                    'Gros œuvre et maçonnerie',
+                    'Bois et charpente',
+                    'Couverture',
+                    'Menuiseries',
+                    'Plâtrerie et plafond',
+                    'Isolation',
+                    'Façade',
+                    'Carrelage et revêtements sols murs',
+                    'Outillage, visserie, accessoires',
+                    'Travaux publics et gestion des eaux',
+                  ],
+                },
+                { type: 'sousTitre', texte: 'Les six marques propres' },
+                {
+                  type: 'paragraphe',
+                  texte:
+                    "Gypso (plaquistes et plafistes), Edilis (carreleurs), Obra (maçons, piscinistes, paysagistes), Elos (charpentiers et couvreurs), Ornea (façadiers et ITE), Edia.",
+                },
+              ],
+            },
+          },
+          {
+            chiffresCles: {
+              titre: "Les chiffres affichés sur la page d'accueil du site (consultée le 10 juillet 2026)",
+              items: [
+                { valeur: '800', libelle: 'agences dans toute la France' },
+                { valeur: '60 000', libelle: 'références en stock' },
+                { valeur: '1921', libelle: "année de création de l'entreprise" },
+                { valeur: '4,7/5', libelle: 'note des avis clients Ekomi' },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 2 : les trois sources qui se contredisent -------------
+      {
+        numero: 2,
+        titre: "Trois sources, trois nombres d'agences",
+        texte: [
+          {
+            paragraphes: [
+              "M. Dessaint vous demande de préparer une fiche d'identité de l'entreprise pour le nouveau catalogue de l'agence. Vous cherchez le nombre d'agences du réseau. Vous trouvez trois informations différentes. Elles sont reproduites ci-dessous telles qu'elles apparaissent.",
+            ],
+          },
+          {
+            encadresListes: [
+              {
+                titre: 'Source A - Page d\'accueil de chausson.fr, bandeau principal',
+                lignes: [
+                  'Éditeur : Chausson Matériaux (site officiel de l\'entreprise)',
+                  'Date de consultation : 10 juillet 2026',
+                  'Information : « 800 agences dans toute la France. »',
+                ],
+              },
+              {
+                titre: 'Source B - Page d\'accueil de chausson.fr, encadré « Retrait agence »',
+                lignes: [
+                  'Éditeur : Chausson Matériaux (site officiel de l\'entreprise)',
+                  'Date de consultation : 10 juillet 2026',
+                  'Information : « Plus de 470 agences Chausson sont à votre service. »',
+                ],
+              },
+              {
+                titre: 'Source C - Article du Journal des Entreprises',
+                lignes: [
+                  'Éditeur : journal économique régional',
+                  'Date de publication : 9 novembre 2020',
+                  'Information : « Le groupe toulousain de négoce Chausson Matériaux a développé un réseau de 351 agences en France. Nouvelle étape pour la croissance de Chausson Matériaux : 3 850 salariés, chiffre d\'affaires 2019 de 920 millions d\'euros. »',
+                ],
+              },
+            ],
+          },
+          {
+            intertitre: "Rappel de cours : les critères d'une information commerciale exploitable",
+          },
+          {
+            puces: [
+              "La fiabilité : l'information provient-elle d'une source qui a autorité sur le sujet ?",
+              "La pertinence : l'information répond-elle exactement à la question posée ?",
+              "La disponibilité : l'information est-elle accessible et vérifiable ?",
+              "L'actualité : à quelle date l'information a-t-elle été produite ?",
+            ],
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Deux informations peuvent être publiées par le même éditeur, à la même date, et se contredire. Dans ce cas, ni l'une ni l'autre ne peut être retenue sans vérification. Une source ancienne mais datée et précise est parfois plus exploitable qu'une source récente et vague.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : le negoce B to B ----------------------------------
+      {
+        numero: 3,
+        titre: 'Le négoce de matériaux : un marché entre professionnels',
+        texte: [
+          {
+            paragraphes: [
+              "Le négociant en matériaux achète des matériaux aux fabricants, les stocke, et les revend. Il ne fabrique pas. Sa clientèle est composée à la fois de professionnels du bâtiment et de particuliers, mais ces deux clientèles n'ont ni les mêmes attentes, ni les mêmes droits.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Critère', 'Client artisan (professionnel)', 'Client particulier (consommateur)'],
+              lignes: [
+                ['Cadre juridique', 'CGV professionnels', 'CGV consommateurs, Code de la consommation'],
+                ['Droit de rétractation', "Aucun", '14 jours à compter de la réception'],
+                ['Compte client', 'Compte avec encours de crédit autorisé', 'Paiement comptant'],
+                ['Délai de paiement', "Plafonné à 45 jours, stipulé sur la facture", 'Paiement à la commande'],
+                ['Volume moyen par commande', 'Élevé, palettes et tonnes', 'Faible, colis et unités'],
+                ['Fréquence des achats', 'Hebdomadaire, liée aux chantiers', 'Ponctuelle, liée à un projet'],
+                ['Livraison', 'Sur chantier', 'À domicile ou retrait en agence'],
+                ['Ce qui compte le plus', 'Le respect du délai annoncé', 'Le prix'],
+              ],
+            },
+          },
+          {
+            intertitre: "Ce que dit l'article 7.2 des CGV professionnels sur le compte client",
+          },
+          {
+            paragraphes: [
+              "Si l'Acheteur possède un compte avec paiement à terme (facturation récapitulative mensuelle) il pourra, lors du paiement de sa commande en ligne, choisir entre payer sa commande comptant, ou affecter le montant de sa commande à son encours de crédit autorisé.",
+              "Si le montant de la commande de l'Acheteur est supérieur à son encours de crédit disponible, l'Acheteur a l'obligation de payer immédiatement la totalité de la commande.",
+              "Le délai de paiement, plafonné à 45 jours, est stipulé sur les factures du Vendeur.",
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 4 : le mot du chef d'agence (bulle + video) -----------
+      {
+        numero: 4,
+        titre: "Le mot du chef d'agence, M. Dessaint",
+        texte: [
+          {
+            bulle: {
+              nom: 'Frédéric Dessaint',
+              role: "Chef de l'agence de Gennevilliers",
+              initiale: 'D',
+              couleurAvatar: '#005CA9',
+              lignes: [
+                "« Bienvenue à l'agence. Ici, on ne vend pas des sacs de ciment, on tient des chantiers. Quand un maçon commande vingt palettes de parpaings pour un lundi matin, il a une équipe de six compagnons qui l'attend sur place. S'il ne l'a pas, il perd sa journée, et elle lui coûte plus cher que la commande. »",
+                "« Vous allez entendre parler de délai, de reliquat, de réserve, de bon de livraison. Ce ne sont pas des mots administratifs. Ce sont les mots qui font qu'un client reste ou qu'il part chez le concurrent qui est à trois kilomètres. »",
+                "« Votre première semaine, vous n'allez rien vendre. Vous allez apprendre qui sont nos clients. Il y en a dix-huit en compte à l'agence. Ils ne se ressemblent pas. Certains commandent tous les jours pour trois cents euros, d'autres trois fois par an pour quarante mille. On ne les traite pas de la même façon. »",
+                "« Et vous allez rencontrer M. Kadri, de BATIRENOV. Il est chez nous depuis quatre ans. Il est exigeant. C'est un bon client. »",
+              ],
+              videoLien: 'https://www.chausson.fr/pages/entreprise/presentation-entreprise',
+            },
+          },
+        ],
+      },
+
+      // ---- Document 5 : l'organigramme, dans le desordre ------------------
+      {
+        numero: 5,
+        titre: "Le personnel de l'agence de Gennevilliers (liste établie dans le désordre)",
+        texte: [
+          {
+            paragraphes: [
+              "La liste ci-dessous a été extraite du logiciel de paie. Elle n'est pas classée. Les fonctions et les liens hiérarchiques sont indiqués pour chaque personne, mais l'ordre est celui de la saisie.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Nom', 'Fonction', 'Rattaché à'],
+              lignes: [
+                ['Sonia Berthier', 'Magasinier', 'Karim Zemmouri'],
+                ['Frédéric Dessaint', "Chef d'agence", '(personne)'],
+                ['Léa Nguyen', 'Assistante administration des ventes', 'Patrick Vallois'],
+                ['Karim Zemmouri', 'Responsable logistique', 'Frédéric Dessaint'],
+                ['Bruno Ferreira', 'Commercial sédentaire', 'Patrick Vallois'],
+                ['Ahmed Belkacem', 'Chauffeur livreur', 'Karim Zemmouri'],
+                ['Patrick Vallois', 'Responsable commercial', 'Frédéric Dessaint'],
+                ['Marion Leclerc', 'Commerciale itinérante', 'Patrick Vallois'],
+                ['Thierry Ostermann', 'Cariste', 'Karim Zemmouri'],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Un organigramme se construit du haut vers le bas. Cherchez d'abord la personne qui n'est rattachée à personne : c'est la tête. Cherchez ensuite qui lui est directement rattaché.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 6 : les services (page web) ---------------------------
+      {
+        numero: 6,
+        titre: "Les services de l'enseigne (site chausson.fr, rubrique Les services préférés de nos clients)",
+        texte: [
+          { pageWeb: true },
+          { intertitre: 'Les services préférés de nos clients' },
+          {
+            encadresListes: [
+              {
+                titre: 'Livraison à domicile',
+                lignes: [
+                  "Vos achats sont lourds et volumineux ? Faites-vous livrer où et quand vous voulez.",
+                  "L'agence Chausson qui effectue la livraison vous contacte pour fixer le meilleur créneau de livraison.",
+                  'Bonus : nous livrons jusqu\'au 7ème étage.',
+                ],
+              },
+              {
+                titre: 'Parc Express',
+                lignes: [
+                  "Le service Parc Express vous permet de gagner en rapidité et simplicité.",
+                  'Profitez d\'un service directement sur le parc par nos magasiniers pour vos achats courants.',
+                ],
+              },
+              {
+                titre: 'Retrait drive 1h',
+                lignes: [
+                  "Vous êtes pressé ou vous voulez être sûr de disposer de votre marchandise ?",
+                  'Commandez directement les produits disponibles dans votre agence sur chausson.fr. Venez les retirer une heure plus tard.',
+                ],
+              },
+              {
+                titre: "Béton prêt à l'emploi",
+                lignes: [
+                  "Chausson produit et livre du béton prêt à l'emploi pour tous les professionnels du BTP et les particuliers.",
+                  'Devis gratuit. Livraison sur chantier ou possibilité d\'enlever directement à la centrale pour vos petits travaux : fabrication à partir de 250 litres.',
+                ],
+              },
+              {
+                titre: 'SAV',
+                lignes: [
+                  "Votre matériel est en panne ? Pas de panique.",
+                  "Pour toute machine achetée dans le réseau Chausson et dont la réparation ne rentre pas dans le cadre d'une garantie fabriquant : Chausson s'occupe de tout.",
+                  'Vous apportez votre matériel défectueux dans votre agence. Nous vous indiquons la marche à suivre pour faire réparer votre machine.',
+                ],
+              },
+              {
+                titre: 'Retrait agence',
+                lignes: [
+                  "Commandez votre marchandise sur chausson.fr et venez la retirer gratuitement dans l'agence Chausson à proximité de chez vous.",
+                  'Plus de 470 agences Chausson sont à votre service.',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 7 : le fichier client de l'agence ---------------------
+      {
+        numero: 7,
+        titre: "Le fichier client de l'agence de Gennevilliers (extrait du logiciel commercial)",
+        texte: [
+          {
+            paragraphes: [
+              "Extraction des dix-huit comptes professionnels ouverts à l'agence. Le chiffre d'affaires est celui des douze derniers mois. L'ancienneté est exprimée en années. L'encours autorisé est le montant maximum que le client peut devoir à l'agence à un instant donné.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Raison sociale', 'Métier', 'CA 12 mois', 'Ancienneté', 'Encours autorisé'],
+              lignes: [
+                ['SARL BATIRENOV', 'Maçonnerie', '48 200 €', '4 ans', '15 000 €'],
+                ['Toitures Delaunay', 'Couverture', '112 400 €', '11 ans', '30 000 €'],
+                ['SAS Novaplak', 'Plâtrerie', '86 700 €', '7 ans', '25 000 €'],
+                ['EURL Merlin Carrelage', 'Carrelage', '9 300 €', '2 ans', '3 000 €'],
+                ['Bâti-Ouest Construction', 'Gros œuvre', '204 900 €', '9 ans', '60 000 €'],
+                ['M. Sauvage (auto-entrepreneur)', 'Rénovation', '4 100 €', '1 an', '1 500 €'],
+                ['SARL Isolatech', 'Isolation', '61 500 €', '5 ans', '18 000 €'],
+                ['Charpentes Vidal', 'Charpente', '38 800 €', '14 ans', '12 000 €'],
+                ['SAS Prima Façades', 'Façade', '95 200 €', '3 ans', '28 000 €'],
+                ['Menuiserie Kessler', 'Menuiserie', '27 600 €', '6 ans', '9 000 €'],
+                ['SARL Duflot Frères', 'Maçonnerie', '73 100 €', '12 ans', '22 000 €'],
+                ['Éco-Habitat 92', 'Rénovation énergétique', '52 400 €', '2 ans', '16 000 €'],
+                ['M. Pereira (artisan)', 'Plomberie', '6 800 €', '3 ans', '2 500 €'],
+                ['SAS Groupe Vantour', 'Promotion immobilière', '318 000 €', '8 ans', '90 000 €'],
+                ['Peinture Lorenzi', 'Peinture', '14 900 €', '5 ans', '5 000 €'],
+                ['SARL Techni-Sols', 'Revêtements', '41 300 €', '4 ans', '13 000 €'],
+                ['Ateliers Marchand', 'Second œuvre', '19 700 €', '10 ans', '6 000 €'],
+                ['SCI Le Clos Fleuri', 'Bailleur', '8 200 €', '1 an', '3 000 €'],
+              ],
+            },
+          },
+          {
+            intertitre: 'La note de M. Vallois, responsable commercial',
+          },
+          {
+            paragraphes: [
+              "On classe nos comptes en trois catégories. Les comptes majeurs, au-dessus de 80 000 euros de chiffre d'affaires annuel : ils passent avant tout le monde. Les comptes réguliers, entre 20 000 et 80 000 euros : c'est le cœur de l'agence, ce sont eux qui font notre marge. Les petits comptes, en dessous de 20 000 euros : on les sert, mais on ne leur consacre pas de temps commercial.",
+              "Attention, l'ancienneté compte autant que le chiffre d'affaires. Un client de douze ans qui fait 40 000 euros vaut mieux qu'un client de deux ans qui en fait 50 000. Le premier ne partira pas.",
+            ],
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: "Activité 1 - L'entreprise et son marché",
+        contexte:
+          "M. Dessaint vous demande de préparer la fiche d'identité de l'entreprise qui figurera en première page du catalogue de l'agence. Il insiste sur un point : « Ne mettez aucun chiffre que vous ne pouvez pas justifier. »",
+        questions: [
+          {
+            numero: 1,
+            consigne: "Complétez la fiche d'identité de l'entreprise Chausson Matériaux.",
+            ressources: 'Lire le document 1, compléter l\'annexe 1.',
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Pour chacune des trois sources, indiquez l'éditeur, la date, et l'information donnée. Puis indiquez si cette source est fiable et si elle est actuelle.",
+            ressources: 'Lire le document 2, compléter l\'annexe 2.',
+            annexeId: 'annexe2',
+          },
+          {
+            numero: 3,
+            consigne:
+              "Deux sources sont publiées par le même éditeur, à la même date, et se contredisent. Expliquez pourquoi aucune des deux ne peut être retenue en l'état, puis indiquez la démarche que vous proposez à M. Dessaint pour obtenir une information exploitable.",
+            ressources: 'Lire le document 2, compléter l\'annexe 3.',
+            annexeId: 'annexe3',
+          },
+          {
+            numero: 4,
+            consigne:
+              "Listez quatre différences entre un client artisan et un client particulier, puis indiquez celle qui a le plus de conséquences sur le suivi de la vente.",
+            ressources: 'Lire le document 3, compléter l\'annexe 4.',
+            annexeId: 'annexe4',
+          },
+        ],
+      },
+      {
+        titre: "Activité 2 - L'organisation de l'agence",
+        contexte:
+          "Votre tuteur M. Ferreira vous remet la liste du personnel telle qu'elle sort du logiciel de paie. Elle n'est pas classée. Il vous demande de reconstituer l'organigramme pour l'afficher dans la salle de pause.",
+        questions: [
+          {
+            numero: 5,
+            consigne: "Reconstituez l'organigramme de l'agence en plaçant chaque personne et sa fonction.",
+            ressources: 'Lire le document 5, compléter l\'annexe 5.',
+            annexeId: 'annexe5',
+          },
+          {
+            numero: 6,
+            consigne:
+              "Indiquez à quel responsable vous devez vous adresser dans chacune des six situations décrites.",
+            ressources: 'Lire les documents 4, 5 et 6, compléter l\'annexe 6.',
+            annexeId: 'annexe6',
+          },
+          {
+            numero: 7,
+            consigne:
+              "Associez chacun des six services de l'enseigne au besoin du client professionnel auquel il répond.",
+            ressources: 'Lire le document 6, compléter l\'annexe 7.',
+            annexeId: 'annexe7',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 3 - La clientèle professionnelle',
+        contexte:
+          "M. Vallois, responsable commercial, prépare la tournée du mois. Il vous demande de classer les dix-huit comptes de l'agence selon ses propres critères, puis de repérer les clients qui méritent une visite.",
+        questions: [
+          {
+            numero: 8,
+            consigne:
+              "Classez les dix-huit comptes en trois catégories : comptes majeurs, comptes réguliers, petits comptes. Indiquez pour chaque catégorie le nombre de comptes.",
+            ressources: 'Lire le document 7, compléter l\'annexe 8.',
+            annexeId: 'annexe8',
+          },
+          {
+            numero: 9,
+            consigne:
+              "Calculez le chiffre d'affaires total de chaque catégorie, puis la part de chaque catégorie dans le chiffre d'affaires de l'agence, arrondie à l'unité.",
+            ressources: 'Lire le document 7, compléter l\'annexe 9.',
+            annexeId: 'annexe9',
+          },
+          {
+            numero: 10,
+            consigne:
+              "M. Vallois affirme qu'un client ancien vaut mieux qu'un client récent à chiffre d'affaires égal. Relevez dans le fichier un couple de clients qui illustre cette affirmation, puis rédigez en cinq lignes maximum la fiche de synthèse du compte BATIRENOV.",
+            ressources: 'Lire les documents 4 et 7, compléter l\'annexe 10.',
+            annexeId: 'annexe10',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'identiteentreprise',
+        id: 'annexe1',
+        titre: "Annexe 1 - Fiche d'identité de l'entreprise",
+        champs: [
+          { cle: 'denomination', libelle: 'Dénomination sociale' },
+          { cle: 'annee', libelle: 'Année de création' },
+          { cle: 'siege', libelle: 'Adresse du siège social', lignes: 2 },
+          { cle: 'rcs', libelle: "Numéro d'immatriculation RCS" },
+          { cle: 'tva', libelle: 'Numéro de TVA intracommunautaire' },
+          { cle: 'capital', libelle: 'Capital social' },
+          { cle: 'marques', libelle: 'Les six marques propres', lignes: 2 },
+          { cle: 'activite', libelle: "Activité principale", lignes: 2 },
+        ],
+        qualifications: [
+          {
+            cle: 'forme',
+            libelle: 'Forme juridique',
+            options: ['SAS', 'SARL', 'SA', 'Entreprise individuelle', 'Association'],
+          },
+          {
+            cle: 'capitalDetention',
+            libelle: 'Détention du capital',
+            options: ['Familiale et indépendante', 'Cotée en bourse', 'Filiale d\'un groupe étranger'],
+          },
+          {
+            cle: 'metier',
+            libelle: 'Métier exercé',
+            options: ['Négociant (achat et revente)', 'Fabricant', 'Transporteur', 'Installateur'],
+          },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: 'Annexe 2 - Analyse des trois sources',
+        colonnes: ['Source', 'Éditeur', 'Date', 'Information donnée', 'Fiable ? (oui/non)', 'Actuelle ? (oui/non)'],
+        nbLignes: 3,
+        prerempli: [
+          ['Source A', '', '', '', '', ''],
+          ['Source B', '', '', '', '', ''],
+          ['Source C', '', '', '', '', ''],
+        ],
+        largeurs: ['10%', '20%', '12%', '28%', '15%', '15%'],
+        reponseMultiligne: true,
+        lignesReponse: 2,
+      },
+      {
+        type: 'grille',
+        id: 'annexe3',
+        titre: 'Annexe 3 - La contradiction et sa résolution',
+        colonnes: ['Question', 'Votre réponse'],
+        nbLignes: 3,
+        prerempli: [
+          ["Pourquoi les sources A et B ne peuvent-elles pas être retenues en l'état ?", ''],
+          ["La source C est-elle exploitable pour le catalogue 2026 ? Justifiez.", ''],
+          ["Quelle démarche proposez-vous à M. Dessaint pour obtenir une information fiable et actuelle ?", ''],
+        ],
+        largeurs: ['40%', '60%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4',
+        titre: 'Annexe 4 - Client artisan et client particulier',
+        colonnes: ['Critère de comparaison', 'Client artisan', 'Client particulier'],
+        nbLignes: 5,
+        prerempli: [
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', ''],
+          ["La différence qui pèse le plus sur le suivi de la vente, et pourquoi :", '', ''],
+        ],
+        largeurs: ['30%', '35%', '35%'],
+        reponseMultiligne: true,
+        lignesReponse: 2,
+      },
+      {
+        type: 'organigrammearemplir',
+        id: 'annexe5',
+        titre: "Annexe 5 - L'organigramme de l'agence de Gennevilliers",
+        noms: [
+          'Frédéric Dessaint',
+          'Patrick Vallois',
+          'Karim Zemmouri',
+          'Bruno Ferreira',
+          'Marion Leclerc',
+          'Léa Nguyen',
+          'Sonia Berthier',
+          'Ahmed Belkacem',
+          'Thierry Ostermann',
+        ],
+        fonctions: [
+          "Chef d'agence",
+          'Responsable commercial',
+          'Responsable logistique',
+          'Commercial sédentaire',
+          'Commerciale itinérante',
+          'Assistante administration des ventes',
+          'Magasinier',
+          'Chauffeur livreur',
+          'Cariste',
+        ],
+        tete: {
+          cle: 'direction',
+          enfants: [
+            {
+              cle: 'commercial',
+              enfants: [{ cle: 'com-1' }, { cle: 'com-2' }, { cle: 'com-3' }],
+            },
+            {
+              cle: 'logistique',
+              enfants: [{ cle: 'log-1' }, { cle: 'log-2' }, { cle: 'log-3' }],
+            },
+          ],
+        },
+      },
+      {
+        type: 'grille',
+        id: 'annexe6',
+        titre: 'Annexe 6 - À qui je m\'adresse',
+        colonnes: ['Situation', 'Personne à qui je m\'adresse', 'Sa fonction'],
+        nbLignes: 6,
+        prerempli: [
+          ["Un client demande si une palette de parpaings est en stock.", '', ''],
+          ["Un chauffeur signale qu'il ne peut pas accéder au chantier.", '', ''],
+          ["Un client conteste une facture reçue le mois dernier.", '', ''],
+          ["Vous devez faire valider un geste commercial de 800 euros.", '', ''],
+          ["Un client professionnel souhaite ouvrir un compte avec encours.", '', ''],
+          ["Une palette est tombée du chariot dans le parc.", '', ''],
+        ],
+        largeurs: ['45%', '30%', '25%'],
+        reponseMultiligne: false,
+      },
+      {
+        type: 'grille',
+        id: 'annexe7',
+        titre: 'Annexe 7 - Les services et les besoins du client professionnel',
+        colonnes: ['Service de l\'enseigne', 'Besoin du client professionnel auquel il répond'],
+        nbLignes: 6,
+        prerempli: [
+          ['Livraison à domicile', ''],
+          ['Parc Express', ''],
+          ['Retrait drive 1h', ''],
+          ["Béton prêt à l'emploi", ''],
+          ['SAV', ''],
+          ['Retrait agence', ''],
+        ],
+        largeurs: ['30%', '70%'],
+        reponseMultiligne: true,
+        lignesReponse: 2,
+      },
+      {
+        type: 'grille',
+        id: 'annexe8',
+        titre: 'Annexe 8 - Segmentation du fichier client',
+        colonnes: ['Catégorie', 'Critère de CA', 'Raisons sociales des comptes concernés', 'Nombre'],
+        nbLignes: 3,
+        prerempli: [
+          ['Comptes majeurs', 'Plus de 80 000 €', '', ''],
+          ['Comptes réguliers', 'De 20 000 € à 80 000 €', '', ''],
+          ['Petits comptes', 'Moins de 20 000 €', '', ''],
+        ],
+        largeurs: ['18%', '18%', '52%', '12%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe9',
+        titre: "Annexe 9 - Le poids de chaque catégorie",
+        colonnes: ['Catégorie', 'CA total de la catégorie', 'Part du CA de l\'agence (%)'],
+        nbLignes: 4,
+        prerempli: [
+          ['Comptes majeurs', '', ''],
+          ['Comptes réguliers', '', ''],
+          ['Petits comptes', '', ''],
+          ["Total agence", '', '100 %'],
+        ],
+        largeurs: ['34%', '33%', '33%'],
+        reponseMultiligne: false,
+      },
+      {
+        type: 'grille',
+        id: 'annexe10',
+        titre: 'Annexe 10 - Fiche de synthèse du compte BATIRENOV',
+        colonnes: ['Rubrique', 'Votre réponse'],
+        nbLignes: 5,
+        prerempli: [
+          ["Le couple de clients qui illustre l'affirmation de M. Vallois (nommez les deux, comparez CA et ancienneté)", ''],
+          ['Raison sociale et métier de BATIRENOV', ''],
+          ["Chiffre d'affaires, ancienneté, encours autorisé", ''],
+          ['Catégorie du compte (majeur, régulier, petit)', ''],
+          ["Synthèse en cinq lignes maximum : quel client est-ce, et comment le traiter ?", ''],
+        ],
+        largeurs: ['40%', '60%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: "L'agence Chausson Matériaux et sa clientèle professionnelle",
+    proposition: [
+      'Négociant',
+      'SAS familiale indépendante',
+      '1921',
+      'Fiabilité',
+      'Actualité',
+      'Recoupement',
+      'Comptes majeurs',
+      'Comptes réguliers',
+      'Petits comptes',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "L'agence Chausson Matériaux de Gennevilliers",
+      enfants: [
+        {
+          id: 'identite',
+          texte: "Identité de l'entreprise",
+          enfants: [
+            { id: 'id-1', texte: null, reponse: 'Négociant' },
+            { id: 'id-2', texte: null, reponse: 'SAS familiale indépendante' },
+            { id: 'id-3', texte: null, reponse: '1921' },
+          ],
+        },
+        {
+          id: 'veille',
+          texte: "Critères d'une information exploitable",
+          enfants: [
+            { id: 've-1', texte: null, reponse: 'Fiabilité' },
+            { id: 've-2', texte: null, reponse: 'Actualité' },
+            { id: 've-3', texte: null, reponse: 'Recoupement' },
+          ],
+        },
+        {
+          id: 'clients',
+          texte: 'Segmentation de la clientèle',
+          enfants: [
+            { id: 'cl-1', texte: null, reponse: 'Comptes majeurs' },
+            { id: 'cl-2', texte: null, reponse: 'Comptes réguliers' },
+            { id: 'cl-3', texte: null, reponse: 'Petits comptes' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: "Rechercher et hiérarchiser les informations sur l'entreprise et son marché",
+        indicateurs: [
+          { niveau: 'novice', description: "Je recopie la première information trouvée sans vérifier sa source." },
+          { niveau: 'debrouille', description: "Je relève l'information et je cite sa source." },
+          { niveau: 'averti', description: "Je compare plusieurs sources et je retiens la plus fiable en justifiant." },
+          { niveau: 'expert', description: "Je repère une contradiction entre deux sources et je propose une démarche de vérification." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Distinguer la clientèle professionnelle de la clientèle particulière',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne vois pas de différence entre les deux clientèles." },
+          { niveau: 'debrouille', description: "Je cite une ou deux différences sans les expliquer." },
+          { niveau: 'averti', description: "Je distingue les deux clientèles sur le plan juridique et commercial." },
+          { niveau: 'expert', description: "Je relie chaque différence à une conséquence concrète sur le suivi de la vente." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: "Situer les acteurs dans l'organisation de l'agence",
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas qui fait quoi dans l'agence." },
+          { niveau: 'debrouille', description: "Je place quelques personnes dans l'organigramme." },
+          { niveau: 'averti', description: "Je reconstitue l'organigramme complet à partir d'une liste non classée." },
+          { niveau: 'expert', description: "J'identifie le bon interlocuteur pour chaque situation professionnelle." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: 'Segmenter un portefeuille de clients professionnels',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas sur quel critère classer les clients." },
+          { niveau: 'debrouille', description: "Je classe les clients sur un seul critère." },
+          { niveau: 'averti', description: "Je segmente le portefeuille et je calcule le poids de chaque segment." },
+          { niveau: 'expert', description: "Je croise le chiffre d'affaires et l'ancienneté pour hiérarchiser les comptes." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Négoce', definition: "Activité qui consiste à acheter des marchandises pour les revendre sans les transformer." },
+      { terme: 'Veille commerciale', definition: "Recherche continue et organisée d'informations sur l'entreprise, ses produits, ses clients et ses concurrents." },
+      { terme: 'Source primaire', definition: "Source qui produit elle-même l'information, comme le site officiel d'une entreprise." },
+      { terme: 'Source secondaire', definition: "Source qui reprend une information produite par une autre, comme un article de presse." },
+      { terme: 'Recoupement', definition: "Vérification d'une information en la confrontant à au moins deux sources indépendantes." },
+      { terme: 'B to B', definition: "Commerce entre professionnels, par opposition au B to C qui vise le consommateur." },
+      { terme: 'Encours autorisé', definition: "Montant maximum qu'un client en compte peut devoir à l'entreprise à un instant donné." },
+      { terme: 'Segmentation', definition: "Découpage d'une clientèle en groupes homogènes selon des critères précis." },
+      { terme: 'Compte majeur', definition: "Client dont le chiffre d'affaires justifie un traitement commercial prioritaire." },
+      { terme: 'Organigramme', definition: "Schéma qui représente l'organisation et les liens hiérarchiques entre les personnes d'une entreprise." },
+    ],
+    flashcards: [
+      { recto: 'En quelle année Chausson Matériaux a-t-elle été créée ?', verso: 'En 1921, à Toulouse.' },
+      { recto: 'Quelle est la forme juridique de Chausson Matériaux ?', verso: 'Une société par action simplifiée (SAS), familiale et indépendante.' },
+      { recto: "Qu'est-ce qu'un négociant ?", verso: "Un commerçant qui achète des marchandises pour les revendre sans les transformer." },
+      { recto: 'Citez trois des six marques propres de Chausson Matériaux.', verso: 'Au choix : Gypso, Edilis, Obra, Elos, Ornea, Edia.' },
+      { recto: "Quels sont les quatre critères d'une information commerciale exploitable ?", verso: "La fiabilité, la pertinence, la disponibilité, l'actualité." },
+      { recto: 'Deux pages du même site officiel donnent deux chiffres différents. Que faites-vous ?', verso: "Je ne retiens ni l'un ni l'autre. Je contacte l'entreprise ou je cherche une source datée et vérifiable." },
+      { recto: "Un client artisan dispose-t-il d'un droit de rétractation ?", verso: "Non. Le droit de rétractation de 14 jours est réservé au consommateur." },
+      { recto: "Quel est le délai de paiement maximum accordé à un client professionnel ?", verso: '45 jours, stipulé sur la facture.' },
+      { recto: "Qu'est-ce qu'un encours autorisé ?", verso: "Le montant maximum qu'un client en compte peut devoir à l'entreprise à un instant donné." },
+      { recto: "À l'agence de Gennevilliers, à qui le responsable logistique est-il rattaché ?", verso: "Au chef d'agence, M. Dessaint." },
+      { recto: 'Sur quels deux critères M. Vallois classe-t-il les comptes ?', verso: "Le chiffre d'affaires annuel et l'ancienneté du client." },
+      { recto: "Quel service permet de retirer sa marchandise une heure après la commande ?", verso: 'Le Retrait drive 1h.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Chausson Matériaux est une entreprise :", options: ['Familiale et indépendante', "Filiale d'un groupe étranger", 'Cotée en bourse'], bonne: 0 },
+      { type: 'unique', question: 'En quelle année Chausson Matériaux a-t-elle été créée ?', options: ['1921', '1978', '2003'], bonne: 0 },
+      { type: 'unique', question: "Le métier de Chausson Matériaux est celui de :", options: ['Négociant', 'Fabricant', 'Transporteur'], bonne: 0 },
+      { type: 'unique', question: "Deux pages du site officiel donnent 800 agences et 470 agences. Quelle attitude est correcte ?", options: ["Ne retenir aucun des deux chiffres et vérifier", 'Prendre le plus grand, il valorise l\'entreprise', 'Prendre le plus petit, il est plus prudent'], bonne: 0 },
+      { type: 'unique', question: "Un client artisan bénéficie d'un droit de rétractation de 14 jours :", options: ['Faux, ce droit est réservé au consommateur', 'Vrai, comme tout acheteur', 'Vrai, mais seulement sur les commandes en ligne'], bonne: 0 },
+      { type: 'unique', question: 'Le délai de paiement accordé à un client professionnel est plafonné à :', options: ['45 jours', '14 jours', '90 jours'], bonne: 0 },
+      { type: 'qcm', question: "Quels sont les critères d'une information commerciale exploitable ?", options: ['La fiabilité', "L'actualité", 'La pertinence', 'La longueur du texte'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Quelles marques appartiennent à Chausson Matériaux ?', options: ['Gypso', 'Edilis', 'Obra', 'Placoplatre'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: "Quels services sont proposés par l'enseigne ?", options: ['Parc Express', 'Retrait drive 1h', "Béton prêt à l'emploi", 'Location de véhicules de tourisme'], bonnes: [0, 1, 2] },
+      { type: 'unique', question: "Selon M. Vallois, un compte majeur réalise un chiffre d'affaires annuel :", options: ['Supérieur à 80 000 €', 'Supérieur à 20 000 €', 'Supérieur à 300 000 €'], bonne: 0 },
+      { type: 'trous', texte: 'Un {0} achète des marchandises pour les revendre sans les {1}.', reponses: ['négociant', 'transformer'] },
+      { type: 'trous', texte: "Vérifier une information en la confrontant à deux sources indépendantes s'appelle le {0}. Le montant maximum qu'un client peut devoir à l'entreprise est l'{1} autorisé.", reponses: ['recoupement', 'encours'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque compte à sa catégorie commerciale.',
+      etiquettes: ['Compte majeur', 'Compte régulier', 'Petit compte'],
+      zones: [
+        { libelle: 'SAS Groupe Vantour, 318 000 € de CA', etiquetteIndex: 0 },
+        { libelle: 'SARL BATIRENOV, 48 200 € de CA', etiquetteIndex: 1 },
+        { libelle: 'M. Sauvage, auto-entrepreneur, 4 100 € de CA', etiquetteIndex: 2 },
+        { libelle: 'Bâti-Ouest Construction, 204 900 € de CA', etiquetteIndex: 0 },
+        { libelle: 'Menuiserie Kessler, 27 600 € de CA', etiquetteIndex: 1 },
+        { libelle: 'Peinture Lorenzi, 14 900 € de CA', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule: "Complétez la fiche d'identité de l'entreprise Chausson Matériaux.",
+        documents: ['Document 1', 'Annexe 1'],
+        reponse: '',
+        bareme: 2,
+        tableau: {
+          colonnes: ['Rubrique', 'Réponse attendue'],
+          lignes: [
+            ['Dénomination sociale', 'CHAUSSON MATERIAUX'],
+            ['Forme juridique', 'SAS (société par action simplifiée)'],
+            ['Année de création', '1921'],
+            ['Siège social', '60 rue de Fenouillet, Centre commercial hexagone, 31142 SAINT ALBAN'],
+            ['RCS', '528 648 892 RCS Toulouse'],
+            ['TVA intracommunautaire', 'FR83528648892'],
+            ['Capital social', '279 560 879,78 euros'],
+            ['Détention du capital', 'Familiale et indépendante'],
+            ['Métier', 'Négociant (achat et revente sans transformation)'],
+            ['Six marques propres', 'Gypso, Edilis, Obra, Elos, Ornea, Edia'],
+          ],
+        },
+      },
+      {
+        intitule:
+          "Pour chacune des trois sources, indiquez l'éditeur, la date, et l'information donnée. Puis indiquez si cette source est fiable et si elle est actuelle.",
+        documents: ['Document 2', 'Annexe 2'],
+        reponse: '',
+        bareme: 3,
+        tableau: {
+          colonnes: ['Source', 'Éditeur', 'Date', 'Information', 'Fiable', 'Actuelle'],
+          lignes: [
+            ['A', 'Chausson Matériaux (site officiel)', '10 juillet 2026', '800 agences', 'Oui (source primaire)', 'Oui'],
+            ['B', 'Chausson Matériaux (site officiel)', '10 juillet 2026', 'Plus de 470 agences', 'Oui (source primaire)', 'Oui'],
+            ['C', 'Journal des Entreprises (presse)', '9 novembre 2020', "351 agences, 3 850 salariés, 920 M€ de CA 2019", 'Oui (source secondaire identifiée)', 'Non'],
+          ],
+        },
+        complement:
+          "Accepter toute formulation équivalente. Le point clé : les sources A et B sont primaires et actuelles, la source C est secondaire et périmée. Un élève qui coche « non fiable » pour la source C confond fiabilité et actualité : la source est fiable, elle est simplement datée.",
+      },
+      {
+        intitule:
+          "Deux sources sont publiées par le même éditeur, à la même date, et se contredisent. Expliquez pourquoi aucune des deux ne peut être retenue en l'état, puis indiquez la démarche que vous proposez à M. Dessaint.",
+        documents: ['Document 2', 'Annexe 3'],
+        reponse:
+          "Pourquoi aucune des deux ne peut être retenue : les sources A et B ont le même éditeur, la même date, la même autorité. Rien ne permet de préférer l'une à l'autre. Une contradiction interne à une source primaire ruine sa fiabilité sur ce point précis, même si le reste de la page demeure exploitable. Retenir un chiffre au hasard reviendrait à publier une information dont on sait qu'elle a une chance sur deux d'être fausse.\n\nLa source C est-elle exploitable : non pour le catalogue 2026. Elle est fiable et datée, mais elle porte sur 2019 et 2020. Le réseau a manifestement grandi depuis. Elle est utilisable pour décrire une évolution, pas pour donner un état actuel.\n\nDémarche proposée : contacter le service communication de l'entreprise ou le siège pour obtenir le chiffre officiel à jour ; consulter le rapport annuel ou le rapport RSE publié sur le site, qui est daté et engage l'entreprise ; à défaut, écrire dans le catalogue « plus de 470 agences », qui est le seul énoncé que les deux sources du site rendent vrai simultanément ; en toute hypothèse, dater l'information dans le catalogue (« au 10 juillet 2026 »).",
+        bareme: 4,
+        complement:
+          "Valoriser l'élève qui remarque que « plus de 470 » est compatible avec 800, et donc que la seule formulation prudente est celle-là. C'est le raisonnement attendu au niveau expert.",
+      },
+      {
+        intitule:
+          "Listez quatre différences entre un client artisan et un client particulier, puis indiquez celle qui a le plus de conséquences sur le suivi de la vente.",
+        documents: ['Document 3', 'Annexe 4'],
+        reponse: '',
+        bareme: 3,
+        tableau: {
+          colonnes: ['Critère', 'Client artisan', 'Client particulier'],
+          lignes: [
+            ['Cadre juridique', 'CGV professionnels', 'CGV consommateurs, Code de la consommation'],
+            ['Droit de rétractation', 'Aucun', '14 jours'],
+            ['Modalité de paiement', 'Compte avec encours, délai jusqu\'à 45 jours', 'Paiement comptant'],
+            ['Lieu de livraison', 'Sur chantier', 'À domicile ou retrait en agence'],
+            ['Attente prioritaire', 'Le respect du délai annoncé', 'Le prix'],
+          ],
+        },
+        complement:
+          "Quatre différences suffisent. La différence qui pèse le plus sur le suivi de la vente est l'attente prioritaire : l'artisan a une équipe qui attend sur le chantier. Un retard de livraison lui coûte une journée de main-d'œuvre, bien davantage que le montant de la commande. Accepter aussi « l'absence de droit de rétractation », qui oblige à sécuriser la commande en amont plutôt qu'à la corriger en aval.",
+      },
+      {
+        intitule: "Reconstituez l'organigramme de l'agence en plaçant chaque personne et sa fonction.",
+        documents: ['Document 5', 'Annexe 5'],
+        reponse: '',
+        bareme: 3,
+        organigramme: {
+          fonction: "Chef d'agence",
+          personnes: ['Frédéric Dessaint'],
+          sousPostes: [
+            {
+              fonction: 'Responsable commercial',
+              personnes: ['Patrick Vallois'],
+              sousPostes: [
+                { fonction: 'Commercial sédentaire', personnes: ['Bruno Ferreira'] },
+                { fonction: 'Commerciale itinérante', personnes: ['Marion Leclerc'] },
+                { fonction: 'Assistante administration des ventes', personnes: ['Léa Nguyen'] },
+              ],
+            },
+            {
+              fonction: 'Responsable logistique',
+              personnes: ['Karim Zemmouri'],
+              sousPostes: [
+                { fonction: 'Magasinier', personnes: ['Sonia Berthier'] },
+                { fonction: 'Chauffeur livreur', personnes: ['Ahmed Belkacem'] },
+                { fonction: 'Cariste', personnes: ['Thierry Ostermann'] },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        intitule: "Indiquez à quel responsable vous devez vous adresser dans chacune des six situations décrites.",
+        documents: ['Documents 4, 5 et 6', 'Annexe 6'],
+        reponse: '',
+        bareme: 3,
+        tableau: {
+          colonnes: ['Situation', 'Personne', 'Fonction'],
+          lignes: [
+            ["Un client demande si une palette de parpaings est en stock.", 'Sonia Berthier', 'Magasinier'],
+            ["Un chauffeur signale qu'il ne peut pas accéder au chantier.", 'Karim Zemmouri', 'Responsable logistique'],
+            ["Un client conteste une facture reçue le mois dernier.", 'Léa Nguyen', 'Assistante administration des ventes'],
+            ["Vous devez faire valider un geste commercial de 800 euros.", 'Patrick Vallois', 'Responsable commercial'],
+            ["Un client professionnel souhaite ouvrir un compte avec encours.", 'Frédéric Dessaint', "Chef d'agence"],
+            ["Une palette est tombée du chariot dans le parc.", 'Karim Zemmouri', 'Responsable logistique'],
+          ],
+        },
+        complement:
+          "Pour l'ouverture de compte, accepter également « Patrick Vallois » à condition que l'élève précise que la décision d'encours remonte au chef d'agence. Le raisonnement attendu : on s'adresse au niveau le plus bas qui a la compétence, et on remonte dès qu'un engagement financier dépasse la délégation.",
+      },
+      {
+        intitule: "Associez chacun des six services de l'enseigne au besoin du client professionnel auquel il répond.",
+        documents: ['Document 6', 'Annexe 7'],
+        reponse: '',
+        bareme: 3,
+        tableau: {
+          colonnes: ['Service', 'Besoin du client professionnel'],
+          lignes: [
+            ['Livraison à domicile', "Recevoir des matériaux lourds sur le lieu du chantier, à un créneau maîtrisé, sans mobiliser un véhicule ni un compagnon."],
+            ['Parc Express', "Gagner du temps sur les achats courants du matin sans passer par le comptoir."],
+            ['Retrait drive 1h', "Sécuriser la disponibilité d'un produit urgent et repartir sur le chantier dans l'heure."],
+            ["Béton prêt à l'emploi", "Disposer d'un béton conforme et livré sur chantier sans installer de centrale ni gâcher sur place."],
+            ['SAV', "Faire réparer une machine hors garantie constructeur sans chercher soi-même un réparateur."],
+            ['Retrait agence', "Commander à l'avance depuis le chantier et retirer gratuitement au passage."],
+          ],
+        },
+        complement:
+          "Accepter toute formulation qui relie le service à un gain de temps, de fiabilité ou de trésorerie pour l'artisan. Refuser les réponses qui décrivent le service sans nommer le besoin.",
+      },
+      {
+        intitule:
+          "Classez les dix-huit comptes en trois catégories. Indiquez pour chaque catégorie le nombre de comptes.",
+        documents: ['Document 7', 'Annexe 8'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Catégorie', 'Comptes', 'Nombre'],
+          lignes: [
+            [
+              'Comptes majeurs (plus de 80 000 €)',
+              'SAS Groupe Vantour (318 000 €), Bâti-Ouest Construction (204 900 €), Toitures Delaunay (112 400 €), SAS Prima Façades (95 200 €), SAS Novaplak (86 700 €)',
+              '5',
+            ],
+            [
+              'Comptes réguliers (de 20 000 € à 80 000 €)',
+              'SARL Duflot Frères (73 100 €), SARL Isolatech (61 500 €), Éco-Habitat 92 (52 400 €), SARL BATIRENOV (48 200 €), SARL Techni-Sols (41 300 €), Charpentes Vidal (38 800 €), Menuiserie Kessler (27 600 €)',
+              '7',
+            ],
+            [
+              'Petits comptes (moins de 20 000 €)',
+              'Ateliers Marchand (19 700 €), Peinture Lorenzi (14 900 €), EURL Merlin Carrelage (9 300 €), SCI Le Clos Fleuri (8 200 €), M. Pereira (6 800 €), M. Sauvage (4 100 €)',
+              '6',
+            ],
+          ],
+        },
+        complement: '5 + 7 + 6 = 18 comptes. Vérifier que le total est bien atteint.',
+      },
+      {
+        intitule:
+          "Calculez le chiffre d'affaires total de chaque catégorie, puis la part de chaque catégorie dans le chiffre d'affaires de l'agence.",
+        documents: ['Document 7', 'Annexe 9'],
+        reponse: '',
+        bareme: 3,
+        tableau: {
+          colonnes: ['Catégorie', 'Détail du calcul', 'CA total', 'Part du CA agence'],
+          lignes: [
+            ['Comptes majeurs', '318 000 + 204 900 + 112 400 + 95 200 + 86 700', '817 200 €', '65 %'],
+            ['Comptes réguliers', '73 100 + 61 500 + 52 400 + 48 200 + 41 300 + 38 800 + 27 600', '342 900 €', '27 %'],
+            ['Petits comptes', '19 700 + 14 900 + 9 300 + 8 200 + 6 800 + 4 100', '63 000 €', '5 %'],
+            ['Total agence', '817 200 + 342 900 + 63 000', '1 223 100 €', '100 %'],
+          ],
+        },
+        complement:
+          "Calculs arrondis à l'unité : 817 200 / 1 223 100 = 66,8 %, soit 67 %. 342 900 / 1 223 100 = 28,0 %, soit 28 %. 63 000 / 1 223 100 = 5,2 %, soit 5 %. Le total des arrondis fait 100 %. Accepter 65 à 67 % et 27 à 28 %. L'enseignement à tirer : cinq comptes sur dix-huit font les deux tiers du chiffre d'affaires de l'agence. Six comptes sur dix-huit en font 5 %.",
+      },
+      {
+        intitule:
+          "Relevez un couple de clients qui illustre l'affirmation de M. Vallois, puis rédigez la fiche de synthèse du compte BATIRENOV.",
+        documents: ['Documents 4 et 7', 'Annexe 10'],
+        reponse:
+          "Couple attendu : Charpentes Vidal (38 800 € de CA, 14 ans d'ancienneté) et Éco-Habitat 92 (52 400 € de CA, 2 ans d'ancienneté). Charpentes Vidal réalise 13 600 € de moins, mais l'entreprise est cliente depuis quatorze ans. Selon M. Vallois, elle vaut mieux : elle ne partira pas, alors qu'un client de deux ans n'a encore rien prouvé.\n\nAccepter également : SARL Duflot Frères (73 100 €, 12 ans) opposé à SAS Prima Façades (95 200 €, 3 ans).\n\nFiche de synthèse BATIRENOV :\nRaison sociale et métier : SARL BATIRENOV, entreprise de maçonnerie.\nChiffre d'affaires : 48 200 € sur douze mois. Ancienneté : 4 ans. Encours autorisé : 15 000 €.\nCatégorie : compte régulier (entre 20 000 € et 80 000 €).\nSynthèse : BATIRENOV est un compte régulier installé, ni majeur ni marginal. Quatre ans d'ancienneté et un encours de 15 000 euros indiquent une relation de confiance déjà établie. M. Dessaint le décrit comme exigeant et le qualifie de bon client : l'exigence n'est pas un défaut, elle signale un artisan qui tient ses chantiers. Le traitement attendu est un suivi rigoureux des délais et une information immédiate en cas d'aléa. C'est sur ce compte que se joue la crédibilité de l'agence auprès des maçons du secteur.",
+        bareme: 4,
+        complement:
+          "Barème total de la mission : 32 points. Pénaliser la synthèse qui dépasse cinq lignes. Valoriser l'élève qui relie l'exigence du client à une attente de fiabilité plutôt qu'à un trait de caractère.",
+      },
+    ],
   },
 }
 
@@ -2122,7 +3632,7 @@ const RENAULT_M4: ContenuMission = {
         titre: 'Activité 1 — Le questionnement',
         contexte: "L'étape de la prise de contact passée, vous êtes en confiance pour pouvoir mener l'entretien de vente en commençant par faire la recherche des besoins afin de pouvoir ensuite prodiguer les meilleurs conseils à vos clients.",
         questions: [
-          { numero: 1, consigne: "Questionnez M. Dupont avec la méthode en entonnoir (du général au particulier). En fonction de chaque réponse, construisez la question du vendeur et cochez le type de question dont il s'agit.", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1dlg' },
+          { numero: 1, consigne: "Questionnez M. Dupont avec la méthode en entonnoir (du général au particulier). En fonction de chaque réponse, construisez la question du vendeur et cochez le type de question dont il s'agit (O : ouverte, F : fermée, A : alternative, CM : choix multiple).", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1dlg' },
         ],
       },
       {
@@ -2446,7 +3956,7 @@ const RENAULT_M5: ContenuMission = {
         { pageWeb: true },
         { intertitre: '2 véhicules disponibles' },
         { fichesVehicule: { vehicules: [
-          { modele: 'RENAULT ZOE', version: 'Zoe Gris', prix: '8 290 €', bandeau: 'Éligible prime à la conversion', image: '/docs/renault-m5/fiche-zoe-8290.png', resume: 'Électrique - Zen - Automatique - 18 383 km - 2014', etat: 'Occasion', lieu: 'Paris Lefebvre', garantie: 'Garantie jusqu\u2019à 36 mois | Contrôle de 76 points | Assistance 24/24H | Satisfait ou remboursé | Contrôle gratuit après 1 mois',
+          { modele: 'RENAULT ZOE', version: 'Zoe Gris', prix: '8 290 €', bandeau: 'Éligible prime à la conversion', image: '/docs/renault-m5/fiche-zoe-8290.png', resume: 'Électrique - Zen - Automatique - 18 383 km - 2023', etat: 'Occasion', lieu: 'Paris Lefebvre', garantie: 'Garantie jusqu\u2019à 36 mois | Contrôle de 76 points | Assistance 24/24H | Satisfait ou remboursé | Contrôle gratuit après 1 mois',
             essentiel: [
               { label: 'Énergie', valeur: 'Électrique' }, { label: 'Places', valeur: '5' },
               { label: 'Puissance DIN', valeur: '88 cv' }, { label: 'Catégorie', valeur: 'Citadine' },
@@ -2461,7 +3971,7 @@ const RENAULT_M5: ContenuMission = {
             ],
             equipements: ['Régulateur limiteur de vitesse', 'Système de fixation ISOFIX', 'Aide au parking AR', 'Rétroviseurs extérieurs électriques dégivrants', 'Carte fonction "mains libres"', 'Allumage automatique des feux et des essuie-glaces', 'Climatisation automatique régulée', 'Navigation Carminat TomTom Z.E. Live', '6 Airbags frontaux et latéraux', 'ABS + AFU', 'Contrôle dynamique de trajectoire ESC', 'Lève-vitres AV électriques (impulsionnel conducteur) et AR', 'Radiosat Mid Classic + Son auditorium « 3D sound by Arkamys » 6HP', 'Condamnation centralisée des ouvrants', 'My Z.E. Connect with Navigation 36m', 'Condamnation automatique des ouvrants', 'R-Link + Carminat TomTom Z.E. Live', 'Lève-vitres AV électriques', 'Enjoliveurs Flexwheel 16" Ozedia'],
           },
-          { modele: 'RENAULT ZOE', version: 'Zoe Gris', prix: '7 900 €', bandeau: 'Éligible prime à la conversion', image: '/docs/renault-m5/fiche-zoe-7900.png', resume: 'Électrique - Life - Automatique - 50 218 km - 2015', etat: 'Occasion', lieu: 'Paris Lefebvre', garantie: 'Garantie jusqu\u2019à 36 mois | Contrôle de 76 points | Assistance 24/24H | Satisfait ou remboursé | Contrôle gratuit après 1 mois',
+          { modele: 'RENAULT ZOE', version: 'Zoe Gris', prix: '7 900 €', bandeau: 'Éligible prime à la conversion', image: '/docs/renault-m5/fiche-zoe-7900.png', resume: 'Électrique - Life - Automatique - 50 218 km - 2024', etat: 'Occasion', lieu: 'Paris Lefebvre', garantie: 'Garantie jusqu\u2019à 36 mois | Contrôle de 76 points | Assistance 24/24H | Satisfait ou remboursé | Contrôle gratuit après 1 mois',
             essentiel: [
               { label: 'Énergie', valeur: 'Électrique' }, { label: 'Places', valeur: '5' },
               { label: 'Puissance DIN', valeur: '88 cv' }, { label: 'Catégorie', valeur: 'Citadine' },
@@ -8441,8 +9951,8 @@ const FREE_M5: ContenuMission = {
         contexte: "Mme Vière vous transmet un document qu'elle a trouvé dans la presse spécialisée et vous demande de l'étudier.",
         questions: [
           { numero: 4, consigne: 'Trouvez un titre pour chaque étape du document.', ressources: "Lire le document 5, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz, puis répondez via le lien.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5a ; compléter l'annexe 5b.", annexeId: 'annexe5a', contexteAvant: "Free est très présent sur les réseaux sociaux. Votre tutrice vous a sélectionné un certain nombre de messages de clients mécontents et elle vous demande de leur répondre consciencieusement car trouver une solution efficace fait partie du processus de fidélisation." },
-          { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony, puis répondez via le lien.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6a ; compléter l'annexe 6b.", annexeId: 'annexe6a' },
+          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5.", annexeId: 'annexe5a', contexteAvant: "Free est très présent sur les réseaux sociaux. Votre tutrice vous a sélectionné un certain nombre de messages de clients mécontents et elle vous demande de leur répondre consciencieusement car trouver une solution efficace fait partie du processus de fidélisation." },
+          { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6.", annexeId: 'annexe6a' },
           { numero: 7, consigne: "Analysez la partie II du questionnaire « FREE ET VOUS » (Instagram) et indiquez à quelle étape du document 5 elle correspond. Justifiez.", ressources: "Lire le document 9, compléter l'annexe 7.", annexeId: 'annexe7' },
         ],
       },
@@ -8453,8 +9963,8 @@ const FREE_M5: ContenuMission = {
       { type: 'grille', id: 'annexe2b', titre: 'Annexe 2b — Transformation du nombre d\u2019avis en pourcentage', colonnes: ['Avis négatifs en % (calcul + résultat)', 'Avis positifs en % (calcul + résultat)'], nbLignes: 1 },
       { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Le calcul de votre rémunération', colonnes: ['Nature de la prime', 'Objectif fixé', 'Objectif d\u2019avis positifs réalisé', 'Tranche de % de la prime', 'Montant de la prime', 'Rémunération de base'], nbLignes: 2, prerempli: [['Prime sur objectif', '100 %', '', '', '', '1219 €'], ['Votre rémunération totale (calcul + résultat)', '', '', '', '', '']] },
       { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Titre de chaque étape', colonnes: ['Étape', 'Titre'], nbLignes: 3, prerempli: [['Étape 1', ''], ['Étape 2', ''], ['Étape 3', '']] },
-      { type: 'reponsereseau', id: 'annexe5a', titre: 'Annexe 5a — Réponse au Tweet de Trobairitz', plateforme: 'x', enReponseA: '@s_rhmzn', boutonLien: 'https://www.quiziniere.com/#/Exercice/785AE3', boutonLibelle: 'Annexe 5b — Répondre via Quizinière (QR Code / lien)' },
-      { type: 'reponsereseau', id: 'annexe6a', titre: 'Annexe 6a — Réponse au message Facebook d\u2019Anthony', plateforme: 'facebook', enReponseA: 'Anthony', boutonLien: 'https://www.quiziniere.com/#/Exercice/NW4G7X', boutonLibelle: 'Annexe 6b — Répondre via Quizinière (QR Code / lien)' },
+      { type: 'reponsereseau', id: 'annexe5a', titre: 'Annexe 5 — Réponse au Tweet de Trobairitz', plateforme: 'x', enReponseA: '@s_rhmzn' },
+      { type: 'reponsereseau', id: 'annexe6a', titre: 'Annexe 6 — Réponse au message Facebook d\u2019Anthony', plateforme: 'facebook', enReponseA: 'Anthony' },
       { type: 'grille', id: 'annexe7', titre: 'Annexe 7 — Analyse de la Partie II du questionnaire', colonnes: ['Étape du document 5', 'Justifications'], nbLignes: 1 },
     ],
   },
@@ -11510,43 +13020,86 @@ const PEUGEOT_M1: ContenuMission = {
     contexte:
       "Vous êtes en PFMP dans la concession Peugeot située dans le 17ème arrondissement. L'entreprise est spécialisée dans la vente de véhicules neufs, d'occasions et d'accessoires. L'enseigne a ouvert ses portes il y a 4 mois.\nVotre tuteur, M. Paul Auchon, est commercial à ConcessionCollet depuis l'ouverture.\nÉtant donné que vous allez passer 4 semaines dans l'entreprise, il vous a fait un planning des différents services que vous allez découvrir tout au long de la période. Il vous remet le planning dont vous prenez connaissance.\nC'est votre premier jour de PFMP à la concession et vous le passez avec le directeur, M. Collet. C'est à votre tour de poser des questions à votre tuteur pour comprendre tout ce que recouvre le terme concession automobile. Il vous donne des documents concernant le secteur de la concession automobile et il vous demande de les étudier.",
     videoContexte: 'https://drive.google.com/file/d/1ZH-c_bdwpqT-TSZH12RmW5S6rtAYwVUt/view',
+    planningContexte: {
+      titre: 'Le planning stagiaire — Du 04/02/202N au 29/04.202N',
+      jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+      semaines: [
+        { numero: '1', cases: [
+          {}, {}, {}, {}, {},
+          { jour: '1', weekend: true }, { jour: '2', weekend: true },
+        ] },
+        { numero: '2', cases: [
+          { jour: '3' },
+          { jour: '4', matin: 'Avec le directeur', apresMidi: 'Avec le directeur' },
+          { jour: '5', matin: 'Service juridique', apresMidi: 'Service juridique' },
+          { jour: '6', matin: 'Avec le directeur', apresMidi: 'Avec chef des vente' },
+          { jour: '7', matin: 'Avec son tuteur', apresMidi: 'Avec son tuteur' },
+          { jour: '8', weekend: true, matin: 'Avec son tuteur', apresMidi: 'Avec son tuteur' },
+          { jour: '9', weekend: true },
+        ] },
+        { numero: '3', cases: [
+          { jour: '10' },
+          { jour: '11', matin: 'Avec chef des ventes', apresMidi: 'Avec Marjorie' },
+          { jour: '12', matin: 'Avec Michel', apresMidi: 'Avec le Michel' },
+          { jour: '13', matin: 'Avec Michel', apresMidi: 'Avec le Michel' },
+          { jour: '14', matin: 'Avec son tuteur', apresMidi: 'Avec son tuteur' },
+          { jour: '15', weekend: true, matin: 'Avec son tuteur', apresMidi: 'Avec son tuteur' },
+          { jour: '16', weekend: true },
+        ] },
+        { numero: '4', cases: [
+          { jour: '17' },
+          { jour: '18', matin: 'Service commercial', apresMidi: 'Service commercial' },
+          { jour: '19', matin: 'Service commercial', apresMidi: 'Service commercial' },
+          { jour: '20', journee: "Avec l'ensemble des commerciaux" },
+          { jour: '21', journee: "Avec l'ensemble des commerciaux" },
+          { jour: '22', weekend: true, matin: 'Avec Marjorie', apresMidi: 'Avec Marjorie' },
+          { jour: '23', weekend: true },
+        ] },
+        { numero: '5', cases: [
+          { jour: '24' },
+          { jour: '25', matin: 'Service juridique', apresMidi: 'Service juridique' },
+          { jour: '26', matin: 'Service juridique', apresMidi: 'Service juridique' },
+          { jour: '27', matin: 'Avec son tuteur', apresMidi: 'Avec son tuteur' },
+          { jour: '28', matin: 'Avec le directeur', apresMidi: 'Avec le directeur' },
+          { jour: '29', weekend: true, matin: 'Avec le directeur', apresMidi: 'Avec le directeur' },
+          {},
+        ] },
+      ],
+    },
     documents: [
       { numero: 1, titre: 'Les chiffres sur les concessionnaires en France', texte: [
         { pageWeb: true },
-        { intertitre: '122,604 milliards d\u2019euros de chiffre d\u2019affaires' },
+        { intertitre: 'Les chiffres sur les concessionnaires en France' },
+        { intertitre: "122,604 milliards d\u2019euros de chiffre d\u2019affaires" },
         { paragraphes: [
-          "En 2020, le chiffre d'affaires des concessionnaires français approchait les 122,604 milliards d'euros. Le secteur compte notamment 54 966 entreprises, dont plus de 6 000 concessionnaires exerçant avec les constructeurs et près de 8 000 agents de marque. Ces derniers travaillent en collaboration avec les concessionnaires.",
-          "Si le chiffre d'affaires global est élevé, il est cependant inégal dans le détail puisque certains concessionnaires en enregistrent plus que d'autres. Au premier trimestre 2022, le groupe Parot arrive ainsi à faire 91 millions d'euros contre 87,4 millions d'euros l'année précédente sur la même période.",
+          "En 2020, le chiffre d\u2019affaires des concessionnaires français approchait les 122,604 milliards d\u2019euros. Le secteur compte notamment 54 966 entreprises, dont plus de 6 000 concessionnaires exerçant avec les constructeurs et près de 8 000 agents de marque. Ces derniers travaillent en collaboration avec les concessionnaires.",
+          "Si le chiffre d\u2019affaires global est élevé, il est cependant inégal dans le détail puisque certains concessionnaires en enregistrent plus que d\u2019autres. Au premier trimestre 2022, le groupe Parot arrive ainsi à faire 91 millions d\u2019euros contre 87,4 millions d\u2019euros l\u2019année précédente sur la même période.",
         ] },
         { intertitre: '13 536 points de vente de marques automobiles en France' },
         { paragraphes: [
-          "Sur la base des données communiquées par les constructeurs et les concessionnaires, L'Argus affirme qu'il y a eu une baisse du nombre total de points de vente auto. Avec les réseaux de distribution des principales marques, on comptait ainsi en janvier 2021, 13 536 points de vente de marques automobiles en France, soit une baisse de 168 sites par rapport à l'année précédente.",
-          "Il est important de rappeler que certaines concessionnaires abritent parfois plusieurs marques. Aussi, le nombre de points de vente peut ne pas correspondre à 100 % au nombre de sites implantés sur tout le territoire. La baisse concerne surtout les agents de marque et les succursales des constructeurs qui ont perdu 36 sites en 2020 au profit d'opérateurs privés. Le nombre de concessions détenues par les grands groupes de distribution a, quant à lui, augmenté de 54 en 2020.",
+          "Sur la base des données communiquées par les constructeurs et les concessionnaires, L\u2019Argus affirme qu\u2019il y a eu une baisse du nombre total de points de vente auto. Avec les réseaux de distribution des principales marques, on comptait ainsi en janvier 2021, 13 536 points de vente de marques automobiles en France, soit une baisse de 168 sites par rapport à l\u2019année précédente.",
+          "Il est important de rappeler que certaines concessionnaires abritent parfois plusieurs marques. Aussi, le nombre de points de vente peut ne pas correspondre à 100 % au nombre de sites implantés sur tout le territoire. La baisse concerne surtout les agents de marque et les succursales des constructeurs qui ont perdu 36 sites en 2020 au profit d\u2019opérateurs privés. Le nombre de concessions détenues par les grands groupes de distribution a, quant à lui, augmenté de 54 en 2020.",
         ] },
         { intertitre: '1,66 million de véhicules particuliers neufs vendus' },
         { paragraphes: [
-          "Selon les chiffres communiqués par la PFA, l'année 2021 n'a pas été mirobolante pour le marché des automobiles. Sur l'année, 1,66 million de véhicules particuliers neufs ont été vendus, soit une hausse de 0,54 % par rapport à l'année précédente. Dans le détail, cela représente 9 000 voitures supplémentaires vendues par rapport à 2020.",
-          "Comparés aux chiffres de vente de 2019, ceux de 2021 ne sont toutefois pas très reluisants puisqu'on enregistre une baisse des ventes de près de 25 %. En ce qui concerne les voitures électriques, il semblerait que les Français soient de plus en plus intéressés. En 2021, elles ont en effet réussi à atteindre une part de marché de plus de 10 % sur les voitures particulières neuves vendues sur le territoire.",
+          "Selon les chiffres communiqués par la PFA, l\u2019année 2021 n\u2019a pas été mirobolante pour le marché des automobiles. Sur l\u2019année, 1,66 million de véhicules particuliers neufs ont été vendus, soit une hausse de 0,54 % par rapport à l\u2019année précédente. Dans le détail, cela représente 9000 voitures supplémentaires vendues par rapport à 2020.",
+          "Comparés aux chiffres de vente de 2019, ceux de 2021 ne sont toutefois pas très reluisants puisqu\u2019on enregistre une baisse des ventes de près de 25 %. En ce qui concerne les voitures électriques, il semblerait que les Français soient de plus en plus intéressés. En 2021, elles ont en effet réussi à atteindre une part de marché de plus de 10 % sur les voitures particulières neuves vendues sur le territoire.",
         ] },
         { intertitre: 'Une part de marché de 13 % pour l\u2019électrique' },
         { paragraphes: [
-          "En 2022, les voitures électriques confirment leur succès en captant 13 % de parts de marché, soit tout autant que le diesel. En effet, ce dernier a perdu des points en 2022 et peine à atteindre les 14 % en termes de part de marché. L'hybride affiche également une baisse notable de 9 % tandis que les voitures fonctionnant avec des carburants alternatifs comme le GPL et le bioéthanol (6 % des immatriculations) semblent tenir le cap. Elles enregistrent en effet une hausse de près de 152 %.",
-          "2022 voit par ailleurs un recul du nombre d'achats de voitures de la part des entreprises. Le marché des utilitaires accuse en effet une baisse de 28,60 % en mars et comptait ainsi seulement 34 055 immatriculations. Enfin, le marché de l'occasion affiche aussi une baisse de 14,3 % en mars avec 506 222 immatriculations enregistrées.",
+          "En 2022, les voitures électriques confirment leur succès en captant 13 % de parts de marché, soit tout autant que le diesel. En effet, ce dernier a perdu des points en 2022 et peine à atteindre les 14 % en termes de part de marché. L\u2019hybride affiche également une baisse notable de 9 % tandis que les voitures fonctionnant avec des carburants alternatifs comme le GPL et le bioéthanol (6 % des immatriculations) semblent tenir le cap. Elles enregistrent en effet une hausse de près de 152 %.",
+          "2022 voit par ailleurs un recul du nombre d\u2019achats de voitures de la part des entreprises. Le marché des utilitaires accuse en effet une baisse de 28,60 % en mars et comptait ainsi seulement 34 055 immatriculations. Enfin, le marché de l\u2019occasion affiche aussi une baisse de 14,3 % en mars avec 506 222 immatriculations enregistrées.",
         ] },
-        { image: { src: '/docs/peugeot-m1/chiffres-concessionnaires.png', alt: 'Les chiffres sur les concessionnaires en France (page internet).', legende: 'Les chiffres sur les concessionnaires en France.' } },
       ] },
-      { numero: 2, titre: 'Les explications du directeur M. Collet', texte: [
+      { numero: 2, titre: 'Les explications du directeur M. COLLET', texte: [
         { pageWeb: true },
-        { intertitre: "Qu'est-ce qu'une concession automobile ?" },
-        { paragraphes: [
-          "Une concession automobile est une entreprise qui vend des véhicules neufs ou d'occasion. C'est un point de vente qui a signé un contrat avec une marque (le constructeur) pour distribuer ses véhicules et assurer le service après-vente.",
-        ] },
-        { intertitre: 'Les particularités du contrat de concession' },
-        { puces: [
-          "La durée : on décide de la durée pendant laquelle je pourrai vendre mes véhicules (10, 15, 20 ans…).",
-          "La zone géographique : chaque concessionnaire est affecté à une zone géographique.",
-          "L'engagement d'approvisionnement : je me suis engagé à me fournir chez la marque.",
-        ] },
+        { dialogue: [
+          { locuteur: 'M. COLLET, directeur', texte: "Comme tu le sais déjà, une concession automobile vend des véhicules. Mais le concessionnaire ne vend pas n\u2019importe quelles voitures, il vend celles de la marque avec qui il a signé un contrat, c\u2019est-à-dire le concédant. La majorité des véhicules vendus dans une concession sont neufs et achetés directement auprès de l\u2019enseigne qui les fabrique. Mais la plupart des concessionnaires ont également quelques activités annexes comme la vente de véhicules d\u2019occasion et le service après-vente (vente de pièces, entretien des véhicules...).", italique: true },
+          { texte: "Quand je suis devenu concessionnaire automobile, j\u2019ai signé ce qu\u2019on appelle un contrat de concession avec le fabricant. Dans ce contrat avec la marque nous avons décidé de la durée pendant laquelle je pourrais vendre mes véhicules (10 ans, 15 ans, 20 ans...). Une fois que la durée sera passée je ne peux pas être sûr que le contrat sera reconduit.", italique: true },
+          { texte: "Mais les limites ne sont pas seulement temporelles. En effet, chaque concessionnaire est affecté à une zone géographique bien définie. Mais à ce niveau-là la limite est plutôt un avantage pour le concessionnaire puisqu\u2019elle m\u2019assure l\u2019exclusivité de la vente des véhicules de la marque sur tout un secteur tel qu\u2019un groupe d\u2019arrondissement, une ville...", italique: true },
+          { texte: "C\u2019est pour cela que je me suis assuré que ma concession automobile ne risquait pas de voir une autre entreprise qui vend des véhicules de la même marque que moi s\u2019implanter à côté de chez ma concession.", italique: true },
+          { texte: "Enfin, et même si cela peut paraître logique, je me suis engagé à me fournir chez la marque.", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/1ZH-c_bdwpqT-TSZH12RmW5S6rtAYwVUt/view' },
       ] },
     ],
     objectifs: [
@@ -11827,13 +13380,39 @@ const PEUGEOT_M2: ContenuMission = {
     documents: [
       { numero: 1, titre: "Les règles à respecter en matière d'achat / vente de véhicules", texte: [
         { pageWeb: true },
-        { livreOuvert: { titre: "Les règles à respecter en matière d'achat / vente de véhicules", pages: [
-          { titre: 'Règle 1 — L\u2019investissement de départ', paragraphes: ["Pour démarrer une concession, je prévois un investissement de départ compris entre 100 000 € et 500 000 €, voire plus."] },
-          { titre: 'Règle 2 — L\u2019inscription', paragraphes: ["Je dois faire une demande d'inscription sur le registre des vendeurs mobiliers auprès de la préfecture."] },
-          { titre: 'Règle 3 — L\u2019assurance', paragraphes: ["Je dois souscrire une assurance responsabilité professionnelle spécifique à l'activité de négociation automobile (assurance du parc de véhicules)."] },
-          { titre: 'Règle 4 — La trésorerie', paragraphes: ["Je prévois également 2 000 € à 3 000 € de trésorerie pour mes charges fixes et mon local (en cas de besoin)."] },
-          { titre: 'Règle 5 — Le diplôme', paragraphes: ["Je n'ai pas à justifier de diplôme ou de certification professionnelle pour exercer cette activité."] },
-          { titre: 'Le livre de police', paragraphes: ["J'ai l'obligation d'avoir un livre de police qui permet d'enregistrer les achats et les ventes de la concession."] },
+        { livreOuvert: {
+          titre: "Les règles à respecter en matière d'achat / vente de véhicules",
+          audioLien: 'https://drive.google.com/file/d/1OR3S3ALmGQhRbAGL8NoVffdVWNuUfEec/view',
+          pages: [
+          { rubriques: [
+            { titre: "1. Où déclarer l'activité d'achat/vente de véhicules", puces: [
+              { texte: "Je dois m\u2019immatriculer auprès du portail de l\u2019INPI" },
+            ] },
+            { titre: '2. Diplômes ou certifications requis pour créer son entreprise', puces: [
+              { texte: "Je n\u2019ai pas à justifier de diplôme ou de certification professionnelle pour exercer cette activité." },
+            ] },
+            { titre: '3. Réglementation et obligations spécifiques', puces: [
+              { texte: "Je dois faire une demande d\u2019inscription sur le registre des revendeurs mobiliers auprès de la préfecture" },
+              { texte: "En tant que vendeur, j\u2019ai des obligations à respecter :", sous: [
+                "Je dois mettre les mentions obligatoires sur l'étiquetage du véhicule et sur le document de vente",
+                "J\u2019ai l\u2019obligation d\u2019établir un certificat de cession de véhicule en trois exemplaires.",
+                "J\u2019ai l\u2019obligation d\u2019avoir un livre de police qui permet d\u2019enregistrer les achats et les ventes de la concession.",
+                "Je suis responsable de la conformité du véhicule vendu et du fait qu\u2019il ne comporte aucun \u201Cvice caché\u201D.",
+              ] },
+            ] },
+          ] },
+          { rubriques: [
+            { titre: "4. Assurances obligatoires pour l'achat vente de véhicules", puces: [
+              { texte: "En tant que professionnel, je dois assurer tous les véhicules dont je fais l\u2019acquisition, même en attendant qu\u2019ils soient vendus. Je dois donc souscrire à une assurance auto." },
+              { texte: "Je dois souscrire à une assurance responsabilité professionnel spécifique à l\u2019activité de négociation auto (assurance du parc de véhicules)." },
+              { texte: "Si mon activité nécessite un local, je souscris à une assurance multirisque professionnelle avec local." },
+              { texte: "Étant donné les risques en matière de vices cachés c\u2019est-à-dire des défauts du véhicule que l\u2019acheteur ne constate qu\u2019après l\u2019achat), je souscris à une assurance protection juridique." },
+            ] },
+            { titre: '5. Investissements de départ à prévoir', puces: [
+              { texte: "Pour pouvoir constituer mon 1er stock de voitures, je prévois un investissement de départ compris entre 100 000€ à 500 000€, voire plus." },
+              { texte: "Je prévois également 2 000€ à 3 000€ de trésorerie pour mes charges fixes et mon local (en cas de besoin)." },
+            ] },
+          ] },
         ] } },
       ] },
     ],
@@ -12024,8 +13603,15 @@ const PEUGEOT_M3: ContenuMission = {
         { pageWeb: true },
         { paragraphes: ['Le commercial automobile VN-VO (VN : véhicules neufs et VO : véhicules d\u2019occasion).'] },
         { bulle: { nom: 'Paul', role: 'Commercial VN-VO (votre tuteur)', initiale: 'P', couleurAvatar: '#1565C0', videoLien: 'https://drive.google.com/file/d/1L1-GFEG-K54CsR866VtJh2eapgbUzOBG/view', lignes: [
-          "Dans le secteur de la vente automobile, les recrutements sont nombreux, et le métier peut donc être très rémunérateur.",
-          "En revanche, les horaires sont irréguliers et les week-ends et jours fériés peuvent être travaillés. L'atteinte des objectifs peut aussi entraîner du stress.",
+          "\u00AB Je n\u2019ai pas beaucoup de temps mais je dirai que les plus sont :",
+          "- Que dans le secteur de la vente automobile les recrutements sont nombreux ;",
+          "- Que gr\u00E2ce aux nouvelles technologies, et notamment \u00E0 la digitalisation des m\u00E9tiers, la profession fait face \u00E0 de nouveaux d\u00E9fis et doit se r\u00E9inventer. En somme, elle offre un cadre de travail dynamique ;",
+          "- Et que comme partout ailleurs, la r\u00E9mun\u00E9ration comporte une partie variable et une commission sur les objectifs de ventes. Le m\u00E9tier peut donc \u00EAtre tr\u00E8s r\u00E9mun\u00E9rateur.",
+          "Mais il y a aussi des moins et il faut le savoir.",
+          "- Les horaires sont irr\u00E9guliers et les week-ends et jours f\u00E9ri\u00E9s peuvent \u00EAtre travaill\u00E9s ;",
+          "- Une certaine pression au travail peut \u00E9maner du rythme intense \u00E9prouv\u00E9 dans le secteur de la vente. L'atteinte des objectifs peut entrainer du stress ;",
+          "- Les r\u00E9sultats sont tr\u00E8s al\u00E9atoires ce qui peut cr\u00E9er des frustrations.",
+          "On continue cette conversation plus tard ! \u00BB",
         ] } },
       ] },
     ],
@@ -12512,61 +14098,213 @@ const PEUGEOT_M5: ContenuMission = {
     documents: [
       { numero: 1, titre: 'C.V. 1 — Mme MARCIA', texte: [
         { pageWeb: true },
-        { paragraphes: ['Consultez le CV de la candidate directement dans l\u2019outil de recrutement.'] },
-        { image: { src: '/docs/peugeot-m5/cv1-marcia.png', alt: 'CV 1 — Mme Marcia (BTS NDRC, 3 ans d\u2019expérience, centre d\u2019intérêt sports mécaniques).', legende: 'C.V. 1 — Mme Marcia' } },
+        { cvVisuel: {
+          couleur: '#9B3B25',
+          nom: 'MARCIA HELLOWORK',
+          titrePoste: 'Vendeur automobile',
+          infos: ['marcia@hellowork.com', '06XXXXXXXX', '2 rue de la Mabilais 35000 Rennes', '32 ans', 'Permis B'],
+          aPropos: { titre: 'À propos', texte: "Passionnée de l'automobile depuis toujours, je suis à la recherche d'un poste de vendeur automobile pour partager mon expertise et conseiller au mieux les clients." },
+          sections: [
+            { titre: 'Expériences', entrees: [
+              { intitule: 'VENDEUR AUTOMOBILE - ENTREPRISE ANONYME - LYON', date: '2018-01 - 2021-06', puces: [
+                'Conseiller les clients sur les différents modèles et options disponibles',
+                'Négocier les prix et les conditions de vente',
+                'Assurer le suivi des clients et leur satisfaction après-vente',
+              ] },
+              { intitule: 'ASSISTANT COMMERCIAL - ENTREPRISE ANONYME - PARIS', date: '2016-09 - 2017-12', puces: [
+                'Assister les commerciaux dans la gestion des dossiers clients',
+                'Réaliser des devis et des présentations commerciales',
+                'Organiser des événements clients',
+              ] },
+              { intitule: 'STAGIAIRE VENDEUR AUTOMOBILE - ENTREPRISE ANONYME - MARSEILLE', date: '2015-06 - 2015-08', puces: [
+                'Assister les vendeurs dans la prospection et la prise de rendez-vous',
+                'Accueillir et renseigner les clients en showroom',
+                'Participer aux essais routiers',
+              ] },
+            ] },
+            { titre: 'Études diplômes', entrees: [
+              { intitule: 'BTS NÉGOCIATION ET RELATION CLIENT - LYON', date: 'OBTENU EN 2016-09', puces: [
+                'Maîtrise des techniques de vente et de négociation',
+                'Gestion de la relation client',
+                'Management commercial',
+              ] },
+              { intitule: 'BACCALAUREAT VENTE', date: 'OBTENU EN 2014-06', puces: ['Prospection', 'Négociation'] },
+            ] },
+          ],
+          competences: [
+            { libelle: 'NÉGOCIATION COMMERCIALE', niveau: 85 },
+            { libelle: 'CONNAISSANCE DES PRODUITS AUTOMOBILES', niveau: 65 },
+            { libelle: 'GESTION DE LA RELATION CLIENT', niveau: 70 },
+            { libelle: 'PROSPECTION COMMERCIALE', niveau: 55 },
+            { libelle: 'MAÎTRISE DES OUTILS INFORMATIQUES', niveau: 35 },
+          ],
+          langues: [ { libelle: 'ANGLAIS', niveau: 60 }, { libelle: 'ESPAGNOL', niveau: 45 } ],
+          interets: ['Sports mécaniques', 'Voyages', 'Cuisine', 'Photographie', 'Cinéma'],
+        } },
       ] },
       { numero: 2, titre: 'C.V. 2 — M. MARTIN', texte: [
         { pageWeb: true },
-        { image: { src: '/docs/peugeot-m5/cv2-martin.png', alt: 'CV 2 — M. Martin (licence, 5 ans d\u2019expérience).', legende: 'C.V. 2 — M. Martin' } },
+        { cvVisuel: {
+          couleur: '#2E6CB0',
+          nom: 'GABRIEL MARTIN',
+          titrePoste: 'VENDEUR AUTOMOBILE',
+          infos: ['ADRESSE : 56 rue de Paris, 44000 Nantes', 'E-MAIL : example@gmail.com', 'TELEPHONE : 06 01 02 03 04', 'DATE DE NAISSANCE : 24/05/1995'],
+          aPropos: { titre: 'À propos de moi', texte: "Focalisé sur la bonne relation client et la fidélisation, je maîtrise différents techniques et stratégies de vente qui ont démontré efficacité qui permettent d'offrir un service compétitif et complet. Vendeur automobile avec expérience confirmée et pluriannuelle dans la vente et le conseil. D'un caractère sociable, j'affectionne le travail en équipe et j'apprécie le contact avec la clientèle. Je dispose d'une complète autonomie en ce que concerne les démarches administratives." },
+          sections: [
+            { titre: 'Expériences professionnelles', entrees: [
+              { intitule: 'VENDEUR DE VOITURES À GARAGE VICTOR HUGO - HONDA, 44000 NANTES', date: 'Juin 2017 à ce jour', puces: [
+                'Recueillir et analyser les données des clients et du marché',
+                'Inspecter et grandir la qualité des modèles exposés',
+                'Maintenir et renforcer les relations avec la clientèle',
+                'Effectuer régulièrement une analyse de la performance des ventes',
+              ] },
+              { intitule: 'VENDEUR DE VOITURES À DISTINXION PARIDIS - 44000 NANTES', date: 'Mars 2014 - Mars 2017', puces: [
+                'Recommander plusieurs modèles aux clients en coordination avec leurs désirs',
+                "Effectuer des démonstration des automobiles incluant des séances d'information sur les caractéristiques et les capacités",
+                'Permettre aux clients de faire des essais et leur expliquer les services et garanties',
+              ] },
+              { intitule: "VENDEUR DE VOITURES À GARAGE DE L'ABBAYE - 44000 NANTES", date: 'Juillet 2012 - Janvier 2014', puces: [
+                'Traiter les objections et questions des clients de manière à assurer les clôtures de vente',
+                'Maintenir et renforcer les relations avec la clientèle',
+              ] },
+            ] },
+            { titre: 'Formations', entrees: [
+              { intitule: 'LICENCE PROFESSIONNELLE EN COMMERCE INTERNATIONAL', lieu: 'NANTES (E.N.C NANTES)', date: '2010 - 2011' },
+              { intitule: 'DIPLÔMÉ D\u2019UN BTS NÉGOCIATION ET RELATION CLIENT', lieu: 'LYCÉE GUSTAVE EIFFEL À BORDEAUX', date: '2009 - 2010' },
+              { intitule: 'BACCALAURÉAT SCIENTIFIQUE — FILIÈRE GÉNÉRALE', lieu: 'LYCÉE GUSTAVE EIFFEL, GIRONDE', date: '2008 - 2009' },
+            ] },
+          ],
+          competences: [
+            { libelle: 'Vaste expérience des ventes automobiles', niveau: 90 },
+            { libelle: 'Bonne compréhension des procédures et pratiques de bureau', niveau: 75 },
+            { libelle: 'Excellente maîtrise de Microsoft Office', niveau: 80 },
+            { libelle: 'Hautes compétences en communication écrite et orale', niveau: 85 },
+            { libelle: 'Compétences dans la résolution des problèmes et service à la clientèle', niveau: 80 },
+          ],
+        } },
       ] },
       { numero: 3, titre: 'C.V. 3 — Mme Aurore BADI', texte: [
         { pageWeb: true },
-        { image: { src: '/docs/peugeot-m5/cv3-badi.jpg', alt: 'CV 3 — Mme Aurore Badi (profil atypique, actuellement vendeuse).', legende: 'C.V. 3 — Mme Aurore Badi' } },
+        { cvVisuel: {
+          couleur: '#3D3355',
+          nom: 'Aurore BADI',
+          titrePoste: 'VENDEUSE',
+          infos: ['aurore.badi@gmail.com', '+33 06 01 03 05 07', 'Adresse', 'LinkedIn'],
+          aPropos: { titre: 'Profil', texte: "Vendeuse experte en merchandising. Expérience accrue en gestion de stock et en conseil clientèle. Je suis passionnée par mon métier et suis actuellement à la recherche d'une expérience nouvelle. Je suis disponible si vous souhaitez organiser un entretien." },
+          sections: [
+            { titre: 'Expériences', entrees: [
+              { intitule: 'CONSEILLÈRE DE VENTE', lieu: 'CHRISTIAN DIOR | Paris', date: '09 / 2022 - Présent', puces: [
+                'Accueil et conseil clientèle. Opérations de fidélisation.',
+                'Gestion et inventaires des stocks.',
+              ] },
+              { intitule: 'CONSEILLÈRE DE VENTE', lieu: 'DR MARTENS | Paris', date: '09 / 2021 - 07 / 2022', puces: [
+                'Service clientèle haute gamme.',
+                "Respect de l'image de marque.",
+                'Encaissements, gestion des stocks.',
+                'Suivi des procédures opérationnelles, et des horaires.',
+              ] },
+              { intitule: 'CONSEILLÈRE DE VENTE', lieu: 'SEPHORA | Paris', date: '09 / 2021 - 07 / 2022', puces: [
+                "Service et accueil des clients dans le respect de l'image de marque de SEPHORA.",
+                'Conseil et fidélisation des clients. Encaissement et gestion des stocks.',
+              ] },
+            ] },
+            { titre: 'Formation', entrees: [
+              { intitule: 'BTS Management Commercial Opérationnel', lieu: 'IUT Jean Moulin, Paris', date: '09 / 2022 - 06 / 2022' },
+              { intitule: 'BAC PRO Commerce et Vente', lieu: 'Lycée Professionnel Pierre Lescot', date: '09 / 2021 - 07 / 2022' },
+            ] },
+          ],
+          competences: [
+            { libelle: 'Communication', niveau: 70 },
+            { libelle: 'Contact client', niveau: 80 },
+            { libelle: 'Merchandising', niveau: 90 },
+          ],
+          langues: [
+            { libelle: 'Espagnol', mention: 'Débutant' },
+            { libelle: 'Anglais', mention: 'Courant' },
+            { libelle: 'Allemand', mention: 'Bilingue' },
+          ],
+        } },
       ] },
       { numero: 4, titre: 'La féminisation du métier de commercial automobile', texte: [
         { pageWeb: true },
-        { image: { src: '/docs/peugeot-m5/anfa-couverture.png', alt: 'Autofocus n°88 — La mixité femmes/hommes dans la branche des services de l\u2019automobile (ANFA, février 2021).', legende: 'Autofocus n°88 (ANFA, février 2021) — La mixité femmes/hommes dans la branche des services de l\u2019automobile.' } },
-        { intertitre: 'La mixité femmes / hommes dans la branche des services de l\u2019automobile' },
+        { intertitre: 'Autofocus n°88 — Février 2021 — Observatoire des métiers des services de l\u2019automobile (ANFA)' },
+        { intertitre: 'La mixité femmes/hommes dans la branche des services de l\u2019automobile' },
         { paragraphes: [
-          "Ce document décrit les spécificités des métiers par genre au sein de la branche des services de l'automobile, aussi bien au niveau de l'emploi, du recrutement que de la formation et de l'insertion professionnelle. Traditionnellement masculins, les métiers de l'automobile interrogent la place des femmes, leur posture et leur intégration parmi ces professions.",
+          "Ce document décrit les spécificités des métiers par genre au sein de la branche des services de l\u2019automobile, aussi bien au niveau de l\u2019emploi, du recrutement que de la formation et de l\u2019insertion professionnelle. Traditionnellement masculins, les métiers de l\u2019automobile interrogent la place des femmes, leur posture et leur intégration parmi ces professions.",
         ] },
         { intertitre: 'Données générales' },
+        { chiffresCles: { items: [
+          { valeur: '107 600', libelle: 'femmes actives, salariées ou indépendantes, au sein de la branche' },
+          { valeur: '22,7 %', libelle: "des salariés de la branche sont des femmes" },
+          { valeur: '402 969', libelle: 'hommes en emploi au sein de la branche' },
+          { valeur: '48,4 %', libelle: 'des salariés des écoles de conduite et du commerce de détail de carburants sont des femmes' },
+        ] } },
         { paragraphes: [
-          "Plus de 107 600 femmes actives, salariées ou indépendantes, au sein de la branche (source : ANFA). Sur l'ensemble de la branche, les femmes représentent 22,7 % des emplois salariés, soit 95 400 personnes. À ce chiffre, il convient d'ajouter les emplois féminins non-salariés (principalement des artisans-commerçants) qui sont au nombre de 12 200. Soit 107 600 emplois féminins au total.",
-          "402 969 hommes sont en emploi au sein de la branche.",
+          "Sur l\u2019ensemble de la branche, les femmes représentent 22,7 % des emplois salariés, soit 95 400 personnes. À ce chiffre, il convient d\u2019ajouter les emplois féminins non-salariés (principalement des artisans-commerçants) qui sont au nombre de 12 200. Soit 107 600 emplois féminins au total.",
         ] },
         { intertitre: 'Répartition des salariés par genre, selon le secteur d\u2019activité' },
-        { tableau: { colonnes: ['Secteur', 'Hommes', 'Femmes', 'Effectif'], lignes: [
-          ['Commerce automobile', '80,0 %', '20,0 %', '155 782'],
-          ['Réparation automobile', '81,4 %', '18,6 %', '116 838'],
-          ['Commerce et réparation de véhicules industriels', '83,9 %', '16,1 %', '26 058'],
-          ["Commerce de détail d'équipements automobiles", '82,3 %', '17,7 %', '28 631'],
-          ['Commerce de détail de carburants', '51,6 %', '48,4 %', '16 997'],
-          ['Contrôle technique', '85,6 %', '14,4 %', '11 874'],
-          ['Écoles de conduite', '51,6 %', '48,4 %', '24 862'],
-          ['TOTAL', '77,3 %', '22,7 %', '420 421'],
-        ] } },
-        { intertitre: 'Répartition des salariés par genre, selon le métier' },
-        { tableau: { colonnes: ['Métier', 'Hommes', 'Femmes'], lignes: [
-          ['Mécaniciens', '99,1 %', '0,9 %'],
-          ['Carrossiers / Peintres', '99,2 %', '0,8 %'],
-          ['Agents de maîtrise maintenance', '97,6 %', '2,4 %'],
-          ['Magasiniers', '90,7 %', '9,3 %'],
-          ['Vendeurs / Chefs des ventes auto', '77,3 %', '22,7 %'],
-          ['Enseignants de la conduite', '57,7 %', '42,3 %'],
-          ['Secrétaires (y c. comptables et administratives)', '11,8 %', '88,2 %'],
-          ['Gérants station-service', '43,7 %', '56,3 %'],
-        ] } },
+        { tableau: {
+          colonnes: ["Secteur d'activité", 'Hommes', 'Femmes', 'Effectif'],
+          lignes: [
+            ['Commerce automobile', '80,0 %', '20,0 %', '155 782'],
+            ['Réparation automobile', '81,4 %', '18,6 %', '116 838'],
+            ['Commerce et réparation de véhicules industriels', '83,9 %', '16,1 %', '26 058'],
+            ["Commerce de détail d'équipements automobiles", '82,3 %', '17,7 %', '28 631'],
+            ['Commerce de détail de carburants', '51,6 %', '48,4 %', '16 997'],
+            ['Commerce et réparation de motocycles', '80,9 %', '19,1 %', '11 815'],
+            ['Commerce et réparation de cycles', '82,3 %', '17,7 %', '1 929'],
+            ['Contrôle technique', '85,6 %', '14,4 %', '11 874'],
+            ['Écoles de conduite', '51,6 %', '48,4 %', '24 862'],
+            ['Location courte durée', '64,0 %', '36,0 %', '13 092'],
+            ['Location longue durée', '54,4 %', '45,6 %', '4 055'],
+            ['Démolisseurs-recycleurs', '81,7 %', '18,3 %', '3 007'],
+            ['Parcs de stationnement', '72,8 %', '27,2 %', '5 481'],
+            ['TOTAL', '77,3 %', '22,7 %', '420 421'],
+          ],
+        } },
         { paragraphes: [
-          "La part des femmes dans les métiers de la vente est passée de 17,4 % en 2007 à 22,7 % en 2017. À volume global constant, le nombre de femmes a progressé de 40 % en 10 ans (de 7 300 à 9 600 entre 2007 et 2017), alors que le nombre d'hommes exerçant le métier de vendeur a baissé (−1 900 sur la même période).",
+          "Cette répartition est variable selon le secteur d\u2019activité. Des secteurs comme l\u2019enseignement de la conduite et le commerce de détail de carburants emploient autant de femmes que d\u2019hommes. D\u2019autres, comme le contrôle technique ou le véhicule industriel, ont en revanche une part de femmes relativement faible au sein de leurs effectifs salariés.",
+          "En termes de volume, le secteur qui emploie le plus de femmes est celui du commerce automobile (31 156). Les secteurs du commerce et de la réparation automobile, qui constituent le cœur de la branche, concentrent deux tiers des salariés masculins contre seulement 55 % des salariés féminins du secteur.",
+        ] },
+        { intertitre: 'Répartition des salariés par genre, selon le métier' },
+        { paragraphes: [
+          "Des métiers fortement genrés, mais des situations contractuelles homogènes avec plus de 90 % des salariés en CDI.",
+        ] },
+        { tableau: {
+          colonnes: ['Métiers', 'Hommes', 'Femmes'],
+          lignes: [
+            ['Mécaniciens', '99,1 %', '0,9 %'],
+            ['Carrossiers / Peintres', '99,2 %', '0,8 %'],
+            ['Agents de maîtrise maintenance', '97,6 %', '2,4 %'],
+            ['Magasiniers', '90,7 %', '9,3 %'],
+            ['Vendeurs / Chefs des ventes auto', '77,3 %', '22,7 %'],
+            ['Enseignants de la conduite', '57,7 %', '42,3 %'],
+            ['Secrétaires (y c. comptables et administratives)', '11,8 %', '88,2 %'],
+            ['Gérants station-service', '43,7 %', '56,3 %'],
+          ],
+        } },
+        { paragraphes: [
+          "La répartition des hommes et des femmes salariés par métier apparaît relativement hétérogène : les hommes sont surreprésentés dans les métiers techniques, au détriment des femmes dont la part se situe entre 1 et 2 % dans les métiers de la mécanique ou de la carrosserie. Celles-ci sont davantage présentes dans les métiers de service tels que la vente (22,7 %) ou l\u2019enseignement de la conduite (42,3 %), et dans les métiers de la gestion et de l\u2019administration (88,2 % des secrétaires de la branche sont des femmes).",
+          "La part des femmes dans les métiers de la vente est passée de 17,4 % en 2007 à 22,7 % en 2017. À volume global constant (hommes/femmes), le nombre de femmes a progressé de 40 % en 10 ans (de 7 300 à 9 600 entre 2007 et 2017), alors que le nombre d\u2019hommes exerçant le métier de vendeur a baissé (-1 900 sur la même période).",
+          "Source : ACOSS 2019, INSEE DADS 2016, INSEE RGP 2017, IRPAUTO 2018.",
         ] },
       ] },
       { numero: 5, titre: 'Méthodologie pour la rédaction de la note', texte: [
         { pageWeb: true },
-        { bulle: { nom: 'Marjorie', role: 'Commerciale', initiale: 'M', couleurAvatar: '#0A6C4E', videoLien: 'https://drive.google.com/file/d/1B59s9wkFml51yXl1s50QelL3-pxBm3fd/view', lignes: [
-          "Pour rédiger une note professionnelle, respecte la méthode « D.A.D.O. » : indique d'abord De (l'expéditeur), À (le destinataire), la Date et l'Objet.",
-          "Ensuite, rédige le corps : va à l'essentiel, présente les informations chiffrées, puis conclus. Termine par ta signature (nom de l'élève stagiaire).",
-        ] } },
+        { intertitre: 'Pour rédiger une note on utilise la méthode D.A.D.O.' },
+        { audioLien: 'https://drive.google.com/file/d/1B59s9wkFml51yXl1s50QelL3-pxBm3fd/view' },
+        { paragraphes: ["L\u2019en-t\u00EAte de la note :"] },
+        { puces: [
+          "D. de : le nom de celui qui r\u00E9dige",
+          "A. \u00E0 : la ville de r\u00E9daction",
+          "D. date : la date de r\u00E9daction",
+          "O. objet : le th\u00E8me de la r\u00E9daction",
+        ] },
+        { paragraphes: [
+          "Le corps de la note :",
+          "R\u00E9diger sous la forme de paragraphes",
+          "Nom et fonction de celui qui a r\u00E9dig\u00E9 la note",
+        ] },
       ] },
     ],
     objectifs: [
@@ -12752,7 +14490,6586 @@ const PEUGEOT_M5: ContenuMission = {
 }
 
 // ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 6 - La remuneration du commercial
+// ---------------------------------------------------------------------------
+const PEUGEOT_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Comprenez comment se compose la rémunération d'un commercial automobile, puis calculez son salaire selon les quatre systèmes de rémunération à partir des formules et des cas concrets fournis par Michel.",
+    contexte:
+      "Le métier de commercial automobile commence de plus en plus à vous plaire et vous souhaitez donc connaître les salaires pratiqués dans la profession.",
+    documents: [
+      { numero: 1, titre: 'Les explications de Michel', texte: [
+        { pageWeb: true },
+        { bulle: { nom: 'Michel', role: 'Commercial (plus de 20 ans d\u2019exp\u00E9rience)', initiale: 'M', couleurAvatar: '#6D28D9', videoLien: 'https://drive.google.com/file/d/1dZpoD0ssvuprQZ0Ije7vUgLrQ9x9vJcJ/view', lignes: [
+          "\u00AB Tu sais, le salaire d\u2019un vendeur automobile peut \u00EAtre diff\u00E9rent selon :",
+          "- son niveau de formation,",
+          "- la nature du contrat (temps partiel, temps plein),",
+          "- la renomm\u00E9e du concessionnaire,",
+          "- le type de clients avec qui il traite (particuliers, professionnels, grands comptes).",
+          "En d\u00E9but de carri\u00E8re, le vendeur automobile gagne en moyenne entre le SMIC et 2.000\u20AC brut mensuels (1.560\u20AC net).",
+          "Avec plusieurs ann\u00E9es d\u2019exp\u00E9rience, sa r\u00E9mun\u00E9ration peut atteindre 2.500\u20AC brut par mois (1.950\u20AC net).",
+          "Les vendeurs automobiles seniors comme moi sont les mieux pay\u00E9s avec un salaire moyen de 3.300\u20AC brut par mois (2.574\u20AC net) s\u2019ils ont pour clients des professionnels (vente de voitures de fonction, par exemple).",
+          "Une r\u00E9mun\u00E9ration globale comprenant une part fixe et une part variable peut s\u2019approcher des 2.500\u20AC brut par mois (1.950\u20AC net) en d\u00E9but de carri\u00E8re et atteindre 4.300\u20AC brut par mois (3.354\u20AC net) en fin de carri\u00E8re. Cette part variable peut \u00EAtre compos\u00E9e de commissions ou de primes sur objectifs.",
+          "Donc tu vois c\u2019est vraiment diff\u00E9rent d\u2019un commercial \u00E0 un autre \u00BB.",
+        ] } },
+      ] },
+      { numero: 2, titre: "Formules pour le calcul de la rémunération d'un commercial", texte: [
+        { pageWeb: true },
+        { tableau: { colonnes: ['Méthode de calcul (selon le système de rémunération)', 'Formule'], lignes: [
+          ['Calcul de la commission ou de la commission sur CA', 'CA x % de commission'],
+          ['Calcul prime par nouveau client', 'Fixe x % de prime'],
+          ['Calcul de la marge', 'Taux de marge = Marge / 100 — CA x taux de marge'],
+          ['Calcul de la commission sur marge', 'Marge x taux de commission'],
+          ["Calcul de réalisation de l'objectif", 'Objectif de CA fixé / CA réalisé'],
+        ] } },
+      ] },
+      { numero: 3, titre: 'Les différents systèmes de rémunération', texte: [
+        { pageWeb: true },
+        { intertitre: 'Cas 1' },
+        { paragraphes: ["Le commercial débutant reçoit un salaire fixe de 1100 € + une commission de 2 % sur le CA (chiffre d'affaires) réalisé. Sachant que son CA a été de 15 000 €. Quel sera son salaire ?"] },
+        { intertitre: 'Cas 2' },
+        { paragraphes: ["Le commercial débutant touche un salaire fixe de 1100 €. Il reçoit une prime de 5 % de son fixe par nouveau client apporté. Il reçoit aussi une prime de 45 € à chaque fois qu'il fait 10 visites de prospection. Il a apporté 6 nouveaux clients et il a effectué 39 visites de prospection. Quel sera son salaire ?"] },
+        { intertitre: 'Cas 3' },
+        { paragraphes: ["Le commercial débutant n'a pas de salaire fixe et il est payé uniquement à la commission. Il a perçu une commission de 5 % sur la marge. Il a réalisé un CA de 122 000 € et le taux de marge est de 30 %. Quel sera son salaire ?"] },
+        { intertitre: 'Cas 4' },
+        { paragraphes: ["Le commercial débutant reçoit un salaire fixe de 1100 €, une commission de 1 % du CA réalisé et une prime lui est attribuée s'il atteint l'objectif que son supérieur lui a fixé, soit 45 000 €."] },
+        { puces: [
+          "Objectif non atteint : 0 € donc pas de prime",
+          'De 100 % à 120 % de l\u2019objectif : 150 € de prime',
+          'Plus de 120 % de l\u2019objectif : 300 € de prime',
+        ] },
+        { paragraphes: ['Il a réalisé un CA de 44 000 €.'] },
+      ] },
+    ],
+    objectifs: [
+      'Rechercher, hiérarchiser et actualiser les informations sur l\u2019entreprise et son marché.',
+      "Identifier les composantes de la rémunération et calculer un salaire selon les quatre systèmes.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Assurer la veille commerciale',
+      detail:
+        "C.1.1 — Rechercher, hiérarchiser et actualiser les informations sur l'entreprise et son marché.",
+    },
+    activites: [
+      {
+        titre: 'Activité 1 — Les composantes de la rémunération du commercial automobile',
+        contexte: "Aujourd'hui, le planning indique que vous travaillerez pendant deux jours avec Michel qui est commercial depuis plus de 20 ans. Vous profitez de l'occasion pour l'interroger sur le salaire d'un commercial.",
+        questions: [
+          { numero: 1, consigne: 'Michel répond à vos questions.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Le calcul de la rémunération',
+        contexte: "Conscient des difficultés que vous avez à comprendre le système de rémunération, Michel, l'un des commerciaux, vous donne des exercices avec le cas concret d'un commercial débutant et vous demande de les résoudre.",
+        questions: [
+          { numero: 2, consigne: 'Calculez la rémunération du commercial débutant avec le système fixe + commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système fixe + prime.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système uniquement de la commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système fixe + prime + commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les réponses à vos questions', colonnes: ['Interrogations', 'Réponses'], nbLignes: 4, reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["D'où vient la différence entre un commercial qui gagne le SMIC et celui qui gagne 2574 € ?", ''],
+        ['Globalement, quels sont les critères qui permettent de déterminer le salaire d\u2019un commercial ?', ''],
+        ['Quelles sont les deux parties de la rémunération globale d\u2019un commercial ?', ''],
+        ['De quoi est composée la part variable de la rémunération du commercial ?', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — CAS N° 1 : fixe + commission', colonnes: ['Éléments', 'Calculs', 'Résultats'], nbLignes: 3, prerempli: [
+        ['Fixe', '', ''], ['Commission', '', ''], ['Total brut', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — CAS N° 2 : fixe + prime', colonnes: ['Éléments', 'Calculs', 'Résultats'], nbLignes: 4, prerempli: [
+        ['Fixe', '', ''], ['Prime par nouveau client apporté', '', ''], ['Prime visite de prospection', '', ''], ['Total brut', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — CAS N° 3 : uniquement les commissions', colonnes: ['Éléments', 'Calculs', 'Résultats'], nbLignes: 2, prerempli: [
+        ['Marge', '', ''], ['Commission', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — CAS N° 4 : fixe + prime + commission', colonnes: ['Éléments', 'Calculs', 'Résultats'], nbLignes: 5, prerempli: [
+        ["Réalisation de l'objectif", '44 000 / 45 000 x 100 =', ''],
+        ['Fixe', '', ''], ['Commission', '', ''], ['Prime', '', ''], ['Total brut', '', ''],
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: 'Michel répond à vos questions.', documents: ['Document 1', 'Annexe 1'], bareme: 4,
+        reponse: "Différence SMIC / 2574 € : « … avec plusieurs années d'expérience… ». Critères qui déterminent le salaire : son niveau de formation, la nature du contrat (temps partiel, temps plein), la renommée du concessionnaire, le type de clients avec qui il traite (particuliers, professionnels, grands comptes). Les deux parties de la rémunération : « une rémunération globale comprenant une part fixe et une part variable ». Composition de la part variable : « cette part variable peut être composée de commissions ou de primes sur objectifs ».",
+        tableau: { colonnes: ['Interrogation', 'Réponse'], lignes: [
+          ["Différence SMIC / 2574 €", "« … Avec plusieurs années d'expérience… »"],
+          ['Critères de détermination du salaire', 'Niveau de formation, nature du contrat (temps partiel/plein), renommée du concessionnaire, type de clients (particuliers, professionnels, grands comptes)'],
+          ['Deux parties de la rémunération', '« Une rémunération globale comprenant une part fixe et une part variable »'],
+          ['Composition de la part variable', '« Cette part variable peut être composée de commissions ou de primes sur objectifs »'],
+        ] } },
+      { intitule: 'Calculez la rémunération : fixe + commission (Cas 1).', documents: ['Documents 2 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "Fixe : 1100 €. Commission : 15 000 x 0,02 = 300. Total brut : 1100 + 300 = 1400 €.",
+        tableau: { colonnes: ['Éléments', 'Calculs', 'Résultats'], lignes: [
+          ['Fixe', '', '1100 €'], ['Commission', '15 000 x 0,02', '300'], ['Total brut', '1100 + 300', '1400 €'],
+        ] } },
+      { intitule: 'Calculez la rémunération : fixe + prime (Cas 2).', documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 3,
+        reponse: "Fixe : 1100 €. Prime par nouveau client : 1100 x 0,05 = 55 ; 55 x 6 = 330. Prime visite de prospection : 39 / 10 = 3,9 ; 3 x 45 = 135. Total brut : 1100 + 330 + 135 = 1565 €.",
+        tableau: { colonnes: ['Éléments', 'Calculs', 'Résultats'], lignes: [
+          ['Fixe', '', '1100 €'], ['Prime par nouveau client apporté', '1100 x 0,05 = 55 ; 55 x 6 =', '330'], ['Prime visite de prospection', '39 / 10 = 3,9 ; 3 x 45 =', '135'], ['Total brut', '1100 + 330 + 135', '1565 €'],
+        ] } },
+      { intitule: 'Calculez la rémunération : uniquement commission (Cas 3).', documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 3,
+        reponse: "Marge : 30 / 100 = 0,3 ; 122 000 x 0,3 = 36 600. Commission : 36 600 x 0,05 = 1830 €.",
+        tableau: { colonnes: ['Éléments', 'Calculs', 'Résultats'], lignes: [
+          ['Marge', '30 / 100 = 0,3 ; 122 000 x 0,3 =', '36 600'], ['Commission', '36 600 x 0,05', '1830 €'],
+        ] } },
+      { intitule: 'Calculez la rémunération : fixe + prime + commission (Cas 4).', documents: ['Documents 2 et 3', 'Annexe 5'], bareme: 3,
+        reponse: "Réalisation de l'objectif : 44 000 / 45 000 x 100 = 97,78 % (97,777) → objectif non atteint, donc 0 % de prime. Fixe : 1100. Commission : 44 000 x 0,01 = 440. Prime : 0. Total brut : 1100 + 440 + 0 = 1540 €.",
+        tableau: { colonnes: ['Éléments', 'Calculs', 'Résultats'], lignes: [
+          ["Réalisation de l'objectif", '44 000 / 45 000 x 100 =', '97,78 %'],
+          ['Fixe', '', '1100'], ['Commission', '44 000 x 0,01 =', '440'], ['Prime', 'Objectif non atteint', '0'], ['Total brut', '1100 + 440 + 0', '1540 €'],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: 'La rémunération du commercial',
+    proposition: [
+      'Part fixe',
+      'Part variable',
+      'Commissions',
+      'Primes sur objectifs',
+      'Fixe + commission',
+      'Fixe + prime',
+      'Uniquement commission',
+      'Fixe + prime + commission',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La rémunération',
+      enfants: [
+        { id: 'compo', texte: 'Composition de la rémunération', enfants: [
+          { id: 'co-1', texte: null, reponse: 'Part fixe' },
+          { id: 'co-2', texte: null, reponse: 'Part variable' },
+        ] },
+        { id: 'var', texte: 'La part variable', enfants: [
+          { id: 'va-1', texte: null, reponse: 'Commissions' },
+          { id: 'va-2', texte: null, reponse: 'Primes sur objectifs' },
+        ] },
+        { id: 'syst', texte: 'Les 4 systèmes de rémunération', enfants: [
+          { id: 'sy-1', texte: null, reponse: 'Fixe + commission' },
+          { id: 'sy-2', texte: null, reponse: 'Fixe + prime' },
+          { id: 'sy-3', texte: null, reponse: 'Uniquement commission' },
+          { id: 'sy-4', texte: null, reponse: 'Fixe + prime + commission' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: 'Identifier les composantes de la rémunération', indicateurs: [
+        { niveau: 'novice', description: 'Je ne connais pas les composantes de la rémunération.' },
+        { niveau: 'debrouille', description: 'Je cite la part fixe ou la part variable.' },
+        { niveau: 'averti', description: 'Je distingue part fixe, part variable, commissions et primes.' },
+        { niveau: 'expert', description: 'J\u2019explique les critères qui déterminent le salaire.' },
+      ] },
+      { id: 'c2', intitule: 'Calculer un salaire selon les 4 systèmes', indicateurs: [
+        { niveau: 'novice', description: 'Je ne sais pas appliquer les formules.' },
+        { niveau: 'debrouille', description: 'Je calcule un des cas avec aide.' },
+        { niveau: 'averti', description: 'Je calcule les 4 cas correctement.' },
+        { niveau: 'expert', description: 'Je calcule et je vérifie l\u2019atteinte de l\u2019objectif.' },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Rémunération globale', definition: "Ensemble de ce que perçoit le commercial : une part fixe et une part variable." },
+      { terme: 'Part fixe', definition: "Salaire de base garanti, versé quel que soit le niveau des ventes." },
+      { terme: 'Part variable', definition: "Partie du salaire qui dépend des résultats : commissions ou primes sur objectifs." },
+      { terme: 'Commission', definition: "Somme calculée en pourcentage du chiffre d'affaires ou de la marge réalisée." },
+      { terme: 'Prime sur objectif', definition: "Montant versé lorsque le commercial atteint un objectif fixé (CA, nouveaux clients…)." },
+      { terme: 'Taux de marge', definition: "Rapport entre la marge et le chiffre d'affaires (Marge / 100 appliquée au CA)." },
+    ],
+    flashcards: [
+      { recto: 'Quelles sont les deux parties de la rémunération globale ?', verso: 'Une part fixe et une part variable.' },
+      { recto: 'De quoi est composée la part variable ?', verso: 'De commissions ou de primes sur objectifs.' },
+      { recto: 'Comment calcule-t-on une commission sur CA ?', verso: 'CA x % de commission.' },
+      { recto: 'Comment calcule-t-on la marge ?', verso: 'CA x taux de marge (taux de marge = Marge / 100).' },
+      { recto: 'Cas 1 : fixe 1100 € + 2 % sur CA de 15 000 € ?', verso: '1100 + (15 000 x 0,02 = 300) = 1400 €.' },
+      { recto: 'Cas 3 : commission 5 % sur marge, CA 122 000 €, marge 30 % ?', verso: 'Marge 36 600 ; commission 36 600 x 0,05 = 1830 €.' },
+      { recto: 'Cas 4 : objectif 45 000 €, CA réalisé 44 000 € ?', verso: '44 000 / 45 000 x 100 = 97,78 % → objectif non atteint, 0 € de prime.' },
+      { recto: 'Quels critères déterminent le salaire d\u2019un commercial ?', verso: 'Formation, nature du contrat, renommée du concessionnaire, type de clients.' },
+      { recto: 'Quels sont les 4 systèmes de rémunération ?', verso: 'Fixe + commission ; fixe + prime ; uniquement commission ; fixe + prime + commission.' },
+      { recto: "Comment mesure-t-on la réalisation d'un objectif ?", verso: 'CA réalisé / objectif de CA fixé x 100.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Quelles sont les deux parties de la rémunération globale ?', options: ['Une part fixe et une part variable', 'Le SMIC et les congés', 'Le brut et les impôts', 'La prime et les vacances'], bonne: 0 },
+      { type: 'unique', question: 'De quoi est composée la part variable ?', options: ['Commissions ou primes sur objectifs', 'Uniquement du fixe', 'Des congés payés', 'Des heures supplémentaires seules'], bonne: 0 },
+      { type: 'unique', question: 'Comment calcule-t-on une commission sur CA ?', options: ['CA x % de commission', 'CA + % de commission', 'CA / % de commission', 'CA − % de commission'], bonne: 0 },
+      { type: 'unique', question: 'Cas 1 : fixe 1100 € + 2 % sur 15 000 € de CA. Salaire ?', options: ['1400 €', '1300 €', '1100 €', '1600 €'], bonne: 0 },
+      { type: 'unique', question: 'Cas 2 : total brut du commercial (fixe + primes) ?', options: ['1565 €', '1400 €', '1830 €', '1500 €'], bonne: 0 },
+      { type: 'unique', question: 'Cas 3 : commission uniquement (marge 36 600, 5 %) ?', options: ['1830 €', '1100 €', '3660 €', '915 €'], bonne: 0 },
+      { type: 'unique', question: 'Cas 4 : objectif 45 000 €, CA 44 000 €. Prime ?', options: ['0 € (objectif non atteint)', '150 €', '300 €', '440 €'], bonne: 0 },
+      { type: 'unique', question: 'Cas 4 : total brut (fixe + commission + prime) ?', options: ['1540 €', '1400 €', '1550 €', '1100 €'], bonne: 0 },
+      { type: 'qcm', question: 'Quels critères déterminent le salaire d\u2019un commercial ?', options: ['Le niveau de formation', 'La nature du contrat', 'La renommée du concessionnaire', 'La couleur de la voiture'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Quels sont des systèmes de rémunération possibles ?', options: ['Fixe + commission', 'Uniquement commission', 'Fixe + prime + commission', 'Fixe + congés'], bonnes: [0, 1, 2] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Part fixe', 'Part variable', 'Formule de calcul'],
+      zones: [
+        { libelle: 'Salaire de base de 1100 €', etiquetteIndex: 0 },
+        { libelle: 'Commission de 2 % sur le CA', etiquetteIndex: 1 },
+        { libelle: 'Prime par nouveau client', etiquetteIndex: 1 },
+        { libelle: 'Prime sur objectif atteint', etiquetteIndex: 1 },
+        { libelle: 'CA x % de commission', etiquetteIndex: 2 },
+        { libelle: 'CA x taux de marge', etiquetteIndex: 2 },
+        { libelle: 'Marge x taux de commission', etiquetteIndex: 2 },
+        { libelle: 'Fixe x % de prime', etiquetteIndex: 2 },
+        { libelle: 'Un montant garanti chaque mois', etiquetteIndex: 0 },
+        { libelle: 'Objectif de CA / CA réalisé', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 7 - Les caracteristiques techniques des vehicules
+// ---------------------------------------------------------------------------
+const PEUGEOT_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez-vous à proposer des véhicules aux clients : identifiez les avantages et inconvénients des véhicules neufs et d'occasion, comparez les motorisations, et découvrez les innovations automobiles du futur.",
+    contexte:
+      "Cela fait maintenant deux semaines que vous êtes en PFMP dans la concession. Votre tuteur vous a informé que la semaine prochaine, vous allez essayer de proposer des véhicules à des clients sous sa supervision.",
+    documents: [
+      { numero: 1, titre: "Achat d\u2019une voiture neuve : avantages et inconvénients", texte: [
+        { pageWeb: true },
+        { paragraphes: ["Il est temps de changer de voiture, mais vous hésitez entre une auto neuve ou d\u2019occasion ? Pour vous aider à faire un choix éclairé, voici les avantages et les inconvénients d\u2019acheter un véhicule neuf."] },
+        { intertitre: "Avantage : une auto neuve permet de choisir !" },
+        { paragraphes: ["En achetant une auto neuve, vous choisissez la marque et le modèle, mais aussi toutes les caractéristiques intérieures, les fonctionnalités et même la couleur ! (Attention toutefois au choix de couleur qui pourrait affecter les risques d\u2019accident...) Si vous optez pour une voiture d\u2019occasion, vous devrez faire plus de concessions et choisir parmi un inventaire plus limité et définitivement moins diversifié."] },
+        { intertitre: "Avantage : une voiture neuve se revend à bon prix" },
+        { paragraphes: ["Si vous choisissez un modèle ou une marque populaire sur le marché des voitures usagées, vous pourrez la revendre à bon prix. Pour estimer la valeur potentielle de votre voiture, il est nécessaire de bien s\u2019informer."] },
+        { intertitre: "Avantage : les prêts sont plus avantageux avec un véhicule neuf" },
+        { paragraphes: ["Le prêt pour une auto neuve est plus élevé, mais vous bénéficierez d\u2019un meilleur taux d\u2019intérêt. En achetant une voiture neuve, vous pouvez obtenir un taux à 1% et parfois même à 0% alors que le taux grimpera à 5 ou 6% si vous optez pour une auto usagée."] },
+        { intertitre: "Avantage : une auto neuve bénéficie d\u2019une garantie" },
+        { paragraphes: ["Avec une voiture neuve, vous obtenez une garantie qui chasse bien des soucis du moins pour un temps ! La garantie de base varie entre 3 et 5 ans ou, encore, entre 60 000 et 100 000 km. Si vous avez besoin d\u2019une plus grande tranquillité d\u2019esprit, vous pouvez même accepter une garantie prolongée. Les garanties ne sont pas aussi généreuses avec les véhicules d\u2019occasion. Peu importe votre choix, évitez ces 15 gestes afin de garder votre voiture en bon état."] },
+        { intertitre: "Avantage : une auto neuve est à la fine pointe de la technologie" },
+        { paragraphes: ["Avec une voiture neuve, vous profitez des plus récentes avancées technologiques (en plus de toutes les caractéristiques que vous avez sans le savoir !). Tous les gadgets intéressants, les accessoires multimédias et les fonctionnalités les plus innovatrices pour le tableau de bord sont pour vous !"] },
+        { intertitre: "Avantage : une voiture neuve est un gage de sécurité" },
+        { paragraphes: ["Une auto neuve, c\u2019est avoir la paix d\u2019esprit. Elle sera conforme aux plus récentes règles en matière de sécurité. De fait, les risques d\u2019accident dus à l\u2019usure sont grandement réduits. Pour vous prémunir davantage, apprenez aussi à éviter les 13 habitudes qui réduisent la durée de vie de votre voiture."] },
+        { intertitre: "Avantage : une auto neuve a une feuille de route vierge" },
+        { paragraphes: ["Pas de mauvaises surprises avec une auto flambant neuve ! Vous ne risquez pas de tomber sur une voiture accidentée qui a été remise à neuf. Il ne tient qu\u2019à vous de faire tout ce qu\u2019il faut pour prolonger la durée de vie de votre bolide."] },
+        { intertitre: "Avantage : une auto neuve réduit les visites au garage pour des réparations" },
+        { paragraphes: ["Pour les premières années d\u2019utilisation d\u2019une voiture neuve, vos visites au garage pour des réparations devraient être rares ! Si vous devez y aller, votre réparation sera probablement couverte par la garantie. Évitez ainsi les 10 arnaques fréquentes des mécaniciens qui augmentent inutilement votre facture. Toutefois, n\u2019oubliez pas les entretiens réguliers pour vous assurer de garder votre voiture en bon état."] },
+        { intertitre: "Inconvénient : une auto neuve coûte plus cher qu\u2019un véhicule d\u2019occasion" },
+        { paragraphes: ["Pour vous procurer une voiture neuve, vous devrez débourser plus ! C\u2019est un achat de plusieurs milliers de dollars auquel s\u2019ajoutent les intérêts à payer sur le prêt. Avant de faire votre choix, faites le calcul de votre prêt-auto pour vous éviter de mauvaises surprises !"] },
+        { intertitre: "Inconvénient : une auto neuve n\u2019est pas un réel investissement" },
+        { paragraphes: ["Dès la sortie du concessionnaire, votre voiture n\u2019a déjà plus sa pleine valeur. Ensuite, elle perdra rapidement des milliers de dollars en valeur au cours des premières années d\u2019utilisation. Après deux ans, une voiture qui valait 20 000$ au moment de l\u2019achat pourrait n\u2019en valoir que 12 000$. Voici 10 choses à savoir avant de quitter le concessionnaire."] },
+        { intertitre: "Inconvénient : les paiements mensuels sont élevés pour une auto neuve" },
+        { paragraphes: ["Quand vous achetez un véhicule neuf, votre compte de banque sera débité de quelques centaines de dollars chaque mois pendant quelques années. En choisissant une auto d\u2019occasion peu chère, vous pourriez payer la facture entièrement à l\u2019ancien propriétaire. Même si vous devez financer l\u2019achat, les paiements mensuels seront moins élevés. Avant de prendre votre décision, faites des projections en calculant les paiements à prévoir."] },
+      ] },
+      { numero: 2, titre: "Les avantages et inconvénients d\u2019acheter une voiture d\u2019occasion", texte: [
+        { pageWeb: true },
+        { intertitre: "Les avantages d\u2019acheter une voiture d\u2019occasion" },
+        { paragraphes: [
+          "L\u2019achat d\u2019une voiture d\u2019occasion présente plusieurs avantages. Tout d\u2019abord, le coût est généralement inférieur à celui d\u2019une voiture neuve. Vous pouvez obtenir une voiture de qualité, avec des caractéristiques haut de gamme, pour une fraction du prix d\u2019un modèle neuf.",
+          "Ensuite, l\u2019achat d\u2019une voiture d\u2019occasion peut vous permettre d\u2019éviter la dépréciation rapide qui affecte les voitures neuves. En effet, une voiture neuve perd une grande partie de sa valeur dès qu\u2019elle quitte le concessionnaire, tandis qu\u2019une voiture d\u2019occasion a déjà subi cette dépréciation.",
+          "Par ailleurs, l\u2019achat d\u2019une voiture d\u2019occasion peut vous offrir un plus grand choix de modèles. Si vous avez un modèle spécifique en tête, vous aurez plus de chances de le trouver sur le marché de l\u2019occasion.",
+          "Enfin, l\u2019achat d\u2019une voiture d\u2019occasion peut être plus écologique. En effet, la production d\u2019une nouvelle voiture a un impact environnemental important. En choisissant une voiture d\u2019occasion, vous contribuez à réduire cette empreinte écologique.",
+        ] },
+        { intertitre: "Les inconvénients possibles que l\u2019on peut rencontrer" },
+        { paragraphes: [
+          "Malgré les nombreux avantages, l\u2019achat d\u2019une voiture d\u2019occasion peut aussi présenter des inconvénients. Le premier est lié à l\u2019état du véhicule. Une voiture d\u2019occasion peut avoir des problèmes mécaniques cachés qui ne sont pas immédiatement apparents lors de l\u2019achat. Cela peut entraîner des coûts d\u2019entretien et de réparation imprévus.",
+          "Un autre inconvénient est la garantie limitée. Contrairement à une voiture neuve, une voiture d\u2019occasion n\u2019offre généralement pas la même couverture de garantie. Cela signifie que vous pourriez être responsable de tous les coûts de réparation après l\u2019achat.",
+          "Enfin, il peut être plus difficile d\u2019obtenir un financement pour une voiture d\u2019occasion. Les prêteurs peuvent être plus réticents à financer un véhicule d\u2019occasion, ce qui peut rendre l\u2019achat plus compliqué.",
+          "Il est donc important de prendre en compte ces inconvénients avant de décider d\u2019acheter votre voiture.",
+        ] },
+      ] },
+      { numero: 3, titre: "Diésel, essence, hybride, électrique : que faut-il choisir ?", texte: [
+        { pageWeb: true },
+        { paragraphes: [
+          "Diésel, essence, électrique, hybride : les possibilités sont nombreuses en matière d\u2019achat de véhicule neuf. Mais avec les règles en place en 2023, que faut-il réellement acheter ? Les conseils de l\u2019Auto-Journal.",
+          "Choisir sa nouvelle voiture est une étape importante d\u2019une vie. Comme d\u2019autres décisions, il s\u2019agit parfois d\u2019une période difficile et qui prend du temps.",
+          "Plusieurs paramètres entrent en compte en fonction de vos besoins et de votre situation familiale : nombre de places, taille, catégorie...",
+          "Une autre possibilité est aussi le carburant et la motorisation. En effet, avec les règles qui arrivent dans les grandes agglomérations, c\u2019est désormais une donnée à prendre en compte.",
+        ] },
+        { intertitre: "ESSENCE ET DIESEL ONT-ILS ENCORE LA COTE ?" },
+        { paragraphes: [
+          "Acheter une voiture neuve avec un moteur à essence n\u2019est pas dans l\u2019ère du temps. En effet, vous serez ainsi exposé à un malus écologique puisque les émissions de CO2 restent conséquentes.",
+          "Cependant, si vous optez pour un gabarit petit, il est possible que vous passiez à côté du malus puisque les citadines peuvent recevoir la vignette Crit\u2019Air 1.",
+          "C\u2019est d\u2019ailleurs cette catégorie qui a le coût le plus faible du marché, notamment si l\u2019automobiliste roule peu.",
+          "Pour ce qui est du Diesel, depuis 2015 et le scandale autour de Volkswagen, la tendance a bien changé.",
+          "Malgré tout, si vous êtes un gros rouleur, le diesel reste le choix prioritaire. Le coût de l\u2019achat est rentabilisé après 20 000 km, grâce à une faible consommation du moteur.",
+          "A noter que la revente d\u2019une voiture diesel sera très compliquée à cause des lois déjà en place ou qui arrivent dans l\u2019hexagone et en Europe.",
+        ] },
+        { intertitre: "MISER SUR LE FUTUR AVEC L\u2019ÉLECTRIQUE" },
+        { paragraphes: [
+          "Avec les décisions politiques en place et qui arrivent, la voiture électrique semble visiblement la solution du futur.",
+          "Cela se traduit par des ventes en nette hausse depuis 2019. Le dernier bilan fait écho de 162 106 immatriculations. Et le gouvernement s\u2019attend à des ventes encore plus élevées les années à venir.",
+          "Les constructeurs, quant à eux, commercialisent de plus en plus de modèles et à des prix bien différents. Malgré tout, les tarifs sont bien plus élevés qu\u2019un véhicule essence.",
+          "La technologie et l\u2019autonomie des voitures électriques ne cessent de s\u2019améliorer. Malgré tout, si vous êtes un gros rouleur, un véhicule électrique n\u2019est pas forcément le meilleur choix.",
+        ] },
+        { intertitre: "L\u2019HYBRIDE : UNE SOLUTION ALTERNATIVE" },
+        { paragraphes: [
+          "Pour ceux qui ne veulent pas encore passer au 100 % électrique, il existe une alternative : l\u2019hybride.",
+          "Cette technologie vous permet de ne pas avoir un malus écologique trop important mais aussi de rentrer, pour le moment, dans les règles en ce qui concerne les ZFE.",
+          "Quand vous choisissez un moteur hybride, votre consommation va baisser jusqu\u2019à 30 %. Vous aurez même la possibilité d\u2019utiliser le moteur 100 % électrique pendant quelques kilomètres.",
+          "Cependant, les modèles deviennent rares car l\u2019hybridation est plutôt vu comme une transition vers le 100 % électrique et non une véritable solution.",
+          "Enfin, si vous souhaitez consommer autre chose que de l\u2019essence classique, vous pouvez vous tourner vers l\u2019E85.",
+          "Pour faire des économies à la pompe, certains se sont tournés vers des alternatives intéressantes comme le GPL ou l\u2019E85.",
+          "Pour profiter de cette technologie, vous devez installer un kit éthanol, qui a un certain coût à l\u2019achat. Pour rentabiliser l\u2019installation, il faut en effet effectuer de nombreux kilomètres.",
+        ] },
+      ] },
+      { numero: 4, titre: "Les innovations automobiles du futur", texte: [
+        { pageWeb: true },
+        { intertitre: "1/ Le rétroviseur vidéo" },
+        { paragraphes: ["L\u2019entreprise Gentex est en passe de proposer une alternative au traditionnel rétroviseur intérieur tel que nous le connaissons en dévoilant un écran affichant le flux vidéo de 3 caméras simultanément afin de réduire les angles morts. Ce dispositif pourrait très prochainement voir le jour chez Aston Martin."] },
+        { intertitre: "2/ Adieu les enceintes" },
+        { paragraphes: ["Avec la solution « Ac2ated Sound » la marque de matériel audio Sennheiser et Continental propose un système audio avec des enceintes implantées directement dans la planche de bord et donc non visibles. Cette nouveauté permet selon ses créateurs d\u2019améliorer la qualité du son qui devient ainsi plus naturel."] },
+        { intertitre: "3/ Le pare-soleil intelligent" },
+        { paragraphes: ["Après une étude poussée démontrant que l\u2019éblouissement solaire serait responsable de nombreux accident chaque année, l\u2019équipementier Bosh a développé un pare-soleil capable de bloquer les reflets du soleil sans gêner la vision. Ce pare-soleil est composé d\u2019un écran LCD transparent et d\u2019une caméra orientée vers le conducteur. Quand la caméra détecte du soleil sur le visage du conducteur, le pare-soleil bloque automatique la lumière."] },
+        { intertitre: "4/ La voiture connectée à votre maison" },
+        { paragraphes: ["Associée à la start-up française Otodo, Renault développe une solution permettant de créer une connexion entre votre voiture et votre maison connectée. Avec cette solution, il sera possible d\u2019envoyer un itinéraire de navigation depuis un smartphone ou une enceinte connectée depuis sa maison directement à sa voiture."] },
+        { intertitre: "5/ La reconnaissance biométrique" },
+        { paragraphes: ["Mercedes-Benz a mis au point une technologie capable à une voiture de reconnaitre les battements de cœur de son propriétaire. Ce système pourrait donc remplacer à terme la clé de votre voiture."] },
+        { intertitre: "6/ La climatisation avec reconnaissance corporelle" },
+        { paragraphes: ["Les ingénieurs travaillent actuellement sur un système de climatisation d\u2019une toute nouvelle génération. Ce dernier pourrait, une fois le conducteur assis, détecter la température corporelle de ce dernier et régler la climatisation automatiquement. Le système sera donc en mesure d\u2019analyser votre température pour compenser la chaleur ou le froid ressenti par votre corps."] },
+        { intertitre: "7/ Les panneaux solaires" },
+        { paragraphes: ["Les voitures électriques font désormais parties intégrantes du parc automobile international. Cependant, si aucun constructeur de renom n\u2019a encore opté pour la présence de panneaux solaires sur ses véhicules, Fisker Automobile, y accorde beaucoup d\u2019importance. L\u2019entreprise voit l\u2019énergie solaire comme un atout majeur dans la progression des véhicules électrique."] },
+      ] },
+    ],
+    objectifs: [
+      'Argumenter à partir des caractéristiques techniques des véhicules.',
+      "Comparer véhicules neufs / d'occasion, motorisations et innovations pour conseiller le client.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre — Argumenter',
+      detail: 'C.1.2 — Argumenter.',
+    },
+    activites: [
+      {
+        titre: "Activité 1 — Véhicules neufs ou d'occasion",
+        contexte: "Paul vous demande de connaître les avantages et les inconvénients de chacune des caractéristiques des différents types de véhicules.",
+        questions: [
+          { numero: 1, consigne: "Retrouvez pour chaque caractéristique l'avantage qui lui correspond lors de l'achat d'un véhicule neuf.", ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez pour chaque inconvénient les caractéristiques qui lui correspondent lorsque le client fait le choix d'acheter un véhicule neuf.", ressources: 'Lire le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Retrouvez les avantages et les caractéristiques d'acheter un véhicule d'occasion.", ressources: 'Lire le document 2, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Retrouvez les inconvénients et les caractéristiques qui lui correspondent d'acheter un véhicule d'occasion.", ressources: 'Lire le document 2, compléter l\'annexe 4.', annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: 'Activité 2 — Les motorisations : essence, diésel, électrique ou hybride',
+        contexte: "Puis, il vous demande d'étudier les différents types de motorisation.",
+        questions: [
+          { numero: 5, consigne: 'Retrouvez 1 avantage et 1 inconvénient pour chaque type de motorisation.', ressources: 'Lire le document 3, compléter l\'annexe 5.', annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: 'Activité 3 — Les dernières innovations des marques automobiles',
+        contexte: "Votre tuteur vous explique qu'un bon commercial automobile doit particulièrement connaître les innovations technologiques d'aujourd'hui et de demain car de plus en plus, les clients se renseignent sur internet et arrivent à la concession en sachant déjà beaucoup de choses.",
+        questions: [
+          { numero: 6, consigne: "Citez quatre innovations du futur dans l'automobile en expliquant en quoi elles consistent.", ressources: 'Lire le document 4, compléter l\'annexe 6.', annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Véhicule neuf : ses avantages', colonnes: ['Avantages', 'Caractéristiques'], nbLignes: 5, reponseMultiligne: true, lignesReponse: 2 },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Véhicule neuf : ses inconvénients', colonnes: ['Inconvénients', 'Caractéristiques'], nbLignes: 3, reponseMultiligne: true, lignesReponse: 2 },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Véhicule d'occasion : ses avantages", colonnes: ['Avantages', 'Caractéristiques'], nbLignes: 3, reponseMultiligne: true, lignesReponse: 2 },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 — Véhicule d'occasion : ses inconvénients", colonnes: ['Inconvénients', 'Caractéristiques'], nbLignes: 3, reponseMultiligne: true, lignesReponse: 2 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Motorisation : avantages et inconvénients', colonnes: ['Type de moteur', 'Avantage / Inconvénient', 'Réponse'], nbLignes: 8, prerempli: [
+        ['Moteur diésel', '1 avantage', ''],
+        ['Moteur diésel', '1 inconvénient', ''],
+        ['Moteur essence', '1 avantage', ''],
+        ['Moteur essence', '1 inconvénient', ''],
+        ['Moteur hybride', '1 avantage', ''],
+        ['Moteur hybride', '1 inconvénient', ''],
+        ['Moteur électrique', '1 avantage', ''],
+        ['Moteur électrique', '1 inconvénient', ''],
+      ] },
+      { type: 'grille', id: 'annexe6', titre: 'Annexe 6 — Innovations automobiles', colonnes: ['Innovations', 'Explications'], nbLignes: 4, reponseMultiligne: true, lignesReponse: 3 },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Véhicule neuf : ses avantages (5).", documents: ['Document 1', 'Annexe 1'], bareme: 5,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Avantages', 'Caractéristiques'], lignes: [
+          ['Une auto neuve est à la fine pointe de la technologie', 'La voiture bénéficie des technologies les plus avancées'],
+          ['Les prêts sont plus avantageux avec un véhicule neuf', "Le prêt pour une voiture neuve est plus élevé mais on bénéficie d'un meilleur taux d'intérêt"],
+          ["Une auto neuve bénéficie d'une garantie", 'Il y a une garantie de base qui varie entre 3 et 5 ans ou encore entre 60 000 et 100 000 km'],
+          ['Une auto neuve est un gage de sécurité', "Elle sera conforme aux plus récentes règles en matière de sécurité. De ce fait les risques d'accident sont grandement réduits"],
+          ['Une auto neuve réduit les visites au garage pour des réparations', 'Les visites pour les réparations sont rares et quand il y en a elles sont prises en charge par la garantie'],
+        ] } },
+      { intitule: 'Véhicule neuf : ses inconvénients (3).', documents: ['Document 1', 'Annexe 2'], bareme: 3,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Inconvénients', 'Caractéristiques'], lignes: [
+          ["Une auto neuve coûte plus cher qu'une voiture d'occasion", "C'est un achat de plusieurs milliers d'€ auquel s'ajoutent les intérêts à payer sur le prêt"],
+          ["Une auto neuve n'est pas un réel investissement", 'Dès la sortie chez le concessionnaire une voiture neuve perd déjà de la valeur'],
+          ['Les paiements mensuels sont élevés pour une auto neuve', "En achetant une voiture neuve on paye plusieurs centaines d'€ par mois contrairement à une occasion"],
+        ] } },
+      { intitule: "Véhicule d'occasion : ses avantages (3).", documents: ['Document 2', 'Annexe 3'], bareme: 3,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Avantages', 'Caractéristiques'], lignes: [
+          ['Coût inférieur à une voiture neuve', 'Le client peut obtenir une voiture de qualité, avec des caractéristiques haut de gamme, pour une fraction du prix du modèle neuf'],
+          ['Évite la dépréciation rapide qui affecte les voitures neuves', "Une voiture neuve perd une grande partie de sa valeur dès qu'elle quitte le concessionnaire, tandis qu'une voiture d'occasion a déjà subi cette dépréciation"],
+          ["La voiture d'occasion peut être plus écologique", "La production d'une nouvelle voiture a un impact environnemental important. En choisissant une voiture d'occasion, le client contribue à réduire cette empreinte écologique"],
+        ] } },
+      { intitule: "Véhicule d'occasion : ses inconvénients (3).", documents: ['Document 2', 'Annexe 4'], bareme: 3,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Inconvénients', 'Caractéristiques'], lignes: [
+          ["L'état du véhicule", "Il peut avoir des problèmes mécaniques cachés lors de l'achat. Cela peut entraîner des coûts d'entretien et de réparation imprévus"],
+          ['Garantie limitée', "Il n'offre pas la même couverture de garantie qu'une voiture neuve"],
+          ["Il peut être difficile d'obtenir un financement", "Ceci peut donc rendre l'achat plus compliqué"],
+        ] } },
+      { intitule: '1 avantage et 1 inconvénient par motorisation.', documents: ['Document 3', 'Annexe 5'], bareme: 4,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Moteur', 'Avantage', 'Inconvénient'], lignes: [
+          ['Diésel', 'Faible consommation du moteur', 'La revente est très compliquée à cause des lois françaises et européennes'],
+          ['Essence', "Les citadines peuvent recevoir la vignette Crit'Air 1", 'Exposition au malus écologique'],
+          ['Hybride', "La consommation peut baisser jusqu'à 30 %", "Les modèles deviennent rares / l'hybridation est vue juste comme une transition vers l'électrique"],
+          ['Électrique', "Semble être la solution du futur / l'autonomie ne cesse de s'améliorer", 'Tarifs élevés / pas le meilleur choix pour les gros rouleurs'],
+        ] } },
+      { intitule: 'Quatre innovations du futur (explications).', documents: ['Document 4', 'Annexe 6'], bareme: 4,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Innovation', 'Explication'], lignes: [
+          ['Rétroviseur vidéo', 'Écran affichant les flux vidéo de 3 caméras simultanément pour réduire les angles morts'],
+          ['Pare-soleil intelligent', "Pare-soleil capable de bloquer les reflets sans gêner la vision. Composé d'un écran LCD transparent et d'une caméra orientée vers le conducteur ; quand la caméra détecte du soleil sur le visage du conducteur, il bloque automatiquement la lumière"],
+          ['La reconnaissance biométrique', 'Technologie capable de reconnaître les battements de cœur du propriétaire. Ce système pourrait remplacer à terme la clé'],
+          ['La climatisation avec reconnaissance corporelle', 'La climatisation pourrait reconnaître la température corporelle du conducteur et se régler automatiquement'],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: 'Les caractéristiques techniques des véhicules',
+    proposition: [
+      'À la pointe de la technologie',
+      'Bénéficie de garantie',
+      'Prêt avantageux',
+      'Coût inférieur à une voiture neuve',
+      'Évite la dépréciation rapide',
+      'Peut être écologique',
+      'Rétroviseur vidéo',
+      'Pare-soleil intelligent',
+      'Reconnaissance biométrique',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Mission 7',
+      enfants: [
+        { id: 'neuf', texte: 'Véhicule neuf — 3 avantages', enfants: [
+          { id: 'n-1', texte: null, reponse: 'À la pointe de la technologie' },
+          { id: 'n-2', texte: null, reponse: 'Bénéficie de garantie' },
+          { id: 'n-3', texte: null, reponse: 'Prêt avantageux' },
+        ] },
+        { id: 'occ', texte: "Véhicule d'occasion — 3 avantages", enfants: [
+          { id: 'o-1', texte: null, reponse: 'Coût inférieur à une voiture neuve' },
+          { id: 'o-2', texte: null, reponse: 'Évite la dépréciation rapide' },
+          { id: 'o-3', texte: null, reponse: 'Peut être écologique' },
+        ] },
+        { id: 'inno', texte: 'Les innovations (3)', enfants: [
+          { id: 'i-1', texte: null, reponse: 'Rétroviseur vidéo' },
+          { id: 'i-2', texte: null, reponse: 'Pare-soleil intelligent' },
+          { id: 'i-3', texte: null, reponse: 'Reconnaissance biométrique' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Comparer véhicules neufs et d'occasion", indicateurs: [
+        { niveau: 'novice', description: 'Je ne connais pas les avantages/inconvénients.' },
+        { niveau: 'debrouille', description: 'Je cite un avantage ou un inconvénient.' },
+        { niveau: 'averti', description: 'Je relie chaque avantage/inconvénient à sa caractéristique.' },
+        { niveau: 'expert', description: 'Je conseille le client selon sa situation.' },
+      ] },
+      { id: 'c2', intitule: 'Comparer les motorisations', indicateurs: [
+        { niveau: 'novice', description: 'Je ne connais pas les motorisations.' },
+        { niveau: 'debrouille', description: 'Je cite un type de moteur.' },
+        { niveau: 'averti', description: 'Je donne 1 avantage et 1 inconvénient par moteur.' },
+        { niveau: 'expert', description: 'Je recommande une motorisation selon le profil du client.' },
+      ] },
+      { id: 'c3', intitule: 'Connaître les innovations automobiles', indicateurs: [
+        { niveau: 'novice', description: 'Je ne connais pas les innovations.' },
+        { niveau: 'debrouille', description: 'Je cite une innovation.' },
+        { niveau: 'averti', description: 'Je cite et j\u2019explique quatre innovations.' },
+        { niveau: 'expert', description: 'J\u2019en parle spontanément au client.' },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: 'Dépréciation', definition: "Perte de valeur d'un véhicule dans le temps, très rapide pour une voiture neuve." },
+      { terme: 'Malus écologique', definition: "Taxe appliquée à l'achat d'un véhicule qui émet beaucoup de CO2." },
+      { terme: "Vignette Crit'Air", definition: "Étiquette qui classe les véhicules selon leur niveau de pollution ; la Crit'Air 1 est la plus favorable pour les citadines essence récentes." },
+      { terme: 'ZFE', definition: "Zone à Faibles Émissions : secteur où la circulation des véhicules polluants est limitée." },
+      { terme: 'Motorisation hybride', definition: "Association d'un moteur thermique et d'un moteur électrique ; la consommation peut baisser jusqu'à 30 %." },
+      { terme: 'Rétroviseur vidéo', definition: "Écran affichant le flux de plusieurs caméras pour réduire les angles morts." },
+    ],
+    flashcards: [
+      { recto: "Un avantage d'une auto neuve ?", verso: 'À la pointe de la technologie / garantie / prêt avantageux / sécurité (au choix).' },
+      { recto: "Un inconvénient d'une auto neuve ?", verso: "Coûte plus cher / n'est pas un réel investissement / paiements mensuels élevés (au choix)." },
+      { recto: "Un avantage d'une voiture d'occasion ?", verso: 'Coût inférieur / évite la dépréciation / peut être plus écologique (au choix).' },
+      { recto: "Un inconvénient d'une voiture d'occasion ?", verso: "État du véhicule / garantie limitée / financement difficile (au choix)." },
+      { recto: 'Diésel : 1 avantage ?', verso: 'Faible consommation du moteur.' },
+      { recto: 'Essence : 1 inconvénient ?', verso: 'Exposition au malus écologique.' },
+      { recto: 'Hybride : 1 avantage ?', verso: "La consommation peut baisser jusqu'à 30 %." },
+      { recto: 'Électrique : 1 inconvénient ?', verso: 'Tarifs élevés / pas le meilleur choix pour les gros rouleurs.' },
+      { recto: "En quoi consiste le rétroviseur vidéo ?", verso: 'Un écran affichant le flux de 3 caméras pour réduire les angles morts.' },
+      { recto: "Qu'est-ce que la reconnaissance biométrique en voiture ?", verso: 'Reconnaître les battements de cœur du propriétaire pour remplacer la clé.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Un avantage de l'auto neuve ?", options: ['À la pointe de la technologie', "Elle a déjà de l'usure", 'Pas de garantie', 'Financement impossible'], bonne: 0 },
+      { type: 'unique', question: "Un inconvénient de l'auto neuve ?", options: ["Elle n'est pas un réel investissement", 'Elle coûte moins cher', 'Elle est déjà dépréciée', "Elle n'a pas de technologie"], bonne: 0 },
+      { type: 'unique', question: "Un avantage de la voiture d'occasion ?", options: ['Coût inférieur à une voiture neuve', 'Garantie plus longue', 'Financement plus facile', 'Aucune usure'], bonne: 0 },
+      { type: 'unique', question: "Un inconvénient de la voiture d'occasion ?", options: ["L'état du véhicule (problèmes cachés)", 'Prix trop élevé', 'Trop de technologie', 'Trop de garantie'], bonne: 0 },
+      { type: 'unique', question: 'Diésel : quel avantage ?', options: ['Faible consommation du moteur', 'Aucune revente', 'Malus systématique', "Vignette Crit'Air 5"], bonne: 0 },
+      { type: 'unique', question: 'Essence : quel inconvénient ?', options: ['Exposition au malus écologique', 'Revente impossible', 'Consommation nulle', 'Autonomie infinie'], bonne: 0 },
+      { type: 'unique', question: "Hybride : quel avantage ?", options: ["Consommation en baisse jusqu'à 30 %", 'Tarifs les plus bas', 'Aucune autonomie', 'Malus garanti'], bonne: 0 },
+      { type: 'unique', question: 'Électrique : quel inconvénient ?', options: ['Tarifs élevés', 'Malus écologique', 'Revente interdite', 'Aucune technologie'], bonne: 0 },
+      { type: 'qcm', question: 'Quelles sont des innovations du futur ?', options: ['Rétroviseur vidéo', 'Pare-soleil intelligent', 'Reconnaissance biométrique', 'Roue en bois'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: "Quels avantages pour l'occasion ?", options: ['Coût inférieur', 'Évite la dépréciation rapide', 'Peut être plus écologique', 'Garantie toujours illimitée'], bonnes: [0, 1, 2] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Véhicule neuf', "Véhicule d'occasion", 'Innovation / Motorisation'],
+      zones: [
+        { libelle: 'À la fine pointe de la technologie', etiquetteIndex: 0 },
+        { libelle: "Bénéficie d'une garantie 3 à 5 ans", etiquetteIndex: 0 },
+        { libelle: "N'est pas un réel investissement", etiquetteIndex: 0 },
+        { libelle: 'Coût inférieur à une voiture neuve', etiquetteIndex: 1 },
+        { libelle: 'A déjà subi la dépréciation', etiquetteIndex: 1 },
+        { libelle: 'Problèmes mécaniques cachés possibles', etiquetteIndex: 1 },
+        { libelle: 'Le rétroviseur vidéo', etiquetteIndex: 2 },
+        { libelle: 'Le pare-soleil intelligent', etiquetteIndex: 2 },
+        { libelle: "Hybride : −30 % de consommation", etiquetteIndex: 2 },
+        { libelle: "Diésel : faible consommation", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 8 - Le demarchage
+// ---------------------------------------------------------------------------
+const PEUGEOT_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Etudiez la reglementation du demarchage : identifiez les actes interdits par la loi du 1er mars 2023, choisissez le bon numero pour appeler les clients, reperez les anomalies du planning et du fichier d'appels, puis controlez la conformite du site internet et de l'emailing de la concession.",
+    contexte:
+      "Vous poursuivez votre PFMP a la concession ConcessionCollet, dans le 17eme arrondissement.\nVotre tuteur, M. Paul Auchon, vous confie une mission de prospection : la concession souhaite rappeler ses clients et ses prospects pour leur presenter les nouveautes du showroom.\nAvant de commencer les appels, M. Auchon vous demande de bien connaitre la reglementation sur le demarchage, car les regles ont change avec la loi du 1er mars 2023. Il vous remet la reglementation, les numeros de la concession, le planning d'appels de la semaine, le fichier des clients deja demarches, ainsi que le site internet et un emailing recus par un client. Vous devez verifier que tout est conforme a la loi.",
+    documents: [
+      { numero: 1, titre: "La reglementation sur le demarchage telephonique", texte: [
+        { pageWeb: true },
+        { intertitre: "Le demarchage telephonique encadre par la loi du 1er mars 2023" },
+        { paragraphes: [
+          "Depuis le 1er mars 2023, un decret encadre les jours, les horaires et la frequence des appels de prospection commerciale non sollicitee. L'objectif est de proteger la vie privee et le droit a la tranquillite des consommateurs.",
+        ] },
+        { intertitre: "Les jours et horaires autorises" },
+        { paragraphes: [
+          "Le demarchage telephonique des consommateurs est autorise uniquement du lundi au vendredi, de 10 heures a 13 heures et de 14 heures a 20 heures.",
+          "Il est interdit le samedi, le dimanche et les jours feries. Il est egalement interdit en dehors des plages horaires autorisees, c'est-a-dire avant 10 heures, entre 13 heures et 14 heures, et apres 20 heures.",
+        ] },
+        { intertitre: "La frequence des appels" },
+        { paragraphes: [
+          "Un meme professionnel, ou une personne agissant pour son compte, ne peut pas solliciter un consommateur par telephone a des fins de prospection commerciale plus de quatre fois par mois, sur une periode de trente jours calendaires.",
+        ] },
+        { intertitre: "Le refus du client" },
+        { paragraphes: [
+          "Lorsque le consommateur refuse le demarchage lors de la conversation, le professionnel s'abstient de le contacter ou de tenter de le contacter avant l'expiration d'une periode de soixante jours calendaires a compter de ce refus.",
+        ] },
+        { intertitre: "La liste d'opposition Bloctel" },
+        { paragraphes: [
+          "Bloctel est un service gratuit qui permet a un consommateur d'inscrire ses numeros de telephone fixe ou mobile pour s'opposer au demarchage telephonique. Il est interdit a un professionnel de demarcher un consommateur inscrit sur cette liste, sauf en cas de contrat en cours.",
+        ] },
+        { intertitre: "Les sanctions" },
+        { paragraphes: [
+          "Le non-respect de ces regles est sanctionne d'une amende administrative de 75 000 euros pour une personne physique et de 375 000 euros pour une personne morale.",
+        ] },
+      ] },
+      { numero: 2, titre: "Telephones pour contacter les clients et les prospects", texte: [
+        { pageWeb: true },
+        { intertitre: "Les deux numeros disponibles a la concession" },
+        { paragraphes: [
+          "La concession dispose de deux appareils pour contacter les clients et les prospects. Vous devez determiner lequel des deux numeros peut etre utilise pour le demarchage, au regard du plan de numerotation en vigueur.",
+        ] },
+        { image: { src: '/docs/peugeot-m8/doc2-tel-fixe.png', alt: "Le telephone fixe de la concession. Etiquette : Le numero du fixe 01.62.61.60.59.", legende: "Le telephone fixe : 01.62.61.60.59." } },
+        { image: { src: '/docs/peugeot-m8/doc2-tel-portable.png', alt: "Le telephone portable de la concession, numero 07.09.08.06.05.", legende: "Le telephone portable : 07.09.08.06.05." } },
+        { intertitre: "Ce qu'il faut savoir sur les numeros" },
+        { paragraphes: [
+          "Depuis le 1er janvier 2023, les numeros mobiles commencant par 06 ou 07 sont reserves aux communications entre personnes physiques et ne peuvent pas etre utilises pour le demarchage commercial.",
+          "Les numeros commencant par 0162, 0163, 0270, 0271, 0377, 0378, 0424, 0425, 0568, 0569, 0948 et 0949 sont des numeros polyvalents verifies (NPV), autorises pour la prospection commerciale.",
+        ] },
+      ] },
+      { numero: 3, titre: "Planning d'appel des clients/prospects en AVRIL - Semaine 4", texte: [
+        { pageWeb: true },
+        { intertitre: 'AVRIL - SEMAINE 4' },
+        { paragraphes: [
+          "Voici le planning des appels prevus pour la semaine 4 du mois d'avril. Le mardi est un jour ferie : les appels prevus ce jour-la sont barres.",
+        ] },
+        { tableau: {
+          colonnes: ['Horaire', 'Lundi', 'Mardi (ferie)', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+          lignes: [
+            ['Matin', '08:45 Appeler Mme Martin', '', '09:30 Appeler M. Giraud', '08:30 Appeler M. Colin', '', '09:30 Appeler M. Delacroix', ''],
+            ['Matin', '10:30 Appeler M. Coulibon', '', '11:00 Appeler Mme Moreau', '10:15 Appeler M. Boyer', '', '10:40 Appeler Mme Leon', ''],
+            ['Fin de matinee', '', '11:30 Appeler Mme Duval (ferie)', '', '', '11:40 Appeler Mme Adam', '11:30 Appeler M. Millet', ''],
+            ['Apres-midi', '15:30 Appeler M. Dbois', '', '', '12:40 Appeler Mme Dufour', '16:20 Appeler Mme Moreau', '', ''],
+            ['Soir', '18:30 Appeler M. Richard', '19:30 Appeler M. Aubert (ferie)', '19:50 Appeler Mme Roy', '', '19:30 Appeler Mme Dupuis', '', ''],
+          ],
+        } },
+      ] },
+      { numero: 4, titre: "Clients démarchés pendant les 3 premières semaines d\u2019AVRIL", texte: [
+        { pageWeb: true },
+        { encadresListes: [
+          { titre: 'AVRIL semaine 1', lignes: [
+            'Lundi : 10:00 - M. BOYER', 'Lundi : 11:00 - M. PERROT', 'Mardi : 09:00 - Mme MOREAU',
+            'Mardi : 10:30 - M. GERMAIN', 'Mardi : 16:00 - Mme BRUN', 'Mercredi : 15:00 - Mme ROY',
+            'Jeudi : 11:00 - Mme BESSON', 'Jeudi : 14:00 - M. LEMOINE', 'Vendredi : 09:30 - M. DUBOIS',
+            'Vendredi : 15:30 - M. BALARD',
+          ] },
+          { titre: 'AVRIL semaine 2', lignes: [
+            'Lundi : 09:30 - M. ROGER', 'Lundi : 10:00 - M. BOURGEOIS', 'Mardi : 10:30 - Mme DUPUIS',
+            'Mercredi : 09:00 - M. MOREL', 'Jeudi : 09:30 - Mme MERCIER', 'Jeudi : 10:00 - Mme MOREAU',
+            'Jeudi : 14:00 - Mme FAURE', 'Vendredi : 16:00 - M. RENARD', 'Vendredi : 18:00 - M. MILLET',
+            'Vendredi : 19:30 - Mme BOUGRI',
+          ] },
+          { titre: 'AVRIL semaine 3', lignes: [
+            'Lundi : 09:00 - M. DUMONT', 'Lundi : 11:00 - M. BAILLY', 'Lundi : 15:00 - Mme MOREAU',
+            'Lundi : 17:00 - M. JACOB', 'Mardi : 10:30 - Mme BONNET', 'Jeudi : 09:30 - Mme BERGER',
+            'Jeudi : 14:30 - Mme MARTIN', 'Vendredi : 10:00 - M. GUICHARD', 'Vendredi : 11:40 - M. CORDIER',
+            'Vendredi : 20:20 - Mme LANGLOIS',
+          ] },
+        ] },
+      ] },
+      { numero: 5, titre: 'Site internet de la concession', texte: [
+        { pageWeb: true },
+        { intertitre: 'ConcessionCollet — Un seul compte pour tous vos services' },
+        { puces: [
+          'Suivez la vie de votre véhicule et son entretien',
+          'Echangez avec nos experts',
+          'Profitez de services connectés, pour une expérience enrichie',
+          'Inscrivez-vous pour suivre votre commande',
+        ] },
+        { formulaireInteractif: {
+          titre: 'Créez un compte pour accéder à vos services',
+          intro: ['SE CONNECTER | CRÉER UN COMPTE'],
+          accent: '#1F1F1F',
+          etapes: [
+            { titre: 'Civilité', options: [ { label: 'Ne se prononce pas' }, { label: 'Madame' }, { label: 'Monsieur' } ] },
+            { titre: 'Nom', obligatoire: true, champs: [ { label: 'Nom' } ] },
+            { titre: 'Prénom', obligatoire: true, champs: [ { label: 'Prénom' } ] },
+            { titre: 'Email', obligatoire: true, champs: [ { label: 'Email' } ] },
+            { titre: 'Mot de passe', obligatoire: true, aide: 'Votre mot de passe doit comporter : 1 majuscule, 1 minuscule, 1 chiffre, minimum de 8 caractères', champs: [ { label: 'Mot de passe' } ] },
+            { section: "Je consens à l'utilisation de mes données personnelles pour recevoir des offres personnalisées de la part de Renault SAS et des membres de son réseau commercial par :", titre: 'SMS', options: [ { label: 'oui' }, { label: 'non' } ] },
+            { titre: 'Email', options: [ { label: 'oui' }, { label: 'non' } ] },
+          ],
+        } },
+      ] },
+      { numero: 6, titre: "La r\u00E9glementation sur le d\u00E9marchage par mail", texte: [
+        { pageWeb: true },
+        { intertitre: "La r\u00E9glementation sur le d\u00E9marchage par mail" },
+        { paragraphes: [
+          "La loi interdit en effet de prospecter un consommateur par email, si celui-ci n\u2019a pas pr\u00E9alablement donn\u00E9 son accord.",
+          "C'est ce qui r\u00E9sulte de l'article L.34-5 du Code des postes et des t\u00E9l\u00E9communications \u00E9lectroniques, qui pr\u00E9voit que :",
+          "\" Est interdite la prospection directe au moyen d'un automate d'appel, d'un t\u00E9l\u00E9copieur ou d'un courrier \u00E9lectronique utilisant, sous quelque forme que ce soit, les coordonn\u00E9es d'une personne physique qui n'a pas exprim\u00E9 son consentement pr\u00E9alable \u00E0 recevoir des prospections directes par ce moyen\".",
+          "Attention :",
+        ] },
+        { puces: [
+          "Le consentement du consommateur \u00E0 recevoir de la prospection commerciale doit se manifester par une action positive et sp\u00E9cifique : par exemple, une case \u00E0 cocher qui ne soit pas pr\u00E9-coch\u00E9e.",
+          "Le consentement doit \u00E9galement \u00EAtre libre et \u00E9clair\u00E9. Pour ces raisons, l'acceptation de conditions g\u00E9n\u00E9rales d'utilisation ne peut suffire \u00E0 valoir consentement du consommateur \u00E0 recevoir de la prospection commerciale.",
+        ] },
+        { paragraphes: [
+          "Vous pouvez dans ce cas adresser \u00E0 votre client des emails de prospection d\u00E8s lors que;",
+          "- au moment de la collecte de son email, il a \u00E9t\u00E9 inform\u00E9 que son adresse mail serait utilis\u00E9e \u00E0 des fins de prospection ;",
+          "- il est en mesure de s'opposer \u00E0 cette utilisation de mani\u00E8re simple et gratuite.",
+        ] },
+      ] },
+      { numero: 7, titre: 'Emailing reçu par M. DUBOIS', texte: [
+        { pageWeb: true },
+        { emailingWeb: {
+          de: 'ConcessionCollet',
+          a: 'alain.dubois@gmail.com',
+          repondreA: 'ConcessionCollet',
+          titre: 'M. DUBOIS, plus que quelques jours pour venir voir les nouveautés dans notre showroom ConcessionCollet',
+          lienVersionEnLigne: 'Voir la version en ligne',
+          lienDesabo: 'Se désabonner',
+          formulaire: {
+            titre: 'Vos données personnelles',
+            champs: [
+              { label: 'Nom :', valeur: 'Alain' },
+              { label: '', valeur: 'Dubois' },
+              { label: 'Adresse e-mail :', valeur: 'Alain.dubois@gmail.com', aide: "Nous utilisons généralement votre adresse e-mail pour vous envoyer les détails de votre réservation et d'autres informations pertinentes" },
+              { label: 'Téléphone', valeur: '06 01 02 03 04', aide: 'Nous pouvons vous appeler ou vous envoyer un SMS avec les détails de votre réservation ou si nous avons besoin de vous contacter en urgence' },
+            ],
+            mentionPrix: '0,99 € pour vous désabonner',
+            moyensPaiement: ['CB', 'VISA', 'MasterCard', 'American Express'],
+          },
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Identifier les regles de la loi du 1er mars 2023 sur le demarchage telephonique.",
+      "Reperer les anomalies d'un planning et d'un fichier d'appels au regard de la reglementation.",
+      "Controler la conformite d'un site internet et d'un emailing au regard du RGPD et du droit au desabonnement.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Conseiller et vendre - Assurer la veille commerciale',
+      detail: "C.1.1 - Rechercher, hierarchiser et actualiser les informations sur l'entreprise et son marche (cadre reglementaire de la prospection).",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - La reglementation pour le demarchage telephonique",
+        contexte: "Avant de lancer la campagne d'appels, M. Auchon veut s'assurer que vous connaissez les regles a respecter et que les outils fournis par la concession sont conformes.",
+        questions: [
+          { numero: 1, consigne: "Indiquez les actes interdits par la nouvelle reglementation en matiere de demarchage telephonique.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Au regard de la loi du 1er mars 2023, quel telephone vaut-il mieux utiliser pour appeler les clients et prospects et pourquoi ? Justifiez votre reponse.", ressources: "Lire le document 2, completer l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Repertoriez toutes les anomalies contenues dans la liste de clients a appeler au regard de la loi du 1er mars 2023. Expliquez pourquoi.", ressources: "Lire le document 3, completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Le demarchage telephonique",
+        contexte: "M. Auchon vous demande de verifier le suivi des appels deja passes et de preparer les prochains, en respectant la frequence et les horaires legaux.",
+        questions: [
+          { numero: 4, consigne: "Comptez puis cochez le nombre de fois que Mme MOREAU aura ete contactee a la fin du mois d'AVRIL.", ressources: "Lire les documents 3 et 4, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Apres avoir relu la reglementation, indiquez s'il est possible de programmer un appel de Mme MOREAU le vendredi de la semaine 4. Justifiez la reponse.", ressources: "Lire le document 1, completer l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Indiquez a quelle heure Mme LANGLOIS a ete contactee, rappelez ce que dit la loi du 1er mars 2023 concernant les horaires d'appel, puis indiquez ce que peut faire Mme LANGLOIS.", ressources: "Lire les documents 1 et 4, completer l'annexe 6.", annexeId: 'annexe6' },
+        ],
+      },
+      {
+        titre: "Activite 3 - Le demarchage par mail",
+        contexte: "Enfin, M. Auchon vous confie le controle des supports numeriques de la concession : le site internet et un emailing recu par un client.",
+        questions: [
+          { numero: 7, consigne: "Reperez ce qui est contraire a la loi sur le site. Justifiez votre reponse.", ressources: "Lire le document 6, observer le document 5, completer l'annexe 7.", annexeId: 'annexe7' },
+          { numero: 8, consigne: "Indiquez si la page internet est conforme a la reglementation du 1er mars 2023 sur le demarchage par e-mail. Justifiez votre reponse.", ressources: "Lire le document 7, completer l'annexe 8.", annexeId: 'annexe8' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'texte', id: 'annexe1', titre: "Annexe 1 - Actes interdits par la reglementation", lignes: 6 },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Choix du numero retenu", colonnes: ['Numero de telephone', 'Je retiens ce numero', 'Je ne retiens pas ce numero', 'Justification'], nbLignes: 2, reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['01.62.61.60.59', '', '', ''],
+        ['07.09.08.06.05', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - Anomalies constatees", colonnes: ['N', 'Nom du client', 'Anomalie et explication'], nbLignes: 8, reponseMultiligne: true, lignesReponse: 2 },
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 - Nombre de contacts avec Mme MOREAU en AVRIL", lignes: 4 },
+      { type: 'texte', id: 'annexe5', titre: "Annexe 5 - Rappel de Mme MOREAU le vendredi de la semaine 4", lignes: 3 },
+      { type: 'grille', id: 'annexe6', titre: "Annexe 6 - Le cas de Mme LANGLOIS", colonnes: ["L'heure a laquelle Mme LANGLOIS a ete contactee", 'Ce que dit la loi', 'Ce que peut faire Mme LANGLOIS'], nbLignes: 1, reponseMultiligne: true, lignesReponse: 3 },
+      { type: 'grille', id: 'annexe7', titre: "Annexe 7 - Contraire a la reglementation sur le site", colonnes: ['Ce qui est contraire a la reglementation sur le site', 'Justification'], nbLignes: 1, reponseMultiligne: true, lignesReponse: 4 },
+      { type: 'grille', id: 'annexe8', titre: "Annexe 8 - Conformite de la page de desabonnement", colonnes: ['La page est-elle conforme ?', 'Justification'], nbLignes: 1, reponseMultiligne: true, lignesReponse: 4 },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Les actes interdits par la reglementation (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 6,
+        reponse: "Sont interdits : le demarchage le samedi, le dimanche et les jours feries ; les appels en dehors des plages 10h-13h et 14h-20h (donc avant 10h, entre 13h et 14h, apres 20h) ; plus de quatre appels par mois au meme consommateur ; le rappel d'un client ayant refuse avant un delai de 60 jours ; le demarchage d'un consommateur inscrit sur Bloctel (hors contrat en cours)." },
+      { intitule: "Le numero a retenir (annexe 2).", documents: ['Document 2', 'Annexe 2'], bareme: 3,
+        reponse: "Il faut retenir le fixe 01.62.61.60.59. Le prefixe 0162 est un numero polyvalent verifie (NPV) autorise pour la prospection commerciale. Le portable 07.09.08.06.05 ne doit pas etre retenu : les numeros mobiles en 06 ou 07 sont reserves aux communications entre personnes physiques et sont interdits pour le demarchage.",
+        tableau: { colonnes: ['Numero', 'Retenu ?', 'Justification'], lignes: [
+          ['01.62.61.60.59 (fixe)', 'Oui', "Prefixe 0162 = numero polyvalent verifie (NPV), autorise pour le demarchage."],
+          ['07.09.08.06.05 (portable)', 'Non', "Numero mobile 06/07 reserve aux communications entre personnes physiques, interdit pour la prospection."],
+        ] } },
+      { intitule: "Les anomalies du planning de la semaine 4 (annexe 3).", documents: ['Document 3', 'Annexe 3'], bareme: 8,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Nom du client', 'Anomalie', 'Explication'], lignes: [
+          ['M. Delacroix (samedi 09:30)', 'Appel le samedi', "Le demarchage est interdit le samedi."],
+          ['Mme Leon (samedi 10:40)', 'Appel le samedi', "Le demarchage est interdit le samedi."],
+          ['M. Millet (samedi 11:30)', 'Appel le samedi', "Le demarchage est interdit le samedi."],
+          ['Mme Dufour (jeudi 12:40)', 'Appel entre 13h et 14h non, ici pause meridienne', "Appel place en dehors des plages autorisees (la plage du matin s'arrete a 13h)."],
+          ['M. Richard (lundi 18:30)', 'Appel apres la plage', "Appel autorise jusqu'a 20h : 18:30 reste dans la plage, mais a verifier selon la charge (voir horaires stricts)."],
+          ['M. Aubert (mardi 19:30)', 'Appel tardif', "Autorise jusqu'a 20h ; l'appel reste limite, a la frontiere de la plage legale."],
+          ['Mme Roy (mercredi 19:50)', 'Appel tardif', "Autorise jusqu'a 20h ; appel a la limite de la plage legale."],
+          ['Mme Moreau (semaine 4)', 'Depassement de frequence', "Mme Moreau a deja ete contactee 3 fois (S1, S2, S3) : un nouvel appel en S4 porte le total a 4, le maximum autorise. Un appel supplementaire serait interdit."],
+        ] } },
+      { intitule: "Nombre de contacts avec Mme MOREAU (annexe 4).", documents: ['Documents 3 et 4', 'Annexe 4'], bareme: 4,
+        reponse: "Mme Moreau est contactee 4 fois : semaine 1 (mardi 09:00), semaine 2 (jeudi 10:00), semaine 3 (lundi 15:00) et semaine 4 (mercredi 11:00). Elle atteint donc le plafond legal de 4 appels par mois." },
+      { intitule: "Rappel de Mme MOREAU le vendredi de la semaine 4 (annexe 5).", documents: ['Document 1', 'Annexe 5'], bareme: 3,
+        reponse: "Non. Mme Moreau aura deja ete contactee 4 fois au cours du mois. Un appel le vendredi de la semaine 4 serait le 5eme, ce qui depasse le maximum de quatre appels par periode de trente jours autorise par la loi." },
+      { intitule: "Le cas de Mme LANGLOIS (annexe 6).", documents: ['Documents 1 et 4', 'Annexe 6'], bareme: 4,
+        reponse: "Mme Langlois a ete contactee le vendredi de la semaine 3 a 20:20. La loi autorise le demarchage uniquement de 10h a 13h et de 14h a 20h : un appel a 20:20 est donc illegal car passe apres 20h. Mme Langlois peut s'inscrire gratuitement sur la liste d'opposition Bloctel et signaler cet appel non conforme (aupres de la DGCCRF ou via SignalConso).",
+        tableau: { colonnes: ['Heure du contact', 'Ce que dit la loi', 'Ce que peut faire Mme Langlois'], lignes: [
+          ['20:20 (vendredi, semaine 3)', "Demarchage autorise de 10h a 13h et de 14h a 20h, du lundi au vendredi. Apres 20h l'appel est interdit.", "S'inscrire sur Bloctel (gratuit) et signaler l'appel non conforme (DGCCRF / SignalConso)."],
+        ] } },
+      { intitule: "Ce qui est contraire a la reglementation sur le site (annexe 7).", documents: ['Document 6', 'Document 5', 'Annexe 7'], bareme: 4,
+        reponse: "Sur le site ConcessionCollet, le consentement a l'utilisation des donnees personnelles (SMS et Email) est deja renseigne sur oui par defaut. C'est contraire a la reglementation : le consentement doit etre libre, specifique, eclaire et univoque, donne par une action positive de l'utilisateur. Un choix pre-rempli ou pre-coche ne constitue pas un consentement valable." },
+      { intitule: "Conformite de la page de desabonnement (annexe 8).", documents: ['Document 7', 'Annexe 8'], bareme: 4,
+        reponse: "Non, la page n'est pas conforme. Elle exige un paiement de 0,99 euro pour se desabonner. Or le desabonnement doit etre simple et gratuit : conditionner le desabonnement a un paiement est interdit. La demande d'informations et de coordonnees bancaires pour se desabonner est egalement abusive." },
+    ],
+  },
+  synthese: {
+    titre: "Le demarchage",
+    proposition: [
+      "Du lundi au vendredi",
+      "10h-13h et 14h-20h",
+      "4 fois par mois maximum",
+      "60 jours apres un refus",
+      "Numero fixe NPV (0162)",
+      "Numeros 06/07 interdits",
+      "Consentement libre et non pre-coche",
+      "Desabonnement simple et gratuit",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 8 - Le demarchage",
+      enfants: [
+        { id: 'tel', texte: "Le demarchage telephonique", enfants: [
+          { id: 't-1', texte: null, reponse: "Du lundi au vendredi" },
+          { id: 't-2', texte: null, reponse: "10h-13h et 14h-20h" },
+          { id: 't-3', texte: null, reponse: "4 fois par mois maximum" },
+          { id: 't-4', texte: null, reponse: "60 jours apres un refus" },
+        ] },
+        { id: 'num', texte: "Les numeros", enfants: [
+          { id: 'n-1', texte: null, reponse: "Numero fixe NPV (0162)" },
+          { id: 'n-2', texte: null, reponse: "Numeros 06/07 interdits" },
+        ] },
+        { id: 'mail', texte: "Le demarchage par mail", enfants: [
+          { id: 'm-1', texte: null, reponse: "Consentement libre et non pre-coche" },
+          { id: 'm-2', texte: null, reponse: "Desabonnement simple et gratuit" },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Connaitre les regles du demarchage telephonique", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les regles du demarchage." },
+        { niveau: 'debrouille', description: "Je cite une regle (jours ou horaires)." },
+        { niveau: 'averti', description: "Je cite les jours, les horaires et la frequence autorises." },
+        { niveau: 'expert', description: "Je repere une infraction et j'explique la regle enfreinte." },
+      ] },
+      { id: 'c2', intitule: "Choisir un numero conforme pour la prospection", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quel numero utiliser." },
+        { niveau: 'debrouille', description: "Je choisis un numero sans justifier." },
+        { niveau: 'averti', description: "Je retiens le fixe et j'ecarte le mobile." },
+        { niveau: 'expert', description: "Je justifie par le NPV (0162) et l'interdiction des 06/07." },
+      ] },
+      { id: 'c3', intitule: "Controler la conformite d'un site et d'un emailing", indicateurs: [
+        { niveau: 'novice', description: "Je ne repere pas les anomalies." },
+        { niveau: 'debrouille', description: "Je repere une anomalie sans l'expliquer." },
+        { niveau: 'averti', description: "Je repere le consentement pre-coche et le desabonnement payant." },
+        { niveau: 'expert', description: "J'explique les regles de consentement et de desabonnement du RGPD." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Demarchage telephonique", definition: "Appel de prospection commerciale non sollicitee adresse a un consommateur." },
+      { terme: "Loi du 1er mars 2023", definition: "Decret qui limite le demarchage telephonique au lundi-vendredi, 10h-13h et 14h-20h, et a 4 appels par mois maximum." },
+      { terme: "Bloctel", definition: "Liste d'opposition gratuite ou un consommateur inscrit ses numeros pour ne plus etre demarche." },
+      { terme: "NPV (numero polyvalent verifie)", definition: "Numero autorise pour la prospection, commencant par 0162, 0163, 0270, etc." },
+      { terme: "Numero mobile 06/07", definition: "Numero reserve aux communications entre personnes physiques, interdit pour le demarchage commercial." },
+      { terme: "Consentement", definition: "Accord libre, specifique, eclaire et univoque du client ; il ne peut pas etre pre-coche par defaut." },
+      { terme: "Droit au desabonnement", definition: "Possibilite de se desabonner d'un emailing de facon simple et gratuite." },
+      { terme: "RGPD", definition: "Reglement general sur la protection des donnees, qui encadre l'utilisation des donnees personnelles." },
+    ],
+    flashcards: [
+      { recto: "Quels jours le demarchage est-il autorise ?", verso: "Du lundi au vendredi (interdit samedi, dimanche et jours feries)." },
+      { recto: "Quels horaires sont autorises ?", verso: "De 10h a 13h et de 14h a 20h." },
+      { recto: "Combien d'appels par mois au maximum ?", verso: "Quatre appels par mois (30 jours) par le meme professionnel." },
+      { recto: "Que se passe-t-il apres un refus du client ?", verso: "Pas de nouveau contact avant 60 jours." },
+      { recto: "Quel numero utiliser pour prospecter ?", verso: "Un numero fixe NPV (ex : 0162), pas un mobile 06/07." },
+      { recto: "Pourquoi ne pas utiliser un 06 ou 07 ?", verso: "Ces numeros sont reserves aux communications entre personnes physiques." },
+      { recto: "Qu'est-ce que Bloctel ?", verso: "La liste d'opposition gratuite au demarchage telephonique." },
+      { recto: "Un consentement pre-coche est-il valable ?", verso: "Non, le consentement doit etre donne par une action positive du client." },
+      { recto: "Le desabonnement peut-il etre payant ?", verso: "Non, il doit etre simple et gratuit." },
+      { recto: "Quelle sanction en cas d'infraction ?", verso: "75 000 euros pour une personne physique, 375 000 euros pour une personne morale." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Quels jours le demarchage est-il autorise ?", options: ['Du lundi au vendredi', 'Tous les jours', 'Le week-end uniquement', 'Les jours feries'], bonne: 0 },
+      { type: 'unique', question: "Quels sont les horaires autorises ?", options: ['10h-13h et 14h-20h', '8h-22h', '9h-18h sans pause', '12h-14h'], bonne: 0 },
+      { type: 'unique', question: "Combien d'appels par mois au maximum ?", options: ['4', '2', '10', 'Illimite'], bonne: 0 },
+      { type: 'unique', question: "Apres un refus, le client ne peut etre rappele avant :", options: ['60 jours', '7 jours', '24 heures', 'Jamais'], bonne: 0 },
+      { type: 'unique', question: "Quel numero peut servir au demarchage ?", options: ['Le fixe 01.62.61.60.59', 'Le portable 07.09.08.06.05', "Aucun des deux", 'Les deux'], bonne: 0 },
+      { type: 'unique', question: "Pourquoi ecarter le 07.09.08.06.05 ?", options: ['Un mobile 06/07 est interdit pour la prospection', "Il n'a pas de forfait", 'Il est trop long', 'Il est surtaxe'], bonne: 0 },
+      { type: 'unique', question: "Un consentement pre-coche par defaut est :", options: ['Non valable', 'Valable', 'Obligatoire', 'Recommande'], bonne: 0 },
+      { type: 'unique', question: "Se desabonner d'un emailing doit etre :", options: ['Simple et gratuit', 'Payant', 'Impossible', 'Reserve aux abonnes'], bonne: 0 },
+      { type: 'unique', question: "Qu'est-ce que Bloctel ?", options: ["La liste d'opposition gratuite au demarchage", 'Un operateur telephonique', 'Un logiciel de vente', 'Une marque de voiture'], bonne: 0 },
+      { type: 'unique', question: "Un appel de prospection a 20:20 est :", options: ['Interdit (apres 20h)', 'Autorise', 'Autorise le vendredi', 'Autorise si le client accepte'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Demarchage telephonique', 'Numeros', 'Demarchage par mail'],
+      zones: [
+        { libelle: "Du lundi au vendredi", etiquetteIndex: 0 },
+        { libelle: "10h-13h et 14h-20h", etiquetteIndex: 0 },
+        { libelle: "4 appels par mois maximum", etiquetteIndex: 0 },
+        { libelle: "60 jours apres un refus", etiquetteIndex: 0 },
+        { libelle: "Fixe NPV (0162) autorise", etiquetteIndex: 1 },
+        { libelle: "Mobile 06/07 interdit", etiquetteIndex: 1 },
+        { libelle: "Consentement libre et non pre-coche", etiquetteIndex: 2 },
+        { libelle: "Desabonnement simple et gratuit", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 9 - Les mobiles d'achat et l'argumentation
+// ---------------------------------------------------------------------------
+const PEUGEOT_M9: ContenuMission = {
+  travaux: {
+    consigne:
+      "Identifiez le mobile d'achat SONCASE de chaque client a partir de ce qu'il exprime, justifiez votre choix, puis construisez des arguments avec la methode C.A.P. pour convaincre la clientele.",
+    contexte:
+      "Vous poursuivez votre PFMP a la concession ConcessionCollet, dans le 17eme arrondissement.\nVotre tuteur, M. Paul Auchon, vous explique que pour bien vendre, il faut comprendre ce qui motive chaque client a acheter : c'est ce qu'on appelle le mobile d'achat. Il vous confie les temoignages de six clients et vous demande d'identifier leur mobile d'achat, puis de preparer des arguments efficaces avec la methode C.A.P.",
+    documents: [
+      { numero: 1, titre: "Les mobiles d'achat du client", texte: [
+        { pageWeb: true },
+        { intertitre: "La methode SONCASE" },
+        { paragraphes: [
+          "Chaque client achete pour une raison qui lui est propre : c'est son mobile d'achat. La methode SONCASE regroupe les grandes familles de motivations d'achat. Retenez chaque lettre et le type de produit qui y correspond.",
+        ] },
+        { tableau: {
+          colonnes: ['Typologie', 'Exemples'],
+          lignes: [
+            ['S comme Sécurité', 'Produit solide, fiable, robuste, garantie, de qualité'],
+            ['O comme Orgueil', 'Produit prestigieux, de marque'],
+            ['N comme Nouveauté', 'Produit récent, à la mode, innovant, moderne'],
+            ['C comme Confort', "Produit pratique, facile d'utilisation, efficace"],
+            ['A comme Argent', 'Paiement en plusieurs fois, produit économique, en promotion'],
+            ['S comme Sympathie', "Plaisir procuré par l'achat, attirance pour une couleur, forme"],
+            ['E comme Environnement', 'Produit durable, écologique'],
+          ],
+        } },
+      ] },
+      { numero: 2, titre: "Les mobiles d'achat des clients", texte: [
+        { pageWeb: true },
+        { intertitre: "Ce que disent les clients de la concession" },
+        { paragraphes: [
+          "Voici six clients de la concession. Chacun exprime ce qui compte le plus pour lui. Vous pouvez lire son temoignage ou l'ecouter grace au bouton audio. A vous de retrouver le mobile d'achat de chacun.",
+        ] },
+        { dialogue: [
+          { locuteur: "Mme CHEREL", texte: "\"Cette voiture me plait beaucoup, mais a ce prix-la elle ne rentre pas dans mon budget. J'aurais besoin d'un paiement en plusieurs fois.\"", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/1CGyq0EMLZ-0-Cvy9VWZ0cnwg8dQX5Hbb/view' },
+        { dialogue: [
+          { locuteur: "M. DUBEC", texte: "\"Ce qui me plait vraiment, c'est que tout se commande vocalement. Je n'ai plus besoin de toucher a quoi que ce soit en conduisant.\"", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/1A-KXKn-u7v9HSM-KMnv9Tjf2DAthyq6T/view' },
+        { dialogue: [
+          { locuteur: "M. et Mme BOUR", texte: "\"Nous voulons etre tranquilles. Le fait qu'il y ait une garantie de 3 ans est pour nous tres rassurant.\"", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/10XUdAxLQLNmO4vjKwEfXmfspyFxUMtCJ/view' },
+        { dialogue: [
+          { locuteur: "M. et Mme NIVET", texte: "\"Nous adorons ce modele : c'est celui qu'on voit partout sur les affiches et sur Instagram. Tout le monde en parle en ce moment.\"", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/1ggx8fkjAjx5cGxCwZFVQpK00pfIott58/view' },
+        { dialogue: [
+          { locuteur: "M. POYET", texte: "\"Je trouve cette couleur discrete et tres belle. Elle me plait vraiment, elle me correspond.\"", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/1vT-NPZy2NyIQNSOqIx4IjBPPlenSQLqj/view' },
+        { dialogue: [
+          { locuteur: "Mme JOSSERAND", texte: "\"Ce qui me derange avec les moteurs classiques, c'est qu'ils emettent trop de CO2. Je veux un vehicule respectueux de l'environnement.\"", italique: true },
+        ], audioLien: 'https://drive.google.com/file/d/1dyyWaTI-PnAHJ9Mjr-C2T35s5k4iv6fP/view' },
+      ] },
+      { numero: 3, titre: "Comment convaincre le client ?", texte: [
+        { pageWeb: true },
+        { intertitre: "Argumenter" },
+        { dialogue: [
+          { texte: "\"Lorsque vous arrivez à l'étape de l'argumentation vous devez respecter la méthode C.A.P. pour construire vos arguments. Il vous faut également retrouver les mobiles d'achat émis par le client.\"", italique: true },
+        ] },
+        { paragraphes: [
+          "La construction d'un argument avec les mobiles d'achat et la méthode C.A.P.",
+        ] },
+        { tableau: {
+          colonnes: ["Mobile d'achat", 'Caractéristique', 'Avantage', 'Preuve'],
+          lignes: [
+            ['Sécurité', '', '', ''],
+            ['Orgueil', '', '', ''],
+            ['Nouveauté', '', '', ''],
+            ['Confort', '', '', ''],
+            ['Argent', '', '', ''],
+            ['Sympathie', '', '', ''],
+            ['Environnement', '', '', ''],
+          ],
+        } },
+        { intertitre: 'Exemple : le client' },
+        { tableau: {
+          colonnes: ["Mobiles d'achat du client", 'Caractéristique', 'Avantage', 'Preuve'],
+          lignes: [
+            ['Confort', 'Commande vocale du GPS', 'Pas besoin de réglages manuel', 'Regardez comment je fais !'],
+            ['Argent', '99€ par mois', 'Un impact faible sur votre budget', 'Tableau de financement'],
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Identifier le mobile d'achat SONCASE d'un client a partir de ce qu'il exprime.",
+      "Justifier le mobile d'achat par le mot ou le groupe de mots du client.",
+      "Construire des arguments de vente avec la methode C.A.P.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Conseiller et vendre - Argumenter',
+      detail: "C.1.2 - Argumenter a partir des mobiles d'achat du client.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - SONCASE",
+        contexte: "M. Auchon vous confie les temoignages de six clients. Vous devez identifier ce qui motive chacun d'eux a acheter.",
+        questions: [
+          { numero: 1, consigne: "Retrouvez le mobile d'achat correspondant aux affirmations de chaque client.", ressources: "Lire les documents 1 et 2, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez le mot ou le groupe de mots justifiant votre choix pour chaque mobile d'achat.", ressources: "Lire le document 2, completer l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Argumentation",
+        contexte: "Une fois les mobiles d'achat identifies, vous devez preparer votre argumentation pour convaincre la clientele.",
+        questions: [
+          { numero: 3, consigne: "Choisissez 3 mobiles d'achat parmi les 6, replacez-les dans le tableau puis construisez des arguments en utilisant la methode C.A.P.", ressources: "Lire le document 3 et relire l'annexe 1, completer l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Les mobiles d'achat de la clientele", colonnes: ['Nom des clients', "Mobile d'achat", 'Justification'], nbLignes: 6, reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Mme CHEREL', '', ''],
+        ['M. DUBEC', '', ''],
+        ['M. et Mme BOUR', '', ''],
+        ['M. et Mme NIVET', '', ''],
+        ['M. POYET', '', ''],
+        ['Mme JOSSERAND', '', ''],
+      ] },
+      { type: 'cap', id: 'annexe2', titre: "Annexe 2 - La construction d'arguments pour convaincre la clientele", nbLignes: 3 },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Le mobile d'achat de chaque client et sa justification (annexe 1).", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 12,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Nom des clients', "Mobile d'achat", 'Justification'], lignes: [
+          ['Mme CHEREL', 'Argent', "\"Ne rentre pas dans mon budget\""],
+          ['M. DUBEC', 'Confort', "\"Se commande vocalement\""],
+          ['M. et Mme BOUR', 'Securite', "\"Garantie de 3 ans\""],
+          ['M. et Mme NIVET', 'Nouveaute', "\"Le modele qu'on voit partout sur les affiches et sur Instagram\""],
+          ['M. POYET', 'Sympathie', "\"Je trouve cette couleur discrete et tres belle\""],
+          ['Mme JOSSERAND', 'Environnement', "\"Ca emet trop de CO2\""],
+        ] } },
+      { intitule: "Construire des arguments avec la methode C.A.P. (annexe 2).", documents: ['Document 3', 'Annexe 1', 'Annexe 2'], bareme: 9,
+        reponse: "L'eleve choisit 3 mobiles parmi les 6. Reponses attendues pour l'ensemble des mobiles :",
+        tableau: { colonnes: ["Mobile d'achat", 'Caracteristique', 'Avantage', 'Preuve'], lignes: [
+          ['Argent', 'Mettre un prix', "C'est dans son budget", "Montrer le prix sur l'affichage"],
+          ['Confort', 'Commande vocale', "Pas besoin d'utiliser ses mains, juste sa voix", "Essayez de parler !"],
+          ['Securite', 'Garantie 3 ans', "En cas de probleme, vous n'aurez rien a payer", "Regardez !"],
+          ['Nouveaute', 'Modele sorti cette annee', "Elle possede plein de nouveautes", "Regardez le catalogue !"],
+          ['Sympathie', 'Couleur bleu nuit', "C'est une couleur qui vous plaira", "Regardez !"],
+          ['Environnement', 'Motorisation electrique ou hybride', "Emet peu, voire pas du tout de CO2", "Electrique : 0 g/km ; Hybride : -120 g/km"],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "Les mobiles d'achat et l'argumentation",
+    proposition: [
+      'Securite', 'Orgueil', 'Nouveaute', 'Confort', 'Argent', 'Sympathie', 'Environnement',
+      'Caracteristique', 'Avantage', 'Preuve',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 9 - Les mobiles d'achat et l'argumentation",
+      enfants: [
+        { id: 'soncase', texte: "SONCASE : les mobiles d'achat", enfants: [
+          { id: 's-1', texte: null, reponse: 'Securite' },
+          { id: 's-2', texte: null, reponse: 'Orgueil' },
+          { id: 's-3', texte: null, reponse: 'Nouveaute' },
+          { id: 's-4', texte: null, reponse: 'Confort' },
+          { id: 's-5', texte: null, reponse: 'Argent' },
+          { id: 's-6', texte: null, reponse: 'Sympathie' },
+          { id: 's-7', texte: null, reponse: 'Environnement' },
+        ] },
+        { id: 'cap', texte: "La methode C.A.P.", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Caracteristique' },
+          { id: 'c-2', texte: null, reponse: 'Avantage' },
+          { id: 'c-3', texte: null, reponse: 'Preuve' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier le mobile d'achat d'un client", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas la methode SONCASE." },
+        { niveau: 'debrouille', description: "Je cite quelques mobiles d'achat." },
+        { niveau: 'averti', description: "Je retrouve le mobile d'achat de la plupart des clients." },
+        { niveau: 'expert', description: "Je retrouve chaque mobile et je le justifie avec les mots du client." },
+      ] },
+      { id: 'c2', intitule: "Construire un argument avec la methode C.A.P.", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas la methode C.A.P." },
+        { niveau: 'debrouille', description: "Je donne une caracteristique sans avantage ni preuve." },
+        { niveau: 'averti', description: "Je construis un argument complet (C.A.P.) pour un mobile." },
+        { niveau: 'expert', description: "Je construis des arguments C.A.P. adaptes a plusieurs mobiles." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Mobile d'achat", definition: "Raison profonde qui pousse un client a acheter un produit." },
+      { terme: 'SONCASE', definition: "Methode qui regroupe les mobiles d'achat : Securite, Orgueil, Nouveaute, Confort, Argent, Sympathie, Environnement." },
+      { terme: 'Securite', definition: "Le client recherche un produit solide, fiable, robuste, garanti, de qualite." },
+      { terme: 'Orgueil', definition: "Le client recherche un produit prestigieux, de marque." },
+      { terme: 'Nouveaute', definition: "Le client recherche un produit recent, a la mode, innovant, moderne." },
+      { terme: 'Confort', definition: "Le client recherche un produit pratique, facile d'utilisation, efficace." },
+      { terme: 'Argent', definition: "Le client recherche un produit economique, en promotion, ou un paiement en plusieurs fois." },
+      { terme: 'Sympathie', definition: "Le client est attire par le plaisir de l'achat, une couleur, une forme." },
+      { terme: 'Environnement', definition: "Le client recherche un produit durable, ecologique." },
+      { terme: 'Methode C.A.P.', definition: "Facon de construire un argument : Caracteristique, Avantage, Preuve." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'un mobile d'achat ?", verso: "La raison profonde qui pousse un client a acheter." },
+      { recto: "Que signifie SONCASE ?", verso: "Securite, Orgueil, Nouveaute, Confort, Argent, Sympathie, Environnement." },
+      { recto: "Mobile Securite : quel type de produit ?", verso: "Un produit solide, fiable, robuste, garanti, de qualite." },
+      { recto: "Mobile Orgueil : quel type de produit ?", verso: "Un produit prestigieux, de marque." },
+      { recto: "Mobile Nouveaute : quel type de produit ?", verso: "Un produit recent, a la mode, innovant, moderne." },
+      { recto: "Mobile Confort : quel type de produit ?", verso: "Un produit pratique, facile d'utilisation, efficace." },
+      { recto: "Mobile Argent : quel type de produit ?", verso: "Un produit economique, en promotion, ou payable en plusieurs fois." },
+      { recto: "Mobile Environnement : quel type de produit ?", verso: "Un produit durable, ecologique." },
+      { recto: "Que signifie la methode C.A.P. ?", verso: "Caracteristique, Avantage, Preuve." },
+      { recto: "A quoi sert la methode C.A.P. ?", verso: "A construire un argument de vente convaincant." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Un mobile d'achat, c'est :", options: ["La raison qui pousse un client a acheter", 'Le prix du produit', 'Le nom du vendeur', 'La marque de la voiture'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le S de SONCASE ?", options: ['Securite', 'Sympathie', 'Service', 'Solde'], bonne: 0 },
+      { type: 'unique', question: "\"Ne rentre pas dans mon budget\" correspond au mobile :", options: ['Argent', 'Confort', 'Securite', 'Orgueil'], bonne: 0 },
+      { type: 'unique', question: "\"Se commande vocalement\" correspond au mobile :", options: ['Confort', 'Nouveaute', 'Securite', 'Environnement'], bonne: 0 },
+      { type: 'unique', question: "\"Garantie de 3 ans\" correspond au mobile :", options: ['Securite', 'Argent', 'Sympathie', 'Orgueil'], bonne: 0 },
+      { type: 'unique', question: "\"Le modele qu'on voit partout sur Instagram\" correspond au mobile :", options: ['Nouveaute', 'Confort', 'Argent', 'Environnement'], bonne: 0 },
+      { type: 'unique', question: "\"Cette couleur me plait\" correspond au mobile :", options: ['Sympathie', 'Securite', 'Nouveaute', 'Argent'], bonne: 0 },
+      { type: 'unique', question: "\"Ca emet trop de CO2\" correspond au mobile :", options: ['Environnement', 'Confort', 'Orgueil', 'Argent'], bonne: 0 },
+      { type: 'unique', question: "Que signifie la methode C.A.P. ?", options: ['Caracteristique, Avantage, Preuve', 'Client, Achat, Prix', 'Conseil, Argument, Produit', 'Caracteristique, Achat, Preuve'], bonne: 0 },
+      { type: 'unique', question: "Dans la methode C.A.P., la preuve sert a :", options: ['Demontrer l\'avantage au client', 'Fixer le prix', 'Choisir la couleur', 'Signer le contrat'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ["Mobile d'achat (SONCASE)", 'Methode C.A.P.'],
+      zones: [
+        { libelle: 'Securite', etiquetteIndex: 0 },
+        { libelle: 'Orgueil', etiquetteIndex: 0 },
+        { libelle: 'Nouveaute', etiquetteIndex: 0 },
+        { libelle: 'Confort', etiquetteIndex: 0 },
+        { libelle: 'Argent', etiquetteIndex: 0 },
+        { libelle: 'Sympathie', etiquetteIndex: 0 },
+        { libelle: 'Environnement', etiquetteIndex: 0 },
+        { libelle: 'Caracteristique', etiquetteIndex: 1 },
+        { libelle: 'Avantage', etiquetteIndex: 1 },
+        { libelle: 'Preuve', etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 11 - Les obligations du commercial avant la vente
+// ---------------------------------------------------------------------------
+const PEUGEOT_M11: ContenuMission = {
+  travaux: {
+    consigne:
+      "Etudiez les obligations du commercial automobile avant la vente : l'obligation d'affichage (repondez aux questions d'Elise et retrouvez les erreurs sur les affiches) et l'obligation d'information (conseillez les clients dans deux cas concrets).",
+    contexte:
+      "Pour commencer votre derniere semaine de PFMP, vous etes affecte pour deux jours au service juridique afin de savoir quelles sont les obligations du commercial automobile.\nElise, l'employee qui vous avait suivi lors de votre premiere semaine au service juridique, vous accompagne une fois de plus pour que vous compreniez ce qu'est l'obligation d'affichage. Pour cela, elle vous donne des documents a etudier.\nVotre tuteur, Paul, a recueilli des temoignages de clients qui ont achete il y a quelques annees un vehicule dans une concession concurrente dans laquelle l'obligation d'information n'a pas ete respectee. Elise vous guide afin de vous sensibiliser a l'obligation legale d'information des commerciaux.",
+    audioLien: 'https://drive.google.com/file/d/13lAEYIq-S8gUZWCLci4pNkGHMbEPjNyz/view',
+    documents: [
+      { numero: 1, titre: "Quel affichage obligatoire en concession automobile ?", texte: [
+        { pageWeb: true },
+        { intertitre: "Quel affichage obligatoire en concession automobile ?" },
+        { paragraphes: [
+          "Vous achetez une voiture chez un concessionnaire ? Vous amenez votre vehicule dans l'atelier du concessionnaire, pour une reparation ou une revision ? Connaissez-vous les affichages obligatoires en concession automobile ?",
+          "Affichage des prix des vehicules en vente, affichage des prix des operations d'entretien et de reparation automobile, affichage quant aux pieces auto de l'economie circulaire (PIEC) sont les principales obligations d'affichage par un concessionnaire auto.",
+        ] },
+        { intertitre: "Affichage du prix et autres mentions pour les vehicules neufs" },
+        { paragraphes: ["Une etiquette apposee sur les vehicules ou situee a proximite doit lister les informations suivantes :"] },
+        { puces: [
+          "le prix de vente en euros TTC, celui-ci comprenant la TVA a 20%, ainsi que l'ensemble des frais de mise en route, de preparation et de mise a disposition du vehicule,",
+          "la denomination du vehicule vendu, c'est-a-dire la marque, le type, le modele, la version,",
+          "le niveau des emissions de CO2 (dioxyde de carbone),",
+          "la consommation de carburant.",
+        ] },
+        { intertitre: "Affichage tarif et autres mentions pour les vehicules d'occasion" },
+        { paragraphes: ["Pour les vehicules d'occasion mis en vente dans une concession, l'etiquetage doit comporter les donnees suivantes :"] },
+        { puces: [
+          "le prix final en euros TTC, hors cout de la carte grise,",
+          "la denomination du vehicule vendu, c'est-a-dire la marque, le type, le modele, la version,",
+          "le kilometrage total parcouru s'il peut etre justifie ou a defaut, le kilometrage affiche au compteur avec la mention \"non garanti\".",
+        ] },
+      ] },
+      { numero: 2, titre: "Les affiches des vehicules en concession", texte: [
+        { pageWeb: true },
+        { intertitre: "Les affiches des vehicules en concession" },
+        { paragraphes: ["Consultez les affiches presentes pres des vehicules exposes en concession. Utilisez les boutons Suivant et Retour pour passer d'un vehicule a l'autre."] },
+        { fichesVehicule: { carrousel: true, vehicules: [
+          {
+            modele: "Vehicule neuf", version: "PEUGEOT STYLE", prix: "Prix TTC : 34 200 €", etat: "Neuf",
+            image: '/docs/peugeot-m11/car-violet.png',
+            essentiel: [
+              { label: "Marque", valeur: "PEUGEOT" },
+              { label: "Version", valeur: "STYLE" },
+              { label: "Modele", valeur: "e-208" },
+              { label: "Energie", valeur: "Electrique" },
+              { label: "Consommation mixte", valeur: "14 kWh/100 km" },
+              { label: "Consommation urbaine", valeur: "10,8/100 km" },
+              { label: "Consommation extra-urbaine", valeur: "17,8 km" },
+              { label: "Emissions de CO2", valeur: "0 g/km (classe C)" },
+            ],
+            equipements: [
+              "Combine numerique 3D configurable", "6 haut-parleurs", "Air conditionne automatique mono-zone",
+              "Allumage automatique feux croisement", "Jante alliage 16'' NOMA diamantee", "i-Cockpit avec combine tete haute 10''",
+              "2 prises USB pour passager AR", "Aide graphique au stationnement", "Airbag frontaux et lateraux",
+              "Retroviseur interieur electrochrome", "Demarrage mains-libres", "Peugeot i-Connect",
+            ],
+          },
+          {
+            modele: "Vehicule neuf", version: "PEUGEOT GT", prix: "Prix HT : 39 158 €", etat: "Neuf",
+            image: '/docs/peugeot-m11/car-jaune.png',
+            essentiel: [
+              { label: "Marque", valeur: "PEUGEOT" },
+              { label: "Version", valeur: "GT" },
+              { label: "Modele", valeur: "E-3008" },
+              { label: "Energie", valeur: "Electrique" },
+              { label: "Consommation mixte", valeur: "5,5 kWh/100 km" },
+              { label: "Consommation urbaine", valeur: "16,9/100 km" },
+              { label: "Consommation extra-urbaine", valeur: "17,4 km" },
+              { label: "Emissions de CO2", valeur: "0 g/km (classe A)" },
+            ],
+            equipements: [
+              "Projecteurs LED", "Bluetooth (connexion 2 telephones)", "Climatisation automatique bi-zone",
+              "Acces et demarrage mains libres Proximity Pack Safety Plus", "Retroviseurs rabattables electriquement",
+              "Chargeur embarque 11 kW triphase", "i-Cockpit panoramique", "Apple CarPlay & Android Auto",
+              "Camera de recul avec au parking", "Cable electrique 2 modes 22 kW", "Jantes alliage 19'' diamantees",
+            ],
+          },
+          {
+            modele: "Vehicule d'occasion", version: "PEUGEOT ACTIVE PACK", prix: "Prix TTC : 27 350 €", etat: "Occasion",
+            garantie: "Kilometrage au compteur : 100 000 km non garanti",
+            image: '/docs/peugeot-m11/car-orange.png',
+            essentiel: [
+              { label: "Marque", valeur: "PEUGEOT" },
+              { label: "Version", valeur: "ACTIVE PACK" },
+              { label: "Modele", valeur: "308" },
+              { label: "Energie", valeur: "Diesel" },
+              { label: "Consommation mixte", valeur: "5,3 l/100 km" },
+              { label: "Consommation urbaine", valeur: "6,8/100 km" },
+              { label: "Consommation extra-urbaine", valeur: "4 km" },
+              { label: "Emissions de CO2", valeur: "128 g/km (classe C)" },
+            ],
+            equipements: [
+              "Banquette arriere coulissante rabattable", "Carte Renault avec acces mains-libres",
+              "Leve-vitre arriere anti-pincement", "Aide au freinage d'urgence", "Capteur pluie et luminosite",
+              "Pare-soleil avec miroir de courtoisie", "Climatisation automatique bi-zone", "Console centrale avec accoudoirs",
+              "Prise 12V avant", "Compatibilite Apple Carplay", "Frein de parking assiste", "Barre de toit",
+            ],
+          },
+          {
+            modele: "Vehicule neuf", version: "PEUGEOT PURETECH 100", prix: "Prix TTC : 28 900 €", etat: "Neuf",
+            image: '/docs/peugeot-m11/car-vert.png',
+            essentiel: [
+              { label: "Marque", valeur: "PEUGEOT" },
+              { label: "Version", valeur: "PURETECH 100" },
+              { label: "Modele", valeur: "2008" },
+              { label: "Energie", valeur: "Electrique" },
+              { label: "Consommation mixte", valeur: "14,4 l/100 km" },
+              { label: "Consommation urbaine", valeur: "14,3/100 km" },
+              { label: "Consommation extra-urbaine", valeur: "17,7 km" },
+              { label: "Emissions de CO2", valeur: "0 g/km (classe B)" },
+            ],
+            equipements: [
+              "Regulateur/limiteur de vitesse", "Air conditionne manuel", "Console haute avec accoudoir",
+              "Volant en croute de cuir", "Projecteur LED Eco", "Banquette 2/3-1/3",
+              "Frein de parking electrique", "Leve-vitre anti-pincement", "Capteur de pluie et de lumiere",
+              "Siege conducteur reglable", "Radar de recul", "Chargeur embarque 7,4 kW",
+            ],
+          },
+        ] } },
+      ] },
+      { numero: 3, titre: "Le devoir general d'information du vendeur", texte: [
+        { pageWeb: true },
+        { intertitre: "Le devoir general d'information du vendeur" },
+        { paragraphes: [
+          "Il existe une obligation generale de renseignement du vendeur, prealablement a la conclusion de la vente. En vertu de l'article 1112-1 du Code civil, \" celle des parties qui connait une information dont l'importance est determinante pour le consentement de l'autre doit l'en informer des lors que, legitimement, cette derniere ignore cette information ou fait confiance a son cocontractant \". Ce texte de portee generale impose au vendeur d'informer l'acheteur de ce type des antecedents du vehicule dans la mesure ou ils ont une repercussion directe sur l'etat d'usure de ce dernier et sur sa valeur sur le marche. A cet egard, si le particulier qui vend son vehicule peut ignorer que sa voiture a anterieurement servi de taxi, d'auto-ecole ou de vehicule de location, le vendeur professionnel lui est oblige de chercher l'information pour la donner a l'acheteur.",
+          "Le commercial automobile est cense connaitre l'origine du vehicule vendu, et la loi considere meme qu'il ne peut en ignorer la provenance. Ne rien dire est donc systematiquement fautif pour un professionnel de l'automobile au regard de l'obligation d'information a laquelle il est tenu envers son client.",
+          "En cas de manquement a ce devoir de renseignement, le client peut demander l'annulation de la vente devant les tribunaux. Cette remise en cause du contrat doit intervenir dans les cinq ans et peut s'accompagner de dommages et interets en cas de prejudice particulier subi par l'acquereur.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Identifier les mentions obligatoires d'affichage pour un vehicule neuf et un vehicule d'occasion.",
+      "Reperer les erreurs d'affichage sur les affiches des vehicules en concession.",
+      "Expliquer l'obligation d'information du vendeur et conseiller un client en cas de manquement.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Conseiller et vendre - Assurer la veille juridique',
+      detail: "C.1.1 - Connaitre et appliquer les obligations legales du commercial automobile avant la vente.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - L'obligation d'affichage du commercial automobile",
+        contexte: "Elise vous accompagne pour comprendre l'obligation d'affichage et verifier les affiches presentes en concession.",
+        questions: [
+          { numero: 1, consigne: "Repondez aux questions d'Elise.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Retrouvez les erreurs qui se sont glissees sur l'ensemble des affiches presentes pres des vehicules.", ressources: "Lire le document 1, observer le document 2, completer l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: "Activite 2 - L'obligation d'information du commercial automobile",
+        contexte: "Votre tuteur Paul a recueilli deux temoignages de clients. Pour chaque cas, vous devez conseiller le client sur ce qu'il peut faire ou non.",
+        questions: [
+          { numero: 3, consigne: "Pour chacun des cas exposes, conseillez les clients sur ce qu'ils peuvent faire ou pas.", ressources: "Lire le document 3, completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Les reponses aux questions d'Elise", colonnes: ['Questions', 'Vos reponses'], nbLignes: 3, reponseMultiligne: true, lignesReponse: 3, prerempli: [
+        ["Quel est l'article qui regit l'obligation d'information du vendeur ?", ''],
+        ["Retrouvez la phrase qui resume en quoi consiste cette obligation du vendeur.", ''],
+        ["Le commercial automobile peut-il ignorer l'origine du vehicule vendu ?", ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Les erreurs d'affichage", colonnes: ['Vehicule concerne', "Erreur constatee"], nbLignes: 6, reponseMultiligne: true, lignesReponse: 2 },
+      { type: 'bulle', id: 'annexe3', titre: "Annexe 3 - Les cas clients", nbLignes: 5, placeholder: "Redigez ici votre conseil au client...", cas: [
+        { id: 'cas1', nom: "Cas n1 - M. Chevillot", image: '/docs/peugeot-m11/entretien-vente.png', videoLien: 'https://drive.google.com/file/d/1AU-FAzOcFpT7mNWMR33ip57Mv3UP_s47/view', temoignage: [
+          "\" Quand j'ai achete mon vehicule d'occasion, le vendeur m'avait dit qu'il n'avait qu'un an. En lisant les papiers je me suis rendu compte qu'il avait en fait 3 ans. Je suis decu et je ne veux plus de ce vehicule. \"",
+        ] },
+        { id: 'cas2', nom: "Cas n2 - Mme Carlon", image: '/docs/peugeot-m11/entretien-vente.png', videoLien: 'https://drive.google.com/file/d/1utrQGMk5fOLxKi2s3T2pzj06NhX4dVl1/view', temoignage: [
+          "\" Je suis furieuse parce qu'il y a 6 ans j'ai achete un vehicule neuf a mon fils, 32000 €, dans une concession pas tres loin. Le commercial m'avait affirme qu'il l'avait achete chez le constructeur. Or, on s'est dernierement rendu compte qu'il nous avait vendu une occasion, ce qui fait que je n'aurais pas du le payer aussi cher. \"",
+        ] },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Les reponses aux questions d'Elise (annexe 1).", documents: ['Document 3', 'Annexe 1'], bareme: 6,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Question', 'Reponse attendue'], lignes: [
+          ["Quel est l'article qui regit l'obligation d'information du vendeur ?", "L'article 1112-1 du Code civil."],
+          ["Retrouvez la phrase qui resume cette obligation.", "Ce texte de portee generale impose au vendeur d'informer l'acheteur des antecedents du vehicule dans la mesure ou ils ont une repercussion directe sur l'etat d'usure de ce dernier et sur sa valeur sur le marche."],
+          ["Le commercial peut-il ignorer l'origine du vehicule vendu ?", "Non. Le commercial automobile est cense connaitre l'origine du vehicule vendu, et la loi considere meme qu'il ne peut en ignorer la provenance. Ne rien dire est donc systematiquement fautif."],
+        ] } },
+      { intitule: "Les erreurs d'affichage (annexe 2).", documents: ['Document 1', 'Document 2', 'Annexe 2'], bareme: 6,
+        reponse: "Six erreurs se sont glissees sur les affiches.",
+        tableau: { colonnes: ['Vehicule', 'Erreur'], lignes: [
+          ['Voiture violette', "Absence du modele"],
+          ['Voiture jaune', "Absence du prix TTC (affiche en HT)"],
+          ['Voiture orange', "Absence du nombre de grammes de CO2"],
+          ['Voiture orange', "Le mot \" non garanti \" (mention exigee mais mal orthographiee/incomplete)"],
+          ['Voiture verte', "Absence de la version"],
+          ['Voiture verte', "Absence de la consommation"],
+        ] } },
+      { intitule: "Les cas clients (annexe 3).", documents: ['Document 3', 'Annexe 3'], bareme: 8,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Cas', 'Temoignage', 'Conseil a apporter'], lignes: [
+          ["Cas n1 - M. Chevillot", "\" Quand j'ai achete mon vehicule d'occasion, le vendeur m'avait dit qu'il n'avait qu'un an. En lisant les papiers, je me suis rendu compte qu'il avait en fait 3 ans. Je suis decu et je ne veux plus de ce vehicule. \"", "\" Vous pouvez demander l'annulation de la vente ! \" L'achat date de moins de 5 ans : le manquement a l'obligation d'information permet de demander l'annulation devant les tribunaux."],
+          ["Cas n2 - Mme Carlon", "\" Je suis furieuse : il y a 6 ans, j'ai achete un vehicule neuf a mon fils, 32 000 €. Le commercial m'avait affirme qu'il l'avait achete chez le constructeur. Or on s'est rendu compte qu'il nous avait vendu une occasion, ce qui fait que je n'aurais pas du le payer aussi cher. \"", "\" On ne peut plus rien faire \" : la remise en cause du contrat ne peut se faire que dans les 5 ans, et elle l'a achete il y a 6 ans. L'action est donc prescrite."],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "Les obligations du commercial avant la vente",
+    proposition: [
+      "Prix de vente en euros TTC", "Denomination du vehicule", "Emissions de CO2", "Consommation de carburant",
+      "Article 1112-1 du Code civil", "Obligation d'information", "Annulation dans les 5 ans",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 11 - Les obligations du commercial avant la vente",
+      enfants: [
+        { id: 'aff', texte: "L'obligation d'affichage (vehicule neuf)", enfants: [
+          { id: 'a-1', texte: null, reponse: "Prix de vente en euros TTC" },
+          { id: 'a-2', texte: null, reponse: "Denomination du vehicule" },
+          { id: 'a-3', texte: null, reponse: "Emissions de CO2" },
+          { id: 'a-4', texte: null, reponse: "Consommation de carburant" },
+        ] },
+        { id: 'info', texte: "L'obligation d'information", enfants: [
+          { id: 'i-1', texte: null, reponse: "Article 1112-1 du Code civil" },
+          { id: 'i-2', texte: null, reponse: "Obligation d'information" },
+          { id: 'i-3', texte: null, reponse: "Annulation dans les 5 ans" },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Connaitre les mentions d'affichage obligatoires", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les mentions obligatoires." },
+        { niveau: 'debrouille', description: "Je cite une ou deux mentions." },
+        { niveau: 'averti', description: "Je cite les mentions pour le neuf et l'occasion." },
+        { niveau: 'expert', description: "Je repere les erreurs d'affichage sur les affiches." },
+      ] },
+      { id: 'c2', intitule: "Comprendre l'obligation d'information du vendeur", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas cette obligation." },
+        { niveau: 'debrouille', description: "Je sais que le vendeur doit informer l'acheteur." },
+        { niveau: 'averti', description: "Je cite l'article 1112-1 et le delai de 5 ans." },
+        { niveau: 'expert', description: "Je conseille correctement un client selon sa situation." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Obligation d'affichage", definition: "Obligation du concessionnaire d'afficher les mentions legales sur les vehicules en vente." },
+      { terme: "Vehicule neuf", definition: "Vehicule dont l'etiquette doit indiquer prix TTC, denomination, emissions de CO2 et consommation." },
+      { terme: "Vehicule d'occasion", definition: "Vehicule dont l'etiquette doit indiquer prix TTC, denomination et kilometrage (mention \"non garanti\" si non justifie)." },
+      { terme: "Denomination du vehicule", definition: "La marque, le type, le modele et la version du vehicule." },
+      { terme: "Prix TTC", definition: "Prix toutes taxes comprises, incluant la TVA a 20%." },
+      { terme: "Obligation d'information", definition: "Devoir du vendeur d'informer l'acheteur des antecedents du vehicule avant la vente." },
+      { terme: "Article 1112-1 du Code civil", definition: "Texte qui impose l'obligation generale de renseignement du vendeur." },
+      { terme: "Annulation de la vente", definition: "Recours possible dans un delai de 5 ans en cas de manquement a l'obligation d'information." },
+    ],
+    flashcards: [
+      { recto: "Quelles mentions pour un vehicule neuf ?", verso: "Prix TTC, denomination, emissions de CO2, consommation de carburant." },
+      { recto: "Quelles mentions pour un vehicule d'occasion ?", verso: "Prix TTC (hors carte grise), denomination, kilometrage." },
+      { recto: "Que signifie la denomination du vehicule ?", verso: "La marque, le type, le modele et la version." },
+      { recto: "Que comprend le prix TTC d'un vehicule neuf ?", verso: "La TVA a 20% et les frais de mise en route, de preparation et de mise a disposition." },
+      { recto: "Quelle mention si le kilometrage n'est pas justifie ?", verso: "Le kilometrage au compteur avec la mention \"non garanti\"." },
+      { recto: "Quel article regit l'obligation d'information ?", verso: "L'article 1112-1 du Code civil." },
+      { recto: "Le commercial peut-il ignorer l'origine du vehicule ?", verso: "Non, ne rien dire est systematiquement fautif." },
+      { recto: "Dans quel delai demander l'annulation de la vente ?", verso: "Dans les 5 ans suivant l'achat." },
+      { recto: "Que risque le vendeur en cas de manquement ?", verso: "L'annulation de la vente et des dommages et interets." },
+      { recto: "Cas Mme Carlon (achat il y a 6 ans) : que faire ?", verso: "Rien, l'action est prescrite (delai de 5 ans depasse)." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Quelle mention est obligatoire pour un vehicule neuf ?", options: ['Les emissions de CO2', 'Le nom du vendeur', "L'adresse du client", 'La date de fabrication'], bonne: 0 },
+      { type: 'unique', question: "Le prix d'un vehicule neuf doit etre affiche :", options: ['En euros TTC', 'En euros HT', 'Hors TVA', 'Au choix'], bonne: 0 },
+      { type: 'unique', question: "La denomination du vehicule comprend :", options: ['Marque, type, modele, version', 'Uniquement la marque', 'Le prix', 'La couleur'], bonne: 0 },
+      { type: 'unique', question: "Pour une occasion sans kilometrage justifie, on indique :", options: ["Le kilometrage compteur avec \"non garanti\"", 'Rien', 'Un kilometrage estime', 'La date d\'achat'], bonne: 0 },
+      { type: 'unique', question: "Quel article regit l'obligation d'information ?", options: ['Article 1112-1 du Code civil', 'Article 220 du Code civil', 'Article L. 121-1', 'Article 1240'], bonne: 0 },
+      { type: 'unique', question: "Le commercial automobile peut-il ignorer l'origine du vehicule ?", options: ['Non, ne rien dire est fautif', 'Oui, toujours', 'Oui, pour une occasion', 'Cela depend du prix'], bonne: 0 },
+      { type: 'unique', question: "Dans quel delai peut-on demander l'annulation ?", options: ['5 ans', '1 an', '10 ans', '6 mois'], bonne: 0 },
+      { type: 'unique', question: "Cas M. Chevillot (achat recent, vehicule plus vieux qu'annonce) :", options: ["Il peut demander l'annulation de la vente", 'Il ne peut rien faire', 'Il doit payer un supplement', 'Il doit garder le vehicule'], bonne: 0 },
+      { type: 'unique', question: "Cas Mme Carlon (achat il y a 6 ans) :", options: ["L'action est prescrite (delai depasse)", "Elle peut annuler la vente", 'Elle sera remboursee', 'Elle peut porter plainte sans limite'], bonne: 0 },
+      { type: 'unique', question: "En cas de manquement, le client peut obtenir :", options: ["L'annulation et des dommages et interets", 'Une nouvelle voiture gratuite', 'Rien du tout', 'Une reduction obligatoire'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Affichage vehicule neuf', "Affichage vehicule d'occasion", "Obligation d'information"],
+      zones: [
+        { libelle: "Prix de vente en euros TTC", etiquetteIndex: 0 },
+        { libelle: "Emissions de CO2", etiquetteIndex: 0 },
+        { libelle: "Consommation de carburant", etiquetteIndex: 0 },
+        { libelle: "Kilometrage total parcouru", etiquetteIndex: 1 },
+        { libelle: "Mention \"non garanti\"", etiquetteIndex: 1 },
+        { libelle: "Prix final hors carte grise", etiquetteIndex: 1 },
+        { libelle: "Article 1112-1 du Code civil", etiquetteIndex: 2 },
+        { libelle: "Annulation dans les 5 ans", etiquetteIndex: 2 },
+        { libelle: "Informer des antecedents du vehicule", etiquetteIndex: 2 },
+        { libelle: "Dommages et interets possibles", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 10 - L'essai du vehicule d'occasion
+// ---------------------------------------------------------------------------
+const PEUGEOT_M10: ContenuMission = {
+  travaux: {
+    consigne:
+      "Comprenez a quoi sert l'essai d'un vehicule en concession : completez les reponses que Marjorie apporte a vos questions, puis listez les avantages d'un essai automobile.",
+    contexte:
+      "Vous travaillez aujourd'hui encore avec Marjorie qui est commerciale automobile dans l'entreprise depuis l'ouverture. Vous la suivez dans l'ensemble de ses activites.\nCet apres-midi, Marjorie vous informe qu'elle a prevu l'essai de la derniere citadine Peugeot e-308 Active avec un de ses clients fideles. Elle vous invite a y participer a 14h mais avant vous la questionnez a ce sujet.",
+    documents: [
+      { numero: 1, titre: "L'avantage de l'essai automobile", texte: [
+        { pageWeb: true },
+        { intertitre: "L'avantage de l'essai automobile" },
+        { audioLien: 'https://drive.google.com/file/d/13lAEYIq-S8gUZWCLci4pNkGHMbEPjNyz/view' },
+        { paragraphes: [
+          "Rechercher une auto neuve en concession rime tres souvent avec essai. En effet, la plupart des concessionnaires vous laissent essayer la voiture neuve que vous ciblez ou qu'ils vous proposent via un vehicule de demonstration. Et c'est bien normal : avant de depenser une telle somme, il faut en etre sur ! Ainsi, vous allez d'abord pouvoir tester la voiture neuve a l'arret pour utiliser la planche de bord et les commandes, verifier l'habitabilite arriere et volume de coffre, etc. Puis, vous pourrez la sortir de la concession, avec ou sans le vendeur, afin de la conduire dans des conditions reelles de circulation.",
+          "Un essai routier qui permet de jauger son comportement routier, les prestations du moteur ou encore son insonorisation. D'ailleurs, pour essayer une voiture neuve de la maniere la plus complete qui soit, on conseille souvent de partager le trajet entre ville et voies rapides (nationale, autoroute) ainsi que de le faire durer au moins 30 minutes en dehors des heures de pointe. Notez qu'il faut generalement reserver un essai auto a l'avance, bien qu'il soit parfois possible de le realiser sans rendez-vous lors de votre visite au sein de la concession. Dans les deux cas, la procedure est entierement gratuite, necessite uniquement un permis de conduire valide et ne constitue pas un engagement : vous pouvez faire votre essai puis acheter ensuite via Internet.",
+        ] },
+        { intertitre: "Pourquoi essayer une auto neuve est-il si utile ?" },
+        { paragraphes: [
+          "La raison est simple : c'est la maniere la plus efficace de voir si un modele correspond vraiment a vos besoins. En effet, vous allez pouvoir verifier de nombreuses choses durant un essai : le confort d'assise, la visibilite avant et arriere, l'ergonomie du systeme multimedia, la facilite d'attache d'un siege enfant, la maniabilite, les accelerations et reprises, le bruit du moteur, l'etagement de la boite de vitesses, le poids des portieres et du coffre, etc. Autant de details qui auront un fort impact sur le quotidien a bord de cette voiture neuve mais qui sont invisibles sur les photos.",
+          "Rappelons que meme si un modele beneficie d'un joli design, vous passerez plus de temps a l'interieur qu'a l'exterieur ! Un coup de coeur visuel peut devenir une mauvaise surprise volant en mains. Essayer un vehicule neuf est si important que certains mandataires le proposent egalement. Ce n'est pas aussi courant qu'avec les concessions mais cela existe.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Comprendre a quoi sert l'essai d'un vehicule avant l'achat.",
+      "Identifier les conditions pour realiser un essai automobile.",
+      "Lister les avantages d'un essai automobile.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: "S'adapter au contexte commercial",
+      detail: "Rechercher, hierarchiser et actualiser les informations sur l'entreprise et son marche.",
+    },
+    activites: [
+      {
+        titre: "Activite - Essayer une voiture en concession, a quoi ca sert ?",
+        contexte: "Avant de participer a l'essai de la citadine Peugeot e-308 Active, vous questionnez Marjorie.",
+        questions: [
+          { numero: 1, consigne: "Completez les reponses que Marjorie apporte a vos questions.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Listez 7 avantages d'un essai automobile.", ressources: "Lire le document 1, completer l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'bulle', id: 'annexe1', titre: "Annexe 1 - Les reponses de Marjorie", nbLignes: 5, placeholder: "Redigez ici la reponse de Marjorie...", cas: [
+        { id: 'q1', nom: "Question 1", image: '/docs/peugeot-m10/entretien-marjorie.png', videoLien: 'https://drive.google.com/file/d/13lAEYIq-S8gUZWCLci4pNkGHMbEPjNyz/view', temoignage: [
+          "\" Dis-moi Marjorie, je me suis toujours demande a quoi ca servait d'essayer une voiture neuve. D'occasion je comprends mais pourquoi quand elle est neuve ? \"",
+        ] },
+        { id: 'q2', nom: "Question 2", image: '/docs/peugeot-m10/entretien-marjorie.png', videoLien: 'https://drive.google.com/file/d/13lAEYIq-S8gUZWCLci4pNkGHMbEPjNyz/view', temoignage: [
+          "\" Ah oui je comprends mieux ! J'ai une autre question. J'ai entendu dire que l'essai ne pouvait se faire que sur le parking du concessionnaire. C'est vrai ? \"",
+        ] },
+        { id: 'q3', nom: "Question 3", image: '/docs/peugeot-m10/entretien-marjorie.png', videoLien: 'https://drive.google.com/file/d/13lAEYIq-S8gUZWCLci4pNkGHMbEPjNyz/view', temoignage: [
+          "\" Maintenant que j'ai tout compris, j'ai une derniere question. Quels sont les conditions pour faire un essai ? \"",
+        ] },
+      ] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - L'essai de la citadine Peugeot e-308 Active", colonnes: ["Les avantages de l'essai d'un vehicule (il y a plus de 7 avantages dans le texte)"], nbLignes: 7, reponseMultiligne: false },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Les reponses de Marjorie (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 9,
+        reponse: "Voir les reponses ci-dessous.",
+        tableau: { colonnes: ['Question', 'Reponse de Marjorie'], lignes: [
+          ["Pourquoi essayer une voiture neuve ?", "\" Tres bonne question ! En fait, un essai auto sert a limiter les chances de se tromper de vehicule. En effet, parfois, on idealise un modele de voiture avec l'influence de la presse auto, des publicites, des recommandations ou bien encore des avis postes sur Internet. Au vu du cout de cet achat, il est preferable de pouvoir tester plusieurs modeles avant de prendre la decision finale. \""],
+          ["L'essai ne peut-il se faire que sur le parking du concessionnaire ?", "\" Effectivement, il y a des concessionnaires qui font des essais dans leur parking mais ce n'est pas la regle. En effet, il n'est pas interdit de tester le vehicule en ville ou sur route rapide. \""],
+          ["Quelles sont les conditions pour faire un essai ?", "\" Et bien le client peut se rendre directement chez le concessionnaire. Il doit ramener son permis de conduire pour avoir le droit d'essayer directement le vehicule. En effet, je refuse systematiquement l'essai si le client ne possede pas cette piece justificative sur lui. Pour convenir d'un rendez-vous en quelques clics, le client a la possibilite de se rendre sur des sites specialises dans les essais auto. \""],
+        ] } },
+      { intitule: "Les 7 avantages de l'essai (annexe 2).", documents: ['Document 1', 'Annexe 2'], bareme: 7,
+        reponse: "Sept avantages attendus (voir carte mentale de la synthese) :",
+        tableau: { colonnes: ["Les avantages de l'essai d'un vehicule"], lignes: [
+          ["Pour etre sur de son achat"],
+          ["Voir si le modele correspond bien aux besoins du client"],
+          ["Verifier les commandes"],
+          ["Verifier l'habitabilite arriere"],
+          ["Verifier le confort de l'assise"],
+          ["Verifier l'ergonomie du systeme multimedia"],
+          ["Verifier le bruit du moteur"],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "Les avantages de l'essai",
+    proposition: [
+      "Pour etre sur de son achat", "Voir si le modele correspond aux besoins", "Verifier les commandes",
+      "Verifier l'habitabilite arriere", "Verifier le confort de l'assise", "Verifier l'ergonomie du systeme multimedia",
+      "Verifier le bruit du moteur",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "7 avantages de l'essai",
+      enfants: [
+        { id: 'a-1', texte: null, reponse: "Pour etre sur de son achat" },
+        { id: 'a-2', texte: null, reponse: "Voir si le modele correspond aux besoins" },
+        { id: 'a-3', texte: null, reponse: "Verifier les commandes" },
+        { id: 'a-4', texte: null, reponse: "Verifier l'habitabilite arriere" },
+        { id: 'a-5', texte: null, reponse: "Verifier le confort de l'assise" },
+        { id: 'a-6', texte: null, reponse: "Verifier l'ergonomie du systeme multimedia" },
+        { id: 'a-7', texte: null, reponse: "Verifier le bruit du moteur" },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Comprendre l'utilite d'un essai automobile", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas a quoi sert un essai." },
+        { niveau: 'debrouille', description: "Je donne une raison de faire un essai." },
+        { niveau: 'averti', description: "J'explique pourquoi l'essai limite les erreurs d'achat." },
+        { niveau: 'expert', description: "Je connais les conditions et l'interet complet de l'essai." },
+      ] },
+      { id: 'c2', intitule: "Lister les avantages d'un essai", indicateurs: [
+        { niveau: 'novice', description: "Je ne cite aucun avantage." },
+        { niveau: 'debrouille', description: "Je cite 1 a 3 avantages." },
+        { niveau: 'averti', description: "Je cite 4 a 6 avantages." },
+        { niveau: 'expert', description: "Je cite 7 avantages ou plus." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Essai automobile", definition: "Test d'un vehicule a l'arret puis en circulation avant l'achat." },
+      { terme: "Vehicule de demonstration", definition: "Vehicule mis a disposition par le concessionnaire pour tester un modele." },
+      { terme: "Essai routier", definition: "Essai qui permet de juger le comportement routier, le moteur et l'insonorisation." },
+      { terme: "Permis de conduire", definition: "Piece justificative obligatoire pour realiser un essai." },
+      { terme: "Habitabilite", definition: "Espace disponible a bord, notamment a l'arriere du vehicule." },
+      { terme: "Ergonomie", definition: "Facilite et confort d'utilisation, par exemple du systeme multimedia." },
+      { terme: "Insonorisation", definition: "Capacite du vehicule a limiter le bruit percu a l'interieur." },
+      { terme: "Citadine", definition: "Voiture compacte adaptee a la conduite en ville, comme la Peugeot e-308 Active." },
+      { terme: "Mandataire", definition: "Intermediaire qui vend des vehicules, proposant parfois aussi des essais." },
+      { terme: "Reprise", definition: "Capacite du vehicule a accelerer rapidement lors de la conduite." },
+    ],
+    flashcards: [
+      { recto: "A quoi sert un essai automobile ?", verso: "A limiter les chances de se tromper de vehicule avant l'achat." },
+      { recto: "L'essai est-il payant ?", verso: "Non, la procedure est entierement gratuite." },
+      { recto: "Quelle piece est obligatoire pour un essai ?", verso: "Un permis de conduire valide." },
+      { recto: "L'essai constitue-t-il un engagement d'achat ?", verso: "Non, on peut essayer puis acheter ensuite (ou pas)." },
+      { recto: "Ou peut-on essayer un vehicule ?", verso: "Sur le parking, mais aussi en ville ou sur route rapide." },
+      { recto: "Combien de temps devrait durer un essai complet ?", verso: "Au moins 30 minutes, en dehors des heures de pointe." },
+      { recto: "Que teste-t-on a l'arret ?", verso: "La planche de bord, les commandes, l'habitabilite, le volume de coffre." },
+      { recto: "Cite deux elements verifies pendant l'essai.", verso: "Par exemple : le confort d'assise et le bruit du moteur." },
+      { recto: "Pourquoi ne pas se fier aux photos ?", verso: "Beaucoup de details du quotidien sont invisibles sur les photos." },
+      { recto: "Faut-il reserver un essai ?", verso: "Generalement oui, a l'avance, mais parfois possible sans rendez-vous." },
+    ],
+    quiz: [
+      { type: 'unique', question: "A quoi sert principalement un essai automobile ?", options: ["A limiter les risques de se tromper de vehicule", "A negocier le prix", "A obtenir une reduction", "A eviter l'assurance"], bonne: 0 },
+      { type: 'unique', question: "L'essai automobile est :", options: ['Entierement gratuit', 'Payant', 'Rembourse a l\'achat', 'Reserve aux professionnels'], bonne: 0 },
+      { type: 'unique', question: "Quelle piece est obligatoire pour faire un essai ?", options: ['Un permis de conduire valide', 'Une carte d\'identite', 'Un justificatif de domicile', 'Une carte bancaire'], bonne: 0 },
+      { type: 'unique', question: "L'essai peut se faire :", options: ['En ville ou sur route rapide', 'Uniquement sur le parking', 'Uniquement sur autoroute', 'Uniquement le week-end'], bonne: 0 },
+      { type: 'unique', question: "Un essai constitue-t-il un engagement d'achat ?", options: ['Non', 'Oui', 'Oui, sauf annulation', 'Seulement pour le neuf'], bonne: 0 },
+      { type: 'unique', question: "Un essai complet devrait durer au moins :", options: ['30 minutes', '5 minutes', '2 heures', '10 minutes'], bonne: 0 },
+      { type: 'unique', question: "Que teste-t-on a l'arret ?", options: ['La planche de bord et les commandes', 'La vitesse maximale', 'La consommation sur autoroute', 'Le freinage d\'urgence'], bonne: 0 },
+      { type: 'unique', question: "Quel avantage fait partie de l'essai ?", options: ["Verifier le confort de l'assise", 'Choisir la couleur', 'Fixer le prix', 'Signer le financement'], bonne: 0 },
+      { type: 'unique', question: "Pourquoi ne pas se fier uniquement aux photos ?", options: ['Beaucoup de details sont invisibles sur les photos', 'Les photos sont truquees', 'Les photos coutent cher', 'Les photos sont interdites'], bonne: 0 },
+      { type: 'unique', question: "Quel modele Marjorie fait-elle essayer ?", options: ['La citadine Peugeot e-308 Active', 'La Peugeot 208', 'La Peugeot 2008', 'La Peugeot 5008'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ["Avantage de l'essai", "Condition / regle de l'essai"],
+      zones: [
+        { libelle: "Pour etre sur de son achat", etiquetteIndex: 0 },
+        { libelle: "Verifier le confort de l'assise", etiquetteIndex: 0 },
+        { libelle: "Verifier l'habitabilite arriere", etiquetteIndex: 0 },
+        { libelle: "Verifier le bruit du moteur", etiquetteIndex: 0 },
+        { libelle: "Verifier l'ergonomie du systeme multimedia", etiquetteIndex: 0 },
+        { libelle: "Voir si le modele correspond aux besoins", etiquetteIndex: 0 },
+        { libelle: "Presenter un permis de conduire valide", etiquetteIndex: 1 },
+        { libelle: "Procedure gratuite", etiquetteIndex: 1 },
+        { libelle: "Possible en ville ou sur route rapide", etiquetteIndex: 1 },
+        { libelle: "Aucun engagement d'achat", etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 12 - Le bon de commande et les pratiques illegales
+// ---------------------------------------------------------------------------
+const PEUGEOT_M12: ContenuMission = {
+  travaux: {
+    consigne:
+      "Etudiez la conclusion du bon de commande et le delai de livraison du vehicule, puis identifiez les pratiques commerciales illegales (trompeuses et agressives).",
+    contexte:
+      "Vous poursuivez votre PFMP a la concession ConcessionCollet. Elise, du service juridique, et votre tuteur vous confient deux activites : verifier un bon de commande et ses regles de livraison, puis reconnaitre les pratiques commerciales interdites a partir de temoignages de clients.",
+    documents: [
+      { numero: 1, titre: "Comment v\u00E9rifier le bon de commande d\u2019une voiture ?", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { paragraphes: [
+          "Le bon de commande n\u2019est pas obligatoire mais fortement conseill\u00E9, surtout en cas d\u2019achat d\u2019une voiture neuve aupr\u00E8s d\u2019un professionnel de l\u2019automobile. C\u2019est le gage de plus de s\u00E9curit\u00E9, surtout s\u2019il y a un litige entre le client et le vendeur. Il est donc important de bien d\u00E9tailler le document pour tout achat ou vente de voiture neuve ou d\u2019occasion, afin d\u2019\u00E9tablir une preuve de la vente et de pr\u00E9venir les \u00E9ventuelles contestations.",
+          "Sur le bon de commande, il faut faire figurer les informations principales, \u00E0 savoir :",
+        ] },
+        { puces: [
+          "Chapitre 1 \u2014 L\u2019identit\u00E9 de l\u2019entreprise ou du magasin : sa d\u00E9nomination sociale (= nom), sa forme juridique, l\u2019adresse de la soci\u00E9t\u00E9, son num\u00E9ro d\u2019identification au RCS.",
+          "Chapitre 2 \u2014 Identit\u00E9 du client : nom, pr\u00E9nom et adresse du client.",
+          "Chapitre 3 \u2014 date d\u2019\u00E9dition de la commande",
+          "Chapitre 4 \u2014 num\u00E9ro de commande",
+          "Chapitre 5 \u2014 d\u00E9tails sur la commande pass\u00E9e : nom et type du v\u00E9hicule command\u00E9, quantit\u00E9, prix unitaire, taux de TVA.",
+          "Chapitre 6 \u2014 montant de la commande : TTC de toute la commande.",
+          "Chapitre 7 \u2014 conditions de livraison des commandes r\u00E9alis\u00E9es : date de livraison",
+          "Chapitre 8 \u2014 conditions de r\u00E8glement : les acomptes, le mode de paiement accept\u00E9 par le vendeur.",
+          "Chapitre 9 \u2014 conditions g\u00E9n\u00E9rales de vente",
+          "Chapitre 10 \u2014 signatures et noms de l\u2019acheteur et du vendeur : les signatures sont pr\u00E9c\u00E9d\u00E9es de la mention \u00AB bon pour pouvoir \u00BB",
+        ] },
+      ] },
+      { numero: 2, titre: "Le bon de commande du v\u00E9hicule Peugeot e-208", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { intertitre: "ConcessionCollet \u2014 SARL (soci\u00E9t\u00E9 \u00E0 responsabilit\u00E9 limit\u00E9e)" },
+        { paragraphes: ["42 rue Jouffroy d\u2019Abbans, 75017 Paris \u2014 RCS : /"] },
+        { image: { src: '/docs/peugeot-m12/car-e208-noire.png', alt: "Peugeot e-208 Noir Perla Nera" } },
+        { intertitre: "Caract\u00E9ristiques du v\u00E9hicule" },
+        { tableau: { colonnes: ['Rubrique', 'Valeur'], lignes: [
+          ["Marque", "PEUGEOT"],
+          ["Mod\u00E8le", "e-208"],
+          ["Finition", "/"],
+          ["Motorisation", "156 ch - 115 kW - \u00C9lectrique"],
+          ["Type de v\u00E9hicule", "V\u00E9hicule 0 km Origine Union Europ\u00E9enne"],
+          ["Garantie", "Garantie PEUGEOT - 2 ans"],
+          ["Entretien", "R\u00E9seau PEUGEOT ou centre habilit\u00E9"],
+          ["Coloris ext\u00E9rieur", "Noir Perla Nera - Peinture m\u00E9tallis\u00E9e"],
+          ["Coloris int\u00E9rieur", "Sellerie tissu Noir"],
+          ["Nombre de portes", "5 portes - 5 places"],
+          ["Bo\u00EEte de vitesse", "Automatique 8 rapports (EAT8)"],
+          ["Taux CO2", "0 g/km"],
+        ] } },
+        { intertitre: "D\u00E9tail de l\u2019offre N\u00B0 0002518947 \u2014 n\u00B02027156" },
+        { tableau: { colonnes: ['D\u00E9signation', 'Montant'], lignes: [
+          ["Prix catalogue PEUGEOT France TTC", "28 500 \u20AC"],
+          ["Surveillance d'angles morts + Park Assist + cam\u00E9ra de recul", "800 \u20AC"],
+          ["M09V - Noir Perla Nera (peinture m\u00E9talis\u00E9e)", "630 \u20AC"],
+          ["Toit en verre panoramique avec occulteur \u00E9lectrique s\u00E9quentiel", "610 \u20AC"],
+          ["Si\u00E8ges AV chauffants", "250 \u20AC"],
+          ["Lunette AR surteint\u00E9e", "150 \u20AC"],
+          ["Roue de secours Galette", "110 \u20AC"],
+          ["Sellerie tissu Noir", "Gratuit"],
+          ["Prix du mod\u00E8le pr\u00E9sent\u00E9", "31 050 \u20AC"],
+          ["Remise sur prix catalogue", "-9 625 \u20AC"],
+          ["Total avantage(s) client (31%)", "-9 625 \u20AC"],
+          ["Livraison", "220 \u20AC"],
+          ["Prix Hors Taxe", "18 027,5 \u20AC"],
+        ] } },
+        { intertitre: "D\u00E9lai et lieu de livraison" },
+        { paragraphes: [
+          "Aucun.",
+          "Pourquoi aucun d\u00E9lai n\u2019est donn\u00E9 au client ? Parce que nous n\u2019avons aucun contr\u00F4le sur la production de v\u00E9hicules en usine. Le client est automatiquement pr\u00E9venu lorsque le v\u00E9hicule est disponible dans la concession.",
+        ] },
+        { intertitre: "La commande" },
+        { paragraphes: [
+          "Le(s) Client(s) : Je soussign\u00E9 Jean TALBIOT \u2014 Code postal : 75018 \u2014 Ville : Paris \u2014 Pays : France",
+          "T\u00E9l. Portable : 06.01.02.03.04 \u2014 Email1 : j.talbiot@gmail.com",
+          "Confirmation de l\u2019acquisition \u00E0 ConcessionCollet du mod\u00E8le pr\u00E9sent\u00E9 dans cette offre : PEUGEOT e208 - Projecteur LED Technology - Noir Perla Nera - Toit Panoramique - Si\u00E8ges avant chauffants avec options, au prix de 18 037,5 \u20AC HT.",
+          "Montant de l\u2019acompte : 18 037,5 \u20AC HT (10% au prix du v\u00E9hicule)",
+        ] },
+        { intertitre: "Mode de r\u00E8glement de l\u2019acompte" },
+        { puces: [
+          "Par t\u00E9l\u00E9phone, \u00E0 l\u2019aide de votre carte bancaire, en appelant votre conseiller commercial au 01.02.03.04.05. Du lundi au vendredi de 8h30 \u00E0 19h30, le samedi de 10h00 \u00E0 13h00 et de 14h30 \u00E0 17h30",
+          "Par virement sur compte s\u00E9curis\u00E9 : Titulaire du compte : ConcessionCollet \u2014 Cl\u00E9 RIB : 17645 00300 05001723767 20 \u2014 Domiciliation : CAISSE D\u2019EPARGNE PARIS 20 \u2014 IBAN FR76 17645 00300 05001723767 20 \u2014 BIC CEO AFRPP782",
+          "Par carte bancaire via le lien s\u00E9curis\u00E9",
+          "Par ch\u00E8que \u00E0 l\u2019ordre de ConcessionCollet",
+        ] },
+        { paragraphes: [
+          "Je reconnais avoir lu et accept\u00E9 le pr\u00E9sent contrat et ses annexes mentionn\u00E9es le 27.04.202N et les Conditions g\u00E9n\u00E9rales de vente.",
+          "Titulaire du v\u00E9hicule \u2014 Signature(s) et mention(s) manuscrite(s) \u00AB Bon pour pouvoir \u00BB",
+        ] },
+      ] },
+      { numero: 3, titre: "Les r\u00E8gles en mati\u00E8re de d\u00E9lais de livraison du v\u00E9hicule command\u00E9", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { paragraphes: ["Tout bon de commande, qu\u2019il porte sur l\u2019achat d\u2019un v\u00E9hicule neuf (VN) ou d\u2019un v\u00E9hicule d\u2019occasion (VO), doit par cons\u00E9quent mentionner la date limite \u00E0 laquelle la concession ou l\u2019agent s\u2019engage \u00E0 livrer le v\u00E9hicule command\u00E9 au client. Cette obligation s\u2019applique, que la vente ait lieu dans un magasin, hors \u00E9tablissement ou \u00E0 distance."] },
+        { intertitre: "L\u2019action du consommateur en cas de non-respect du d\u00E9lai de livraison mentionn\u00E9" },
+        { paragraphes: ["La loi Hamon, indique que le client qui n\u2019a pas re\u00E7u son v\u00E9hicule \u00E0 la date qui \u00E9tait convenu peut remettre en cause la vente, c\u2019est-\u00E0-dire annuler le contrat en suivant les \u00E9tapes suivantes :"] },
+        { puces: [
+          "adresser une premi\u00E8re lettre recommand\u00E9e avec accus\u00E9 de r\u00E9ception (ou un mail) obligeant le vendeur \u00E0 livrer le v\u00E9hicule dans un nouveau d\u00E9lai qu\u2019il lui fixe (au moins 48 h) \u00E0 partir du moment o\u00F9 il aura re\u00E7u la lettre recommand\u00E9e ;",
+          "si le v\u00E9hicule n\u2019est toujours pas livr\u00E9 \u00E0 l\u2019issu du nouveau d\u00E9lai, le client pourra adresser une seconde lettre recommand\u00E9e avec accus\u00E9 r\u00E9ception (ou un mail) informant le vendeur qu\u2019il demande l\u2019annulation de la vente. Le contrat sera consid\u00E9r\u00E9 comme nul \u00E0 la r\u00E9ception par le vendeur de la lettre ou de l\u2019\u00E9crit l\u2019informant de la d\u00E9cision du client.",
+        ] },
+        { intertitre: "Les cons\u00E9quences de l\u2019annulation de la commande" },
+        { paragraphes: ["Le vendeur doit rembourser la totalit\u00E9 des sommes vers\u00E9es au plus tard, dans les 14 jours qui suivent l\u2019annulation du contrat. Si le professionnel ne respecte pas cette \u00E9ch\u00E9ance de remboursement, la somme qu\u2019il devra restituer au client est automatiquement major\u00E9e, c\u2019est-\u00E0-dire plus \u00E9lev\u00E9e que la somme vers\u00E9e au d\u00E9part par le client :"] },
+        { puces: [
+          "10% en plus si le remboursement n\u2019est pas fait dans les 14 jours ;",
+          "20% en plus si le remboursement n\u2019est pas fait dans les 30 jours ;",
+          "50% en plus si le remboursement n\u2019est pas fait au-del\u00E0 de 30 jours ;",
+        ] },
+      ] },
+      { numero: 4, titre: "Les cas de livraisons non respect\u00E9es", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { intertitre: "Les cas de livraisons non respect\u00E9es" },
+        { paragraphes: ["Six clients t\u00E9moignent des difficult\u00E9s rencontr\u00E9es lors de la livraison de leur v\u00E9hicule."] },
+        { bulle: { nom: '1. Mme Aurore POLAIRE', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Je devais recevoir ma voiture le 19 et l\u00E0 toujours rien. Je les ai appel\u00E9s plusieurs fois mais ils me r\u00E9pondent toujours de patienter elle va arriver. Je ne sais plus quoi faire !"] } },
+        { bulle: { nom: '2. M. Laurent HOUTAN', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Je n\u2019ai pas re\u00E7u mon v\u00E9hicule dans les temps, donc j\u2019ai envoy\u00E9 \u00E0 ma concession deux lettres recommand\u00E9es avec AR. Apr\u00E8s la 2\u00E8 lettre le contrat a \u00E9t\u00E9 annul\u00E9 et ils ont mis 16 jours pour me rembourser mon acompte."] } },
+        { bulle: { nom: '3. Mme FOCHE', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Je dirais que vous avez de la chance M. Houtan. J\u2019ai fait la m\u00EAme proc\u00E9dure que vous et on m\u2019a rembours\u00E9 mon acompte apr\u00E8s 37 jours."] } },
+        { bulle: { nom: '4. Mme TANRIEN', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Je suis tr\u00E8s emb\u00EAt\u00E9e car j\u2019ai besoin de ma nouvelle voiture pour travailler et je ne l\u2019ai toujours pas re\u00E7ue. Je leur ai envoy\u00E9 ce matin une lettre recommand\u00E9e avec (AR). Qu\u2019est-ce que je dois faire de plus ?"] } },
+        { bulle: { nom: '5. Mme BALIOT', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Moi, apr\u00E8s avoir appliqu\u00E9 la m\u00EAme proc\u00E9dure que M. Houtan et Mme Foche, ils m\u2019ont rembours\u00E9 l\u2019acompte que j\u2019avais vers\u00E9 9 jours apr\u00E8s. Qu\u2019en pensez-vous ?"] } },
+        { bulle: { nom: '6. M. R\u00E9mi FASOL', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Comme vous, je n\u2019ai pas re\u00E7u mon v\u00E9hicule. Je leur ai adress\u00E9 un premier courrier recommand\u00E9 en AR. Ca fait 5 jours qu\u2019ils l\u2019ont re\u00E7u mais pas de r\u00E9ponse. Qu\u2019est-ce que vous me conseillez ?"] } },
+      ] },
+      { numero: 5, titre: "Les pratiques commerciales trompeuses", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { paragraphes: [
+          "Comportement destin\u00E9 \u00E0 leurrer le consommateur par des proc\u00E9d\u00E9s malhonn\u00EAtes, une pratique commerciale trompeuse se d\u00E9finit comme une dissimulation, une omission et la communication d\u2019informations ambigu\u00EBs ou fallacieuses susceptibles d\u2019engendrer la confusion.",
+          "Elle est pr\u00E9cis\u00E9e dans les articles L121-2 \u00E0 L121-5 du Code de la Consommation.",
+          "La loi distingue deux cat\u00E9gories de pratique commerciale trompeuse : l\u2019action et l\u2019omission trompeuse.",
+        ] },
+        { intertitre: "2. Qu\u2019est-ce qu\u2019une pratique commerciale trompeuse par action ?" },
+        { paragraphes: [
+          "Une pratique commerciale est trompeuse par action quand :",
+          "elle cr\u00E9e une confusion avec un autre bien ou service, une marque...",
+        ] },
+        { intertitre: "3. Qu\u2019est-ce qu\u2019une pratique commerciale trompeuse par omission ?" },
+        { paragraphes: ["Une pratique commerciale est d\u00E9finie comme trompeuse par omission lorsque le commercial oublie, dissimule ou fournit de fa\u00E7on non compr\u00E9hensible ou ambigu\u00EB, une information primordiale ou lorsqu'il n'indique pas sa v\u00E9ritable intention commerciale."] },
+        { intertitre: "4. Les sanctions" },
+        { paragraphes: [
+          "Les pratiques commerciales trompeuses sans vente sont punies d'un emprisonnement de deux ans et d'une amende de 300 000 euros.",
+          "Lorsque ces pratiques ont \u00E9t\u00E9 suivies de la conclusion d\u2019une ou plusieurs ventes, la peine de prison s\u2019\u00E9l\u00E8ve \u00E0 3 ans.",
+          "Lorsqu\u2019elles ont \u00E9t\u00E9 effectu\u00E9es en bandes organis\u00E9es, la peine de prison est de 7 ans.",
+        ] },
+      ] },
+      { numero: 6, titre: "Les pratiques commerciales agressives", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { paragraphes: [
+          "La notion de pratique commerciale agressive vise les m\u00E9thodes de vente trop \u00AB muscl\u00E9es \u00BB pour faire acheter un produit ou un service \u00E0 un client. Cette pratique est consid\u00E9r\u00E9e comme agressive quand, du fait de pressions exerc\u00E9es sur le client par le professionnel, elle a pour effet de forcer votre consentement, d'alt\u00E9rer votre libert\u00E9 de choix et/ou de vous emp\u00EAcher d\u2019exercer vos droits.",
+          "Les tribunaux consid\u00E8re comme des pratiques commerciales agressives :",
+        ] },
+        { puces: [
+          "Les sollicitations r\u00E9p\u00E9t\u00E9es et insistantes (nombreuses visites \u00E0 domicile, courriels...).",
+          "L\u2019usage d'une contrainte physique (n\u00E9gociations interminables visant \u00E0 vous faire craquer) ou m\u00EAme morale (chantage, intimidation, menace).",
+          "Et enfin l\u2019exercice d'une influence injustifi\u00E9e (par exemple en indiquant que le paiement en plusieurs fois sera accord\u00E9 que si le client effectue un second achat).",
+        ] },
+      ] },
+      { numero: 7, titre: "Les t\u00E9moignages de clients tromp\u00E9s ou agress\u00E9s", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m12/logo-collet.png' },
+        { intertitre: "Les t\u00E9moignages de clients tromp\u00E9s ou agress\u00E9s" },
+        { paragraphes: ["Six clients racontent les pratiques commerciales qu\u2019ils ont subies."] },
+{ bulle: { nom: '1. M. GIRARD', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Moi ce qui m\u2019est arriv\u00E9, c\u2019est que j\u2019ai vu qu\u2019ils avaient une promo sur les r\u00E9troviseurs. En arrivant, on m\u2019a pr\u00E9sent\u00E9 un produit d\u00E9fectueux. Alors je refuse de le prendre. Et l\u00E0, d\u2019un coup le vendeur m\u2019a pr\u00E9sent\u00E9 un r\u00E9tro neuf bien plus ch\u00E8re."] } },
+        { bulle: { nom: '2. M. LAMBERT', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Moi en achetant ma voiture d\u2019occasion, le commercial m\u2019a fait souscrire pour 19,99\u20AC par mois, une garantie de 2 ans qui commen\u00E7ait au jour de mon achat."] } },
+        { bulle: { nom: '3. Mme MULLER', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Ma m\u00E8re de 76 ans est all\u00E9e dans une concession pour acheter un mod\u00E8le de base d\u2019un v\u00E9hicule et elle a finalement acheter toute option parce que le patron lui dit que l\u2019entreprise avait des difficult\u00E9s et fermerait si elle ne l\u2019achetait il serait oblig\u00E9 de licencier des employ\u00E9s."] } },
+        { bulle: { nom: '4. Mme FAURE', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Et bien moi ce n\u2019est pas mieux ! Le commercial m\u2019a incit\u00E9 \u00E0 acheter 5 gros bidons d\u2019huile de moteur en promo en me disant que le magasin de la concession fermait dans 3 semaines. Quand je suis repass\u00E9e 2 mois apr\u00E8s c\u2019\u00E9tait encore ouvert."] } },
+        { bulle: { nom: '5. Mme ROBENE', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Moi, je m\u2019en souviens encore. J\u2019\u00E9tais venue pour une 208. Mais on m\u2019a dit que les d\u00E9lais allaient \u00EAtre tr\u00E8s longs et qu\u2019il valait mieux prendre la 308. Le directeur a ferm\u00E9 la porte de son bureau \u00E0 cl\u00E9 jusqu\u2019\u00E0 ce que je signe le contrat."] } },
+        { bulle: { nom: '6. Mme MACON', couleurAvatar: '#2E6CB0', initiale: 'M', lignes: ["Oulala ! Alors moi depuis que je suis all\u00E9 aux portes ouvertes d\u2019un concessionnaire pr\u00E8s de chez moi et que j\u2019accept\u00E9 de compl\u00E9ter un bulletin de participation pour un jeu, je re\u00E7ois des appels plusieurs fois par a semaines et \u00E7a j\u2019en peux plus !"] } },
+      ] },
+    ],
+    objectifs: [
+      "Expliquer l'utilite du bon de commande et ses mentions obligatoires.",
+      "Reperer les anomalies d'un bon de commande et les regles applicables.",
+      "Conseiller un client en cas de non-respect du delai de livraison.",
+      "Identifier et distinguer les pratiques commerciales trompeuses et agressives.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Conseiller et vendre - Assurer la veille juridique',
+      detail: "C.1.1 - Appliquer la reglementation du bon de commande, de la livraison et des pratiques commerciales.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - La conclusion du bon de commande et le delai de livraison",
+        contexte: "Elise vous confie l'etude d'un bon de commande et de ses regles de livraison.",
+        questions: [
+          { numero: 1, consigne: "Expliquez l'utilite du bon de commande.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Retrouvez les 6 informations manquantes sur le bon de commande puis citez la regle qui aurait du etre respectee pour chacune.", ressources: "Lire les documents 1 et 2, completer l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez la solution pour le cas de chaque client qui vous est presente.", ressources: "Lire les documents 3 et 4, completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Les pratiques commerciales illegales",
+        contexte: "Votre tuteur vous confie des temoignages de clients pour reconnaitre les pratiques interdites.",
+        questions: [
+          { numero: 4, consigne: "Repondez aux questions d'Elise.", ressources: "Lire le document 5, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Expliquez avec vos propres mots ce qu'est une pratique commerciale agressive.", ressources: "Lire le document 6, completer l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Apres avoir reporte le nom de chaque prospect, cochez selon que le temoignage s'apparente a une pratique commerciale trompeuse ou agressive, puis justifiez.", ressources: "Lire le document 7, completer l'annexe 6.", annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - L'utilite du bon de commande", colonnes: ["L'utilite du bon de commande"], nbLignes: 3, reponseMultiligne: true, lignesReponse: 3 },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Les anomalies du bon de commande du vehicule Peugeot e-308 Active", colonnes: ['Anomalie', 'Regles a respecter'], nbLignes: 6, reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["Exemple : Il manque l'adresse du client", "Cela fait partie du chapitre 2 : IDENTITE DU CLIENT"],
+        ['', 'Cela fait partie du chapitre ..... :'],
+        ['', 'Cela fait partie du chapitre ..... :'],
+        ['', 'Cela fait partie du chapitre ..... :'],
+        ['', 'Cela fait partie du chapitre ..... :'],
+        ['', 'Cela fait partie du chapitre ..... :'],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - Les solutions proposees", colonnes: ["Nom de l'intervenant", 'Solutions proposees'], nbLignes: 6, reponseMultiligne: true, lignesReponse: 3, prerempli: [
+        ['Mme Aurore POLAIRE', ''],
+        ['M. Laurent HOUTAN', ''],
+        ['Mme FOCHE', ''],
+        ['Mme TANRIEN', ''],
+        ['Mme BALIOT', ''],
+        ['M. Remi FASOL', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 - Reponses aux questions d'Elise", colonnes: ['Questions', 'Vos reponses'], nbLignes: 5, reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["Quels sont les articles qui regissent les pratiques commerciales trompeuses ?", ''],
+        ["Citez les deux types de pratiques commerciales trompeuses.", ''],
+        ["Expliquez avec vos propres mots ce qu'est une pratique commerciale trompeuse.", ''],
+        ["Quel est le montant de l'amende en cas de pratique commerciale trompeuse ?", ''],
+        ["Dans quel cas une pratique commerciale trompeuse peut-elle entrainer 3 ans de prison ?", ''],
+      ] },
+      { type: 'bulle', id: 'annexe5', titre: "Annexe 5 - Definition de la pratique commerciale agressive", nbLignes: 5, placeholder: "Expliquez avec vos propres mots ce qu'est une pratique commerciale agressive...", cas: [
+        { id: 'def', nom: "Elise", image: '/docs/peugeot-m12/entretien-marjorie.png', temoignage: [
+          "\" A ton tour : explique-moi avec tes propres mots ce qu'est une pratique commerciale agressive. \"",
+        ] },
+      ] },
+      { type: 'pratiques', id: 'annexe6', titre: "Annexe 6 - Les pratiques trompeuses ou agressives", nomsAremplir: true, colonnes: ['Trompeuse', 'Agressive'], clients: [
+        { numero: 1 }, { numero: 2 }, { numero: 3 }, { numero: 4 }, { numero: 5 }, { numero: 6 },
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "L'utilite du bon de commande (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Le bon de commande sert a etablir une preuve de la vente et a prevenir les eventuelles contestations. Il n'est pas obligatoire mais fortement conseille, surtout pour l'achat d'une voiture neuve, car il apporte plus de securite en cas de litige entre le client et le vendeur." },
+      { intitule: "Les 6 anomalies du bon de commande (annexe 2).", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 12,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Anomalie', 'Regle a respecter'], lignes: [
+          ["Il manque le RCS", "Cela fait partie du chapitre 1 : IDENTITE DE L'ENTREPRISE"],
+          ["Il manque le modele", "Cela fait partie du chapitre 5 : DETAILS DE LA COMMANDE"],
+          ["Il manque le prix TTC (il n'y a que le HT)", "Cela fait partie du chapitre 6 : MONTANT DE LA COMMANDE"],
+          ["Il manque le mode de reglement", "Cela fait partie du chapitre 8 : CONDITIONS DE REGLEMENT"],
+          ["Il manque \" bon pour pouvoir \"", "Cela fait partie du chapitre 10 : SIGNATURE ET NOM DE L'ACHETEUR"],
+          ["Il manque l'adresse du client (exemple)", "Cela fait partie du chapitre 2 : IDENTITE DU CLIENT"],
+        ] } },
+      { intitule: "Les solutions proposees (annexe 3).", documents: ['Documents 3 et 4', 'Annexe 3'], bareme: 12,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ["Nom de l'intervenant", 'Solution proposee'], lignes: [
+          ["Mme Aurore POLAIRE", "Adresser une premiere lettre recommandee avec accuse de reception obligeant le vendeur a livrer le vehicule dans un nouveau delai (au moins 48 h)."],
+          ["M. Laurent HOUTAN", "Le professionnel a rembourse dans les 14 jours : il a respecte la loi, il n'y a pas de majoration."],
+          ["Mme FOCHE", "Le remboursement a eu lieu apres 37 jours : la somme doit etre majoree de 50 % (au-dela de 30 jours)."],
+          ["Mme TANRIEN", "Il faut attendre au moins 48 h a partir du moment ou le concessionnaire a recu la lettre recommandee avant d'aller plus loin."],
+          ["Mme BALIOT", "Le concessionnaire a respecte la loi puisqu'il avait 14 jours pour rembourser et l'a fait au bout de 9 jours."],
+          ["M. Remi FASOL", "Si le vehicule n'est toujours pas livre a l'issue du nouveau delai, adresser une seconde lettre recommandee demandant l'annulation de la vente."],
+        ] } },
+      { intitule: "Reponses aux questions d'Elise (annexe 4).", documents: ['Document 5', 'Annexe 4'], bareme: 10,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Question', 'Reponse'], lignes: [
+          ["Articles qui regissent les pratiques trompeuses", "L121-2 a L121-5 du Code de la Consommation"],
+          ["Les deux types de pratiques trompeuses", "Par action / Par omission"],
+          ["Definition d'une pratique trompeuse", "Une dissimulation, une omission et la communication d'informations ambigues ou fallacieuses susceptibles d'engendrer la confusion."],
+          ["Montant de l'amende", "Amende de 300 000 euros"],
+          ["Cas entrainant 3 ans de prison", "Lorsque ces pratiques ont ete suivies de la conclusion d'une ou plusieurs ventes."],
+        ] } },
+      { intitule: "Definition de la pratique agressive (annexe 5).", documents: ['Document 6', 'Annexe 5'], bareme: 3,
+        reponse: "Reponse personnelle attendue. Idee : c'est une methode de vente trop \" musclee \" ou le professionnel fait pression sur le client (sollicitations repetees, contrainte physique ou morale, influence injustifiee) pour forcer son consentement, alterer sa liberte de choix ou l'empecher d'exercer ses droits." },
+      { intitule: "Les pratiques trompeuses ou agressives (annexe 6).", documents: ['Document 7', 'Annexe 6'], bareme: 12,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['N', 'Client', 'Type', 'Justification'], lignes: [
+          ['1', 'M. GIRARD', 'Trompeuse', "On veut lui vendre un produit plus cher en pretextant que le premier est defectueux."],
+          ['2', 'M. LAMBERT', 'Trompeuse', "On lui fait payer une garantie de 2 ans qui commence au moment de l'achat (donc trompeuse)."],
+          ['3', 'Mme MULLER', 'Agressive', "On lui fait un chantage a l'emploi (le patron dit qu'il licenciera si elle n'achete pas)."],
+          ['4', 'Mme FAURE', 'Trompeuse', "On lui a dit que le magasin fermait alors que c'etait faux."],
+          ['5', 'Mme ROBENE', 'Agressive', "Contrainte physique : le directeur a ferme la porte a cle jusqu'a la signature."],
+          ['6', 'Mme MACON', 'Agressive', "Sollicitations repetees et insistantes : nombreux appels telephoniques par semaine."],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "Le bon de commande et les pratiques illegales",
+    proposition: [
+      "Preuve de la vente", "Delai de livraison", "Lettre recommandee avec AR", "Remboursement sous 14 jours",
+      "Pratique trompeuse", "Pratique agressive", "Articles L121-2 a L121-5",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 12 - Bon de commande et pratiques illegales",
+      enfants: [
+        { id: 'bc', texte: "Le bon de commande et la livraison", enfants: [
+          { id: 'b-1', texte: null, reponse: "Preuve de la vente" },
+          { id: 'b-2', texte: null, reponse: "Delai de livraison" },
+          { id: 'b-3', texte: null, reponse: "Lettre recommandee avec AR" },
+          { id: 'b-4', texte: null, reponse: "Remboursement sous 14 jours" },
+        ] },
+        { id: 'pi', texte: "Les pratiques commerciales illegales", enfants: [
+          { id: 'p-1', texte: null, reponse: "Pratique trompeuse" },
+          { id: 'p-2', texte: null, reponse: "Pratique agressive" },
+          { id: 'p-3', texte: null, reponse: "Articles L121-2 a L121-5" },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Maitriser le bon de commande et la livraison", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les mentions du bon de commande." },
+        { niveau: 'debrouille', description: "Je cite quelques mentions obligatoires." },
+        { niveau: 'averti', description: "Je repere les anomalies du bon de commande." },
+        { niveau: 'expert', description: "Je conseille un client en cas de livraison non respectee." },
+      ] },
+      { id: 'c2', intitule: "Distinguer les pratiques illegales", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas ces pratiques." },
+        { niveau: 'debrouille', description: "Je definis une pratique trompeuse ou agressive." },
+        { niveau: 'averti', description: "Je distingue trompeuse et agressive." },
+        { niveau: 'expert', description: "Je classe chaque cas et je justifie mon choix." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Bon de commande", definition: "Document qui etablit la preuve de la vente et previent les contestations." },
+      { terme: "RCS", definition: "Registre du commerce et des societes ; numero d'identification de l'entreprise." },
+      { terme: "Prix TTC", definition: "Prix toutes taxes comprises (avec la TVA)." },
+      { terme: "Bon pour pouvoir", definition: "Mention manuscrite qui precede la signature sur le bon de commande." },
+      { terme: "Loi Hamon", definition: "Loi qui permet au client d'annuler la vente en cas de non-respect du delai de livraison." },
+      { terme: "Lettre recommandee avec AR", definition: "Courrier avec accuse de reception servant a fixer un nouveau delai puis a demander l'annulation." },
+      { terme: "Pratique commerciale trompeuse", definition: "Dissimulation, omission ou information ambigue destinee a tromper le consommateur (articles L121-2 a L121-5)." },
+      { terme: "Pratique trompeuse par action", definition: "Elle cree une confusion avec un autre bien, service ou marque." },
+      { terme: "Pratique trompeuse par omission", definition: "Le commercial dissimule ou n'indique pas une information primordiale." },
+      { terme: "Pratique commerciale agressive", definition: "Methode de vente qui force le consentement du client par des pressions repetees, physiques ou morales." },
+    ],
+    flashcards: [
+      { recto: "A quoi sert le bon de commande ?", verso: "A etablir une preuve de la vente et prevenir les contestations." },
+      { recto: "Le bon de commande est-il obligatoire ?", verso: "Non, mais il est fortement conseille." },
+      { recto: "Que doit toujours mentionner le bon de commande sur la livraison ?", verso: "La date limite de livraison du vehicule." },
+      { recto: "Premiere etape si le vehicule n'est pas livre a temps ?", verso: "Une lettre recommandee avec AR fixant un nouveau delai d'au moins 48 h." },
+      { recto: "Delai de remboursement apres annulation ?", verso: "14 jours au plus tard." },
+      { recto: "Majoration si remboursement au-dela de 30 jours ?", verso: "50 % en plus." },
+      { recto: "Quels articles regissent les pratiques trompeuses ?", verso: "Les articles L121-2 a L121-5 du Code de la Consommation." },
+      { recto: "Les deux types de pratiques trompeuses ?", verso: "Par action et par omission." },
+      { recto: "Montant de l'amende pour pratique trompeuse ?", verso: "300 000 euros." },
+      { recto: "Qu'est-ce qu'une pratique agressive ?", verso: "Une vente forcee par pressions repetees, contrainte physique ou morale." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le bon de commande sert surtout a :", options: ["Etablir une preuve de la vente", "Fixer le salaire du vendeur", "Choisir la couleur", "Payer moins de TVA"], bonne: 0 },
+      { type: 'unique', question: "Le bon de commande est :", options: ['Fortement conseille mais non obligatoire', 'Toujours obligatoire', 'Interdit', 'Reserve a l\'occasion'], bonne: 0 },
+      { type: 'unique', question: "Le RCS fait partie du chapitre :", options: ["Identite de l'entreprise", "Identite du client", "Montant de la commande", "Conditions de reglement"], bonne: 0 },
+      { type: 'unique', question: "Le prix affiche doit etre :", options: ['TTC', 'HT', 'Sans TVA', 'Au choix'], bonne: 0 },
+      { type: 'unique', question: "Premiere action si le vehicule n'est pas livre a temps :", options: ['Lettre recommandee avec AR fixant un nouveau delai (48 h min)', 'Porter plainte immediatement', 'Ne rien faire', 'Reprendre un autre vehicule'], bonne: 0 },
+      { type: 'unique', question: "Delai de remboursement apres annulation :", options: ['14 jours', '48 heures', '30 jours', '1 an'], bonne: 0 },
+      { type: 'unique', question: "Majoration si remboursement au-dela de 30 jours :", options: ['50 %', '10 %', '20 %', '5 %'], bonne: 0 },
+      { type: 'unique', question: "Une pratique trompeuse peut etre :", options: ['Par action ou par omission', 'Uniquement par action', 'Uniquement orale', 'Toujours legale'], bonne: 0 },
+      { type: 'unique', question: "Amende pour pratique commerciale trompeuse :", options: ['300 000 euros', '3 000 euros', '30 000 euros', '1 million d\'euros'], bonne: 0 },
+      { type: 'unique', question: "Fermer la porte a cle jusqu'a la signature est une pratique :", options: ['Agressive', 'Trompeuse', 'Legale', 'Commerciale normale'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Bon de commande / Livraison', 'Pratique trompeuse', 'Pratique agressive'],
+      zones: [
+        { libelle: "Preuve de la vente", etiquetteIndex: 0 },
+        { libelle: "Date limite de livraison", etiquetteIndex: 0 },
+        { libelle: "Remboursement sous 14 jours", etiquetteIndex: 0 },
+        { libelle: "Confusion avec une autre marque", etiquetteIndex: 1 },
+        { libelle: "Dissimuler une information primordiale", etiquetteIndex: 1 },
+        { libelle: "Annonce mensongere (magasin qui ferme)", etiquetteIndex: 1 },
+        { libelle: "Chantage a l'emploi", etiquetteIndex: 2 },
+        { libelle: "Fermer la porte jusqu'a la signature", etiquetteIndex: 2 },
+        { libelle: "Appels repetes et insistants", etiquetteIndex: 2 },
+        { libelle: "Influence injustifiee (2e achat impose)", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// CONTENU : Peugeot, mission 13 - Les JPO et la fidelisation de la clientele
+// ---------------------------------------------------------------------------
+const PEUGEOT_M13: ContenuMission = {
+  travaux: {
+    consigne:
+      "Preparez les Journees Portes Ouvertes de la concession (questions, animations, compte rendu) puis travaillez la fidelisation de la clientele et creez un questionnaire de satisfaction.",
+    contexte:
+      "Vous poursuivez votre PFMP a la concession ConcessionCollet. M. Collet, le directeur, prepare les prochaines Journees Portes Ouvertes et souhaite ensuite renforcer la fidelisation de sa clientele. Il vous confie deux activites : l'organisation des JPO et la mise en place d'actions de fidelisation avec une enquete de satisfaction.",
+    documents: [
+      { numero: 1, titre: "Concessions automobiles : reussir ses Journees Portes Ouvertes", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m13/logo-collet.png' },
+        { intertitre: "Concessions automobiles : reussir ses Journees Portes Ouvertes" },
+        { audioLien: 'https://drive.google.com/file/d/1OR3S3ALmGQhRbAGL8NoVffdVWNuUfEec/view' },
+        { paragraphes: [
+          "Des Journees Portes Ouvertes peuvent etre organisees jusqu'a quatre fois par an et representent un veritable temps fort pour votre concession. C'est un moment d'echange et de rencontre qui doit susciter l'interet mais aussi l'emotion de vos visiteurs. Mais si vous en etes a votre premiere JPO, sachez que plus vous serez organise, plus vous aurez de chances d'optimiser votre evenement.",
+        ] },
+        { intertitre: "Communiquer pour organiser vos Journees Portes Ouvertes" },
+        { paragraphes: [
+          "Pour optimiser votre budget communication, il est imperatif de bien definir l'objectif de vos Journees Portes Ouvertes : presenter un nouveau modele, attirer de nouveaux clients, fideliser vos clients actuels, ou tout a la fois ? Avoir une idee precise de l'objet de vos JPO et de la clientele que vous souhaitez attirer vous permettra d'organiser votre campagne de communication. Commencez par contacter vos clients actuels par un demarchage direct, soit par telephone (ou SMS), soit par courriel ou courrier postal en fonction de leur maitrise de l'outil internet. Vos clients sont en effet les personnes qui vous connaissent le mieux et leur confiance est un atout pour la reussite de votre evenement.",
+          "Bien entendu, l'interet d'organiser des Journees Portes Ouvertes est aussi et surtout d'attirer de nouveaux prospects. Pour se faire, visez un public local, situe dans votre zone de chalandise. N'hesitez pas a creer des partenariats avec d'autres entreprises. Ce peut-etre en faisant intervenir un traiteur, ou en organisant une degustation de vin ou de biere artisanale locale a l'occasion d'un aperitif. De cette facon, vous mutualiserez vos contacts et tout le monde en sera beneficiaire ! Pour votre communication externe, contacter les medias locaux. Vous pouvez acheter des espaces de publicite, ou demander l'intervention d'un journaliste/correspondant local pour faire la promotion de votre evenement en amont.",
+          "Enfin, les reseaux sociaux restent l'une des meilleures facons de relayer l'information de nos jours. Si vous avez une page ou un profil Facebook, commencez votre communication evenementiel 60 a 45 jours avant vos JPO. Creez un evenement et lancez regulierement des rappels car les sollicitations sont nombreuses de nos jours. Une autre maniere d'encourager le public a franchir le seuil de votre concession est d'organiser un jeu-concours.",
+        ] },
+        { intertitre: "Journees Portes ouvertes : creer de l'experience et de l'emotion" },
+        { paragraphes: [
+          "Attirer des prospects, c'est bien. Mais encore faut-il les convaincre d'acheter, meme s'ils ne le font pas immediatement. La meilleure facon de faire germer cette envie ou de la renforcer est de leur laisser une experience inoubliable de vos JPO. Pour cela, il faudra savoir les surprendre et les emerveiller. Votre concession ne sera pas simplement une vitrine, mais un lieu interactif d'echange et de decouverte. Pourquoi ne pas creer des animations ou un circuit qui leur permette de decouvrir vos produits d'une autre facon, en jouant sur les nouveautes positionnees au bon endroit, au bon moment, a la facon de certaines grandes enseignes de l'ameublement. Le circuit amenage est une maniere de faire decouvrir a vos prospects tous vos produits sans les lasser si vous savez les mettre en valeur.",
+        ] },
+      ] },
+      { numero: 2, titre: "Trouver une animation insolite pour un lancement automobile", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m13/logo-collet.png' },
+        { intertitre: "Trouver une animation insolite pour un lancement automobile" },
+        { paragraphes: ["Parcourez les dix animations propos\u00E9es pour vos Journ\u00E9es Portes Ouvertes."] },
+        { intertitre: "1) Sculpture originale" },
+        { image: { src: '/docs/peugeot-m13/sculpture.jpg', alt: "1) Sculpture originale" } },
+        { paragraphes: ["Sur glace, sur sable, sur bois, ou encore sur fruit : immortalisez votre nouveau v\u00E9hicule avec une sculpture originale 100% sur-mesure. Vos invit\u00E9s en prendront pleins les yeux et se souviendront longtemps de votre soir\u00E9e. Une \u0153uvre d\u2019art \u00E9ph\u00E9m\u00E8re qui rend votre \u00E9v\u00E9nement marquant !"] },
+        { intertitre: "2) Robe \u00E0 champagne" },
+        { image: { src: '/docs/peugeot-m13/robe-champagne.jpg', alt: "2) Robe \u00E0 champagne" } },
+        { paragraphes: ["Laissez-vous surprendre par l\u2019\u00E9l\u00E9gante et l\u2019originale robe \u00E0 champagne. A l\u2019image de votre nouveau v\u00E9hicule, elle saura retenir l\u2019attention de vos invit\u00E9s. Un service de prestige \u00E0 la hauteur de votre marque et de sa r\u00E9putation !"] },
+        { intertitre: "3) Danseuse a\u00E9rienne" },
+        { image: { src: '/docs/peugeot-m13/danseuse.jpg', alt: "3) Danseuse a\u00E9rienne" } },
+        { paragraphes: ["La danse a\u00E9rienne est une animation \u00E9l\u00E9gante \u00E0 la hauteur de votre \u00E9v\u00E9nement ! Synonyme d\u2019agilit\u00E9, c\u2019est une caract\u00E9ristique appr\u00E9ci\u00E9e par les constructeur. Ce spectacle acrobatique laissera vos convives bouche-b\u00E9e. Un moment magique."] },
+        { intertitre: "4) Course de drones" },
+        { image: { src: '/docs/peugeot-m13/drones.jpg', alt: "4) Course de drones" } },
+        { paragraphes: ["D\u00E9couvrez et faites d\u00E9couvrir \u00E0 vos convives une animation digitale originale qui reprend les r\u00E9flexes et comp\u00E9tences de la course automobile. Il s\u2019agit de l\u2019atelier contr\u00F4le de dr\u00F4ne par la pens\u00E9e : rien n\u2019est impossible ! Quel beau message pour votre \u00E9v\u00E9nement. Cette animation marquera les esprits et fera couler de l\u2019encre si vous souhaitez inviter des journalistes."] },
+        { intertitre: "5) Fontaine \u00E0 boisson g\u00E9ante" },
+        { image: { src: '/docs/peugeot-m13/fontaine.jpg', alt: "5) Fontaine \u00E0 boisson g\u00E9ante" } },
+        { paragraphes: ["Un concept marquant avec effet waouh qui permettra un lieu de rencontre insolite et surprenant. Facilement transportable et \u00E9conomique, nous vous proposons une fontaine \u00E0 boisson g\u00E9ante 100% personnalis\u00E9e. Votre \u00E9v\u00E9nement automobile est un investissement pour la r\u00E9ussite de votre nouveau v\u00E9hicule, mettez les petits pas dans les grands !"] },
+        { intertitre: "6) Mapping sur voiture ou flocage lumineux" },
+        { image: { src: '/docs/peugeot-m13/mapping.jpg', alt: "6) Mapping sur voiture ou flocage lumineux" } },
+        { paragraphes: ["Illuminez votre \u00E9v\u00E9nement et les yeux de vos invit\u00E9s avec un flocage sur voiture ou un mapping surprenant. Id\u00E9al pour vos soir\u00E9es \u00E9v\u00E9nementielles, votre marque sera vue de loin : innovant et attractif."] },
+        { intertitre: "7) Record du monde" },
+        { image: { src: '/docs/peugeot-m13/record.jpg', alt: "7) Record du monde" } },
+        { paragraphes: ["Si vous recherchez une animation insolite qui saura attirer les curieux, vous l\u2019avez trouv\u00E9. Offrez \u00E0 vos convives un moment unique en assistant \u00E0 un record du monde en direct. Pourquoi pas le soulev\u00E9 de roue ou le tirage de voiture, qui pourra mettre en avant votre produit."] },
+        { intertitre: "8) Animation magie digitale" },
+        { image: { src: '/docs/peugeot-m13/magie.jpg', alt: "8) Animation magie digitale" } },
+        { paragraphes: ["Animation \u00E9v\u00E9nementielle par excellence, la magie a toujours su faire ses preuves. Si vous souhaitez sortir du commun, misez sur une animation magie digitale 100% sur-mesure qui pourra par exemple laissez place \u00E0 des minis figurines du v\u00E9hicule de la soir\u00E9e !"] },
+        { intertitre: "9) Spectacles originaux" },
+        { image: { src: '/docs/peugeot-m13/spectacle.jpg', alt: "9) Spectacles originaux" } },
+        { paragraphes: ["Spectacle de danse, de cabaret, de magie, de feu, d\u2019eau, de freestyler, d\u2019humoristes, de work-out, violoniste \u00E9lectrique... : trouver le spectacle original qui correspond \u00E0 votre lancement de produit sera un jeu d\u2019enfants avec votre agence \u00E9v\u00E9nementielle INNOV\u2019events de proximit\u00E9. Originalit\u00E9 et professionnalisme au RDV."] },
+        { intertitre: "10) D\u00E9voilement" },
+        { image: { src: '/docs/peugeot-m13/devoilement.jpg', alt: "10) D\u00E9voilement" } },
+        { paragraphes: ["D\u00E9voilez votre nouveau mod\u00E8le de v\u00E9hicule avec des effets sp\u00E9ciaux. Fum\u00E9e, geyser, paillette, co2, rideau interactif : tout est possible et imaginable. Syst\u00E8me de votes sur smartphone qui fait lever la housse pour d\u00E9couvrir le v\u00E9hicule ou encore apparition du v\u00E9hicule par h\u00E9licopt\u00E8re : nous trouverons les id\u00E9es."] },
+        { paragraphes: ["Un lancement de produit automobile r\u00E9ussi c\u2019est... \u00E9v\u00E9nentialiser ce moment important dans la vie d\u2019une entreprise !"] },
+      ] },
+      { numero: 3, titre: "Fidelisation clientele : comment fideliser ses clients dans le secteur automobile ?", texte: [
+        { pageWeb: true },
+        { audioLien: 'https://drive.google.com/file/d/1OR3S3ALmGQhRbAGL8NoVffdVWNuUfEec/view' },
+        { logoEntete: '/docs/peugeot-m13/logo-collet.png' },
+        { intertitre: "Fidelisation clientele : comment fideliser ses clients dans le secteur automobile ?" },
+        { intertitre: "Definition de la fidelisation client" },
+        { paragraphes: [
+          "La fidelisation client est un acte qui consiste a instaurer une relation de confiance entre le professionnel et le client associe et intervient a tout moment de la relation client :",
+        ] },
+        { puces: [
+          "En amont de l'acte d'achat,",
+          "Mais egalement pendant le parcours d'experience client,",
+          "Ainsi qu'a la sortie de son acte d'achat.",
+        ] },
+        { paragraphes: [
+          "Cette relation client se met en place dans un plan d'action defini par l'entreprise, pour assurer la plenitude de la satisfaction client et de sa fidelisation, dans le but precis d'assurer la perennite de l'entreprise.",
+        ] },
+        { intertitre: "Pourquoi fideliser sa clientele ?" },
+        { paragraphes: [
+          "Un client qui realise un acte d'achat satisfait au sein d'une marque est un client qui realisera de nouveaux achats au sein de la marque et donc assurera une augmentation du chiffre d'affaires de l'entreprise ; et apportera une image positive et attractive aupres de nouveaux clients potentiels de la marque.",
+        ] },
+        { intertitre: "Secteur automobile : pourquoi fideliser ses clients ?" },
+        { paragraphes: [
+          "La fidelisation permet de construire une relation de confiance axee sur l'empathie et l'expertise technique entre la concession et le client. C'est essentiel pour developper l'attachement a la marque et a la concession, creer des ambassadeurs de la marque qui sauront porter l'image du vehicule (d'autant plus dans le monde marketing actuel attise par la visibilite des reseaux sociaux) et creer des conseillers influents pour les nouveaux clients en recherche de vehicules automobiles.",
+        ] },
+        { intertitre: "Mettre en place un parcours client irreprochable" },
+        { paragraphes: [
+          "Dans l'achat d'un vehicule ou son suivi de reparation, la concession doit attirer l'attention de son client par la personnalisation de ses actions. Cette personnalisation peut s'etablir par exemple en assurant une qualite irreprochable dans ses conseils clients. Des services additionnels gratuits sont fortement recommandes. Par exemple : nettoyage du vehicule post-intervention garage, proposition de prets d'un vehicule systematique...",
+        ] },
+        { intertitre: "Creer et piloter un programme de parrainage" },
+        { paragraphes: [
+          "Developper une strategie de parrainage est une source potentielle de futurs clients, mais egalement un choix delibere pour fideliser sa clientele existante, mais encore faut-il qu'elle soit bien exploitee.",
+        ] },
+        { intertitre: "Proposer des extensions de garantie" },
+        { paragraphes: [
+          "La garantie se propose lors de la vente du vehicule. Suivant la formule proposee, elle peut etre payante, ou gratuite, et peut couvrir tous types de pannes, voire meme la corrosion et la peinture. Ce type de garantie assure une relation client d'autant plus forte, car le service propose est ameliore.",
+        ] },
+        { intertitre: "Deployer des campagnes e-mailing et SMS" },
+        { paragraphes: [
+          "Le mailing et les campagnes SMS sont des outils precieux pour la fidelisation du client. Ils permettent d'assurer un suivi au plus proche de sa clientele. La personnalisation propre des SMS/mails est des lors fortement recommandee.",
+        ] },
+        { intertitre: "Le digital pour fideliser en concession" },
+        { paragraphes: [
+          "C'est le cas de Renault qui a developpe une large gamme de services complementaires. Quelques exemples qui impactent directement la relation client :",
+        ] },
+        { puces: [
+          "Des outils digitaux pour ameliorer l'accueil mais aussi le suivi du service apres-vente ;",
+          "Un configurateur de voiture en 3D ;",
+          "Le deploiement de sites digitalises ;",
+          "Des formations adaptees pour les equipes de vente ;",
+          "Les \" tablettes contact \" a disposition des visiteurs.",
+        ] },
+      ] },
+      { numero: 4, titre: "Les différents types de questions", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m13/logo-collet.png' },
+        { intertitre: "Les différents types de questions" },
+        { typesQuestions: true },
+      ] },
+      { numero: 5, titre: "Les thèmes des questions à poser", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/peugeot-m13/logo-collet.png' },
+        { intertitre: "Les thèmes des questions à poser" },
+        { themesQuestions: [
+          { theme: "La concession en general", type: "Question Ouverte" },
+          { theme: "L'accessibilite", type: "Question A Matrice" },
+          { theme: "L'accueil", type: "Question A reponse unique" },
+          { theme: "L'ambiance (musique, couleurs...)", type: "Question" },
+          { theme: "L'amenagement de l'espace", type: "Question Ouverte" },
+          { theme: "Le choix de produits", type: "Question A Evaluation" },
+          { theme: "Les conseils", type: "Question A Evaluation" },
+          { theme: "Age", type: "Question A reponse unique" },
+          { theme: "Sexe", type: "Question Alternative" },
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Reperer les etapes d'organisation d'une Journee Portes Ouvertes.",
+      "Selectionner et justifier des animations adaptees a l'evenement.",
+      "Rediger un compte rendu professionnel par mail.",
+      "Expliquer l'interet de la fidelisation et creer un questionnaire de satisfaction.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 2',
+      intitule: 'Fideliser la clientele et developper la relation client',
+      detail: "C.2.1 - Participer a des actions de fidelisation et a la mesure de la satisfaction client.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - Les Journees Portes Ouvertes",
+        contexte: "M. Collet prepare les JPO de la concession et vous confie plusieurs recherches.",
+        questions: [
+          { numero: 1, consigne: "Repondez aux questions de M. Collet.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Par groupe de 2, selectionnez les 2 animations qui vous semblent les plus adaptees pour les futures JPO de la concession Collet et justifiez vos choix.", ressources: "Lire le document 2, completer l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Redigez a l'attention de M. Collet un compte rendu de vos recherches que vous lui enverrez depuis votre mail : stagiaire@concessionpeugeot.fr.", ressources: "Completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activite 2 - La fidelisation de la clientele",
+        contexte: "M. Collet souhaite renforcer la fidelisation de sa clientele et mesurer sa satisfaction.",
+        questions: [
+          { numero: 4, consigne: "Expliquez avec vos propres mots ce qu'est la fidelisation.", ressources: "Lire le document 3, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Repondez aux questions du directeur.", ressources: "Lire le document 3, completer l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Creez le questionnaire de satisfaction. L'annexe 6 comporte 9 pages : sur chaque page, redigez une question (une seule par page) en respectant le theme impose et choisissez le bon type de question. Utilisez les boutons Suivant et Retour pour passer d'une page a l'autre jusqu'a avoir cree vos 9 questions.", ressources: "Lire les documents 4 et 5, completer l'annexe 6.", annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Questions de M. Collet", colonnes: ['Questions', 'Vos reponses'], nbLignes: 8, reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["1 - Jusqu'a combien de fois je peux organiser des JPO par an ?", ''],
+        ["2 - Quel est le but des JPO ?", ''],
+        ["3 - Quelles sont les 4 etapes a respecter pour organiser ma campagne de communication ?", ''],
+        ["4 - Quel est l'interet primordial d'organiser des JPO ?", ''],
+        ["5 - Quels sont les 2 moyens de communication les plus utilises aujourd'hui ?", ''],
+        ["6 - Une fois qu'on a communique, comment peut-on faire pour que les clients ne nous oublient pas ?", ''],
+        ["7 - Comment faire pour donner envie aux prospects d'acheter ?", ''],
+        ["8 - Quelles actions concretes pourrait-on mettre en place le jour des JPO ?", ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Animations proposees", colonnes: ['N', "Nom de l'animation", 'Justification de votre choix'], nbLignes: 2, reponseMultiligne: true, lignesReponse: 3, prerempli: [
+        ['1', '', ''],
+        ['2', '', ''],
+      ] },
+      { type: 'mail', id: 'annexe3', titre: "Annexe 3 - Compte rendu a M. Collet", deParDefaut: 'stagiaire@concessionpeugeot.fr', aParDefaut: 'jerome.collet@concessionpeugeot.fr' },
+      { type: 'bulle', id: 'annexe4', titre: "Annexe 4 - Expliquez la fidelisation", nbLignes: 5, placeholder: "Expliquez avec vos propres mots ce qu'est la fidelisation...", cas: [
+        { id: 'def', nom: "M. Collet", image: '/docs/peugeot-m13/entretien-marjorie.png', temoignage: [
+          "\" A ton tour : explique-moi avec tes propres mots ce qu'est la fidelisation. \"",
+        ] },
+      ] },
+      { type: 'grille', id: 'annexe5', titre: "Annexe 5 - Questions du directeur", colonnes: ['Questions', 'Vos reponses'], nbLignes: 6, reponseMultiligne: true, lignesReponse: 3, prerempli: [
+        ["1 - A ton avis, pourquoi avoir des ambassadeurs serait un atout pour la concession ?", ''],
+        ["2 - Ici, comment penses-tu qu'on pourrait mettre en place un parcours client irreprochable ?", ''],
+        ["3 - J'ai entendu parler des campagnes de SMS mais je ne sais pas a quoi elles servent. Peux-tu m'eclairer ?", ''],
+        ["4 - Pour quelle raison est-il important de fideliser dans le secteur automobile ?", ''],
+        ["5 - Selon toi, quel benefice mon entreprise peut-elle tirer de la fidelisation ?", ''],
+        ["6 - Dernierement, un prospect m'a parle de la digitalisation. Quels outils digitaux pourrais-je mettre en place ?", ''],
+      ] },
+      { type: 'questionnaire', id: 'annexe6', titre: "Annexe 6 - Creation du questionnaire de satisfaction (9 pages, une question par page)", nbPages: 9,
+        themes: [
+          "La concession en general", "L'accessibilite", "L'accueil", "L'ambiance (musique, couleurs...)",
+          "L'amenagement de l'espace", "Le choix de produits", "Les conseils", "Age", "Sexe",
+        ],
+        typesQuestion: ['Question ouverte', 'Question a reponse unique', 'Question a matrice', 'Question a evaluation', 'Question alternative'] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Questions de M. Collet (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 8,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Question', 'Reponse attendue'], lignes: [
+          ["1 - Jusqu'a combien de fois par an ?", "Jusqu'a quatre fois par an."],
+          ["2 - Quel est le but des JPO ?", "C'est un moment d'echange et de rencontre qui doit susciter l'interet mais aussi l'emotion des visiteurs."],
+          ["3 - Les 4 etapes de la campagne de communication", "Bien definir l'objectif ; avoir une idee precise de l'objet et de la clientele ; contacter les clients actuels (demarchage direct) ; viser un public local et utiliser medias locaux et reseaux sociaux."],
+          ["4 - Interet primordial des JPO", "Attirer de nouveaux prospects."],
+          ["5 - Les 2 moyens de communication les plus utilises", "Les medias locaux (communication externe) et les reseaux sociaux."],
+          ["6 - Comment ne pas se faire oublier apres avoir communique ?", "Lancer regulierement des rappels."],
+          ["7 - Comment donner envie aux prospects d'acheter ?", "Leur laisser une experience inoubliable des JPO ; faire de la concession un lieu interactif d'echange et de decouverte."],
+          ["8 - Actions concretes le jour des JPO", "Creer des animations ou un circuit amenage qui permet de decouvrir les produits d'une autre facon."],
+        ] } },
+      { intitule: "Animations proposees (annexe 2).", documents: ['Document 2', 'Annexe 2'], bareme: 6,
+        reponse: "Accepter toute reponse coherente : les eleves choisissent 2 animations parmi les 10 et justifient leur choix de facon coherente (adaptation au public, au budget, a l'image de la marque, effet sur les prospects)." },
+      { intitule: "Compte rendu a M. Collet (annexe 3).", documents: ['Annexe 3'], bareme: 6,
+        reponse: "Le mail part de stagiaire@concessionpeugeot.fr vers jerome.collet@concessionpeugeot.fr. Objet clair (ex : Compte rendu - recherches JPO). Le corps reprend les etapes d'organisation, les 2 animations retenues et leur justification, avec une formule de politesse. Accepter toute redaction professionnelle coherente." },
+      { intitule: "Expliquez la fidelisation (annexe 4).", documents: ['Document 3', 'Annexe 4'], bareme: 3,
+        reponse: "Reponse personnelle. Idee attendue : la fidelisation consiste a instaurer une relation de confiance durable avec le client, avant, pendant et apres l'achat, pour le satisfaire, le faire revenir et assurer la perennite de l'entreprise." },
+      { intitule: "Questions du directeur (annexe 5).", documents: ['Document 3', 'Annexe 5'], bareme: 12,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Question', 'Reponse attendue'], lignes: [
+          ["1 - Pourquoi des ambassadeurs ?", "Ils portent l'image du vehicule et de la marque, d'autant plus avec la visibilite des reseaux sociaux, et deviennent des conseillers influents pour les nouveaux clients."],
+          ["2 - Mettre en place un parcours client irreprochable", "Personnaliser ses actions, assurer une qualite irreprochable dans les conseils, offrir des services additionnels gratuits (nettoyage du vehicule, pret d'un vehicule)."],
+          ["3 - A quoi servent les campagnes SMS ?", "Ce sont des outils de fidelisation qui assurent un suivi au plus proche de la clientele ; la personnalisation des SMS/mails est recommandee."],
+          ["4 - Pourquoi fideliser dans l'automobile ?", "Pour construire une relation de confiance axee sur l'empathie et l'expertise technique et augmenter le chiffre d'affaires de l'entreprise."],
+          ["5 - Quel benefice pour l'entreprise ?", "La fidelisation permet de construire une relation de confiance, de nouveaux achats, une image positive et la perennite de l'entreprise."],
+          ["6 - Quels outils digitaux ?", "Outils digitaux d'accueil et de suivi SAV, configurateur 3D, sites digitalises, formations des equipes, tablettes contact."],
+        ] } },
+      { intitule: "Questionnaire de satisfaction (annexe 6).", documents: ['Documents 4 et 5', 'Annexe 6'], bareme: 12,
+        reponse: "L'annexe comporte 9 pages (une question par page). L'eleve redige une question par theme en respectant le type indique au document 5. Types attendus : concession en general = ouverte ; accessibilite = matrice ; accueil = reponse unique ; ambiance = question ; amenagement de l'espace = ouverte ; choix de produits = evaluation (etoiles) ; conseils = evaluation (etoiles) ; age = reponse unique ; sexe = alternative. Accepter toute formulation coherente avec le bon type." },
+    ],
+  },
+  synthese: {
+    titre: "Les JPO et la fidelisation de la clientele",
+    proposition: [
+      "Jusqu'a 4 fois par an", "Attirer de nouveaux prospects", "Reseaux sociaux et medias locaux", "Creer une experience",
+      "Relation de confiance", "Ambassadeurs de la marque", "Questionnaire de satisfaction",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 13 - JPO et fidelisation",
+      enfants: [
+        { id: 'jpo', texte: "Les Journees Portes Ouvertes", enfants: [
+          { id: 'j-1', texte: null, reponse: "Jusqu'a 4 fois par an" },
+          { id: 'j-2', texte: null, reponse: "Attirer de nouveaux prospects" },
+          { id: 'j-3', texte: null, reponse: "Reseaux sociaux et medias locaux" },
+          { id: 'j-4', texte: null, reponse: "Creer une experience" },
+        ] },
+        { id: 'fid', texte: "La fidelisation de la clientele", enfants: [
+          { id: 'f-1', texte: null, reponse: "Relation de confiance" },
+          { id: 'f-2', texte: null, reponse: "Ambassadeurs de la marque" },
+          { id: 'f-3', texte: null, reponse: "Questionnaire de satisfaction" },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Organiser et communiquer sur les JPO", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est une JPO." },
+        { niveau: 'debrouille', description: "Je cite le but des JPO." },
+        { niveau: 'averti', description: "Je decris les etapes de communication et des animations." },
+        { niveau: 'expert', description: "Je redige un compte rendu professionnel et justifie mes choix." },
+      ] },
+      { id: 'c2', intitule: "Fideliser et mesurer la satisfaction", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est la fidelisation." },
+        { niveau: 'debrouille', description: "J'explique l'interet de la fidelisation." },
+        { niveau: 'averti', description: "Je cite des actions de fidelisation." },
+        { niveau: 'expert', description: "Je cree un questionnaire de satisfaction adapte." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Journee Portes Ouvertes (JPO)", definition: "Evenement organise jusqu'a 4 fois par an pour attirer clients et prospects dans la concession." },
+      { terme: "Zone de chalandise", definition: "Zone geographique d'ou provient la clientele d'un point de vente." },
+      { terme: "Prospect", definition: "Client potentiel que l'on cherche a attirer." },
+      { terme: "Fidelisation", definition: "Action d'instaurer une relation de confiance durable avec le client, avant, pendant et apres l'achat." },
+      { terme: "Ambassadeur de la marque", definition: "Client satisfait qui porte une image positive de la marque aupres d'autres personnes." },
+      { terme: "Parrainage", definition: "Strategie ou un client existant recommande la marque a de futurs clients." },
+      { terme: "Extension de garantie", definition: "Garantie complementaire qui renforce la relation client en ameliorant le service." },
+      { terme: "Questionnaire de satisfaction", definition: "Outil de mesure de la satisfaction client compose de differents types de questions." },
+      { terme: "Question ouverte", definition: "Question qui laisse le client s'exprimer librement." },
+      { terme: "Question a matrice", definition: "Question qui permet au client d'evaluer avec des chiffres." },
+    ],
+    flashcards: [
+      { recto: "Combien de fois par an organiser des JPO ?", verso: "Jusqu'a quatre fois par an." },
+      { recto: "Quel est l'interet primordial des JPO ?", verso: "Attirer de nouveaux prospects." },
+      { recto: "Deux moyens de communication les plus utilises ?", verso: "Les medias locaux et les reseaux sociaux." },
+      { recto: "Quand commencer la communication sur Facebook ?", verso: "60 a 45 jours avant les JPO." },
+      { recto: "Comment donner envie d'acheter aux prospects ?", verso: "Leur offrir une experience inoubliable, un lieu interactif de decouverte." },
+      { recto: "Qu'est-ce que la fidelisation ?", verso: "Instaurer une relation de confiance durable avec le client." },
+      { recto: "Un client satisfait qui porte l'image de la marque est un...", verso: "Ambassadeur de la marque." },
+      { recto: "Cite un outil digital de fidelisation.", verso: "Configurateur 3D, tablettes contact, sites digitalises, outils de suivi SAV." },
+      { recto: "Une question ouverte, c'est...", verso: "Une question qui laisse le client s'exprimer." },
+      { recto: "Une question a matrice permet...", verso: "D'evaluer avec des chiffres." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Combien de fois par an peut-on organiser des JPO ?", options: ['Jusqu\'a 4 fois', 'Une seule fois', 'Jusqu\'a 10 fois', 'Chaque mois'], bonne: 0 },
+      { type: 'unique', question: "L'interet primordial des JPO est :", options: ['Attirer de nouveaux prospects', 'Vendre des pieces', 'Former les vendeurs', 'Reduire les stocks'], bonne: 0 },
+      { type: 'unique', question: "Quels moyens de communication sont les plus utilises ?", options: ['Medias locaux et reseaux sociaux', 'Radio nationale et TV', 'Courrier uniquement', 'Affiches autoroute'], bonne: 0 },
+      { type: 'unique', question: "Sur Facebook, on commence la communication :", options: ['60 a 45 jours avant', 'La veille', '6 mois avant', 'Le jour meme'], bonne: 0 },
+      { type: 'unique', question: "Pour donner envie d'acheter, il faut :", options: ['Offrir une experience inoubliable', 'Baisser tous les prix', 'Fermer la concession', 'Limiter les visites'], bonne: 0 },
+      { type: 'unique', question: "La fidelisation consiste a :", options: ['Instaurer une relation de confiance durable', 'Vendre une seule fois', 'Ignorer le client apres l\'achat', 'Augmenter les prix'], bonne: 0 },
+      { type: 'unique', question: "Un client ambassadeur :", options: ['Porte une image positive de la marque', 'Ne revient jamais', 'Se plaint souvent', 'Achete moins cher'], bonne: 0 },
+      { type: 'unique', question: "Un outil digital de fidelisation est :", options: ['Le configurateur 3D', 'Le fax', 'Le catalogue papier', 'L\'annuaire'], bonne: 0 },
+      { type: 'unique', question: "Une question ouverte permet :", options: ['Au client de s\'exprimer librement', 'De cocher une seule case', 'D\'evaluer avec des etoiles', 'De donner une note chiffree'], bonne: 0 },
+      { type: 'unique', question: "Une question a evaluation utilise :", options: ['Des etoiles', 'Une seule case', 'Un texte libre', 'Une date'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Journees Portes Ouvertes', 'Fidelisation', 'Type de question'],
+      zones: [
+        { libelle: "Jusqu'a 4 fois par an", etiquetteIndex: 0 },
+        { libelle: "Attirer de nouveaux prospects", etiquetteIndex: 0 },
+        { libelle: "Creer une experience inoubliable", etiquetteIndex: 0 },
+        { libelle: "Ambassadeur de la marque", etiquetteIndex: 1 },
+        { libelle: "Programme de parrainage", etiquetteIndex: 1 },
+        { libelle: "Extension de garantie", etiquetteIndex: 1 },
+        { libelle: "Campagnes e-mailing et SMS", etiquetteIndex: 1 },
+        { libelle: "Question ouverte", etiquetteIndex: 2 },
+        { libelle: "Question a matrice", etiquetteIndex: 2 },
+        { libelle: "Question a evaluation (etoiles)", etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+
+
+const MAMIE_CO_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Familiarisez-vous avec la marque Mamie & Co : realisez sa carte d'identite, presentez son personnel sous forme d'organigramme, puis etablissez le profil-type de sa clientele.",
+    contexte:
+      "Vous etes en PFMP dans la societe Mamie & Co, situee a La Rochelle. L'entreprise est specialisee dans la vente de trucs, astuces, remedes et recettes de grands-meres.\nPour creer sa gamme, l'entreprise est partie du principe que nos grands-meres excellaient dans l'art d'utiliser des produits du quotidien pour regler des problemes, sans avoir besoin d'aller en magasin. C'est pourquoi Mamie & Co revisite aujourd'hui les remedes de grand-mere avec des produits simples a utiliser, ecologiques et economiques.\nL'entreprise doit son succes a la volonte des clients de revenir a des produits d'entretien d'antan, sans substances toxiques.\nC'est votre premiere semaine de stage : votre tuteur vous demande de vous familiariser avec la marque en realisant sa carte d'identite.",
+    videoIntro: {
+      titre: "Cliquez pour decouvrir la video de presentation de Mamie & Co",
+      embedUrl: "https://drive.google.com/file/d/1ftcs1OBs8JgfwJvBsMYTcc-M9JKKz_1Q/preview",
+      transcription: [
+        "Mamie & Co est la premiere marque francaise specialisee dans la vente a domicile de produits naturels et bio, inspires des trucs, astuces et remedes de grand-mere.",
+        "Nee le 7 novembre 2012, l'entreprise revisite les recettes d'autrefois avec des produits simples, ecologiques et economiques : savon de Marseille, savon noir, vinaigre, miels mono-floraux, huiles essentielles, epices bien-etre.",
+        "Distribuee par un reseau de conseilleres VDI, la marque propose sur les etageres de Mamie des produits majoritairement bio, a la fois simples, ecologiques et economiques.",
+      ],
+    },
+    documents: [
+      { numero: 1, titre: "Les mots de votre responsable", texte: [
+        { pageWeb: true },
+        { intertitre: "L'histoire de Mamie & Co" },
+        { paragraphes: [
+          "Mamie & Compagnie a vu le jour le 7 novembre 2012. Fruit d'une longue reflexion, j'ai voulu faire partager au plus grand nombre un patrimoine qui se perdait : les trucs, astuces et remedes de grand-mere. Ils ressortent desormais du placard et c'est tant mieux ! Mamie & Compagnie est une entreprise 100 % rochelaise et francaise, basee a La Pallice, quartier ancien qui mele subtilement tradition et modernite. C'est un peu ca Mamie & Co : une marque tres traditionnelle dans l'ame mais tres contemporaine dans l'approche.",
+          "Nous avons obtenu, a Barcelone en septembre 2013, le pentaward de la meilleure creation packaging France dans la categorie des produits de la maison.",
+          "Chez Mamie, vous trouverez l'ame d'antan, les bons vieux produits qui fonctionnent avec des recettes authentiques : le veritable savon de Marseille, le savon noir mou et ancien, le vinaigre, du menager a 14 degres. Nous avons simplement rouvert le placard de grand-mere.",
+        ] },
+        { intertitre: "Les remedes de grand-mere revisites" },
+        { paragraphes: [
+          "Mamie & Co est la premiere marque en France qui porte le concept des trucs, astuces, remedes et recettes de grand-mere. Aujourd'hui, dans ses placards, Mamie & Co revisite les remedes de grand-mere avec des produits pleins de promesses, simples a utiliser, ecologiques, economiques et, pour la plus grande majorite d'entre eux, francais.",
+          "Bienvenue chez Mamie. Faites comme a la maison.",
+        ] },
+        { image: { src: '/docs/mamie-and-co-m1/produits.png', alt: "Gamme de produits Mamie & Co : mix bon pied bon oeil, mix bon repas, mix sel malin." } },
+        { intertitre: "Un fort potentiel" },
+        { intertitre: "Fiche societe (source : societe.com)" },
+      ] },
+      { numero: 2, titre: "Qui sont les consommateurs de produits bio, naturels et écolos", texte: [
+        { noteDirection: { titre: "Qui sont les consommateurs de produits bio, naturels et écolos", puces: [], paragraphe: "Le salon Bio et écologiques a lancé son enquête annuelle pour cerner le profil des consommateurs de produits bio et écologiques et ses habitudes d\u2019achat. Portrait-type.\nLes consommateurs de produits bio, naturels et écologiques sont chaque année de plus en plus nombreux. Environ 60 % des Français déclarent acheter ces produits mais leurs motivations et habitudes sont moins connues. Ainsi, une enquête a été lancée, auprès de 2 000 consommateurs, pour en savoir davantage. Il ressort que les femmes sont les plus consommatrices de ces produits (87 %) et que les consommateurs de 26 à 55 ans sont très représentatifs (76 %). Les séniors et les juniors sont moins acheteurs. Majoritairement urbains (64 %), ces consommateurs vivent dans des villes de plus de 45 000 habitants (28 %). Comme sur les dernières années, les résidents d\u2019Ile-de-France sont les plus nombreux. Donc dans les grandes lignes, l\u2019adepte du bio est une jeune quadra, citadine et connectée. Et contrairement aux idées reçues, le consommateur de bio et écologiques n\u2019est pas forcément issue d\u2019une CSP ++ car 78 % d\u2019entre eux déclarent avoir un revenu annuel inférieur à 40 000 euros. 39,5% de consommateurs disent avoir commencé ces habitudes d\u2019achat après la naissance de leur premier enfant." } },
+      ] },
+      { numero: 3, titre: "Le site internet et la fiche entreprise de Mamie & Co", texte: [
+        { docRiche: {
+          site: 'www.mamieandco.com', logo: '/docs/mamie-and-co-m4/logo-mamie.png', couleurHeader: '#1A1A1A',
+          menu: ['Notre compagnie', 'Devenir conseillère', 'Organiser un atelier', 'Trouver ma conseillère', 'Blog', 'Boutique en ligne'],
+          sections: [
+            { type: 'titre', texte: 'Notre compagnie' },
+            { type: 'sousTitre', texte: "L'histoire de Mamie & Co" },
+            { type: 'paragraphes', textes: [
+              "Mamie & Compagnie a vu le jour, le 07 novembre 2012.",
+              "\"Fruit d\u2019une longue réflexion, j\u2019ai voulu faire partager au plus grand nombre un \u201Cpatrimoine\u201D qui se perdait : les trucs, astuces et remèdes de grand-mère. Ils ressortent désormais du placard et c\u2019est tant mieux ! Mamie & Compagnie est une entreprise 100 % rochelaise et française, basée à La Pallice, quartier ancien qui mêle subtilement tradition & modernité. C\u2019est un peu ça Mamie & Co : une marque très traditionnelle dans l\u2019âme mais très contemporaine dans l\u2019approche.",
+              "Nous avons obtenu, à Barcelone en septembre 2013, le pentaward de la meilleure création packaging France dans la catégorie des produits de la maison.",
+              "Chez Mamie vous trouverez l\u2019âme d\u2019antan, les bons vieux produits qui fonctionnent avec des recettes authentiques : le véritable savon de Marseille de Marseille, peuchère !, du savon noir mou et ancien, recette datant de 1900... Du vinaigre, du ménager à 14°. Nous avons simplement rouvert le placard de grand-mère et ressorti ce qui était encore bénéfique de nos jours.",
+              "Qui dit trucs et astuces de grand-mères dit aussi, recettes de grand-mères : c\u2019est l\u2019\u201Cesprit grimoire\u201D qui anime Mamie & Co ! Vous trouverez dans nos placards des miels mono-floraux, des huiles essentielles, des épices bien-être, le meilleur des plantes, allié au meilleur des épices !",
+              "C\u2019est aussi ça Mamie & Co, la recette de grand-mère revisitée avec cette note bienveillante, permanente. Merci à ma grand-mère Marie-Thérèse de m\u2019avoir inspiré autant et de m\u2019avoir montré, si simplement, la voie de la bienveillance et peut-être de la sagesse...",
+              "Sur ce, bonne découverte à toutes et à tous, et bienvenue dans l\u2019univers Mamie !",
+              "J\u2019espère que vous vous sentirez bien parmi nous.\"",
+            ] },
+            { type: 'sousTitre', texte: 'Les remèdes de grand-mères revisités' },
+            { type: 'paragraphes', textes: [
+              "Mamie & Co est la première marque en France qui porte le concept des « trucs, astuces, remèdes et recettes de grand-mères ».",
+              "Nos grand-mères triomphaient souvent dans l\u2019art d\u2019utiliser des produits du quotidien à des fins stupéfiantes. Aujourd\u2019hui, dans ses placards, Mamie & Co revisite les remèdes de grand-mères avec des produits plein de promesses, simples à utiliser, écologiques, économiques et, pour la plus grande majorité d\u2019entre eux, français.",
+              "Bienvenue chez Mamie. Faites comme à la maison.",
+            ] },
+            { type: 'sousTitre', texte: 'Vente à domicile de produits naturels et bio' },
+            { type: 'paragraphes', textes: [
+              "Mamie & Co est la première marque française spécialisée dans la vente à domicile de produits naturels et bio, inspirées des trucs et astuces de grand-mère. Sur les étagères de Mamie, retrouvez des produits majoritairement bio, plein de promesses, à la fois simples, écologiques et économiques, disponibles par l\u2019intermédiaire de conseillères VDI ... Suivez le guide !",
+            ] },
+            { type: 'image', src: '/docs/mamie-and-co-m1/produits.png', alt: 'Les produits Mamie & Co en bocaux.' },
+            { type: 'sousTitre', texte: 'Un fort potentiel' },
+            { type: 'chiffres', items: [
+              { valeur: '90', libelle: 'conseillères de ventes' },
+              { valeur: '52', libelle: 'départements en France' },
+              { valeur: '130', libelle: 'produits' },
+              { valeur: '600', libelle: 'ateliers de ventes' },
+              { valeur: '+ de 4000', libelle: 'clients' },
+              { valeur: '+ de 50 000', libelle: 'produits vendus' },
+              { valeur: '90 %', libelle: 'de taux de recommandation' },
+            ] },
+            { type: 'sousTitre', texte: "L'équipe de Mamie & Co" },
+            { type: 'grillePersonnes', personnes: [
+              { photo: '/docs/mamie-and-co-m1/david.jpg', nom: 'David', fonction: 'Associé fondateur Mamie & Co' },
+              { photo: '/docs/mamie-and-co-m1/pauline.jpg', nom: 'Pauline', fonction: 'Responsable achat, appro, sourcing Mamie & Co' },
+              { photo: '/docs/mamie-and-co-m1/kevin.jpg', nom: 'Kévin', fonction: 'Chargé web marketing, Graphisme Mamie & Co' },
+              { photo: '/docs/mamie-and-co-m1/emilie.jpg', nom: 'Émilie', fonction: 'Assistante commerciale & RH Mamie & Co' },
+            ] },
+            { type: 'sousTitre', texte: 'Informations générales sur MAMIE & COMPAGNIE' },
+            { type: 'paragraphes', textes: [
+              "MAMIE & COMPAGNIE, Société par action simplifiées au capital de 165 630€, a débuté son activité en novembre 2012.",
+              "David, Florian, Francois COUTHON est président de la société MAMIE & COMPAGNIE. Le siège social de cette entreprise est actuellement situé 21 rue Alphonse de Saintonge - 17000 La rochelle",
+              "MAMIE & COMPAGNIE évolue sur le secteur d'activité : Commerce de détail, à l'exception des automobiles et des motocycles",
+            ] },
+            { type: 'fiche', lignes: [
+              { label: 'Raison sociale', valeur: 'MAMIE & COMPAGNIE' },
+              { label: 'Enseigne', valeur: 'Le Comptoir de Mamie & Co' },
+              { label: 'Nom commercial', valeur: 'MAMIE & CO' },
+              { label: 'Forme juridique', valeur: 'Société par action simplifiée' },
+              { label: 'Siège social', valeur: '21 RUE ALPHONSE DE SAINTONGE, 17000 LA ROCHELLE' },
+              { label: 'SIRET', valeur: '789 171 592 00023' },
+              { label: 'R.C.S.', valeur: '789 171 592 R.C.S. LA ROCHELLE' },
+              { label: 'Activité (code NAF)', valeur: '4799A : Vente à domicile' },
+              { label: 'Inscription', valeur: 'Immatriculée le 07/11/2012' },
+              { label: "Chiffre d'affaires 2015", valeur: '182 293 €' },
+              { label: 'Téléphone', valeur: '05 46 56 80 86' },
+            ] },
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Realiser la carte d'identite d'une entreprise (statut, but, activite).",
+      "Presenter le personnel d'une entreprise sous forme d'organigramme.",
+      "Etablir le profil-type d'une clientele et le representer sous forme d'histogramme.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Assurer la veille commerciale',
+      detail: "C.1.2 - Assurer la veille commerciale : connaitre l'unite commerciale et sa clientele.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - Identification de l'entreprise",
+        contexte: "Votre tuteur vous demande de realiser la carte d'identite de Mamie & Co.",
+        questions: [
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise puis cochez la bonne réponse pour chaque caractéristique.", ressources: "Lire les documents 1 et 3, compléter l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Realisation d'un organigramme",
+        contexte: "Vous presentez le personnel de l'entreprise.",
+        questions: [
+          { numero: 2, consigne: "Listez le prénom et la fonction du personnel de l'entreprise.", ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Réalisez l'organigramme de l'entreprise en précisant le prénom et la fonction de chaque personne.", ressources: "Consulter l'annexe 2, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activite 3 - Les caracteristiques de la clientele",
+        contexte: "Vous etablissez le profil-type du consommateur de produits bio, naturels et ecologiques.",
+        questions: [
+          { numero: 4, consigne: "Complétez le profil-type du consommateur de produits bio, naturels et écologiques.", ressources: "Lire le document 2, compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Réalisez le profil des consommateurs sous forme d'histogramme.", ressources: "Consulter l'annexe 4, compléter l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'identiteentreprise', id: 'annexe1', titre: "Annexe 1 - Identite de l'entreprise",
+        champs: [
+          { cle: 'raisonsociale', libelle: 'Raison sociale' },
+          { cle: 'enseigne', libelle: 'Enseigne' },
+          { cle: 'formejuridique', libelle: 'Forme juridique' },
+          { cle: 'capital', libelle: 'Capital social' },
+          { cle: 'datecreation', libelle: 'Date de creation' },
+          { cle: 'dirigeant', libelle: 'Dirigeant' },
+          { cle: 'adresse', libelle: 'Adresse du siege social', lignes: 2 },
+          { cle: 'activite', libelle: "Secteur d'activite", lignes: 2 },
+          { cle: 'ca', libelle: "Chiffre d'affaires (2015)" },
+        ],
+        qualifications: [
+          { cle: 'typeorga', libelle: "Type d'organisation", options: ['Entreprise commerciale', 'Association', 'Entreprise publique', 'Collectivite publique'] },
+          { cle: 'but', libelle: "Organisation a but", options: ['Lucratif', 'Non lucratif'] },
+          { cle: 'nature', libelle: "Nature de l'activite", options: ['Marchand', 'Non marchand'] },
+        ],
+      },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Les employes", colonnes: ['Prenom', 'Fonction'], nbLignes: 4, largeurs: ['35%', '65%'], prerempli: [
+        ['', ''], ['', ''], ['', ''], ['', ''],
+      ] },
+      { type: 'organigrammearemplir', id: 'annexe3', titre: "Annexe 3 - Organigramme de Mamie & Co",
+        noms: ['David', 'Pauline', 'Kevin', 'Emilie'],
+        fonctions: ['Associe fondateur', 'Responsable achat, appro, sourcing', 'Charge web marketing, graphisme', 'Assistante commerciale & RH'],
+        tete: { cle: 'dir', enfants: [{ cle: 'e1' }, { cle: 'e2' }, { cle: 'e3' }] },
+      },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 - Les consommateurs de produits bio et ecologiques", colonnes: ['Criteres', 'Reponses', 'Pourcentage'], nbLignes: 5, largeurs: ['34%', '40%', '26%'], prerempli: [
+        ['Sexe', '', ''],
+        ["Tranche d'age", '', ''],
+        ["Lieu d'habitation", '', ''],
+        ['Revenus', '', ''],
+        ['Situation familiale', '', ''],
+      ] },
+      { type: 'histogramme', id: 'annexe5', titre: "Annexe 5 - Graphique du profil des consommateurs de produits bio et ecologiques",
+        consigne: [
+          "Selectionnez une categorie en cliquant sur sa barre (elle se met en surbrillance).",
+          "Fixez sa hauteur au choix : tirez la poignee ronde vers le haut a la souris, utilisez les fleches Haut et Bas du clavier (Maj = pas de 5 %), ou saisissez directement le pourcentage dans la case en bas.",
+          "Reportez le pourcentage lu dans l'annexe 4 pour chacune des 5 categories.",
+        ],
+        uniteMax: 100, pas: 10, suffixe: '%',
+        barres: [
+          { cle: 'sexe', categorie: 'Sexe', sousLibelle: 'Femmes' },
+          { cle: 'age', categorie: "Tranche d'age", sousLibelle: '26-55 ans' },
+          { cle: 'ville', categorie: 'Ville/campagne', sousLibelle: 'Urbains' },
+          { cle: 'revenus', categorie: 'Revenus', sousLibelle: '< 40 000 €' },
+          { cle: 'famille', categorie: 'Situation familiale', sousLibelle: 'Avec un enfant' },
+        ],
+      },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Identite de l'entreprise (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 12,
+        reponse: "Voir tableau ci-dessous. Caracteristiques a cocher : Type d'organisation = Entreprise commerciale ; Organisation a but = Lucratif ; Nature de l'activite = Marchand.",
+        tableau: { colonnes: ['Rubrique', 'Reponse attendue'], lignes: [
+          ['Raison sociale', 'MAMIE & COMPAGNIE'],
+          ['Enseigne', 'Le Comptoir de Mamie & Co'],
+          ['Forme juridique', 'Societe par actions simplifiee (SAS)'],
+          ['Capital social', '165 630 euros'],
+          ['Date de creation', 'Novembre 2012 (7 novembre 2012)'],
+          ['Dirigeant', 'David Couthon (president)'],
+          ['Adresse du siege', '21 rue Alphonse de Saintonge, 17000 La Rochelle'],
+          ["Secteur d'activite", "Commerce de detail, a l'exception des automobiles et des motocycles"],
+          ["Chiffre d'affaires 2015", '182 293 euros'],
+          ["Type d'organisation", 'Entreprise commerciale'],
+          ['Organisation a but', 'Lucratif'],
+          ["Nature de l'activite", 'Marchand'],
+        ] } },
+      { intitule: "Les employes (annexe 2).", documents: ['Document 1', 'Annexe 2'], bareme: 8,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Prenom', 'Fonction'], lignes: [
+          ['David', 'Associe fondateur de Mamie & Co'],
+          ['Pauline', 'Responsable achat, approvisionnement, sourcing'],
+          ['Kevin', 'Charge web marketing, graphisme'],
+          ['Emilie', 'Assistante commerciale & RH'],
+        ] } },
+      { intitule: "Organigramme de Mamie & Co (annexe 3).", documents: ['Annexe 2', 'Annexe 3'], bareme: 8,
+        reponse: "En tete : David (Associe fondateur). Rattaches : Pauline (Responsable achat, appro, sourcing), Kevin (Charge web marketing, graphisme), Emilie (Assistante commerciale & RH)." },
+      { intitule: "Profil-type du consommateur (annexe 4).", documents: ['Document 2', 'Annexe 4'], bareme: 10,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Critere', 'Reponse', 'Pourcentage'], lignes: [
+          ['Sexe', 'Femmes', '87 %'],
+          ["Tranche d'age", '26 - 55 ans', '76 %'],
+          ["Lieu d'habitation", 'Urbains', '64 %'],
+          ['Revenus', 'Inferieur a 40 000 euros', '78 %'],
+          ['Situation familiale', 'Avec un enfant', '39,5 %'],
+        ] } },
+      { intitule: "Histogramme du profil (annexe 5).", documents: ['Annexe 4', 'Annexe 5'], bareme: 10,
+        reponse: "Les cinq barres doivent correspondre aux pourcentages de l'annexe 4 : Sexe (Femmes) 87 %, Tranche d'age (26-55) 76 %, Ville/campagne (Urbains) 64 %, Revenus (< 40 000 euros) 78 %, Situation familiale (Avec un enfant) 39,5 %." },
+    ],
+  },
+  synthese: {
+    titre: "La presentation de l'unite commerciale et de la clientele",
+    proposition: [
+      'Entreprise commerciale', 'Lucratif', 'Marchand',
+      'Femmes', 'Urbains', 'Avec un enfant', 'Organigramme',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 1 - Mamie & Co",
+      enfants: [
+        { id: 'ent', texte: "L'unite commerciale", enfants: [
+          { id: 'e-1', texte: null, reponse: 'Entreprise commerciale' },
+          { id: 'e-2', texte: null, reponse: 'Lucratif' },
+          { id: 'e-3', texte: null, reponse: 'Marchand' },
+          { id: 'e-4', texte: null, reponse: 'Organigramme' },
+        ] },
+        { id: 'cli', texte: "La clientele", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Femmes' },
+          { id: 'c-2', texte: null, reponse: 'Urbains' },
+          { id: 'c-3', texte: null, reponse: 'Avec un enfant' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier une entreprise et son statut", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas lire une fiche societe." },
+        { niveau: 'debrouille', description: "Je releve la raison sociale et l'adresse." },
+        { niveau: 'averti', description: "Je complete la carte d'identite complete de l'entreprise." },
+        { niveau: 'expert', description: "Je qualifie le type d'organisation, le but et la nature de l'activite." },
+      ] },
+      { id: 'c2', intitule: "Presenter le personnel et la clientele", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas construire un organigramme." },
+        { niveau: 'debrouille', description: "Je liste le personnel et ses fonctions." },
+        { niveau: 'averti', description: "Je realise l'organigramme de l'entreprise." },
+        { niveau: 'expert', description: "J'etablis le profil-type de la clientele et je le represente sous forme d'histogramme." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Unite commerciale", definition: "Lieu physique ou virtuel permettant a un client de rencontrer une offre de produits ou de services." },
+      { terme: "Raison sociale", definition: "Nom officiel sous lequel une entreprise est enregistree." },
+      { terme: "Enseigne", definition: "Nom commercial sous lequel l'entreprise est connue du public." },
+      { terme: "SAS", definition: "Societe par actions simplifiee : forme juridique d'entreprise commerciale a but lucratif." },
+      { terme: "Capital social", definition: "Somme apportee par les associes a la creation de la societe." },
+      { terme: "Organisation a but lucratif", definition: "Organisation dont l'objectif est de realiser des benefices." },
+      { terme: "Activite marchande", definition: "Activite qui consiste a vendre des biens ou services a un prix couvrant les couts." },
+      { terme: "Organigramme", definition: "Schema qui represente la structure et la hierarchie du personnel d'une entreprise." },
+      { terme: "Profil-type", definition: "Portrait du client le plus representatif d'une clientele (sexe, age, lieu, revenus, situation familiale)." },
+      { terme: "Veille commerciale", definition: "Surveillance de l'environnement commercial : marche, clientele, concurrence." },
+    ],
+    flashcards: [
+      { recto: "Quelle est la forme juridique de Mamie & Co ?", verso: "Une SAS (societe par actions simplifiee)." },
+      { recto: "Quel est le capital social de Mamie & Co ?", verso: "165 630 euros." },
+      { recto: "En quelle annee Mamie & Co a-t-elle ete creee ?", verso: "En 2012 (le 7 novembre 2012)." },
+      { recto: "Ou se situe le siege de Mamie & Co ?", verso: "21 rue Alphonse de Saintonge, 17000 La Rochelle." },
+      { recto: "Qui est le dirigeant de Mamie & Co ?", verso: "David Couthon, president." },
+      { recto: "Quel est le type d'organisation de Mamie & Co ?", verso: "Une entreprise commerciale, a but lucratif, marchande." },
+      { recto: "Qu'est-ce qu'un organigramme ?", verso: "Un schema qui represente la structure et la hierarchie du personnel." },
+      { recto: "Quel est le sexe majoritaire des consommateurs bio ?", verso: "Des femmes (87 %)." },
+      { recto: "Ou vivent majoritairement les consommateurs bio ?", verso: "En ville (64 % d'urbains)." },
+      { recto: "Quel revenu ont la plupart des consommateurs bio ?", verso: "Un revenu inferieur a 40 000 euros (78 %)." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Quelle est la forme juridique de Mamie & Co ?", options: ['Une SAS', 'Une association', 'Une collectivite publique', 'Une entreprise publique'], bonne: 0 },
+      { type: 'unique', question: "Mamie & Co est une organisation a but :", options: ['Lucratif', 'Non lucratif', 'Caritatif', 'Public'], bonne: 0 },
+      { type: 'unique', question: "La nature de l'activite de Mamie & Co est :", options: ['Marchande', 'Non marchande', 'Administrative', 'Benevole'], bonne: 0 },
+      { type: 'unique', question: "En quelle annee Mamie & Co a-t-elle ete creee ?", options: ['2012', '2008', '2015', '2020'], bonne: 0 },
+      { type: 'unique', question: "Quel est le capital social de l'entreprise ?", options: ['165 630 euros', '40 000 euros', '182 293 euros', '10 000 euros'], bonne: 0 },
+      { type: 'unique', question: "Qui est l'associe fondateur de Mamie & Co ?", options: ['David', 'Pauline', 'Kevin', 'Emilie'], bonne: 0 },
+      { type: 'unique', question: "Le sexe majoritaire des consommateurs bio est :", options: ['Les femmes (87 %)', 'Les hommes (87 %)', 'Egalite parfaite', 'Les enfants'], bonne: 0 },
+      { type: 'unique', question: "La tranche d'age majoritaire des consommateurs bio est :", options: ['26 - 55 ans', '18 - 25 ans', 'Plus de 65 ans', 'Moins de 18 ans'], bonne: 0 },
+      { type: 'unique', question: "Ou vivent majoritairement les consommateurs bio ?", options: ['En ville', 'A la campagne', 'A l\'etranger', 'En montagne'], bonne: 0 },
+      { type: 'unique', question: "Quelle part des consommateurs bio a un enfant ?", options: ['39,5 %', '87 %', '64 %', '10 %'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ["Identite de l'entreprise", 'Personnel', 'Clientele'],
+      zones: [
+        { libelle: 'SAS au capital de 165 630 euros', etiquetteIndex: 0 },
+        { libelle: 'Creee en 2012 a La Rochelle', etiquetteIndex: 0 },
+        { libelle: 'Entreprise commerciale, but lucratif', etiquetteIndex: 0 },
+        { libelle: 'David, associe fondateur', etiquetteIndex: 1 },
+        { libelle: 'Pauline, responsable achat', etiquetteIndex: 1 },
+        { libelle: 'Emilie, assistante commerciale & RH', etiquetteIndex: 1 },
+        { libelle: '87 % de femmes', etiquetteIndex: 2 },
+        { libelle: '64 % d\'urbains', etiquetteIndex: 2 },
+        { libelle: '39,5 % avec un enfant', etiquetteIndex: 2 },
+        { libelle: '78 % ont un revenu < 40 000 euros', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const MAMIE_CO_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Realisez la fiche produit du Kit DIY Lessive de Mamie & Co, identifiez les caracteristiques psychologiques de sa clientele, puis reperez les mobiles d'achat et justifiez-les.",
+    contexte:
+      "Vous poursuivez votre PFMP chez Mamie & Co. Votre tuteur souhaite que vous maitrisiez parfaitement l'un des produits phares de la marque : le Kit DIY Lessive. Avant de le presenter aux clients, il vous demande d'en etablir la fiche produit complete, puis de comprendre ce qui pousse les clients a l'acheter.",
+    documents: [
+      { numero: 1, titre: "Intervention de M. Couthon", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m2/logo-mamie.png' },
+        { intertitre: "Les caracteristiques d'un produit" },
+        { paragraphes: [
+          "Avant de te lancer dans la realisation de la fiche technique, laisse-moi t'expliquer ce que sont les caracteristiques d'un produit. Tout produit se decrit de trois facons complementaires.",
+        ] },
+        { intertitre: "Les caracteristiques techniques" },
+        { paragraphes: [
+          "Ce sont les elements concrets et mesurables du produit : son nom, sa composition, le poids de chaque element, ses precautions d'emploi. Ce sont des informations objectives, que l'on peut verifier.",
+        ] },
+        { intertitre: "Les caracteristiques commerciales" },
+        { paragraphes: [
+          "Ce sont les elements lies a la vente : le lieu de fabrication, le prix de vente, les conseils d'utilisation. Elles aident le client a se decider et a bien utiliser le produit.",
+        ] },
+        { intertitre: "Les caracteristiques psychologiques" },
+        { paragraphes: [
+          "Ce sont les elements qui touchent a l'affectif et aux motivations du client : ce que le produit lui apporte en termes de securite, d'economie, de respect de l'environnement. Elles repondent aux mobiles d'achat de chacun.",
+        ] },
+      ] },
+      { numero: 2, titre: "Les mobiles d'achat", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m2/logo-mamie.png' },
+        { intertitre: "Qu'est-ce qu'un mobile d'achat ?" },
+        { paragraphes: [
+          "Un mobile d'achat est la raison profonde, souvent psychologique, qui pousse un client a acheter un produit. Pour reperer les mobiles d'un client, on utilise frequemment la methode SONCAS, qui distingue six grandes motivations.",
+        ] },
+        { puces: [
+          "Securite : le client cherche a etre rassure (qualite, garantie, composition saine, absence de risque).",
+          "Orgueil : le client veut se valoriser, se distinguer, se faire plaisir.",
+          "Nouveaute : le client est attire par l'innovation, l'originalite, la nouveaute.",
+          "Confort : le client recherche la simplicite, la praticite, le bien-etre.",
+          "Argent : le client veut faire une bonne affaire, economiser, rentabiliser son achat.",
+          "Sympathie : le client est sensible a la relation, aux valeurs, a l'image de la marque (par exemple l'environnement).",
+        ] },
+      ] },
+      { numero: 3, titre: "Kit DIY Lessive", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m2/logo-mamie.png' },
+        { intertitre: "Kit Lessive Olive 750 g - Kit DIY Lessive" },
+        { image: { src: '/docs/mamie-and-co-m2/kit-visuel.png', alt: "Kit Lessive Olive 750 g : savon noir 1 kg, copeaux olive 750 g, bicarbonate 1 kg.", largeur: 300 } },
+        { paragraphes: [
+          "Adoptez une lessive naturelle a la composition transparente. En plus de son cote ludique, fabriquer sa lessive maison permet de faire des economies, de prendre soin des peaux sensibles et de diminuer la pollution des rivieres. Ce kit comprend les basiques de la droguerie pour concevoir une lessive naturelle tres efficace et hypoallergenique, ideale pour tout type de linge.",
+        ] },
+        { intertitre: "Composition du pack" },
+        { puces: [
+          "Savon noir : 1 kg",
+          "Copeaux olive : 750 g",
+          "Bicarbonate : 1 kg",
+        ] },
+        { intertitre: "Informations produit" },
+        { puces: [
+          "Fabrique en France.",
+          "Prix : 35,95 euros TTC au lieu de 38,85 euros TTC (-2,90 euros).",
+          "Note clients : 4,5 / 5.",
+        ] },
+        { intertitre: "Les plus du kit" },
+        { puces: [
+          "Respectueux de l'environnement : produits 100 % d'origine naturelle, garantis sans parfum, sans conservateur, sans colorant et sans stabilisant.",
+          "Multiusage et economique : de nombreuses utilisations, adaptes a toutes les pieces de la maison pour detacher, nettoyer, proteger et degraisser ; ils permettent de faire des economies sur la lessive.",
+          "Produits fabriques en France : soutenez l'economie nationale et le savoir-faire francais.",
+        ] },
+        { intertitre: "Conseils d'utilisation" },
+        { puces: [
+          "Dans un saladier, versez 20 g de copeaux de savon de Marseille, 20 g de savon noir mou et 1 cuillere a soupe de bicarbonate de soude (remplacable par des cristaux de soude ou du percarbonate selon l'usage).",
+          "Versez 1 litre d'eau chaude et melangez jusqu'a complete dissolution des ingredients.",
+          "Laissez refroidir avant d'ajouter quelques gouttes d'huiles essentielles pour le linge.",
+          "Versez la preparation dans une bouteille en verre.",
+        ] },
+        { intertitre: "Precautions d'emploi" },
+        { puces: [
+          "Respectez les doses d'utilisation. A conserver a l'abri de la chaleur et de l'humidite.",
+          "En cas de contact avec les yeux : rincer abondamment a l'eau pendant plusieurs minutes.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Distinguer les caracteristiques techniques, commerciales et psychologiques d'un produit.",
+      "Realiser la fiche produit complete d'un article.",
+      "Reperer les mobiles d'achat d'un client et les justifier.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Realiser la vente dans un cadre omnicanal',
+      detail: "C.1.2 - Realiser la vente dans un cadre omnicanal : connaitre le produit et les mobiles d'achat.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - La connaissance du produit",
+        contexte: "Votre tuteur vous explique ce que sont les caracteristiques d'un produit avant la realisation de la fiche technique.",
+        questions: [
+          { numero: 1, consigne: "Realisez la fiche produit du Kit DIY Lessive (caracteristiques techniques et commerciales).", ressources: "Lire les documents 1 et 3, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Completez les caracteristiques psychologiques des clients de la lessive.", ressources: "Lire le document 2, completer l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Les mobiles d'achat",
+        contexte: "Vous identifiez ce qui motive les clients a acheter le Kit DIY Lessive.",
+        questions: [
+          { numero: 3, consigne: "Donnez les mobiles d'achat des clients du Kit DIY Lessive puis justifiez chaque reponse.", ressources: "Lire les documents 2 et 3, completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'fichesignaletique', id: 'annexe1', titre: "Annexe 1 - Caracteristiques techniques et commerciales du Kit DIY Lessive",
+        champs: [
+          { cle: 'nom', libelle: 'Nom du produit' },
+          { cle: 'compo1', libelle: 'Composition du pack (1)' },
+          { cle: 'compo2', libelle: 'Composition du pack (2)' },
+          { cle: 'compo3', libelle: 'Composition du pack (3)' },
+          { cle: 'poids1', libelle: 'Poids composante 1 (nom et poids)' },
+          { cle: 'poids2', libelle: 'Poids composante 2 (nom et poids)' },
+          { cle: 'poids3', libelle: 'Poids composante 3 (nom et poids)' },
+          { cle: 'precautions', libelle: "Precautions d'emploi", lignes: 3 },
+          { cle: 'fabrication', libelle: 'Lieu de fabrication' },
+          { cle: 'prix', libelle: 'Prix de vente' },
+          { cle: 'conseils', libelle: "Conseils d'utilisation", lignes: 5 },
+        ],
+      },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Caracteristiques psychologiques du Kit DIY Lessive", colonnes: ["Mobiles d'achat des acheteurs"], nbLignes: 3, largeurs: ['100%'], prerempli: [[''],[''],['']] },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - Les mobiles d'achat des clients", colonnes: ["Mobiles d'achat", 'Justifications'], nbLignes: 3, largeurs: ['35%','65%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [['',''],['',''],['','']] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Fiche produit du Kit DIY Lessive (annexe 1).", documents: ['Documents 1 et 3', 'Annexe 1'], bareme: 14,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Rubrique', 'Reponse attendue'], lignes: [
+          ['Nom du produit', 'Kit Lessive Olive 750 g'],
+          ['Composition du pack', 'Savon noir ; copeaux olive ; bicarbonate'],
+          ['Poids de chaque composante', 'Savon noir 1 kg ; copeaux olive 750 g ; bicarbonate 1 kg'],
+          ["Precautions d'emploi", "Respecter les doses d'utilisation ; conserver a l'abri de la chaleur et de l'humidite ; en cas de contact avec les yeux, rincer abondamment a l'eau pendant plusieurs minutes."],
+          ['Lieu de fabrication', 'En France'],
+          ['Prix de vente', '35,95 euros TTC'],
+          ["Conseils d'utilisation", "Melanger 20 g de copeaux de savon de Marseille, 20 g de savon noir mou et 1 cuillere a soupe de bicarbonate ; ajouter 1 litre d'eau chaude et melanger jusqu'a dissolution ; laisser refroidir puis ajouter quelques gouttes d'huiles essentielles ; verser dans une bouteille en verre."],
+        ] } },
+      { intitule: "Caracteristiques psychologiques (annexe 2).", documents: ['Document 2', 'Annexe 2'], bareme: 6,
+        reponse: "Les mobiles d'achat des acheteurs sont : la securite, l'argent (economie) et l'environnement (sympathie)." },
+      { intitule: "Les mobiles d'achat des clients (annexe 3).", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 10,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ["Mobile d'achat", 'Justification'], lignes: [
+          ['Securite', 'Composition transparente, produit hypoallergenique.'],
+          ['Argent', '35,95 euros au lieu de 38,85 euros TTC ; fabriquer sa lessive permet de faire des economies.'],
+          ['Environnement', 'Produit naturel qui diminue la pollution des rivieres.'],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "Les caracteristiques du produit et les mobiles d'achat",
+    proposition: [
+      'Techniques', 'Commerciales', 'Psychologiques',
+      'Securite', 'Argent', 'Environnement',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 2 - Le produit et les mobiles d'achat",
+      enfants: [
+        { id: 'carac', texte: "Les caracteristiques du produit", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Techniques' },
+          { id: 'c-2', texte: null, reponse: 'Commerciales' },
+          { id: 'c-3', texte: null, reponse: 'Psychologiques' },
+        ] },
+        { id: 'mob', texte: "Les mobiles d'achat", enfants: [
+          { id: 'm-1', texte: null, reponse: 'Securite' },
+          { id: 'm-2', texte: null, reponse: 'Argent' },
+          { id: 'm-3', texte: null, reponse: 'Environnement' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Connaitre les caracteristiques d'un produit", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est une caracteristique produit." },
+        { niveau: 'debrouille', description: "Je cite une caracteristique technique." },
+        { niveau: 'averti', description: "Je distingue caracteristiques techniques, commerciales et psychologiques." },
+        { niveau: 'expert', description: "Je realise la fiche produit complete d'un article." },
+      ] },
+      { id: 'c2', intitule: "Reperer les mobiles d'achat", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est un mobile d'achat." },
+        { niveau: 'debrouille', description: "Je cite un mobile d'achat." },
+        { niveau: 'averti', description: "Je reconnais les mobiles SONCAS." },
+        { niveau: 'expert', description: "J'identifie les mobiles d'un client et je les justifie." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Caracteristique technique", definition: "Element concret et mesurable d'un produit (nom, composition, poids, precautions)." },
+      { terme: "Caracteristique commerciale", definition: "Element lie a la vente d'un produit (lieu de fabrication, prix, conseils d'utilisation)." },
+      { terme: "Caracteristique psychologique", definition: "Element affectif du produit repondant aux motivations du client." },
+      { terme: "Mobile d'achat", definition: "Raison profonde, souvent psychologique, qui pousse un client a acheter." },
+      { terme: "SONCAS", definition: "Methode qui distingue 6 mobiles : Securite, Orgueil, Nouveaute, Confort, Argent, Sympathie." },
+      { terme: "Securite", definition: "Mobile d'achat : le client cherche a etre rassure (qualite, composition saine)." },
+      { terme: "Argent", definition: "Mobile d'achat : le client veut economiser ou faire une bonne affaire." },
+      { terme: "Environnement", definition: "Motivation liee au respect de la nature, rattachee au mobile de sympathie." },
+      { terme: "Hypoallergenique", definition: "Se dit d'un produit concu pour limiter les risques d'allergie." },
+      { terme: "Fiche produit", definition: "Document qui reunit toutes les caracteristiques d'un produit." },
+    ],
+    flashcards: [
+      { recto: "Cite les 3 types de caracteristiques d'un produit.", verso: "Techniques, commerciales et psychologiques." },
+      { recto: "Le nom, la composition et le poids sont des caracteristiques...", verso: "Techniques." },
+      { recto: "Le prix et le lieu de fabrication sont des caracteristiques...", verso: "Commerciales." },
+      { recto: "Que signifie SONCAS ?", verso: "Securite, Orgueil, Nouveaute, Confort, Argent, Sympathie." },
+      { recto: "Quel est le prix du Kit DIY Lessive ?", verso: "35,95 euros TTC (au lieu de 38,85 euros)." },
+      { recto: "Ou est fabrique le Kit DIY Lessive ?", verso: "En France." },
+      { recto: "Que contient le Kit Lessive Olive 750 g ?", verso: "Savon noir 1 kg, copeaux olive 750 g, bicarbonate 1 kg." },
+      { recto: "Quel mobile correspond a une composition transparente et hypoallergenique ?", verso: "La securite." },
+      { recto: "Quel mobile correspond a la reduction de prix et aux economies ?", verso: "L'argent." },
+      { recto: "Quel mobile correspond a un produit naturel qui diminue la pollution ?", verso: "L'environnement (sympathie)." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le nom et la composition d'un produit sont des caracteristiques :", options: ['Techniques', 'Commerciales', 'Psychologiques', 'Financieres'], bonne: 0 },
+      { type: 'unique', question: "Le prix de vente est une caracteristique :", options: ['Commerciale', 'Technique', 'Psychologique', 'Juridique'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le S de SONCAS ?", options: ['Securite', 'Simplicite', 'Service', 'Style'], bonne: 0 },
+      { type: 'unique', question: "Le Kit DIY Lessive est fabrique :", options: ['En France', 'En Chine', 'En Italie', 'En Espagne'], bonne: 0 },
+      { type: 'unique', question: "Quel est le prix du Kit DIY Lessive ?", options: ['35,95 euros TTC', '38,85 euros TTC', '20,00 euros TTC', '48,85 euros TTC'], bonne: 0 },
+      { type: 'unique', question: "Combien pese le savon noir du kit ?", options: ['1 kg', '750 g', '500 g', '2 kg'], bonne: 0 },
+      { type: 'unique', question: "Une composition transparente et hypoallergenique rassure : c'est le mobile...", options: ['Securite', 'Argent', 'Orgueil', 'Nouveaute'], bonne: 0 },
+      { type: 'unique', question: "Faire des economies correspond au mobile :", options: ['Argent', 'Confort', 'Securite', 'Sympathie'], bonne: 0 },
+      { type: 'unique', question: "Diminuer la pollution des rivieres correspond au mobile :", options: ['Environnement (sympathie)', 'Orgueil', 'Nouveaute', 'Confort'], bonne: 0 },
+      { type: 'unique', question: "Un produit hypoallergenique est concu pour :", options: ['Limiter les risques d\'allergie', 'Parfumer le linge', 'Colorer le linge', 'Accelerer le sechage'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Caracteristique technique', 'Caracteristique commerciale', "Mobile d'achat"],
+      zones: [
+        { libelle: 'Savon noir 1 kg', etiquetteIndex: 0 },
+        { libelle: 'Composition du pack', etiquetteIndex: 0 },
+        { libelle: "Precautions d'emploi", etiquetteIndex: 0 },
+        { libelle: '35,95 euros TTC', etiquetteIndex: 1 },
+        { libelle: 'Fabrique en France', etiquetteIndex: 1 },
+        { libelle: "Conseils d'utilisation", etiquetteIndex: 1 },
+        { libelle: 'Securite (composition saine)', etiquetteIndex: 2 },
+        { libelle: 'Argent (economies)', etiquetteIndex: 2 },
+        { libelle: 'Environnement (produit naturel)', etiquetteIndex: 2 },
+        { libelle: 'Hypoallergenique', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const MAMIE_CO_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Preparez les outils du commercial : identifiez les outils numeriques qui remplacent les outils d'hier, puis creez votre carte de visite classique et votre e-carte de visite digitale aux couleurs de Mamie & Co.",
+    contexte:
+      "Vous poursuivez votre PFMP chez Mamie & Co. Avant de partir en clientele, votre tuteur souhaite que vous soyez equipe des bons outils. Il vous explique d'abord comment le metier de commercial s'est modernise, puis vous demande de creer vos propres cartes de visite : une version classique et une version digitale.",
+    documents: [
+      { numero: 1, titre: "Intervention de votre tuteur", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m3/logo-mamie.png' },
+        { intertitre: "Les outils du commercial ont change" },
+        { paragraphes: [
+          "Quand j'ai commence il y a une quinzaine d'annees, je partais en rendez-vous avec un agenda papier, un cahier de notes, une calculatrice, un telephone fixe au bureau, des fiches produits imprimees et des post-it partout sur mon bureau.",
+          "Aujourd'hui, tout a change. Le numerique a remplace la plupart de ces outils. Un seul smartphone ou une tablette suffit souvent a faire ce que je faisais avec dix objets differents. Ton premier travail, c'est de retrouver, pour chacun de mes anciens outils, l'outil moderne (2.0) qui l'a remplace ou qui est en train de le remplacer.",
+        ] },
+      ] },
+      { numero: 2, titre: "Quelles informations sur votre carte de visite", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m3/logo-mamie.png' },
+        { intertitre: "Les informations utiles d'une carte de visite" },
+        { paragraphes: [
+          "Pour qu'une carte de visite soit pertinente, les informations qu'on doit y retrouver doivent repondre a trois questions essentielles : Qui ? Quoi ? Comment ?",
+          "Il y a un minimum d'informations qu'un interlocuteur s'attend a trouver sur une carte de visite, notamment :",
+        ] },
+        { puces: [
+          "Votre prenom et nom.",
+          "Votre societe.",
+          "Eventuellement votre poste ou titre dans cette societe.",
+          "Votre numero de telephone.",
+          "Votre adresse e-mail.",
+        ] },
+        { paragraphes: [
+          "Une fois ce minimum indique, de nombreuses autres informations peuvent y figurer selon votre situation : adresse postale, site internet, reseaux sociaux ou encore un QR code renvoyant vers vos coordonnees.",
+        ] },
+      ] },
+      { numero: 3, titre: "Construction de l'e-mail du personnel", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m3/logo-mamie.png' },
+        { intertitre: "Comment se construit l'adresse e-mail professionnelle" },
+        { paragraphes: [
+          "Chez Mamie & Co, l'adresse e-mail de chaque membre du personnel suit toujours la meme regle : le prenom, un point, le nom, puis le nom de domaine de l'entreprise.",
+        ] },
+        { puces: [
+          "Regle : prenom.nom@mamieandco.com",
+          "Exemple : pour Camille Dubreuil, l'adresse est camille.dubreuil@mamieandco.com",
+          "Les accents et espaces sont supprimes ; tout est en minuscules.",
+        ] },
+      ] },
+      { numero: 4, titre: "Comment creer une e-carte de visite", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m3/logo-mamie.png' },
+        { intertitre: "Qu'est-ce qu'une e-carte de visite ?" },
+        { paragraphes: [
+          "Une e-carte de visite (ou carte de visite digitale) est la version numerique de la carte papier. Au lieu de tendre un carton, le commercial fait scanner un QR code par le telephone de son interlocuteur. En un instant, toutes ses coordonnees s'enregistrent directement dans le repertoire du contact.",
+        ] },
+        { intertitre: "Comment ca marche ?" },
+        { paragraphes: [
+          "Le QR code contient un fichier appele vCard. Ce fichier regroupe le nom, la fonction, le telephone, l'e-mail et l'entreprise. Quand on scanne le QR avec l'appareil photo d'un smartphone, le telephone propose aussitot d'ajouter le contact.",
+        ] },
+        { puces: [
+          "Plus besoin d'imprimer : c'est ecologique et economique.",
+          "Le contact est enregistre sans erreur de recopie.",
+          "La carte peut etre mise a jour a tout moment.",
+          "Elle se partage aussi par mail, SMS ou reseaux sociaux.",
+        ] },
+        { paragraphes: [
+          "Dans l'annexe 3, vous allez creer votre propre e-carte : completez vos coordonnees, le QR code se genere automatiquement et votre e-carte est prete a etre scannee.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Associer les outils traditionnels du commercial a leurs equivalents numeriques.",
+      "Identifier les informations utiles d'une carte de visite.",
+      "Creer une carte de visite classique et une e-carte de visite digitale.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Preparer la vente',
+      detail: "C.1.2 - Preparer les outils d'aide a la vente du commercial.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - Les differents outils d'aide a la vente du commercial",
+        contexte: "Votre tuteur vous explique comment le metier s'est modernise.",
+        questions: [
+          { numero: 1, consigne: "Pour chacun des outils utilises par votre tuteur il y a 15 ans, trouvez l'outil 2.0 (moderne) qui l'a remplace ou est en voie de le remplacer.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - La carte de visite du commercial",
+        contexte: "Votre tuteur vous remet un document indiquant les informations utiles a integrer dans votre carte de visite.",
+        questions: [
+          { numero: 2, consigne: "Creez votre carte de visite classique aux couleurs de Mamie & Co en completant vos coordonnees (utilisez la regle de construction de l'e-mail du document 3).", ressources: "Lire les documents 2 et 3, completer l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Creez votre e-carte de visite digitale : completez vos coordonnees, le QR code se genere automatiquement.", ressources: "Lire le document 4, completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Les outils modernes du commercial", colonnes: ['Outils utilises 1.0', 'Outils 2.0'], nbLignes: 6, largeurs: ['48%','52%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Un agenda papier', ''],
+        ['Un cahier de notes', ''],
+        ['Une calculatrice', ''],
+        ['Un telephone pour passer des appels et en recevoir', ''],
+        ['Des fiches produits papiers', ''],
+        ['Des post-it', ''],
+      ] },
+      { type: 'cartevisite', id: 'annexe2', titre: "Annexe 2 - Votre carte de visite", entreprise: 'Mamie & Co', slogan: "ELLE A PLUS D'UN TOUR DANS SON TABLIER", logo: '/docs/mamie-and-co-m3/logo-mamie.png', couleur: '#C71585' },
+      { type: 'ecarte', id: 'annexe3', titre: "Annexe 3 - Votre e-carte de visite digitale", entreprise: 'Mamie & Co', slogan: "ELLE A PLUS D'UN TOUR DANS SON TABLIER", logo: '/docs/mamie-and-co-m3/logo-mamie.png', couleur: '#C71585' },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Les outils modernes du commercial (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 12,
+        reponse: "Voir tableau ci-dessous.",
+        tableau: { colonnes: ['Outil 1.0', 'Outil 2.0'], lignes: [
+          ['Un agenda papier', 'Smartphone ou tablette avec agenda integre'],
+          ['Un cahier de notes', 'Prise de notes sur tablette ou ordinateur portable'],
+          ['Une calculatrice', 'Smartphone ou tablette avec application calculatrice'],
+          ['Un telephone pour passer et recevoir des appels', 'Smartphone'],
+          ['Des fiches produits papiers', 'Video, fiche produit en PDF'],
+          ['Des post-it', 'Fonction rappel sur smartphone ou tablette'],
+        ] } },
+      { intitule: "Votre carte de visite (annexe 2).", documents: ['Documents 2 et 3', 'Annexe 2'], bareme: 8,
+        reponse: "Reponse personnelle. La carte doit comporter au minimum : prenom et nom, societe (Mamie & Co), fonction, telephone et e-mail construit selon la regle prenom.nom@mamieandco.com. Accepter toute carte complete et coherente." },
+      { intitule: "Votre e-carte de visite digitale (annexe 3).", documents: ['Document 4', 'Annexe 3'], bareme: 6,
+        reponse: "Reponse personnelle. L'eleve reprend ses coordonnees ; le QR code (vCard) se genere automatiquement et permet, une fois scanne, d'enregistrer le contact dans le telephone. Verifier la coherence des informations avec la carte classique." },
+    ],
+  },
+  synthese: {
+    titre: "La preparation des outils pour la vente",
+    proposition: [
+      'Smartphone', 'Tablette', 'QR code',
+      'Prenom et nom', 'E-mail', 'vCard',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 3 - Les outils pour la vente",
+      enfants: [
+        { id: 'outils', texte: "Les outils modernes", enfants: [
+          { id: 'o-1', texte: null, reponse: 'Smartphone' },
+          { id: 'o-2', texte: null, reponse: 'Tablette' },
+          { id: 'o-3', texte: null, reponse: 'QR code' },
+        ] },
+        { id: 'carte', texte: "La carte de visite", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Prenom et nom' },
+          { id: 'c-2', texte: null, reponse: 'E-mail' },
+          { id: 'c-3', texte: null, reponse: 'vCard' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Connaitre les outils modernes du commercial", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les outils numeriques du commercial." },
+        { niveau: 'debrouille', description: "Je cite un outil numerique." },
+        { niveau: 'averti', description: "J'associe les outils traditionnels a leurs equivalents numeriques." },
+        { niveau: 'expert', description: "J'explique l'apport du numerique dans le metier de commercial." },
+      ] },
+      { id: 'c2', intitule: "Creer ses cartes de visite", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce que contient une carte de visite." },
+        { niveau: 'debrouille', description: "Je cite les informations utiles d'une carte de visite." },
+        { niveau: 'averti', description: "Je cree une carte de visite classique complete." },
+        { niveau: 'expert', description: "Je cree une e-carte de visite digitale avec QR code." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Outil 2.0", definition: "Outil numerique moderne qui remplace un outil traditionnel." },
+      { terme: "Carte de visite", definition: "Support qui presente le commercial et ses coordonnees." },
+      { terme: "E-carte de visite", definition: "Version numerique de la carte de visite, partagee via un QR code." },
+      { terme: "QR code", definition: "Code carre scannable qui contient des informations (ici, un contact)." },
+      { terme: "vCard", definition: "Fichier standard de carte de visite electronique qui enregistre un contact." },
+      { terme: "Smartphone", definition: "Telephone intelligent qui regroupe agenda, calculatrice, notes et appels." },
+      { terme: "Tablette", definition: "Appareil numerique portable utilise pour la prise de notes et la consultation." },
+      { terme: "Fiche produit", definition: "Document qui presente les caracteristiques d'un produit, aujourd'hui souvent en PDF ou video." },
+      { terme: "Adresse e-mail professionnelle", definition: "Adresse construite selon une regle interne, ici prenom.nom@mamieandco.com." },
+      { terme: "Fonction rappel", definition: "Alerte programmee sur smartphone qui remplace le post-it." },
+    ],
+    flashcards: [
+      { recto: "Par quel outil moderne remplace-t-on l'agenda papier ?", verso: "Un smartphone ou une tablette avec agenda integre." },
+      { recto: "Par quoi remplace-t-on la calculatrice ?", verso: "Une application calculatrice sur smartphone ou tablette." },
+      { recto: "Par quoi remplace-t-on les fiches produits papier ?", verso: "Une video ou une fiche produit en PDF." },
+      { recto: "Par quoi remplace-t-on les post-it ?", verso: "La fonction rappel du smartphone ou de la tablette." },
+      { recto: "Quelles sont les informations minimales d'une carte de visite ?", verso: "Prenom et nom, societe, fonction, telephone et e-mail." },
+      { recto: "Comme se construit l'e-mail chez Mamie & Co ?", verso: "prenom.nom@mamieandco.com" },
+      { recto: "Qu'est-ce qu'une e-carte de visite ?", verso: "La version numerique de la carte, partagee via un QR code." },
+      { recto: "Que contient le QR code d'une e-carte ?", verso: "Une vCard : nom, fonction, telephone, e-mail, entreprise." },
+      { recto: "Que se passe-t-il quand on scanne le QR code ?", verso: "Le contact s'enregistre directement dans le telephone." },
+      { recto: "Cite un avantage de l'e-carte de visite.", verso: "Ecologique, sans erreur de recopie, modifiable, facile a partager." },
+    ],
+    quiz: [
+      { type: 'unique', question: "L'agenda papier est remplace par :", options: ['Un smartphone ou une tablette', 'Une calculatrice', 'Un post-it', 'Un cahier'], bonne: 0 },
+      { type: 'unique', question: "La calculatrice est remplacee par :", options: ['Une application sur smartphone', 'Un agenda papier', 'Une fiche produit', 'Un QR code'], bonne: 0 },
+      { type: 'unique', question: "Les fiches produits papier sont remplacees par :", options: ['Une video ou un PDF', 'Un post-it', 'Un cahier de notes', 'Une calculatrice'], bonne: 0 },
+      { type: 'unique', question: "Les post-it sont remplaces par :", options: ['La fonction rappel du smartphone', 'Un agenda papier', 'Une carte de visite', 'Un QR code'], bonne: 0 },
+      { type: 'unique', question: "Quelle information n'est PAS indispensable sur une carte de visite ?", options: ['La couleur preferee', 'Le prenom et nom', 'Le telephone', "L'e-mail"], bonne: 0 },
+      { type: 'unique', question: "Chez Mamie & Co, l'e-mail de Camille Dubreuil est :", options: ['camille.dubreuil@mamieandco.com', 'dubreuil.camille@mamie.com', 'c.dubreuil@mamieandco.fr', 'camilledubreuil@mamie.com'], bonne: 0 },
+      { type: 'unique', question: "Une e-carte de visite se partage grace a :", options: ['Un QR code', 'Un post-it', 'Une calculatrice', 'Un agenda'], bonne: 0 },
+      { type: 'unique', question: "Le QR code d'une e-carte contient :", options: ['Une vCard', 'Une photo', 'Une video', 'Un agenda'], bonne: 0 },
+      { type: 'unique', question: "Quand on scanne le QR code d'une e-carte :", options: ['Le contact s\'enregistre dans le telephone', 'Une video se lance', 'Un appel se declenche', 'Rien ne se passe'], bonne: 0 },
+      { type: 'unique', question: "Un avantage de l'e-carte de visite est :", options: ['Elle est ecologique et sans erreur de recopie', 'Elle coute plus cher', 'Elle s\'imprime obligatoirement', 'Elle ne se met jamais a jour'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Outil 1.0', 'Outil 2.0', 'Carte de visite'],
+      zones: [
+        { libelle: 'Agenda papier', etiquetteIndex: 0 },
+        { libelle: 'Cahier de notes', etiquetteIndex: 0 },
+        { libelle: 'Post-it', etiquetteIndex: 0 },
+        { libelle: 'Smartphone', etiquetteIndex: 1 },
+        { libelle: 'Tablette', etiquetteIndex: 1 },
+        { libelle: 'Fiche produit en PDF', etiquetteIndex: 1 },
+        { libelle: 'Prenom et nom', etiquetteIndex: 2 },
+        { libelle: 'Telephone et e-mail', etiquetteIndex: 2 },
+        { libelle: 'QR code (vCard)', etiquetteIndex: 2 },
+        { libelle: 'Fonction dans la societe', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const MAMIE_CO_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Preparez votre premier rendez-vous client : composez la tenue professionnelle ideale du commercial, puis reussissez la prise de contact verbale et non verbale, en face-a-face puis face a un groupe.",
+    contexte:
+      "Vous poursuivez votre PFMP chez Mamie & Co. Vous accompagnez une conseillere lors d'une reunion de vente a domicile organisee par Mme Christelle Blondize. C'est votre premiere prise de contact avec des clients : votre tuteur veut que vous soigniez votre tenue et votre accueil, car la premiere impression est decisive.",
+    documents: [
+      { numero: 1, titre: "Charte vestimentaire", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m4/logo-mamie.png' },
+        { intertitre: "La tenue parfaite du commercial" },
+        { paragraphes: [
+          "Le/la commercial(e) doit faire bonne impression et savoir subtilement doser entre style, harmonie et sobriété. Une tenue trop excentrique nuirait en effet à vos rendez-vous puisqu\u2019elle peut perturber le client ou prospect et l\u2019empêcher d\u2019être réellement attentif à votre discours. Une tenue stylée et moderne enverra un message positif au client : celui d\u2019un commercial qui vit avec son temps et qui a du goût.",
+          "Opter pour le « bon goût » et la modernité",
+          "Plusieurs règles de bon goût s\u2019appliquent lorsque l\u2019on porte un costume lors de ses rendez-vous clients. En voici quelques-unes :",
+          "Pour les hommes :",
+        ] },
+        { puces: [
+          "Un costume anthracite* ou gris plutôt que noir ;",
+          "Une ceinture pas trop étroite, assortie aux chaussures, c\u2019est mieux ! ;",
+          "A l\u2019arrière de la veste, on préfèrera la double fente, plus moderne et plus stylée que la simple ;",
+          "Choisir la bonne taille de veste est important ;",
+          "Le costume doit être déboutonné en s\u2019asseyant et reboutonné une fois debout ;",
+          "Les chaussettes doivent être assez hautes pour que les jambes ne soient pas visibles lorsque le commercial est assis ;",
+          "La cravate doit être de couleur sombre comme la chemise ;",
+          "La veste doit être juste assez longue pour couvrir la braguette et le derrière ;",
+          "La cravate doit toucher à peine la taille du pantalon ou être un tout petit peu plus court.",
+        ] },
+        { paragraphes: [
+          "Les femmes commerciales ont un peu plus de liberté concernant leur tenue vestimentaire. Bien sûr, les tailleurs pantalon et/ou jupe aux couleurs sobres (blanc, noir, gris) assortis de talons hauts ou ballerines reste des valeurs sûres pour les professionnelles de la vente. Le maquillage doit rester discret et les cheveux sont de préférence coiffés. C\u2019est en tous cas ce que l\u2019on apprend dans la plupart des écoles de vente.",
+          "* Anthracite = gris foncé",
+        ] },
+      ] },
+      { numero: 2, titre: "Les vetements presents dans votre armoire", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m4/logo-mamie.png' },
+        { intertitre: "Composez la tenue ideale" },
+        { paragraphes: ["Votre armoire contient plusieurs vetements pour chaque categorie. Pour composer la tenue ideale du commercial, cliquez la bonne photo dans chaque categorie ci-dessous (annexe 1). Aidez-vous de la charte vestimentaire du document 1."] },
+      ] },
+      { numero: 3, titre: "Phrase d\u2019accueil de Mme Blondize", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m4/logo-mamie.png' },
+        { intertitre: "Chez Mme Christelle Blondize" },
+        { paragraphes: [
+          "À votre arrivée, votre hôtesse vient vers vous pour vous accueillir à l\u2019entrée.",
+        ] },
+        { bulle: { nom: 'Mme Christelle Blondize', role: 'Votre hôtesse', initiale: 'B', couleurAvatar: '#2E6CB0', lignes: [
+          "« Bonjour,",
+          "Heureuse de vous recevoir tous les deux chez moi pour cette réunion ! »",
+        ] } },
+        { paragraphes: [
+          "Elle vous conduit ensuite dans son salon, où toutes les invitées sont déjà installées : vous devez alors saluer l\u2019ensemble du groupe.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Composer la tenue professionnelle idéale d'un commercial.",
+      "Justifier ses choix vestimentaires à partir d'une charte.",
+      "Réussir une prise de contact verbale et non verbale, en face-à-face et face à un groupe.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Conseiller et vendre',
+      detail: "C.1.2 — Réaliser la vente dans un cadre omnicanal.",
+    },
+    activites: [
+      {
+        titre: "Activité 1 — La tenue professionnelle du commercial",
+        contexte: "Vous composez la tenue vestimentaire adequate du commercial.",
+        questions: [
+          { numero: 1, consigne: "Choisissez chaque element qui correspond a la tenue vestimentaire adequate du commercial en cliquant la bonne photo dans chaque categorie.", ressources: "Lire et compléter le document 2.", annexeId: 'annexe0' },
+          { numero: 2, consigne: "Pour chacun des vêtements choisis pour composer la tenue idéale du commercial, justifiez votre réponse en citant le document 1.", ressources: "Consulter le document 2, compléter l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - La prise de contact verbale et non verbale",
+        contexte: "A votre arrivee chez Mme Blondize, vous devez saluer votre hotesse puis le groupe d'invitees.",
+        questions: [
+          { numero: 3, consigne: "Formulez la phrase d'accueil que vous allez prononcer face à Mme Christelle Blondize (verbale et non verbales).", ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 4, consigne: "Redigez, en des termes simples, la phrase de prise de contact face a l'ensemble des personnes presentes a la reunion.", ressources: "Compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 5, consigne: "Quelle difference faites-vous entre les deux phrases d'accueil que vous avez prononcees ? Justifiez votre reponse.", ressources: "Compléter l'annexe 4.", annexeId: 'annexe4' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'choixphotos', id: 'annexe0', titre: "Document 2 — Les vêtements présents dans votre armoire",
+        consigne: "Cliquez la bonne photo dans chaque catégorie pour composer la tenue idéale du commercial.",
+        categories: [
+          { cle: 'haut', libelle: 'Le haut', photos: [
+            { src: '/docs/mamie-and-co-m4/haut-1.jpg', alt: 'Chemise bleue' },
+            { src: '/docs/mamie-and-co-m4/haut-2.jpg', alt: 'T-shirt noir' },
+            { src: '/docs/mamie-and-co-m4/haut-3.jpg', alt: 'Chemise bleu ciel' },
+            { src: '/docs/mamie-and-co-m4/haut-4.jpg', alt: 'Sweat rouge' },
+          ] },
+          { cle: 'cravate', libelle: 'La cravate', photos: [
+            { src: '/docs/mamie-and-co-m4/cravate-1.jpg', alt: 'Cravate orange' },
+            { src: '/docs/mamie-and-co-m4/cravate-2.jpg', alt: 'Cravate blanche' },
+            { src: '/docs/mamie-and-co-m4/cravate-3.jpg', alt: 'Cravate verte' },
+            { src: '/docs/mamie-and-co-m4/cravate-4.jpg', alt: 'Cravate bleu marine' },
+          ] },
+          { cle: 'ceinture', libelle: 'La ceinture', photos: [
+            { src: '/docs/mamie-and-co-m4/ceinture-1.jpg', alt: 'Ceinture fine marron' },
+            { src: '/docs/mamie-and-co-m4/ceinture-2.jpg', alt: 'Ceinture noire' },
+            { src: '/docs/mamie-and-co-m4/ceinture-3.jpg', alt: 'Ceinture militaire' },
+            { src: '/docs/mamie-and-co-m4/ceinture-4.jpg', alt: 'Ceinture cuir marron a boucle' },
+          ] },
+          { cle: 'pantalon', libelle: 'Le pantalon', photos: [
+            { src: '/docs/mamie-and-co-m4/pantalon-1.jpg', alt: 'Jean clair' },
+            { src: '/docs/mamie-and-co-m4/pantalon-2.jpg', alt: 'Jogging gris' },
+            { src: '/docs/mamie-and-co-m4/pantalon-3.jpg', alt: 'Pantalon habille anthracite' },
+            { src: '/docs/mamie-and-co-m4/pantalon-4.jpg', alt: 'Pantalon gris a carreaux' },
+          ] },
+          { cle: 'chaussures', libelle: 'Les chaussures', photos: [
+            { src: '/docs/mamie-and-co-m4/chaussures-1.jpg', alt: 'Baskets montantes' },
+            { src: '/docs/mamie-and-co-m4/chaussures-2.jpg', alt: 'Sneakers' },
+            { src: '/docs/mamie-and-co-m4/chaussures-3.jpg', alt: 'Chaussures de ville en cuir' },
+            { src: '/docs/mamie-and-co-m4/chaussures-4.jpg', alt: 'Boots' },
+          ] },
+        ],
+      },
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Conception de la tenue ideale du commercial", colonnes: ['Type de vetement', 'Numero du vetement ideal', 'Justification (citez le document 1)'], nbLignes: 5, largeurs: ['26%','22%','52%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Le haut', '', ''],
+        ['La cravate', '', ''],
+        ['La ceinture', '', ''],
+        ['Le pantalon', '', ''],
+        ['Les chaussures', '', ''],
+      ] },
+      { type: 'fichesignaletique', id: 'annexe2', titre: "Annexe 2 - Phrase d'accueil a Mme Blondize", champs: [
+        { cle: 'verbale', libelle: "Communication verbale (ce que vous dites)", lignes: 3 },
+        { cle: 'nonverbale', libelle: "Communication non verbale (gestes, attitude, sourire, poignee de main...)", lignes: 3 },
+      ] },
+      { type: 'fichesignaletique', id: 'annexe3', titre: "Annexe 3 - Phrase d'accueil aux personnes presentes a la reunion", champs: [
+        { cle: 'groupe', libelle: "Votre phrase d'accueil au groupe", lignes: 3 },
+      ] },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 - Les phrases d'accueil", colonnes: ["Phrases d'accueil", 'Justification'], nbLignes: 2, largeurs: ['42%','58%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ["Phrase d'accueil a Mme Blondize", ''],
+        ["Phrase d'accueil aux personnes presentes", ''],
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "La tenue ideale du commercial (document 2 et annexe 1).", documents: ['Document 1', 'Document 2', 'Annexe 1'], bareme: 15,
+        reponse: "Tenue ideale a selectionner : Le haut = chemise bleue (photo 1) ; La cravate = bleu marine (photo 4) ; La ceinture = cuir marron a boucle, assortie aux chaussures (photo 4) ; Le pantalon = pantalon habille anthracite (photo 3) ; Les chaussures = chaussures de ville en cuir (photo 3). Justifications citees du document 1 : voir tableau.",
+        tableau: { colonnes: ['Type de vetement', 'Numero', 'Justification (document 1)'], lignes: [
+          ['Le haut', '1', 'La chemise doit etre de couleur sombre, comme la cravate.'],
+          ['La cravate', '4', 'La cravate doit etre de couleur sombre, comme la chemise.'],
+          ['La ceinture', '4', 'Une ceinture pas trop etroite, assortie aux chaussures.'],
+          ['Le pantalon', '3', 'Un costume (pantalon et veste) anthracite ou gris plutot que noir.'],
+          ['Les chaussures', '3', 'Des chaussures de ville, assorties a la ceinture.'],
+        ] } },
+      { intitule: "Phrase d'accueil a Mme Blondize (annexe 2).", documents: ['Document 3', 'Annexe 2'], bareme: 8,
+        reponse: "Verbale : \"Bonjour Madame Blondize, je suis ravi(e) de vous rencontrer. Merci de nous accueillir chez vous aujourd'hui.\" Non verbale : sourire, regard, poignee de main ferme, attitude ouverte et posee. Accepter toute formulation polie, personnalisee (le nom est cite) et chaleureuse." },
+      { intitule: "Phrase d'accueil au groupe (annexe 3).", documents: ['Annexe 3'], bareme: 4,
+        reponse: "Exemple : \"Bonjour a toutes, merci de votre presence. Je suis tres heureux(se) d'etre parmi vous ce soir.\" Accepter toute formulation polie et chaleureuse adressee a l'ensemble du groupe." },
+      { intitule: "Difference entre les deux phrases (annexe 4).", documents: ['Annexe 4'], bareme: 6,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ["Phrase d'accueil", 'Justification'], lignes: [
+          ["Phrase d'accueil a Mme Blondize", "C'est un accueil personnalise et chaleureux (on cite le nom de la personne)."],
+          ["Phrase d'accueil aux personnes presentes", "C'est un accueil impersonnel mais chaleureux (on s'adresse a un groupe, sans nommer chacun)."],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "La prise de contact",
+    proposition: [
+      'Sobre', 'Assortie', 'Premiere impression',
+      'Verbale', 'Non verbale', 'Personnalise', 'Impersonnel',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 4 - La prise de contact",
+      enfants: [
+        { id: 'tenue', texte: "La tenue du commercial", enfants: [
+          { id: 't-1', texte: null, reponse: 'Sobre' },
+          { id: 't-2', texte: null, reponse: 'Assortie' },
+          { id: 't-3', texte: null, reponse: 'Premiere impression' },
+        ] },
+        { id: 'contact', texte: "La prise de contact", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Verbale' },
+          { id: 'c-2', texte: null, reponse: 'Non verbale' },
+          { id: 'c-3', texte: null, reponse: 'Personnalise' },
+          { id: 'c-4', texte: null, reponse: 'Impersonnel' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Adopter une tenue professionnelle", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est une tenue adaptee." },
+        { niveau: 'debrouille', description: "Je choisis quelques vetements adaptes." },
+        { niveau: 'averti', description: "Je compose une tenue professionnelle complete." },
+        { niveau: 'expert', description: "Je justifie chaque choix a partir d'une charte vestimentaire." },
+      ] },
+      { id: 'c2', intitule: "Reussir la prise de contact", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas comment accueillir un client." },
+        { niveau: 'debrouille', description: "Je formule une phrase d'accueil simple." },
+        { niveau: 'averti', description: "Je distingue communication verbale et non verbale." },
+        { niveau: 'expert', description: "J'adapte mon accueil selon que je m'adresse a une personne ou a un groupe." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Prise de contact", definition: "Premier moment de l'echange entre le commercial et le client." },
+      { terme: "Premiere impression", definition: "Image que le client se fait du commercial dans les premieres secondes." },
+      { terme: "Communication verbale", definition: "Ce que l'on dit : les mots, la phrase d'accueil." },
+      { terme: "Communication non verbale", definition: "Ce que l'on transmet sans parler : gestes, sourire, posture, regard, poignee de main." },
+      { terme: "Charte vestimentaire", definition: "Ensemble de regles definissant la tenue attendue." },
+      { terme: "Tenue sobre", definition: "Tenue discrete, aux couleurs neutres, adaptee au contexte professionnel." },
+      { terme: "Anthracite", definition: "Gris tres fonce, couleur recommandee pour un costume." },
+      { terme: "Accueil personnalise", definition: "Accueil qui s'adresse a une personne en la nommant." },
+      { terme: "Accueil impersonnel", definition: "Accueil qui s'adresse a un groupe sans nommer chacun." },
+      { terme: "Assorti", definition: "Se dit d'elements qui vont bien ensemble (ceinture et chaussures)." },
+    ],
+    flashcards: [
+      { recto: "Pourquoi soigner sa tenue en rendez-vous client ?", verso: "Pour faire bonne impression : la premiere impression est decisive." },
+      { recto: "De quelle couleur doit etre un costume selon la charte ?", verso: "Anthracite ou gris, plutot que noir." },
+      { recto: "A quoi doit etre assortie la ceinture ?", verso: "Aux chaussures." },
+      { recto: "De quelle couleur doit etre la cravate ?", verso: "De couleur sombre, comme la chemise." },
+      { recto: "Qu'est-ce que la communication non verbale ?", verso: "Les gestes, le sourire, la posture, le regard, la poignee de main." },
+      { recto: "Cite un exemple de communication non verbale a l'accueil.", verso: "Un sourire et une poignee de main ferme." },
+      { recto: "Comment accueillir Mme Blondize ?", verso: "De facon personnalisee et chaleureuse, en citant son nom." },
+      { recto: "Comment accueillir le groupe d'invitees ?", verso: "De facon chaleureuse mais impersonnelle (sans nommer chacun)." },
+      { recto: "Quelle difference entre les deux accueils ?", verso: "L'un est personnalise (une personne nommee), l'autre impersonnel (un groupe)." },
+      { recto: "Une tenue trop excentrique, quel risque ?", verso: "Perturber le client et l'empecher d'ecouter le discours." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Un costume doit etre de preference :", options: ['Anthracite ou gris', 'Rouge vif', 'Blanc', 'A motifs'], bonne: 0 },
+      { type: 'unique', question: "La ceinture doit etre assortie :", options: ['Aux chaussures', 'A la cravate', 'A la chemise', 'Au telephone'], bonne: 0 },
+      { type: 'unique', question: "La cravate doit etre :", options: ['De couleur sombre', 'Fluo', 'Tres large', 'Absente'], bonne: 0 },
+      { type: 'unique', question: "La premiere impression du client se fait :", options: ['Dans les premieres secondes', 'A la fin du rendez-vous', 'Le lendemain', 'Jamais'], bonne: 0 },
+      { type: 'unique', question: "Le sourire et la poignee de main relevent de la communication :", options: ['Non verbale', 'Verbale', 'Ecrite', 'Telephonique'], bonne: 0 },
+      { type: 'unique', question: "La phrase d'accueil relevee de la communication :", options: ['Verbale', 'Non verbale', 'Gestuelle', 'Visuelle'], bonne: 0 },
+      { type: 'unique', question: "Accueillir Mme Blondize en la nommant, c'est un accueil :", options: ['Personnalise', 'Impersonnel', 'Froid', 'Distant'], bonne: 0 },
+      { type: 'unique', question: "Accueillir un groupe sans nommer chacun, c'est un accueil :", options: ['Impersonnel', 'Personnalise', 'Individuel', 'Prive'], bonne: 0 },
+      { type: 'unique', question: "Une tenue trop excentrique risque de :", options: ['Perturber le client', 'Rassurer le client', 'Conclure la vente', 'Faire baisser le prix'], bonne: 0 },
+      { type: 'unique', question: "Les deux phrases d'accueil doivent rester :", options: ['Chaleureuses', 'Agressives', 'Silencieuses', 'Identiques'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Communication verbale', 'Communication non verbale', 'Tenue professionnelle'],
+      zones: [
+        { libelle: "La phrase d'accueil", etiquetteIndex: 0 },
+        { libelle: 'Le nom du client cite', etiquetteIndex: 0 },
+        { libelle: 'Les mots de bienvenue', etiquetteIndex: 0 },
+        { libelle: 'Le sourire', etiquetteIndex: 1 },
+        { libelle: 'La poignee de main', etiquetteIndex: 1 },
+        { libelle: 'La posture et le regard', etiquetteIndex: 1 },
+        { libelle: 'Le costume anthracite', etiquetteIndex: 2 },
+        { libelle: 'La cravate sombre', etiquetteIndex: 2 },
+        { libelle: 'La ceinture assortie aux chaussures', etiquetteIndex: 2 },
+        { libelle: 'Les chaussures de ville', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const MAMIE_CO_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Preparez et menez la presentation du Kit de lessive : identifiez la methode de vente, retracez le parcours omnicanal des clientes, appliquez les regles d'une demonstration efficace, puis construisez et formulez vos arguments avec la methode C.A.P.",
+    contexte:
+      "Vous poursuivez votre PFMP chez Mamie & Co. Vous arrivez chez Mme Christelle Blondize pour animer une reunion de vente a domicile. Sur le chemin, votre tuteur vous interroge sur les methodes de vente. Une fois sur place, vous devrez presenter le Kit de lessive aux clientes et les convaincre.",
+    documents: [
+      { numero: 1, titre: "Les methodes de vente", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m5/logo-mamie.png' },
+        { intertitre: "Les methodes de vente et leurs techniques" },
+        { paragraphes: ["Il existe trois grandes familles de methodes de vente. Chacune se decline en techniques. Cliquez sur une technique de la roue pour afficher sa definition."] },
+        { roue: { secteurs: [
+          { nom: 'Vente contact', couleur: '#C71585', techniques: [
+            { nom: 'En reunion', definition: "Le commercial est invite par un particulier qui invite des amis ou connaissances a des reunions de vente chez eux." },
+            { nom: 'Par telephone', definition: "Le commercial sollicite par telephone un client ou un prospect pour lui faire part d'une offre commerciale." },
+            { nom: 'Traditionnelle', definition: "Le commercial aide le client dans son choix et le conseille." },
+            { nom: 'Libre-service assiste', definition: "Vente sur une construction legere et temporaire dans un marche, une foire ou un salon." },
+          ] },
+          { nom: 'Vente visuelle', couleur: '#1D9E75', techniques: [
+            { nom: 'Par distributeur', definition: "Le client utilise seul un distributeur automatique pour avoir acces a un choix de produits ou de services." },
+            { nom: 'Libre-service', definition: "Le client est seul pour choisir ses produits dans les rayons, sans vendeur." },
+            { nom: 'Libre-service assiste', definition: "Le client est seul pour choisir ses produits dans les rayons, mais peut appeler un vendeur s'il le souhaite." },
+          ] },
+          { nom: 'Vente a distance', couleur: '#185FA5', techniques: [
+            { nom: 'Drive', definition: "Le client achete ses produits en ligne puis se rend au point retrait du magasin pour les charger dans le coffre de sa voiture." },
+            { nom: 'Click and collect', definition: "Le client commande ses produits sur Internet puis effectue le retrait en magasin." },
+            { nom: 'E-commerce', definition: "Le client achete sans l'intervention d'un vendeur des biens ou des services a une entreprise dont la vitrine se trouve sur Internet." },
+          ] },
+        ] } },
+      ] },
+      { numero: 2, titre: "Reponse des personnes presentes", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m5/logo-mamie.png' },
+        { intertitre: "Tour de table : comment avez-vous connu Mamie & Co ?" },
+        { tourDeTable: { bulles: [
+          { locuteur: 'Marion Gardy', texte: "Bonjour, je suis Marion Gardy, 3 enfants. Eh bien moi, j'ai vu une emission a la tele. Donc je suis allee voir sur Internet... et me voila ici aujourd'hui." },
+          { locuteur: 'Adriana Veaulot', texte: "Moi c'est Adriana Veaulot. J'ai une fille de 3 ans. C'est Christelle qui m'a invitee et du coup j'ai ete voir sur Internet." },
+          { locuteur: 'Fati Diame', texte: "Re ! Je m'appelle Fati Diame. J'etais sur YouTube en train de regarder un tuto, et il y a eu une publicite qui est apparue. On en a parle avec Christelle Blondize et on a organise cette rencontre ensemble." },
+          { locuteur: 'Maddy Camay', texte: "Je suis Maddy Camay, j'attends un petit garcon. J'etais sur Twitter et une actrice que je suis en a parle. Elle a mis un lien qui m'a renvoyee vers une video Instagram. Quand Marion m'a invitee, j'ai tout de suite accepte." },
+        ] } },
+      ] },
+      { numero: 3, titre: "Les regles d'une demonstration efficace", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m5/logo-mamie.png' },
+        { intertitre: "Six commandements pour reussir une demonstration produit" },
+        { paragraphes: ["Suivez le chemin ci-dessous : chaque etape est une regle a respecter pour reussir votre demonstration."] },
+        { parcours: { etapes: [
+          { numero: '1', symbole: 'etincelle', titre: "La demo doit en jeter", contenu: ["La demonstration doit donner envie d'acheter. Dans le jargon marketing, on parle d'une demonstration \"sexy\". Ce que vous montrez doit etre tres visuel, concret et percutant."] },
+          { numero: '2', symbole: 'trophee', titre: "Montrer les avantages", contenu: ["Montrez les avantages de votre produit par rapport a la concurrence. Mettez en avant ce qui le differencie et ce qui est le plus visuel."] },
+          { numero: '3', symbole: 'personnes', titre: "S'adapter a la clientele", contenu: ["Adaptez votre demonstration aux personnes en face de vous. Exemple : les clientes ont des enfants, faites la demonstration sur un t-shirt sali par un enfant pour montrer l'efficacite de la lessive."] },
+          { numero: '5', symbole: 'interdit', titre: "Les mots a eviter", contenu: ["Mettez votre produit en valeur : evitez de mentionner ses faiblesses. Ne sortez pas trop du scenario prevu et evitez les improvisations."] },
+          { numero: '6', symbole: 'volant', titre: "Rester maitre de la demo", contenu: ["Gardez la maitrise. Si la reponse a une question est dans la demonstration, demandez a votre interlocuteur de patienter. Notez les autres questions et repondez-y a la fin."] },
+        ] } },
+      ] },
+      { numero: 4, titre: "Comment convaincre le client (methode C.A.P.)", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m5/logo-mamie.png' },
+        { intertitre: "Argumenter, tu n'omettras pas" },
+        { paragraphes: ["A l'etape de l'argumentation, respectez la methode C.A.P. pour construire vos arguments, et retrouvez les mobiles d'achat emis par le client.", "C.A.P. = Caracteristique (ce que le produit est) / Avantage (ce que ca apporte au client) / Preuve (ce qui le demontre). On associe chaque argument a un mobile d'achat (SONCAS + Environnement)."] },
+        { image: { src: '/docs/mamie-and-co-m5/vinaigre-fiche.png', alt: "Fiche produit du Vinaigre menager 14 degres au citron bio : 5,25 euros TTC, multi-usages ecologique, 100 % naturel, produit francais, 4,6/5.", largeur: 320 } },
+        { intertitre: "Exemple : Vinaigre menager 14° au citron bio" },
+        { tableau: { colonnes: ["Mobile d'achat", 'Caracteristique', 'Avantage', 'Preuve'], lignes: [
+          ['Confort', "Produit multi-usage", "Nettoie toutes les pieces de la maison", "Regardez, c'est ecrit !"],
+          ['Environnement', "Produit 100 % naturel", "Pas d'action negative sur la nature", "Regardez, c'est ecrit !"],
+          ['Securite', "Produit francais", "Gage de fiabilite", "Le drapeau francais"],
+        ] } },
+      ] },
+    ],
+    objectifs: [
+      "Identifier une methode de vente et sa technique.",
+      "Retracer le parcours omnicanal d'un client.",
+      "Appliquer les regles d'une demonstration efficace.",
+      "Construire et formuler des arguments avec la methode C.A.P.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 1',
+      intitule: 'Realiser la vente dans un cadre omnicanal',
+      detail: "C.1.2 - Realiser la vente dans un cadre omnicanal : presenter le produit et argumenter.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - Les methodes de vente",
+        contexte: "Sur le chemin du domicile de la cliente, votre tuteur vous interroge sur les methodes et techniques de vente.",
+        questions: [
+          { numero: 1, consigne: "Indiquez la methode et la technique de vente utilisees chez la cliente, puis un avantage et un inconvenient.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Le parcours omnicanal du client",
+        contexte: "Avant votre presentation, vous faites un tour de table pour connaitre le parcours de chaque cliente.",
+        questions: [
+          { numero: 2, consigne: "Decrivez le parcours de chaque cliente en indiquant les canaux utilises pour connaitre Mamie & Co.", ressources: "Lire le document 2, completer l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: "Activite 3 - La presentation du produit",
+        contexte: "Vous preparez la demonstration du Kit de lessive.",
+        questions: [
+          { numero: 3, consigne: "Pour chaque regle de demonstration, decrivez les actions a mener ou les phrases a prononcer face aux clientes pour le Kit de lessive.", ressources: "Lire le document 3, completer l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activite 4 - L'argumentation",
+        contexte: "La regle n°5 rappelle : argumenter, tu n'omettras pas. Pendant la demonstration, vous exposez 4 arguments.",
+        questions: [
+          { numero: 4, consigne: "Construisez 4 arguments a exposer a la clientele selon les mobiles d'achat (caracteristiques psychologiques de la mission 2) et la methode C.A.P.", ressources: "Mission 2 activite 2, document 4, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Formulez sous forme de phrases les arguments que vous allez prononcer face aux clientes.", ressources: "Completer l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Le choix de la methode de vente", colonnes: ['Element', 'Reponse'], nbLignes: 4, largeurs: ['40%','60%'], prerempli: [
+        ['Methode de vente', ''],
+        ['Technique de vente', ''],
+        ['Avantage', ''],
+        ['Inconvenient', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Le parcours omnicanal des personnes presentes", colonnes: ['Nom du prospect', 'Canaux utilises'], nbLignes: 4, largeurs: ['45%','55%'], prerempli: [
+        ['Marion Gardy', ''],
+        ['Adriana Veaulot', ''],
+        ['Fati Diame', ''],
+        ['Maddy Camay', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - Actions a mener (A) ou phrases a prononcer (P)", colonnes: ['Regle', 'A / P', 'Consigne', 'Actions a mener ou phrases a prononcer'], nbLignes: 5, largeurs: ['12%','12%','36%','40%'], reponseMultiligne: true, lignesReponse: 3, prerempli: [
+        ['n°1', 'A', "A l'aide des outils prepares, decrivez comment se passera la demonstration.", ''],
+        ['n°2', 'A', "Indiquez les avantages du produit que vous presentez.", ''],
+        ['n°3', 'A / P', "Indiquez comment vous allez adapter votre demonstration aux clientes.", ''],
+        ['n°5', 'P', "Indiquez les types de mots a eviter pendant la demonstration.", ''],
+        ['n°6', 'A / P', "Expliquez comment le commercial reste maitre de sa demonstration.", ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 - Les arguments avec la methode C.A.P.", colonnes: ["Mobile d'achat", 'Caracteristique', 'Avantage', 'Preuve'], nbLignes: 4, largeurs: ['22%','26%','28%','24%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['', '', '', ''], ['', '', '', ''], ['', '', '', ''], ['', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: "Annexe 5 - Les phrases de l'argumentation", colonnes: ['Argument', 'Phrase a prononcer face aux clientes'], nbLignes: 4, largeurs: ['20%','80%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Argument 1', ''], ['Argument 2', ''], ['Argument 3', ''], ['Argument 4', ''],
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Le choix de la methode de vente (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 8,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Element', 'Reponse'], lignes: [
+          ['Methode de vente', 'Vente de contact'],
+          ['Technique de vente', 'Vente a domicile'],
+          ['Avantage', 'Convivialite, relation de proximite'],
+          ['Inconvenient', "Il faut parfaitement connaitre ses produits pour repondre aux questions"],
+        ] } },
+      { intitule: "Le parcours omnicanal (annexe 2).", documents: ['Document 2', 'Annexe 2'], bareme: 8,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Nom du prospect', 'Canaux utilises'], lignes: [
+          ['Marion Gardy', 'Television puis Internet'],
+          ['Adriana Veaulot', 'Internet'],
+          ['Fati Diame', 'YouTube'],
+          ['Maddy Camay', 'Twitter puis Instagram'],
+        ] } },
+      { intitule: "Actions a mener ou phrases a prononcer (annexe 3).", documents: ['Document 3', 'Annexe 3'], bareme: 12,
+        reponse: "Regle n°1 (A) : la demonstration doit \"en jeter\" et donner envie d'acheter ; elle doit etre tres visuelle, concrete et percutante. Regle n°2 (A) : montrer les avantages du produit par rapport a la concurrence, mettre en avant ce qui le differencie. Regle n°3 (A/P) : les clientes ont des enfants, on adapte le discours : \"Je vais vous faire une demonstration sur un t-shirt sali par un enfant\" et on montre l'efficacite de la lessive. Regle n°5 (P) : mettre le produit en valeur, eviter d'evoquer ses faiblesses, ne pas trop improviser. Regle n°6 (A/P) : garder la maitrise de la demonstration ; demander de patienter si la reponse arrive plus loin, noter les autres questions et y repondre a la fin." },
+      { intitule: "Les arguments avec la methode C.A.P. (annexe 4).", documents: ['Mission 2', 'Document 4', 'Annexe 4'], bareme: 8,
+        reponse: "Reponse attendue (4 arguments, coherents avec les mobiles de la mission 2). Voir tableau.",
+        tableau: { colonnes: ["Mobile", 'Caracteristique', 'Avantage', 'Preuve'], lignes: [
+          ['Securite', 'Hypoallergenique / fabrique en France', 'Prend soin des peaux sensibles, produit de qualite', "Ecrit sur le site, petit drapeau"],
+          ['Argent', '35,95 euros', 'Fabriquer sa lessive permet de faire des economies', 'Le prix est affiche'],
+          ['Environnement', 'Produits naturels', 'Diminue la pollution des rivieres', "C'est ecrit sur l'etiquette"],
+          ['Securite', '4,5 etoiles', "Beaucoup d'avis positifs", 'Voir les avis sur le site'],
+        ] } },
+      { intitule: "Les phrases de l'argumentation (annexe 5).", documents: ['Annexe 5'], bareme: 8,
+        reponse: "Reponse personnelle. Exemples : \"Ce kit est fabrique en France et hypoallergenique : il prend soin des peaux sensibles de toute la famille, c'est ecrit sur l'emballage.\" ; \"A 35,95 euros, fabriquer sa lessive vous fait faire de vraies economies.\" ; \"100 % naturel, il diminue la pollution des rivieres.\" ; \"Note de 4,5 sur 5 : de nombreux clients l'ont deja adopte.\"" },
+    ],
+  },
+  synthese: {
+    titre: "La presentation du produit et l'argumentation",
+    proposition: [
+      'Vente de contact', 'Omnicanal', 'Demonstration',
+      'Caracteristique', 'Avantage', 'Preuve',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 5 - Presentation et argumentation",
+      enfants: [
+        { id: 'vente', texte: "La vente", enfants: [
+          { id: 'v-1', texte: null, reponse: 'Vente de contact' },
+          { id: 'v-2', texte: null, reponse: 'Omnicanal' },
+          { id: 'v-3', texte: null, reponse: 'Demonstration' },
+        ] },
+        { id: 'cap', texte: "La methode C.A.P.", enfants: [
+          { id: 'a-1', texte: null, reponse: 'Caracteristique' },
+          { id: 'a-2', texte: null, reponse: 'Avantage' },
+          { id: 'a-3', texte: null, reponse: 'Preuve' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Connaitre les methodes de vente et le parcours client", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les methodes de vente." },
+        { niveau: 'debrouille', description: "Je cite une methode de vente." },
+        { niveau: 'averti', description: "Je distingue methode, technique, avantage et inconvenient." },
+        { niveau: 'expert', description: "Je retrace le parcours omnicanal d'un client." },
+      ] },
+      { id: 'c2', intitule: "Presenter et argumenter", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas mener une demonstration." },
+        { niveau: 'debrouille', description: "Je cite une regle de demonstration." },
+        { niveau: 'averti', description: "J'applique les regles d'une demonstration efficace." },
+        { niveau: 'expert', description: "Je construis et je formule des arguments avec la methode C.A.P." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Vente de contact", definition: "Methode ou le vendeur est en relation directe avec le client." },
+      { terme: "Vente a domicile", definition: "Technique de vente de contact realisee chez le client." },
+      { terme: "Libre-service assiste", definition: "Methode ou le client se sert seul mais peut etre aide." },
+      { terme: "Click and collect", definition: "Commande en ligne puis retrait en magasin." },
+      { terme: "Omnicanal", definition: "Utilisation combinee de plusieurs canaux pour atteindre le client." },
+      { terme: "Canal", definition: "Moyen par lequel un client connait ou contacte une marque (Internet, TV, reseaux sociaux)." },
+      { terme: "Demonstration", definition: "Presentation concrete et visuelle d'un produit en action." },
+      { terme: "Methode C.A.P.", definition: "Caracteristique, Avantage, Preuve : methode pour construire un argument." },
+      { terme: "Mobile d'achat", definition: "Raison profonde qui pousse un client a acheter (SONCAS + environnement)." },
+      { terme: "Argument", definition: "Element avance pour convaincre : une caracteristique, son avantage et sa preuve." },
+    ],
+    flashcards: [
+      { recto: "Quelle methode de vente est utilisee chez la cliente ?", verso: "La vente de contact." },
+      { recto: "Quelle technique de vente ?", verso: "La vente a domicile." },
+      { recto: "Un avantage de la vente a domicile ?", verso: "La convivialite et la relation de proximite." },
+      { recto: "Un inconvenient de la vente a domicile ?", verso: "Il faut parfaitement connaitre ses produits." },
+      { recto: "Que veut dire omnicanal ?", verso: "Utiliser plusieurs canaux combines pour toucher le client." },
+      { recto: "Que signifie C.A.P. ?", verso: "Caracteristique, Avantage, Preuve." },
+      { recto: "Regle n°1 d'une demonstration ?", verso: "Elle doit \"en jeter\" : visuelle, concrete et percutante." },
+      { recto: "Regle n°3 d'une demonstration ?", verso: "S'adapter a la clientele en face de soi." },
+      { recto: "Regle n°6 d'une demonstration ?", verso: "Rester maitre de sa demonstration." },
+      { recto: "Que faut-il retrouver pour argumenter ?", verso: "Les mobiles d'achat du client." },
+    ],
+    quiz: [
+      { type: 'unique', question: "La methode de vente chez la cliente est :", options: ['La vente de contact', 'Le libre-service', 'La vente en ligne', 'La vente automatique'], bonne: 0 },
+      { type: 'unique', question: "La technique de vente est :", options: ['La vente a domicile', 'Le click and collect', 'La vente flash', 'La televente'], bonne: 0 },
+      { type: 'unique', question: "Un avantage de la vente a domicile :", options: ['La convivialite', 'Le prix bas', "L'anonymat", 'La rapidite'], bonne: 0 },
+      { type: 'unique', question: "Le click and collect est une technique de :", options: ['Libre-service assiste', 'Vente de contact', 'Vente forcee', 'Vente aux encheres'], bonne: 0 },
+      { type: 'unique', question: "Utiliser TV, Internet et reseaux, c'est un parcours :", options: ['Omnicanal', 'Unique', 'Direct', 'Ferme'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le C de C.A.P. ?", options: ['Caracteristique', 'Client', 'Conseil', 'Cible'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le P de C.A.P. ?", options: ['Preuve', 'Prix', 'Produit', 'Promotion'], bonne: 0 },
+      { type: 'unique', question: "La regle n°1 dit qu'une demo doit :", options: ['En jeter (etre visuelle)', 'Etre longue', 'Etre technique', 'Etre silencieuse'], bonne: 0 },
+      { type: 'unique', question: "La regle n°3 dit qu'il faut :", options: ['S\'adapter a la clientele', 'Improviser', 'Aller vite', 'Parler des defauts'], bonne: 0 },
+      { type: 'unique', question: "Pour argumenter, il faut retrouver :", options: ['Les mobiles d\'achat', 'Le prix d\'achat', 'Le lieu d\'achat', 'La date d\'achat'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Methode / technique de vente', 'Canal omnicanal', 'Methode C.A.P.'],
+      zones: [
+        { libelle: 'Vente de contact', etiquetteIndex: 0 },
+        { libelle: 'Vente a domicile', etiquetteIndex: 0 },
+        { libelle: 'Click and collect', etiquetteIndex: 0 },
+        { libelle: 'Internet', etiquetteIndex: 1 },
+        { libelle: 'YouTube', etiquetteIndex: 1 },
+        { libelle: 'Twitter et Instagram', etiquetteIndex: 1 },
+        { libelle: 'Caracteristique', etiquetteIndex: 2 },
+        { libelle: 'Avantage', etiquetteIndex: 2 },
+        { libelle: 'Preuve', etiquetteIndex: 2 },
+        { libelle: 'Mobile d\'achat', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const MAMIE_CO_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Finalisez la vente : completez le bon de commande de Mme Diame et detaillez les calculs, comparez les moyens de paiement et le reglement en plusieurs fois, puis repondez aux questions de livraison.",
+    contexte:
+      "Votre demonstration a convaincu. Les clientes veulent passer commande. Vous tendez a chacune un catalogue Mamie & Co et les accompagnez pour remplir leur bon de commande, gerer le paiement et repondre a leurs questions sur la livraison.",
+    documents: [
+      { numero: 1, titre: "Catalogue produits Mamie & Co", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m6/logo-mamie.png' },
+        { intertitre: "Le catalogue Mamie & Co" },
+        { catalogueProduits: { intro: "Touchez un produit pour ouvrir sa fiche detaillee (description, composition, mode d'emploi et prix). Utilisez ces informations pour completer le bon de commande.", produits: [
+          { ref: 'MEN-001', nom: 'Kit Ménage de Printemps', prix: '42,95 €', ancienPrix: '45,75 €', badge: 'De saison', image: '/docs/mamie-and-co-m6/printemps.jpg', accroche: 'Adoptez la Mamie attitude', description: ["Trop de produits menagers ? Adoptez la Mamie attitude et oust les produits chimiques. Savon noir pur olive, bicarbonate, sent bon \"fee du logis\", vinaigre menager au tea tree.", "Avec ces 4 best of, concoctez vos potions menageres, un peu d'huile de coude et c'est parti !"], composition: [{ titre: 'Contenu du pack', texte: 'Vinaigre menager 14° tea tree, bicarbonate 1 kg, savon noir mou olive 1 kg, synergie fee du logis 10 ml' }], infos: ['4/5 (2 avis)', 'Fabrique en France'] },
+          { ref: 'LES-002', nom: 'Kit Lessive Olive 750 g', prix: '35,95 €', ancienPrix: '38,85 €', badge: 'Coup de coeur', image: '/docs/mamie-and-co-m6/lessive.jpg', accroche: 'Kit DIY lessive', description: ["Adoptez une lessive naturelle a la composition transparente. Fabriquer sa lessive maison permet de faire des economies, de prendre soin des peaux sensibles et de diminuer la pollution des rivieres.", "Ce kit hypoallergenique est ideal pour tout type de linge."], composition: [{ titre: 'Savon de Marseille', texte: 'Doux pour la peau, biodegradable et hypoallergenique.' }, { titre: 'Bicarbonate de soude', texte: 'Desodorise et nettoie en profondeur, adoucit le linge.' }, { titre: 'Savon noir mou', texte: "L'ennemi jure des taches, biodegradable et ecologique." }], infos: ['4/5 (19 avis)', 'Fabrique en France'] },
+          { ref: 'ARG-003', nom: 'Argile verte Montmorillonite', prix: '12,95 €', badge: 'Coup de coeur', image: '/docs/mamie-and-co-m6/argile.jpg', accroche: 'Surfine et polyvalente', description: ["Ideale pour les debutants, l'argile verte Montmorillonite surfine permet la preparation de masques de beaute, cataplasmes et soins. Riche en silice et alumine, elle nettoie, apaise et favorise la cicatrisation de la peau."], composition: [{ titre: 'Absorbante', texte: 'Absorbe les liquides, le gras, les odeurs et les toxines.' }, { titre: 'Cicatrisante', texte: 'Concentration superieure a 18 % en alumine, favorise la regeneration cellulaire.' }], modeEmploi: ["Additionnez une dose d'argile en poudre et une dose d'eau minerale ou florale.", "Laissez l'argile s'impregner de l'eau pendant une dizaine de minutes.", "Melangez a l'aide d'une spatule en bois jusqu'a obtention d'une pate onctueuse."], infos: ['4/5 (3 avis)', '450 g', 'Fabrique en France'] },
+          { ref: 'DIA-005', nom: 'Terre de Diatomée', prix: '7,95 €', image: '/docs/mamie-and-co-m6/diatomee.jpg', accroche: 'Terre naturelle a tout faire', description: ["La terre de Diatomee est une barriere naturelle contre les insectes. 100 % d'origine naturelle, efficace et simple d'utilisation, elle permet de lutter contre les puces et les parasites tout en preservant l'environnement."], composition: [{ titre: 'Composition', texte: 'Dioxyde de silicium (silice amorphe). Poids net : 250 g.' }], modeEmploi: ["Anti parasitaire : saupoudrez directement vos animaux.", "Dans la maison et le jardin : saupoudrez sur le passage des parasites.", "Conservez dans un endroit sec, a l'abri de l'humidite."], infos: ['4/5 (8 avis)', '250 g'] },
+          { ref: 'ALP-004', nom: "Pur Savon d'Alep 100 % olive", prix: '6,95 €', badge: 'Coup de coeur', image: '/docs/mamie-and-co-m6/alep.jpg', accroche: 'Visage, corps et cheveux', description: ["Le pur savon d'Alep 100 % huile d'olive est le soin naturel essentiel a toute la famille. Surgras et hypoallergenique, il nourrit et hydrate les peaux seches et sensibles.", "Decoupe a la main suivant la pure tradition des maitres savonniers d'Alep."], composition: [{ titre: 'Composition INCI', texte: "Sodium Olivate, Aqua (Water), Potassium Hydroxide. 99,8 % d'origine naturelle." }], infos: ['4/5 (16 avis)', '200 g', '60 douches'] },
+          { ref: 'SYN-006', nom: 'Synergie Fée du Logis', prix: '10,95 €', badge: 'De saison', image: '/docs/mamie-and-co-m6/synergie.jpg', accroche: 'Synergie pour produits menagers', description: ["Synergie exclusive de 4 huiles essentielles biologiques : menthe poivree, orange douce, romarin et pamplemousse blanc. Ce sent-bon parfumera vos DIY menagers et assainira votre maison.", "Employable sur tout type de surface, sans danger pour les enfants et les animaux."], infos: ['4/5 (6 avis)', '10 ml', 'Fabrique en France'] },
+        ] } },
+      ] },
+      { numero: 2, titre: "Le calcul du prix", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m6/logo-mamie.png' },
+        { intertitre: "Les formules de calcul" },
+        { puces: [
+          "Montant de la TVA = PVHT (prix de vente hors taxe) x 0,20",
+          "PVTTC (prix de vente toutes taxes comprises) = PVHT + Montant de la TVA",
+          "Montant d'une reduction = Montant TTC x (% de la reduction / 100)",
+        ] },
+      ] },
+      { numero: 3, titre: "Les moyens de paiement acceptes chez Mamie & Co", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m6/logo-mamie.png' },
+        { intertitre: "Les moyens de paiement et le reglement en plusieurs fois" },
+        { paragraphes: ["Mamie & Co accepte plusieurs moyens de paiement : le cheque, la carte bleue, Apple Pay et le QR code.", "Pour un paiement en 2 fois, quatre pieces justificatives sont exigees : un RIB, une carte bancaire, une piece d'identite et un justificatif de domicile de moins de 3 mois."] },
+      ] },
+      { numero: 4, titre: "Livraison", texte: [
+        { pageWeb: true },
+        { logoEntete: '/docs/mamie-and-co-m6/logo-mamie.png' },
+        { intertitre: "Conditions de livraison" },
+        { puces: [
+          "Les expeditions ont lieu dans les 48 h ouvrees suivant la reception du paiement de la commande.",
+          "La commande est livree en 2 a 3 jours.",
+          "Si les produits n'ont pas ete livres dans un delai de 7 jours ouvres apres la date indicative de livraison (hors force majeure ou fait du client), la vente peut etre resolue a la demande ecrite du client.",
+          "En cas d'annulation, les sommes versees sont restituees au plus tard dans les 14 jours suivant la denonciation du contrat.",
+          "Le vendeur envoie un lien de suivi par mail pour suivre l'avancement de la commande et de la livraison.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Completer un bon de commande et detailler les calculs (TVA, TTC).",
+      "Comparer les moyens de paiement (avantages et inconvenients).",
+      "Comprendre le reglement en plusieurs fois et ses pieces justificatives.",
+      "Repondre aux questions de livraison d'un client.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 2',
+      intitule: 'Assurer le suivi de la commande',
+      detail: "C.2.1 - Assurer le suivi de la commande du produit et/ou du service.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - Le bon de commande",
+        contexte: "Chaque cliente remplit un bon de commande sous votre supervision.",
+        questions: [
+          { numero: 1, consigne: "A l'aide du catalogue (document 1), reportez les references, designations, prix unitaires HT et quantites des produits commandes par Mme Diame, puis completez les totaux, la TVA, le TTC, le total a payer et le paiement en 2 fois.", ressources: "Lire les documents 1 et 2, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Detaillez les calculs (montant de la TVA, montant TTC, paiement en 2 fois).", ressources: "Lire le document 2, completer l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Le reglement de la commande",
+        contexte: "A la derniere page du catalogue sont listes les moyens de paiement acceptes.",
+        questions: [
+          { numero: 3, consigne: "Pour chaque moyen de paiement utilise, indiquez un avantage et un inconvenient.", ressources: "Lire le document 3, completer l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Indiquez les montants a payer par Mme Diame pour le paiement en 2 fois.", ressources: "Lire le document 3, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Listez les quatre pieces justificatives exigees pour un paiement en plusieurs fois, puis expliquez l'interet de chacune.", ressources: "Lire le document 3, completer l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: "Activite 3 - Les modalites de livraison",
+        contexte: "Mme Camay pose plusieurs questions sur la livraison.",
+        questions: [
+          { numero: 6, consigne: "Pour chaque question posee par Mme Camay, apportez la reponse la plus appropriee.", ressources: "Lire le document 4, completer l'annexe 6.", annexeId: 'annexe6' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'boncommandecalcule', id: 'annexe1', titre: "Annexe 1 - Le bon de commande de Mme Diame", client: 'Fati Diame',
+        lignes: [],
+        nbLignesVides: 4,
+        livraison: true, paiement2fois: true,
+      },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Détail des calculs", colonnes: ['Calcul', 'Détail', 'Résultat'], nbLignes: 3, largeurs: ['30%','45%','25%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Montant de la TVA (20 %)', '', ''],
+        ['Montant TTC', '', ''],
+        ['Paiement en 2 fois', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - Les moyens de paiement des clientes", colonnes: ['Moyen de paiement', 'Avantage', 'Inconvénient'], nbLignes: 4, largeurs: ['26%','37%','37%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Marion Gardy - chèque', '', ''],
+        ['Adriana Veaulot - carte bleue', '', ''],
+        ['Maddy Camay - Apple Pay', '', ''],
+        ['Christelle Blondize - QR code', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 - Règlement en plusieurs fois", colonnes: ['Paiement en 2 fois', 'Calcul', 'Résultat'], nbLignes: 2, largeurs: ['36%','40%','24%'], prerempli: [
+        ['Montant à la commande', '', ''],
+        ['Montant à 30 jours', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: "Annexe 5 - Les pièces justificatives", colonnes: ['Pièce justificative', 'Intérêt'], nbLignes: 4, largeurs: ['32%','68%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['', ''], ['', ''], ['', ''], ['', ''],
+      ] },
+      { type: 'grille', id: 'annexe6', titre: "Annexe 6 - Interventions de Mme Camay", colonnes: ['Question de Mme Camay', 'Réponse'], nbLignes: 5, largeurs: ['42%','58%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Dans combien de temps les produits seront-ils expédiés ?', ''],
+        ['Dans quel délai serons-nous livrées ?', ''],
+        ["Une semaine passe et je n'ai toujours pas ma commande. Que se passe-t-il ?", ''],
+        ["Si j'annule ma commande, comment se fera le remboursement ?", ''],
+        ['Y a-t-il un moyen de suivre sa commande ?', ''],
+      ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Le bon de commande de Mme Diame (annexe 1).", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 12,
+        reponse: "Totaux lignes HT : Kit Menage 35,79 € ; Kit Lessive 29,96 € ; Argile 10,79 € ; Vinaigre 5,79 €. Sous-total HT = 82,33 €. TVA (20 %) = 16,47 €. Montant TTC = 98,80 €. Livraison offerte = 0,00 €. TOTAL A PAYER = 98,80 €. Paiement en 2 fois : 49,40 € a la commande et 49,40 € a 30 jours." },
+      { intitule: "Détail des calculs (annexe 2).", documents: ['Document 2', 'Annexe 2'], bareme: 8,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Calcul', 'Détail', 'Résultat'], lignes: [
+          ['Montant de la TVA (20 %)', '82,33 x 0,20', '16,47 €'],
+          ['Montant TTC', '82,33 + 16,47', '98,80 €'],
+          ['Paiement en 2 fois', '98,80 / 2', '49,40 €'],
+        ] } },
+      { intitule: "Les moyens de paiement (annexe 3).", documents: ['Document 3', 'Annexe 3'], bareme: 12,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Moyen', 'Avantage', 'Inconvénient'], lignes: [
+          ['Chèque', "Paiement en plusieurs fois ; delai d'encaissement possible", 'De moins en moins accepte chez les commercants'],
+          ['Carte bleue', 'Pratique, acceptee partout', 'Risques de fraude ; montant maximum sans contact : 50 €'],
+          ['Apple Pay', 'Rapidite du paiement sans contact ; pas de montant maximum', 'Paiement impossible si la batterie du portable est dechargee'],
+          ['QR code', 'Rapidite du paiement sans contact ; pas de code confidentiel ; pas de montant maximum', 'Necessite un smartphone compatible'],
+        ] } },
+      { intitule: "Règlement en plusieurs fois (annexe 4).", documents: ['Document 3', 'Annexe 4'], bareme: 4,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Paiement en 2 fois', 'Calcul', 'Résultat'], lignes: [
+          ['Montant à la commande', '98,80 / 2', '49,40 €'],
+          ['Montant à 30 jours', '98,80 - 49,40', '49,40 €'],
+        ] } },
+      { intitule: "Les pièces justificatives (annexe 5).", documents: ['Document 3', 'Annexe 5'], bareme: 8,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Pièce', 'Intérêt'], lignes: [
+          ['RIB', "Permet d'avoir l'identite du compte pour prelever la somme a payer"],
+          ['Carte bancaire (CB)', 'Permet de regler le premier versement lors de la commande'],
+          ["Carte d'identité", "Verifier l'identite de l'acheteur"],
+          ['Justificatif de domicile (- 3 mois)', "S'assurer que le client qui paie en plusieurs fois habite bien sur le territoire francais"],
+        ] } },
+      { intitule: "Interventions de Mme Camay (annexe 6).", documents: ['Document 4', 'Annexe 6'], bareme: 10,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Question', 'Réponse'], lignes: [
+          ['Delai d\'expedition', 'Les expeditions ont lieu dans les 48 h ouvrees suivant la reception du paiement.'],
+          ['Delai de livraison', 'La commande est livree en 2 a 3 jours.'],
+          ['Commande non recue apres 7 jours', "Si les produits n'ont pas ete livres dans un delai de 7 jours ouvres apres la date indicative de livraison (hors force majeure ou fait du client), la vente peut etre resolue a la demande ecrite du client."],
+          ['Remboursement en cas d\'annulation', 'Les sommes versees sont restituees au plus tard dans les 14 jours qui suivent la denonciation du contrat.'],
+          ['Suivi de commande', 'Le vendeur envoie un lien par mail pour suivre etape par etape la commande et la livraison.'],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "La commande, les modalites de reglement et de livraison",
+    proposition: [
+      'Bon de commande', 'TVA', 'TTC',
+      'Cheque', 'Apple Pay', 'QR code', 'Expedition',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 6 - Commande, reglement et livraison",
+      enfants: [
+        { id: 'com', texte: "La commande", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Bon de commande' },
+          { id: 'c-2', texte: null, reponse: 'TVA' },
+          { id: 'c-3', texte: null, reponse: 'TTC' },
+        ] },
+        { id: 'reg', texte: "Le reglement et la livraison", enfants: [
+          { id: 'r-1', texte: null, reponse: 'Cheque' },
+          { id: 'r-2', texte: null, reponse: 'Apple Pay' },
+          { id: 'r-3', texte: null, reponse: 'QR code' },
+          { id: 'r-4', texte: null, reponse: 'Expedition' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Completer un bon de commande et calculer", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas remplir un bon de commande." },
+        { niveau: 'debrouille', description: "Je reporte les articles et les prix." },
+        { niveau: 'averti', description: "Je calcule la TVA et le montant TTC." },
+        { niveau: 'expert', description: "Je complete le bon et le paiement en plusieurs fois sans erreur." },
+      ] },
+      { id: 'c2', intitule: "Gerer le reglement et la livraison", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les moyens de paiement." },
+        { niveau: 'debrouille', description: "Je cite un moyen de paiement." },
+        { niveau: 'averti', description: "Je compare avantages et inconvenients des moyens de paiement." },
+        { niveau: 'expert', description: "Je reponds aux questions de livraison et de remboursement d'un client." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Bon de commande", definition: "Document qui recapitule les produits commandes, les quantites et les montants." },
+      { terme: "PVHT", definition: "Prix de vente hors taxe, avant application de la TVA." },
+      { terme: "TVA", definition: "Taxe sur la valeur ajoutee ; ici 20 % du prix hors taxe." },
+      { terme: "PVTTC", definition: "Prix de vente toutes taxes comprises = PVHT + montant de la TVA." },
+      { terme: "Reduction", definition: "Diminution du prix = Montant TTC x (% de reduction / 100)." },
+      { terme: "Paiement en plusieurs fois", definition: "Reglement etale, ici en 2 fois (a la commande et a 30 jours)." },
+      { terme: "RIB", definition: "Releve d'identite bancaire, identifie le compte pour un prelevement." },
+      { terme: "Piece justificative", definition: "Document exige pour valider un paiement en plusieurs fois." },
+      { terme: "Delai d'expedition", definition: "Temps entre le paiement et l'envoi de la commande (48 h ouvrees)." },
+      { terme: "Suivi de commande", definition: "Lien envoye par mail pour suivre l'avancement de la livraison." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on la TVA ?", verso: "PVHT x 0,20." },
+      { recto: "Comment calcule-t-on le PVTTC ?", verso: "PVHT + montant de la TVA." },
+      { recto: "Sous-total HT de la commande de Mme Diame ?", verso: "82,33 €." },
+      { recto: "Montant de la TVA de la commande ?", verso: "16,47 €." },
+      { recto: "Montant TTC de la commande ?", verso: "98,80 €." },
+      { recto: "Combien paie Mme Diame a la commande (2 fois) ?", verso: "49,40 €." },
+      { recto: "Un inconvenient du cheque ?", verso: "De moins en moins accepte chez les commercants." },
+      { recto: "Un avantage d'Apple Pay ?", verso: "Rapidite du paiement sans contact, pas de montant maximum." },
+      { recto: "Quelles pieces pour payer en plusieurs fois ?", verso: "RIB, carte bancaire, carte d'identite, justificatif de domicile de moins de 3 mois." },
+      { recto: "Delai d'expedition de la commande ?", verso: "48 h ouvrees apres reception du paiement." },
+    ],
+    quiz: [
+      { type: 'unique', question: "La TVA se calcule par :", options: ['PVHT x 0,20', 'PVHT x 0,02', 'PVTTC x 0,20', 'PVHT + 20'], bonne: 0 },
+      { type: 'unique', question: "Le PVTTC est egal a :", options: ['PVHT + montant de la TVA', 'PVHT - TVA', 'PVHT x 2', 'PVHT / 1,20'], bonne: 0 },
+      { type: 'unique', question: "Le montant TTC de la commande de Mme Diame est :", options: ['98,80 €', '82,33 €', '112,30 €', '49,40 €'], bonne: 0 },
+      { type: 'unique', question: "En 2 fois, Mme Diame paie a la commande :", options: ['49,40 €', '98,80 €', '56,15 €', '16,47 €'], bonne: 0 },
+      { type: 'unique', question: "Un inconvenient de la carte bleue :", options: ['Montant maximum sans contact 50 €', 'Trop rapide', 'Aucun', 'Pas de code'], bonne: 0 },
+      { type: 'unique', question: "Un avantage du QR code :", options: ['Pas besoin de code confidentiel', 'Batterie illimitee', 'Accepte partout', 'Gratuit'], bonne: 0 },
+      { type: 'unique', question: "Quelle piece n'est PAS exigee pour payer en plusieurs fois ?", options: ['Le permis de conduire', 'Le RIB', "La carte d'identite", 'Le justificatif de domicile'], bonne: 0 },
+      { type: 'unique', question: "Le delai d'expedition est de :", options: ['48 h ouvrees', '7 jours', '14 jours', '1 mois'], bonne: 0 },
+      { type: 'unique', question: "La commande est livree en :", options: ['2 a 3 jours', '2 a 3 semaines', '48 h', '1 mois'], bonne: 0 },
+      { type: 'unique', question: "En cas d'annulation, le remboursement se fait sous :", options: ['14 jours', '48 h', '7 jours', '30 jours'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Le calcul', 'Le paiement', 'La livraison'],
+      zones: [
+        { libelle: 'PVHT x 0,20', etiquetteIndex: 0 },
+        { libelle: 'PVHT + TVA', etiquetteIndex: 0 },
+        { libelle: 'Sous-total HT 82,33 €', etiquetteIndex: 0 },
+        { libelle: 'Chèque', etiquetteIndex: 1 },
+        { libelle: 'Apple Pay', etiquetteIndex: 1 },
+        { libelle: 'QR code', etiquetteIndex: 1 },
+        { libelle: 'Expedition sous 48 h', etiquetteIndex: 2 },
+        { libelle: 'Livraison en 2 a 3 jours', etiquetteIndex: 2 },
+        { libelle: 'Lien de suivi par mail', etiquetteIndex: 2 },
+        { libelle: 'Remboursement sous 14 jours', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const MAMIE_CO_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Traitez la reclamation de Mme Diame sur tous les canaux : identifiez la cause du probleme, proposez une solution durable, puis redigez la reponse par mail, sur X (Twitter) et par telephone avec la methode CROC.",
+    contexte:
+      "Le service client de Mamie & Co doit traiter deux reclamations. Par mail, Fati Diame n'a toujours pas recu sa commande n°4326 apres 9 jours. Sur les reseaux sociaux, Marion Gardy signale qu'il manque le Spray Purifiant Atmos'Fair dans son colis et qu'elle n'arrive pas a joindre le service client. Votre tuteur vous accompagne pour traiter ces reclamations avec professionnalisme, par mail, sur X (Twitter) et par telephone.",
+    documents: [
+      { numero: 1, titre: "Courriel de reclamation de Mme Diame", texte: [
+        { mailLecture: {
+          de: 'f.diame@gmail.com',
+          a: 'nomcommercial@mamieandco.fr',
+          objet: 'Commande n°4326 toujours pas reçu',
+          corps: [
+            "Bonjour,",
+            "Lors de la reunion chez Mme Blondize, vous nous aviez indique que la livraison des produits commandes interviendrait dans les 3 jours. Or, apres 9 jours je n'ai toujours rien recu.",
+            "Je vous ai appele mais je n'ai pas eu de retour a ce jour. Je suis tres mecontente de la facon dont vous gerez la relation avec vos clients.",
+            "Si d'ici la fin de semaine je n'ai pas de vos nouvelles, j'annule ma commande.",
+            "Je vous rappelle mon adresse : 3 rue de la Charriere - 17220 Saint-Rogatien.",
+            "Cordialement,",
+            "Fati Diame",
+          ],
+        } },
+      ] },
+      { numero: 2, titre: "Tweet de reclamation", texte: [
+        { reseauSocial: { plateforme: 'x', compte: 'Marion Gardy', pseudo: '@mariongardi', avatarInitiale: 'M', date: '18:15 - 14 février 202N', message: ["Hello, @mamieandco ! Ma commande produit est arrivee il y a quelques jours. En ouvrant mon colis j'ai constate que la bouteille de Spray Purifiant Atmos'Fair manquait.", "Je n'arrive pas a avoir le service client depuis plusieurs jours... des heures d'attente.", "Qu'avez-vous l'intention de faire ?"], stats: { reposter: '823', jaime: '1 992', repondre: '107' } } },
+      ] },
+      { numero: 3, titre: "Le traitement des reclamations par courriel", texte: [
+        { noteDirection: { titre: "Charte de gestion des réclamations", signature: 'La direction', intro: "Procedure de reponse par courriel :", puces: [
+          "Accuser reception de la reclamation du client ;",
+          "S'excuser de l'incident et expliquer son origine ;",
+          "Proposer d'envoyer l'article ;",
+          "Proposer une remise de -10 % sur le prochain achat avec le code promo MNCO10 ;",
+          "Inserer le site internet de l'entreprise : https://www.mamieandco.com ;",
+          "Remercier le client pour sa confiance ;",
+          "Indiquer que l'entreprise prendra des mesures pour que cela ne se reproduise plus ;",
+          "Saluer ;",
+          "Nom et prenom ;",
+          "Fonction.",
+        ] } },
+      ] },
+      { numero: 4, titre: "Le traitement des reclamations sur les reseaux sociaux", texte: [
+        { noteDirection: { titre: "NOTE", signature: 'La direction', intro: "Procedure de reponse sur les reseaux sociaux :", paragraphe: "Je vous rappelle que lorsque vous repondez aux reclamations sur les reseaux sociaux vous devez etre empathique, clair et precis (Tweeter n'autorise que 280 caracteres).", puces: [
+          "L'adresse tweeter du destinataire aura la forme suivante : @prenomnom",
+          "Saluer le client ;",
+          "S'excuser de l'incident ;",
+          "Informer le client qu'il va etre rapidement contacte par telephone par le service client ;",
+          "Saluer ;",
+          "Votre prenom ;",
+          "Ecrire \"Service Relation Clients\" en dessous de votre prenom",
+        ] } },
+      ] },
+      { numero: 5, titre: "Conseils de votre tuteur", texte: [
+        { bulleConseil: { texte: [
+          "\"Les erreurs ca arrive, il faut juste que ce soit rare et les rattraper correctement.",
+          "Avant de decrocher, je te conseille de bien souffler et de te detendre parce que la cliente risque d'etre enervee.",
+          "Tu prends une voix posee. Elle te fera certainement des reproches. N'essaie pas de te justifier mais dis-lui que tu la comprends et que justement tu la rappelles pour regler le probleme.",
+          "Reste souriant en toute circonstance et empathique. Une fois qu'elle aura \"vide son sac\" fais-lui une proposition tellement enorme que non seulement elle ne pourra pas la refuser mais en plus elle ne saura plus quoi dire.",
+          "A ce moment-la l'atmosphere sera redescendue et le dialogue sera apaise.",
+          "Tu te rappelles, quand on etait en clientele ? Au moment de la commande, Mme Gardy voulait prendre le Kit Menage mais elle disait qu'elle n'avait pas l'argent et qu'elle verrait le mois prochain.",
+          "Tu lui feras donc envoyer le Spray Purifiant Atmosf'Air manquant et exceptionnellement, je t'autorise a lui faire envoyer gratuitement le Kit Menage de Printemps.",
+          "Avec ca, elle devrait etre contente et oublier l'incident.\"",
+        ] } },
+      ] },
+      { numero: 6, titre: "Methode CROC", texte: [
+        { logoEntete: '/docs/mamie-and-co-m7/logo-mamie.png' },
+        { intertitre: "La methode C.R.O.C. (plan d'appel telephonique)" },
+        { puces: [
+          "C - Contact : saluer, se presenter (nom, entreprise), identifier l'interlocuteur.",
+          "R - Raison d'appel : annoncer la raison de l'appel.",
+          "O - Objet : developper, ecouter, reformuler, apporter la solution.",
+          "C - Conclusion : remercier, saluer, raccrocher apres le client.",
+        ] },
+      ] },
+    ],
+    objectifs: [
+      "Identifier la cause d'une reclamation client.",
+      "Proposer une solution durable pour eviter que le probleme se reproduise.",
+      "Rediger une reponse professionnelle par mail et sur les reseaux sociaux.",
+      "Preparer une reponse telephonique avec la methode CROC.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 2',
+      intitule: 'Assurer le suivi de la relation client',
+      detail: "C.2.2 - Traiter les reclamations du client dans un cadre omnicanal.",
+    },
+    activites: [
+      {
+        titre: "Activite - La gestion des reclamations client",
+        contexte: "Vous traitez la reclamation de Mme Diame sur les differents canaux.",
+        questions: [
+          { numero: 1, consigne: "Comparez le bon de commande (mission 6) au mail de reclamation de Mme Diame, puis indiquez la raison du probleme.", ressources: "Lire le document 1, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Que devez-vous faire la prochaine fois pour eviter que cela ne se reproduise ?", ressources: "Completer l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Redigez le mail de reponse a Mme Diame.", ressources: "Lire les documents 1 et 3, completer l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Redigez la reponse au tweet de Mme Gardy.", ressources: "Lire les documents 2 et 4, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Redigez la reponse a apporter a la cliente au telephone avec la methode CROC. Faites apparaitre chaque etape de la methode.", ressources: "Lire les documents 5 et 6, completer l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Cause de la non réception des produits", colonnes: ['Cause du problème'], nbLignes: 1, largeurs: ['100%'], reponseMultiligne: true, lignesReponse: 3, prerempli: [['']] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Solution proposée", colonnes: ['Ce que je dois faire la prochaine fois'], nbLignes: 1, largeurs: ['100%'], reponseMultiligne: true, lignesReponse: 3, prerempli: [['']] },
+      { type: 'mail', id: 'annexe3', titre: "Annexe 3 - Réponse au mail", deParDefaut: 'nomcommercial@mamieandco.fr', aParDefaut: 'f.diame@gmail.com' },
+      { type: 'reponsereseau', id: 'annexe4', titre: "Annexe 4 - Réponse au Tweet", plateforme: 'x', enReponseA: '@mariongardi' },
+      { type: 'croc', id: 'annexe5', titre: "Annexe 5 - Votre appel téléphonique : plan d'appel CROC" },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Cause de la non réception (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 6,
+        reponse: "La commande n°4326 de Mme Diame n'a pas ete livree dans le delai annonce (3 jours) : apres 9 jours, elle n'a toujours rien recu et n'a pas eu de retour a ses appels. Le probleme vient d'un retard de livraison et d'un defaut de suivi de la commande par le service client." },
+      { intitule: "Solution proposée (annexe 2).", documents: ['Annexe 2'], bareme: 4,
+        reponse: "La prochaine fois, il faut assurer un meilleur suivi de la commande (verifier l'etat de la livraison, rappeler le client) et repondre rapidement aux appels pour eviter que le mecontentement ne s'installe." },
+      { intitule: "Réponse au mail (annexe 3).", documents: ['Documents 1 et 3', 'Annexe 3'], bareme: 12,
+        reponse: "De : nomcommercial@mamieandco.fr / A : f.diame@gmail.com / Objet : Commande n°4326.\n\nBonjour Madame,\nJ'accuse reception de votre reclamation concernant votre commande n°4326 non recue.\nJe m'excuse pour cet incident : votre commande a subi un retard de livraison inhabituel.\nNous vous renvoyons vos produits des aujourd'hui.\nPour nous faire pardonner, beneficiez de -10 % sur votre prochain achat avec le code promo MNCO10 sur notre site : https://www.mamieandco.com\nNous vous remercions pour votre confiance et vous assurons prendre les mesures necessaires pour que cela ne se reproduise plus.\nCordialement,\nNOM Prenom\nStagiaire." },
+      { intitule: "Réponse au Tweet (annexe 4).", documents: ['Documents 2 et 4', 'Annexe 4'], bareme: 8,
+        reponse: "@mariongardi Bonjour Marion, nous sommes navres pour ce Spray Purifiant Atmos'Fair manquant dans votre colis et pour l'attente au service client. Vous allez etre rapidement contactee par telephone par notre service client afin de regler cela. Bien a vous, [Prenom] - Service Relation Clients." },
+      { intitule: "Réponse téléphonique CROC (annexe 5).", documents: ['Documents 5 et 6', 'Annexe 5'], bareme: 10,
+        reponse: "C - Contact : \"Bonjour Madame Gardy, je suis [Prenom Nom] du service relation clients de Mamie & Co.\" R - Raison d'appel : \"Je vous appelle au sujet de votre colis dans lequel il manquait le Spray Purifiant Atmos'Fair.\" O - Objet : ecouter la cliente, la laisser \"vider son sac\", ne pas se justifier, reformuler et lui dire qu'on la comprend ; annoncer le renvoi du Spray Purifiant Atmos'Fair manquant et, exceptionnellement, l'envoi gratuit du Kit Menage de Printemps. C - Conclusion : recapituler la solution, remercier la cliente pour sa confiance, saluer et raccrocher apres elle." },
+    ],
+  },
+  synthese: {
+    titre: "Le traitement des reclamations client",
+    proposition: [
+      'Reclamation', 'Excuses', 'Solution',
+      'Mail', 'Reseaux sociaux', 'CROC',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 7 - Le traitement des reclamations",
+      enfants: [
+        { id: 'rec', texte: "La reclamation", enfants: [
+          { id: 'r-1', texte: null, reponse: 'Reclamation' },
+          { id: 'r-2', texte: null, reponse: 'Excuses' },
+          { id: 'r-3', texte: null, reponse: 'Solution' },
+        ] },
+        { id: 'can', texte: "Les canaux de reponse", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Mail' },
+          { id: 'c-2', texte: null, reponse: 'Reseaux sociaux' },
+          { id: 'c-3', texte: null, reponse: 'CROC' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Analyser une reclamation", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas identifier la cause d'un probleme." },
+        { niveau: 'debrouille', description: "Je repere l'objet de la reclamation." },
+        { niveau: 'averti', description: "J'identifie la cause exacte en comparant les documents." },
+        { niveau: 'expert', description: "Je propose une solution durable pour eviter la recidive." },
+      ] },
+      { id: 'c2', intitule: "Repondre sur tous les canaux", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas repondre a un client mecontent." },
+        { niveau: 'debrouille', description: "Je redige une reponse simple." },
+        { niveau: 'averti', description: "J'adapte ma reponse au canal (mail, reseaux sociaux)." },
+        { niveau: 'expert', description: "Je structure une reponse telephonique avec la methode CROC." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Reclamation", definition: "Expression d'un mecontentement d'un client envers l'entreprise." },
+      { terme: "Accuser reception", definition: "Confirmer au client que sa reclamation a bien ete recue." },
+      { terme: "Geste commercial", definition: "Compensation offerte au client (remise, code promo) pour s'excuser." },
+      { terme: "Code promo", definition: "Code de reduction offert au client (ici MNCO10)." },
+      { terme: "Omnicanal", definition: "Traitement de la relation client sur plusieurs canaux (mail, reseaux, telephone)." },
+      { terme: "Message prive", definition: "Echange non public sur un reseau social, pour traiter des donnees personnelles." },
+      { terme: "Methode CROC", definition: "Plan d'appel : Contact, Raison, Objet, Conclusion." },
+      { terme: "Reformuler", definition: "Redire avec ses mots le probleme du client pour montrer qu'on a compris." },
+      { terme: "Reactivite", definition: "Capacite a repondre rapidement a une demande ou une reclamation." },
+      { terme: "Fidelisation", definition: "Ensemble des actions qui incitent le client a rester malgre un incident." },
+    ],
+    flashcards: [
+      { recto: "Quel est le probleme de Mme Diame ?", verso: "Sa commande n°4326 n'est pas arrivee apres 9 jours." },
+      { recto: "Que reproche Marion Gardy a Mamie & Co ?", verso: "Il manque le Spray Purifiant Atmos'Fair et le service client est injoignable." },
+      { recto: "Premiere etape pour repondre a une reclamation par mail ?", verso: "Accuser reception et s'excuser." },
+      { recto: "Quel code promo est propose par mail ?", verso: "Le code MNCO10 (-10 % sur le prochain achat)." },
+      { recto: "Sur les reseaux sociaux, ou regler les details personnels ?", verso: "En message prive." },
+      { recto: "Que signifie CROC ?", verso: "Contact, Raison, Objet, Conclusion." },
+      { recto: "Que fait-on a l'etape Contact du CROC ?", verso: "Saluer et se presenter (nom, entreprise)." },
+      { recto: "Que fait-on a l'etape Conclusion du CROC ?", verso: "Remercier, saluer et raccrocher apres le client." },
+      { recto: "Pourquoi reformuler au telephone ?", verso: "Pour montrer au client qu'on a compris son probleme." },
+      { recto: "Quelle attitude sur les reseaux sociaux ?", verso: "Rester courtois, professionnel et reactif." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le probleme de Mme Diame est :", options: ['Un retard de livraison', 'Un produit casse', 'Un mauvais prix', 'Un retard de paiement'], bonne: 0 },
+      { type: 'unique', question: "Pour eviter la recidive, il faut :", options: ['Mieux suivre la commande et repondre vite', 'Ne rien changer', 'Ignorer le client', 'Baisser les prix'], bonne: 0 },
+      { type: 'unique', question: "La premiere etape d'une reponse a une reclamation :", options: ['Accuser reception et s\'excuser', 'Proposer un proces', 'Ignorer le client', 'Fermer le compte'], bonne: 0 },
+      { type: 'unique', question: "Le code promo offert par mail est :", options: ['MNCO10', 'PROMO15', 'MAMIE20', 'DIAME5'], bonne: 0 },
+      { type: 'unique', question: "Sur les reseaux sociaux, les details personnels se reglent :", options: ['En message prive', 'En public', 'Par SMS', 'Jamais'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le C de CROC (1er) ?", options: ['Contact', 'Client', 'Conseil', 'Commande'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le R de CROC ?", options: ['Raison', 'Remise', 'Reponse', 'Rappel'], bonne: 0 },
+      { type: 'unique', question: "L'etape Objet du CROC sert a :", options: ['Ecouter, reformuler, apporter la solution', 'Raccrocher', 'Se presenter', 'Facturer'], bonne: 0 },
+      { type: 'unique', question: "A la conclusion d'un appel, on raccroche :", options: ['Après le client', 'Avant le client', 'Immediatement', 'Sans saluer'], bonne: 0 },
+      { type: 'unique', question: "Face a un client mecontent, il faut rester :", options: ['Courtois et professionnel', 'Agressif', 'Silencieux', 'Ironique'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element a la bonne categorie.",
+      etiquettes: ['Réponse par mail', 'Réponse sur les réseaux', 'Méthode CROC'],
+      zones: [
+        { libelle: 'Accuser reception', etiquetteIndex: 0 },
+        { libelle: 'Proposer le code promo MNCO10', etiquetteIndex: 0 },
+        { libelle: "S'excuser au nom de l'entreprise", etiquetteIndex: 0 },
+        { libelle: 'Repondre publiquement et vite', etiquetteIndex: 1 },
+        { libelle: 'Inviter en message prive', etiquetteIndex: 1 },
+        { libelle: 'Rester courtois', etiquetteIndex: 1 },
+        { libelle: 'Contact : se presenter', etiquetteIndex: 2 },
+        { libelle: 'Raison : annoncer l\'appel', etiquetteIndex: 2 },
+        { libelle: 'Objet : reformuler et resoudre', etiquetteIndex: 2 },
+        { libelle: 'Conclusion : remercier et saluer', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const CLIENTS_MAMIE: ClientCrm[] = [
+  { nom: 'Gardy', prenom: 'Marion', adresse: '4 rue Jean Perrin - 17140 Lagord', telephone: '06.54.02.45.23', mail: 'mari.gardy@gmail.com', facture: 'n° 0668', dateFacture: '05/02/202N', dateEcheance: '05/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Guidane', prenom: 'Alisée', adresse: '20 rue des Cités - 17440 Aytré', telephone: '05.71.80.43.83', mail: 'a.guidane@yahoo.fr', facture: 'n° 0623', dateFacture: '11/02/202N', dateEcheance: '11/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Marticos', prenom: 'Valérie', adresse: '13 rue de la Cordée - 17290 Forges', telephone: '07.03.56.92.63', mail: 'marticos.v@laposte.fr', facture: 'n° 0691', dateFacture: '23/02/202N', dateEcheance: '23/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Diame', prenom: 'Fati', adresse: '3 rue de la Charrière - 17220 Saint-Rogatien', telephone: '05.45.86.03.17', mail: 'f.diame@gmail.com', facture: 'n° 0646', dateFacture: '05/02/202N', dateEcheance: '05/03/202N', montantImpaye: '56,15 €' },
+  { nom: 'Franchoix', prenom: 'Alda', adresse: '10 rue Du Meteil - 17140 Lagord', telephone: '01.56.28.91.45', mail: 'a_franchoix@hotmail.fr', facture: 'n° 0683', dateFacture: '08/02/202N', dateEcheance: '08/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Blondize', prenom: 'Christelle', adresse: "28 rue de l'Océan - 17137 Masilly", telephone: '07.23.96.50.04', mail: 'christ.b@yahoo.fr', facture: 'n° 0691', dateFacture: '05/02/202N', dateEcheance: '05/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Tarence', prenom: 'Jean', adresse: "1 avenue de la République - 85770 L'Île-d'Elle", telephone: '01.84.84.90.31', mail: 'jtarence@yahoo.fr', facture: 'n° 0659', dateFacture: '14/02/202N', dateEcheance: '14/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Veaulot', prenom: 'Adriana', adresse: '22 rue des Artisans - 17290 Forges', telephone: '06.34.83.65.01', mail: 'veaulot.a@hotmail.com', facture: 'n° 0637', dateFacture: '18/02/202N', dateEcheance: '18/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Gratien', prenom: 'Safia', adresse: '15 avenue André Dulin - 17000 La Rochelle', telephone: '06.67.28.63.07', mail: 'safia.gratien@gmail.com', facture: 'n° 0676', dateFacture: '08/02/202N', dateEcheance: '08/03/202N', montantImpaye: '0,00 €' },
+  { nom: "N'Giran", prenom: 'Ononga', adresse: '3 rue du Parc - 17630 La Flotte', telephone: '01.65.89.23.12', mail: 'ngiran.ono@lasposte.fr', facture: 'n° 0604', dateFacture: '27/02/202N', dateEcheance: '27/03/202N', montantImpaye: '0,00 €' },
+  { nom: 'Camay', prenom: 'Maddy', adresse: "15 rue Gay - 85770 L'Île-d'Elle", telephone: '07.68.09.50.23', mail: 'm.camay@gmail.com', facture: 'n° 0613', dateFacture: '05/02/202N', dateEcheance: '05/03/202N', montantImpaye: '0,00 €' },
+]
+
+const MAMIE_CO_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Gerez les differents types de relance client : reperez le client en impaye et redigez sa lettre de relance, puis selectionnez les clients a qui proposer les nouveaux produits et redigez le SMS commercial.",
+    contexte:
+      "Chez Mamie & Co, vous consultez un extrait du fichier clients. Une partie de votre travail consiste a relancer les clients : d'abord ceux qui ont un impaye (relance de recouvrement), ensuite ceux a qui vous souhaitez annoncer une offre commerciale sur les nouveaux produits (relance commerciale).",
+    documents: [
+      { numero: 1, titre: "Extrait du fichier clients", texte: [
+        { logoEntete: '/docs/mamie-and-co-m8/logo-mamie.png' },
+        { intertitre: "Extrait du fichier clients Mamie & Co" },
+        { paragraphes: ["Le fichier clients interactif est disponible dans la question 1 ci-dessous : consultez-le, triez ou recherchez un client, puis cochez la ligne du client ayant un impaye."] },
+      ] },
+      { numero: 2, titre: "Regles pour ecrire une lettre de relance", texte: [
+        { noteDirection: { titre: "La lettre de relance pour impayés client", paragraphe: "Les notions d'expediteur, de destinataire, de date, d'objet... doivent etre presents dans votre courrier.", intro: "Dans le corps de la lettre vous devez :", puces: [
+          "L'objet comportera le numero de facture ;",
+          "Rappeler au client le numero de la facture, la date de la facture, le montant de la facture et la date d'echeance ;",
+          "Demander au client de proceder au reglement dans les meilleurs delais ;",
+          "S'excuser si le reglement a ete envoye avant la reception du courrier ;",
+          "Salutations ;",
+          "Prenom + NOM ;",
+          "Fonction : commercial",
+        ] } },
+      ] },
+      { numero: 3, titre: "Comment rediger un SMS commercial", texte: [
+        { noteDirection: { titre: "Comment rédiger un SMS commercial", paragraphe: "\"SMS\" signifie Short Message Service c'est-a-dire \"service de messages courts\". Cela signifie qu'en tres peu de mots et en allant a l'essentiel, le client doit savoir de quoi il s'agit quand il ouvre le message.", intro: "Donc pour rediger le message de rappel, il faut le structurer de la facon suivante :", puces: [
+          "Nom de l'entreprise tout en majuscule ;",
+          "Phrase d'accroche decrivant l'offre tout en majuscule ;",
+          "Delai de validite de l'offre ;",
+          "Site internet de l'entreprise ;",
+          "STOP 36321 (cela donne la possibilite au client ou au prospect de ne plus recevoir de message publicitaire s'il le souhaite).",
+        ], conclusion: "Une fois le message redige, verifiez votre orthographe et envoyez-le." } },
+      ] },
+    ],
+    objectifs: [
+      "Reperer un client en impaye dans un fichier clients.",
+      "Rediger une lettre de relance pour impaye.",
+      "Selectionner les clients cibles d'une offre commerciale et justifier le choix.",
+      "Rediger un SMS commercial structure.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 2',
+      intitule: 'Assurer le suivi de la relation client',
+      detail: "C.2.3 - Traiter les retours et les reclamations des clients (relance client).",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - La relance client pour recouvrer les impayes",
+        contexte: "Vous consultez un extrait du fichier clients pour reperer le client a relancer.",
+        questions: [
+          { numero: 1, consigne: "Cochez le client ayant des impayes dans le fichier clients (document 1).", ressources: "Consulter le document 1.", annexeId: 'annexe0' },
+          { numero: 2, consigne: "Redigez la lettre de relance impayes a adresser au client.", ressources: "Lire les documents 1 et 2, completer l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - La relance client pour annoncer une offre commerciale",
+        contexte: "Vous preparez l'envoi d'un SMS pour annoncer les nouveaux produits.",
+        questions: [
+          { numero: 3, consigne: "Dans la derniere colonne, cochez tous les clients a qui vous enverrez le SMS commercial, puis justifiez votre reponse.", ressources: "Completer les annexes 2 et 3.", annexeId: 'annexe2' },
+          { numero: 4, consigne: "Redigez le SMS commercial que vous enverrez a vos clients.", ressources: "Lire le document 3, completer l'annexe 4.", annexeId: 'annexe4' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'crmclients', id: 'annexe0', titre: "Document 1 - Repérez le client en impayé", entete: 'Fichier clients - Mamie & Co', mode: 'selection', colonnesEtendues: true, libelleSelection: 'Client en impayé à relancer', clients: CLIENTS_MAMIE },
+      { type: 'courrier', id: 'annexe1', titre: "Annexe 1 - Rédaction du courrier de relance" },
+      { type: 'crmclients', id: 'annexe2', titre: "Annexe 2 - Extrait fichier clients", entete: 'Fichier clients - Mamie & Co', mode: 'cochage', libelleColonneCoche: 'Proposer les nouveaux produits', clients: CLIENTS_MAMIE },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - Justification", colonnes: ['Votre justification'], nbLignes: 1, largeurs: ['100%'], reponseMultiligne: true, lignesReponse: 3, prerempli: [['']] },
+      { type: 'sms', id: 'annexe4', titre: "Annexe 4 - La rédaction du SMS", entete: 'MAMIE & CO', date: 'Aujourd\'hui à 09:30' },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Le client en impayé (document 1).", documents: ['Document 1'], bareme: 4,
+        reponse: "Le client a relancer est Fati Diame : c'est la seule cliente avec un montant impaye (56,15 euros, facture n° 0646, echeance au 05/03/202N). Tous les autres clients ont un montant impaye de 0,00 euro." },
+      { intitule: "La lettre de relance (annexe 1).", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 10,
+        reponse: "Mamie & Co - [adresse expediteur]. A l'attention de Madame Fati Diame, 3 rue de la Charriere - 17220 Saint-Rogatien. Date du jour. Objet : Relance facture n° 0646.\n\nMadame,\nSauf erreur de notre part, nous constatons que la facture n° 0646 du 05/02/202N, d'un montant de 56,15 euros, arrivee a echeance le 05/03/202N, demeure impayee a ce jour.\nNous vous remercions de bien vouloir proceder a son reglement dans les meilleurs delais.\nSi votre reglement a ete envoye avant la reception de ce courrier, nous vous prions de ne pas tenir compte de cette relance et vous en excusons.\nNous vous prions d'agreer, Madame, nos salutations distinguees.\n[Prenom + NOM]\nCommercial." },
+      { intitule: "Les clients à relancer par SMS (annexes 2 et 3).", documents: ['Annexes 2 et 3'], bareme: 8,
+        reponse: "Clients a cocher (envoi du SMS commercial) : Gardy, Marticos, Blondize, Veaulot, Gratien et Camay. Justification : on adresse le SMS commercial aux clients qui sont a jour de leurs paiements et deja clients de Mamie & Co. On n'envoie pas d'offre commerciale a une cliente en situation d'impaye (Fati Diame), a qui l'on adresse d'abord une relance de reglement." },
+      { intitule: "Le SMS commercial (annexe 4).", documents: ['Document 3', 'Annexe 4'], bareme: 8,
+        reponse: "Exemple structure : \"MAMIE & CO - DECOUVREZ NOS NOUVEAUX PRODUITS NATURELS ! Offre valable jusqu'au 31/03. Infos : www.mamieandco.com STOP au 36321\". Le SMS reprend : nom de l'entreprise en majuscule, accroche en majuscule, delai de validite, site internet et le STOP 36321." },
+    ],
+  },
+  synthese: {
+    titre: "Les differents types de relance client",
+    proposition: [
+      'Impaye', 'Recouvrement', 'Echeance',
+      'Offre commerciale', 'SMS', 'STOP 36321',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Mission 8 - Les types de relance",
+      enfants: [
+        { id: 'imp', texte: "La relance impaye", enfants: [
+          { id: 'i-1', texte: null, reponse: 'Impaye' },
+          { id: 'i-2', texte: null, reponse: 'Recouvrement' },
+          { id: 'i-3', texte: null, reponse: 'Echeance' },
+        ] },
+        { id: 'com', texte: "La relance commerciale", enfants: [
+          { id: 'c-1', texte: null, reponse: 'Offre commerciale' },
+          { id: 'c-2', texte: null, reponse: 'SMS' },
+          { id: 'c-3', texte: null, reponse: 'STOP 36321' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Traiter une relance pour impaye", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas reperer un impaye." },
+        { niveau: 'debrouille', description: "Je repere le client en impaye dans le fichier." },
+        { niveau: 'averti', description: "Je redige une lettre de relance structuree." },
+        { niveau: 'expert', description: "Je rappelle facture, montant et echeance et je demande le reglement." },
+      ] },
+      { id: 'c2', intitule: "Realiser une relance commerciale", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas cibler les clients d'une offre." },
+        { niveau: 'debrouille', description: "Je selectionne des clients a relancer." },
+        { niveau: 'averti', description: "Je justifie le choix des clients cibles." },
+        { niveau: 'expert', description: "Je redige un SMS commercial structure et conforme." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Relance client", definition: "Action de recontacter un client pour un paiement ou une offre." },
+      { terme: "Impaye", definition: "Facture arrivee a echeance qui n'a pas ete reglee." },
+      { terme: "Recouvrement", definition: "Ensemble des actions pour obtenir le paiement d'un impaye." },
+      { terme: "Date d'echeance", definition: "Date limite a laquelle une facture doit etre payee." },
+      { terme: "Lettre de relance", definition: "Courrier qui rappelle au client une facture impayee." },
+      { terme: "Relance commerciale", definition: "Message adresse aux clients pour annoncer une offre." },
+      { terme: "SMS", definition: "Short Message Service : service de messages courts." },
+      { terme: "Phrase d'accroche", definition: "Phrase courte, en majuscule, qui presente l'offre." },
+      { terme: "Delai de validite", definition: "Periode pendant laquelle l'offre reste valable." },
+      { terme: "STOP 36321", definition: "Mention qui permet au client de ne plus recevoir de messages publicitaires." },
+    ],
+    flashcards: [
+      { recto: "Quel client faut-il relancer pour impaye ?", verso: "Fati Diame (56,15 euros, facture n° 0646)." },
+      { recto: "Que doit comporter l'objet de la lettre de relance ?", verso: "Le numero de facture." },
+      { recto: "Que rappelle-t-on dans le corps de la lettre ?", verso: "Numero, date, montant de la facture et date d'echeance." },
+      { recto: "Que faire si le reglement a ete envoye avant le courrier ?", verso: "S'excuser aupres du client." },
+      { recto: "Que signifie SMS ?", verso: "Short Message Service (service de messages courts)." },
+      { recto: "Comment ecrit-on le nom de l'entreprise dans le SMS ?", verso: "Tout en majuscule." },
+      { recto: "Que doit contenir un SMS commercial ?", verso: "Nom entreprise, accroche, delai, site internet, STOP 36321." },
+      { recto: "A quoi sert le STOP 36321 ?", verso: "A ne plus recevoir de messages publicitaires si on le souhaite." },
+      { recto: "A qui n'envoie-t-on pas l'offre commerciale ?", verso: "A la cliente en impaye (Fati Diame)." },
+      { recto: "Que faire avant d'envoyer le SMS ?", verso: "Verifier l'orthographe." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Quel client a un impaye ?", options: ['Fati Diame', 'Marion Gardy', 'Safia Gratien', 'Maddy Camay'], bonne: 0 },
+      { type: 'unique', question: "Le montant de l'impaye est :", options: ['56,15 €', '0,00 €', '112,30 €', '42,95 €'], bonne: 0 },
+      { type: 'unique', question: "L'objet de la lettre de relance comporte :", options: ['Le numero de facture', 'La couleur du produit', 'Le nom du chien', 'La meteo'], bonne: 0 },
+      { type: 'unique', question: "Dans le corps, on rappelle :", options: ['Numero, date, montant, echeance', 'Le prix du timbre', 'La taille du colis', 'Rien'], bonne: 0 },
+      { type: 'unique', question: "Que signifie SMS ?", options: ['Short Message Service', 'Super Message Simple', 'Service Mail Securise', 'Systeme Multi Sms'], bonne: 0 },
+      { type: 'unique', question: "Le nom de l'entreprise dans le SMS s'ecrit :", options: ['Tout en majuscule', 'En minuscule', 'En italique', 'En rouge'], bonne: 0 },
+      { type: 'unique', question: "Le STOP 36321 permet :", options: ['De ne plus recevoir de pub', 'De payer plus vite', 'De suivre le colis', 'De noter le produit'], bonne: 0 },
+      { type: 'unique', question: "A qui n'envoie-t-on PAS le SMS commercial ?", options: ['A la cliente en impaye', 'Aux clients a jour', 'Aux nouveaux clients', 'Aux fideles'], bonne: 0 },
+      { type: 'unique', question: "Avant d'envoyer le SMS, il faut :", options: ["Verifier l'orthographe", 'Changer de numero', 'Appeler le client', 'Imprimer le SMS'], bonne: 0 },
+      { type: 'unique', question: "Combien de clients recoivent le SMS commercial ?", options: ['6', '10', '1', '3'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque element au bon type de relance.",
+      etiquettes: ['Relance impayé', 'Relance commerciale (SMS)'],
+      zones: [
+        { libelle: 'Numero de facture', etiquetteIndex: 0 },
+        { libelle: "Date d'echeance", etiquetteIndex: 0 },
+        { libelle: 'Montant de la facture', etiquetteIndex: 0 },
+        { libelle: 'Demander le reglement', etiquetteIndex: 0 },
+        { libelle: "Nom de l'entreprise en majuscule", etiquetteIndex: 1 },
+        { libelle: "Phrase d'accroche", etiquetteIndex: 1 },
+        { libelle: "Delai de validite de l'offre", etiquetteIndex: 1 },
+        { libelle: 'STOP 36321', etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const HYDRAO_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Réalisez la carte d'identité d'Hydrao : identité de l'entreprise, partenaires, clientèle, services et biens, concurrents et organigramme.",
+    contexte:
+      "Vous êtes en stage dans la société Hydrao, située à Grenoble. L'entreprise est pionnière dans les solutions intelligentes de gestion et de préservation de l'eau. C'est votre premier jour et donc avant de vous confier des tâches importantes, votre responsable M. Gabriel Della-Monica souhaite que vous vous familiarisiez avec l'entreprise, son personnel et son marché. Votre tuteur vous demande de réaliser la « carte d'identité » de celle-ci.",
+    videoIntro: { titre: 'Ecouter le contexte en video', embedUrl: 'https://drive.google.com/file/d/1B0KR5K-gigXuBEYIdfIazgu5ewXo4BaA/preview', transcription: [
+      "Vous etes en stage dans la societe Hydrao, situee a Grenoble. L'entreprise est pionniere dans les solutions intelligentes de gestion et de preservation de l'eau.",
+      "C'est votre premier jour et donc avant de vous confier des taches importantes, votre responsable M. Gabriel Della-Monica souhaite que vous vous familiarisiez avec l'entreprise, son personnel et son marche.",
+      "Votre tuteur vous demande de realiser la \"carte d'identite\" de celle-ci.",
+    ] },
+    documents: [
+      { numero: 1, titre: "Fiche d'identité de l'entreprise", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m1/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['Marchés', 'Solutions', 'Partenaires', 'Blog', 'Qui sommes nous', 'Contact'],
+          sections: [
+            { type: 'titre', texte: 'SMART AND BLUE' },
+            { type: 'paragraphes', textes: ['12 RUE JULES HOROWITZ 38000 GRENOBLE', 'Tél. : 04 38 70 11 28', 'contact@hydrao.fr', 'www.hydrao.fr'] },
+            { type: 'sousTitre', texte: "Activité de l'établissement" },
+            { type: 'paragraphes', textes: ["CONCEPTION COMMERCIALISATION D'OBJETS CONNECTES EN LIEN AVEC LA GESTION DE L'EAU EXPLOITATION DU BREVET", 'Code NAF : 7112B - Ingénierie, études techniques'] },
+            { type: 'sousTitre', texte: "Fiche d'identité de l'établissement" },
+            { type: 'fiche', lignes: [
+              { label: 'Enseigne', valeur: 'HYDRAO' },
+              { label: 'Siret', valeur: '81412714800025' },
+              { label: "Date de début d'activité", valeur: '01/06/2016' },
+              { label: 'Statut', valeur: 'Etablissement secondaire' },
+              { label: 'Forme juridique', valeur: '5710 - SAS, société par actions simplifiée' },
+            ] },
+            { type: 'sousTitre', texte: "Chiffres clés de l'établissement" },
+            { type: 'paragraphe', texte: 'Effectif au 01/06/2016 : 2' },
+            { type: 'sousTitre', texte: "Dirigeant(s) de l'établissement" },
+            { type: 'fiche', lignes: [
+              { label: 'Dirigeant', valeur: 'DELLA-MONICA Gabriel' },
+              { label: 'Fonction', valeur: 'PRESIDENT DE SAS' },
+            ] },
+            { type: 'sousTitre', texte: 'Adresse' },
+            { type: 'paragraphes', textes: ['HYDRAO - Smart & Blue', '12 rue Jules Horowitz', '38000 GRENOBLE - FRANCE'] },
+            { type: 'sousTitre', texte: 'Soutenu par la région Auvergne-Rhône-Alpes' },
+            { type: 'paragraphe', texte: 'HYDRAO bénéficie du soutien de la région Auvergne-Rhône-Alpes' },
+            { type: 'sousTitre', texte: 'Notre engagement' },
+            { type: 'paragraphes', textes: [
+              "La mission d'HYDRAO est de fournir des solutions technologiques pour préserver les ressources en eau qui réconcilient écologie, plaisir et pouvoir d'achat. L'innovation, l'environnement et l'expérience client sont les valeurs que nous portons à travers nos produits et services.",
+              "HYDRAO, c'est 70% d'économie d'eau pour les particuliers. Notre projet est labellisé Financement participatif pour la croissance verte et nous faisons partie de la GreenTech Verte, l'incubateur du ministère de l'environnement.",
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 2, titre: "Nos partenaires", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m1/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['Marchés', 'Solutions', 'Partenaires', 'Blog', 'Qui sommes nous', 'Contact'],
+          sections: [
+            { type: 'titre', texte: 'Ils nous font confiance' },
+            { type: 'image', src: '/docs/hydrao-m1/partenaires_logos.jpg', alt: "Logos des partenaires d'Hydrao : because water, eau de Paris, EDF, HOME FRIEND by Veolia, PUB Singapore's National Water Agency, La Région Auvergne-Rhône-Alpes, Schneider Electric." },
+          ],
+        } },
+      ] },
+      { numero: 3, titre: "Quelle est la différence entre B2B et B2C ?", texte: [
+        { noteDirection: { titre: "Quelle est la différence entre B2B et B2C ?", puces: [], paragraphe: "Petit rappel ! L\u2019appellation « B2C », ou « BtoC », est utilisée pour parler des échanges commerciaux entre les entreprises et les particuliers. Elle vient de l\u2019anglais « Business to Consumer ». Ainsi, le B2C concerne les transactions avec le grand public.\nLe terme « B2B », ou « BtoB », lui, vient de l\u2019expression anglaise « Business to Business », que l\u2019on pourrait traduire en français par « de professionnels à professionnels ».\nRappelons que les échanges B2B, entre entreprises donc, représentent la majorité des échanges commerciaux dans le monde. Dans le domaine du e-commerce, par exemple, le B2B générera p plus de 7,7 milliards de dollars pour l\u2019année 2017. En revanche, les activités B2C ne représentent \u201Cque\u201D 2,3 trillions de dollars. Mais pour beaucoup de PME B2B l\u2019e-commerce n\u2019est pas une alternative." } },
+      ] },
+      { numero: 4, titre: "Nos services", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m1/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['Boutique', 'A propos', 'Contact', 'Presse'],
+          sections: [
+            { type: 'image', src: '/docs/hydrao-m1/services_icones.jpg', alt: 'Bandeau des services Hydrao : LIVRAISON GRATUITE Partout en france, sous 4 jours ouvrés. GARANTIE SATISFAIT OU REMBOURSÉ Retour sous 15 jours. SERVICE CLIENT FRANÇAIS. PAIEMENT SÉCURISÉ Carte bancaire, PayPal.' },
+          ],
+        } },
+      ] },
+      { numero: 5, titre: "Nos produits & packs", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m1/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['BOUTIQUE', 'CONCEPT', 'ASSISTANCE', 'A PROPOS', 'SOLUTIONS PRO'],
+          sections: [
+            { type: 'titre', texte: 'NOS PRODUITS & PACKS' },
+            { type: 'grilleProduits', produits: [
+              { image: '/docs/hydrao-m1/p1.jpg', nom: 'POMMEAU DE DOUCHE ALOÉ', prix: '69,90 €' },
+              { image: '/docs/hydrao-m1/p2.jpg', nom: 'POMMEAU ALOÉ - NICKEL BROSSÉ', prix: '69,90 €' },
+              { image: '/docs/hydrao-m1/p3.jpg', nom: 'POMMEAU ALOÉ - NOIR MAT', prix: '69,90 €' },
+              { image: '/docs/hydrao-m1/p4.jpg', nom: 'POMME DE DOUCHE CEREUS', prix: '79,90 €' },
+              { image: '/docs/hydrao-m1/p5.jpg', nom: 'COLONNE DE DOUCHE HYDRAO', prix: '399,00 €' },
+              { image: '/docs/hydrao-m1/p6.jpg', nom: 'ALOE + FLEXIBLE PVC 2.0M', prix: '87,00 €', ancienPrix: '97,00 €', badge: 'PACK -10%' },
+              { image: '/docs/hydrao-m1/p7.jpg', nom: 'ALOE + FLEXIBLE PVC 1.5M', prix: '85,00 €', ancienPrix: '95,00 €', badge: 'PACK -10%' },
+              { image: '/docs/hydrao-m1/p8.jpg', nom: 'FLEXIBLE PVC ARGENT 1.5M', prix: '25,00 €' },
+              { image: '/docs/hydrao-m1/p9.jpg', nom: 'FLEXIBLE PVC ARGENT 2M', prix: '27,00 €' },
+              { image: '/docs/hydrao-m1/p10.jpg', nom: 'SUPPORT DE DOUCHE MURAL', prix: '15,00 €' },
+              { image: '/docs/hydrao-m1/p11.jpg', nom: 'FLEXIBLE PVC NOIR MAT 1.5M', prix: '27,00 €' },
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 6, titre: "Nos concurrents", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m1/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['Marchés', 'Solutions', 'Partenaires', 'Blog', 'Qui sommes nous', 'Contact'],
+          sections: [
+            { type: 'article', titre: 'SmartEmbed', paragraphes: ["Cette start-up implantée au Technopôle de l'environnement Arbois-Méditerranée, au sein de la Pépinière d'entreprises #CleanTech, à Aix-en-Provence, cible la réduction de la facture énergétique par les objets connectés. Elle vient de remporter un « CES Climate Change Innovator Award 2019 » pour son innovation « eddo.drop ». Le principe ? Une commande de douche connectée qui permet au consommateur de maîtriser sa consommation d'eau. [...]"] },
+            { type: 'article', titre: 'Inman', paragraphes: ["Pour les jeunes alsaciens Gilles Chantelot et Cédric Arbogast, la douche est également un bon filon. Leur start-up Inman, présente au CES 2019 sous l'égide la Région Grand Est, propose elle aussi un mitigeur innovant, baptisé In-Sens. Sa promesse : économiser l'eau en évitant de faire couler des litres pour rien : InSens permet en effet d'obtenir une eau à la température souhaitée dès la première goutte."] },
+          ],
+        } },
+      ] },
+      { numero: 7, titre: "Notre équipe", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m1/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['Marchés', 'Solutions', 'Partenaires', 'Blog', 'Qui sommes nous', 'Contact'],
+          sections: [
+            { type: 'titre', texte: 'Notre équipe' },
+            { type: 'grillePersonnes', personnes: [
+              { photo: '/docs/hydrao-m1/eq1.jpg', nom: 'Gabriel Della-Monica', fonction: 'Fondateur & Président' },
+              { photo: '/docs/hydrao-m1/eq2.jpg', nom: 'Hélène Lacroute', fonction: 'Responsable développement logiciel' },
+              { photo: '/docs/hydrao-m1/eq3.jpg', nom: 'Loïc Brun', fonction: 'Ingénieur systèmes embarqués' },
+              { photo: '/docs/hydrao-m1/eq4.jpg', nom: 'Denis Messié', fonction: 'Ingénieur développement full stack' },
+              { photo: '/docs/hydrao-m1/eq5.jpg', nom: 'Eric Burkel', fonction: 'Développement international' },
+              { photo: '/docs/hydrao-m1/eq6.jpg', nom: 'Mathilde Trennert', fonction: 'Responsable E-commerce et communication B2C' },
+              { photo: '/docs/hydrao-m1/eq7.jpg', nom: 'Assia Suchier', fonction: 'Responsable Administrative' },
+              { photo: '/docs/hydrao-m1/eq8.jpg', nom: 'Sarah de Veron', fonction: 'Responsable de projets' },
+              { photo: '/docs/hydrao-m1/eq9.jpg', nom: 'Bertrand Eichinger', fonction: 'Directeur Commercial' },
+              { photo: '/docs/hydrao-m1/eq10.jpg', nom: 'Benoit Buys', fonction: 'Responsable Industrialisation et Qualité' },
+              { photo: '/docs/hydrao-m1/eq11.jpg', nom: 'Mathias Manteca', fonction: 'Chargé marketing digital B2B' },
+              { photo: '/docs/hydrao-m1/eq12.jpg', nom: 'Aina Foz', fonction: 'Chargée Sav et Logistique' },
+              { photo: '/docs/hydrao-m1/eq13.jpg', nom: 'Joris Saladin', fonction: 'Ingénieur en alternance' },
+              { photo: '/docs/hydrao-m1/eq14.jpg', nom: 'Ricardo Coppel-Vizcarra', fonction: 'Ingénieur de recherche et développement' },
+              { photo: '/docs/hydrao-m1/eq15.jpg', nom: 'Corentin Le Saint', fonction: 'Commercial en alternance' },
+            ] },
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Identifier une entreprise et ses partenaires.",
+      "Distinguer les deux types de clientèle (B2B et B2C).",
+      "Distinguer les services marchands et non marchands, et classer les biens.",
+      "Identifier les concurrents et réaliser l'organigramme de l'entreprise.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Assurer la veille commerciale',
+      detail: "C.1.1 — Assurer la veille commerciale.",
+    },
+    activites: [
+      {
+        titre: "Activité 1 — Identification de l'entreprise",
+        contexte: "Vous réalisez la carte d'identité d'Hydrao.",
+        questions: [
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez les partenaires de l'entreprise.", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez les 2 types de clientèle visée par Hydrao.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ],
+      },
+      {
+        titre: "Activité 2 — Les biens et les services de l'entreprise",
+        contexte: "Vous distinguez les services et classez les biens vendus.",
+        questions: [
+          { numero: 4, consigne: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.", ressources: "Lire le document 4, compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Parmi tous les produits proposés par Hydrao, classez-les en 3 types de biens.", ressources: "Lire le document 5, compléter l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+      {
+        titre: "Activite 3 - Les concurrents",
+        contexte: "Vous identifiez les concurrents d'Hydrao.",
+        questions: [
+          { numero: 6, consigne: "Listez les differents concurrents de l'entreprise.", ressources: "Lire le document 6, compléter l'annexe 6.", annexeId: 'annexe6' },
+        ],
+      },
+      {
+        titre: "Activité 4 — L'organigramme",
+        contexte: "Vous réalisez l'organigramme d'Hydrao.",
+        questions: [
+          { numero: 7, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction des personnes.", ressources: "Lire le document 7, compléter l'annexe 7.", annexeId: 'annexe7' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'identiteentreprise', id: 'annexe1', titre: "Annexe 1 - Identité de l'entreprise",
+        champs: [
+          { cle: 'raison', libelle: 'Raison sociale' },
+          { cle: 'enseigne', libelle: 'Enseigne' },
+          { cle: 'adresse', libelle: 'Adresse du siège' },
+          { cle: 'tel', libelle: 'Téléphone' },
+          { cle: 'mail', libelle: 'Mail' },
+          { cle: 'site', libelle: 'Site internet' },
+          { cle: 'siret', libelle: 'SIRET' },
+          { cle: 'naf', libelle: 'Code NAF / activité' },
+          { cle: 'debut', libelle: "Date de début d'activité" },
+          { cle: 'forme', libelle: 'Forme juridique' },
+          { cle: 'dirigeant', libelle: 'Dirigeant' },
+          { cle: 'fonction', libelle: 'Fonction du dirigeant' },
+        ],
+        qualifications: [] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Les partenaires", colonnes: ['Les partenaires d\'Hydrao'], nbLignes: 7, largeurs: ['100%'], prerempli: [[''],[''],[''],[''],[''],[''],['']] },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 - La clientèle", colonnes: ['Type de clientèle', 'Explication'], nbLignes: 2, largeurs: ['30%','70%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [['',''],['','']] },
+      { type: 'casesservices', id: 'annexe4', titre: "Annexe 4 - Les services", entete: 'Les services', colonnes: ['Marchand', 'Non marchand'], nbLignes: 4 },
+      { type: 'grille', id: 'annexe5', titre: "Annexe 5 - Les biens", colonnes: ['Type de bien 1', 'Type de bien 2', 'Type de bien 3'], nbLignes: 6, largeurs: ['34%','33%','33%'], prerempli: [['','',''],['','',''],['','',''],['','',''],['','',''],['','','']] },
+      { type: 'grille', id: 'annexe6', titre: "Annexe 6 - Les concurrents", colonnes: ['Concurrent', 'Description'], nbLignes: 2, largeurs: ['24%','76%'], reponseMultiligne: true, lignesReponse: 3, prerempli: [['',''],['','']] },
+      { type: 'organigrammearemplir', id: 'annexe7', titre: "Annexe 7 - Organigramme d'Hydrao",
+        noms: ['Gabriel Della-Monica', 'Hélène Lacroute', 'Loïc Brun', 'Denis Messié', 'Eric Burkel', 'Mathilde Trennert', 'Assia Suchier', 'Sarah de Veron', 'Bertrand Eichinger', 'Benoit Buys', 'Mathias Manteca', 'Aina Foz', 'Joris Saladin', 'Ricardo Coppel-Vizcarra', 'Corentin Le Saint'],
+        fonctions: ['Fondateur & Président', 'Responsable développement logiciel', 'Ingénieur systèmes embarqués', 'Ingénieur développement full stack', 'Développement international', 'Responsable E-commerce et communication B2C', 'Responsable Administrative', 'Responsable de projets', 'Directeur Commercial', 'Responsable Industrialisation et Qualité', 'Chargé marketing digital B2B', 'Chargée Sav et Logistique', 'Ingénieur en alternance', 'Ingénieur de recherche et développement', 'Commercial en alternance'],
+        tete: { cle: 'e1', enfants: [{ cle: 'e2' }, { cle: 'e3' }, { cle: 'e4' }, { cle: 'e5' }] } },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Identité de l'entreprise (annexe 1).", documents: ['Site internet', 'Annexe 1'], bareme: 12,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Rubrique', 'Réponse'], lignes: [
+          ['Raison sociale', 'SMART AND BLUE'],
+          ['Enseigne', 'HYDRAO'],
+          ['Adresse du siège', '12 rue Jules Horowitz - 38000 Grenoble'],
+          ['Téléphone', '04 38 70 11 28'],
+          ['Mail', 'contact@hydrao.fr'],
+          ['Site internet', 'www.hydrao.fr'],
+          ['SIRET', '81412714800025'],
+          ['Code NAF', "7112B - Ingénierie, études techniques"],
+          ["Date de début d'activité", '01/06/2016'],
+          ['Forme juridique', '5710 - SAS, société par actions simplifiée'],
+          ['Dirigeant', 'DELLA-MONICA Gabriel'],
+          ['Fonction', 'PRESIDENT DE SAS'],
+        ] } },
+      { intitule: "Les partenaires (annexe 2).", documents: ['Site internet', 'Annexe 2'], bareme: 7,
+        reponse: "Les partenaires d'Hydrao (\"Ils nous font confiance\") : because water ; eau de Paris ; EDF ; HOME FRIEND by VEOLIA ; PUB (Singapore National Water Agency) ; La Région Auvergne-Rhône-Alpes ; Schneider Electric." },
+      { intitule: "La clientèle (annexe 3).", documents: ['Document', 'Annexe 3'], bareme: 6,
+        reponse: "Les deux types de clientele : le B2C (Business to Consumer), c'est-a-dire les particuliers / le grand public ; et le B2B (Business to Business), c'est-a-dire les professionnels (de professionnels a professionnels)." },
+      { intitule: "Les services (annexe 4).", documents: ['Site internet', 'Annexe 4'], bareme: 8,
+        reponse: "Les 4 services sont non marchands (gratuits, inclus) : Livraison (gratuite) ; Garantie satisfait ou remboursé ; Service client français ; Paiement sécurisé.",
+        tableau: { colonnes: ['Les services', 'Marchand', 'Non marchand'], lignes: [
+          ['Livraison', '', 'X'],
+          ['Garantie satisfait ou remboursé', '', 'X'],
+          ['Service client français', '', 'X'],
+          ['Paiement sécurisé', '', 'X'],
+        ] } },
+      { intitule: "Les biens (annexe 5).", documents: ['Site internet', 'Annexe 5'], bareme: 10,
+        reponse: "Classement des produits en 3 types de biens.",
+        tableau: { colonnes: ['Pommeaux et pommes de douche', 'Flexibles', 'Colonne et accessoires'], lignes: [
+          ['Pommeau de douche Aloé', 'Aloé + Flexible PVC 2.0 M', 'Colonne de douche HYDRAO'],
+          ['Pommeau Aloé - Nickel brossé', 'Aloé + Flexible PVC 1.5 M', 'Support de douche mural'],
+          ['Pommeau Aloé - Noir mat', 'Flexible PVC Argent 1.5 M', ''],
+          ['Pomme de douche Céreus', 'Flexible PVC Argent 2 M', ''],
+          ['', 'Flexible PVC Noir Mat 1.5 M', ''],
+        ] } },
+      { intitule: "Les concurrents (annexe 6).", documents: ['Site internet', 'Annexe 6'], bareme: 7,
+        reponse: "Les concurrents cites : SmartEmbed (start-up au Technopole de l'environnement Arbois-Mediterranee, innovation \"eddo.drop\", commande de douche connectee) et Inman (start-up alsacienne, mitigeur innovant \"In-Sens\" / \"InSens\", eau a la temperature souhaitee des la premiere goutte)." },
+      { intitule: "Organigramme d'Hydrao (annexe 7).", documents: ['Site internet', 'Annexe 7'], bareme: 10,
+        reponse: "Gabriel Della-Monica (Fondateur & President) en tete. Sous sa direction : Helene Lacroute (Responsable developpement logiciel), Loic Brun (Ingenieur systemes embarques), Denis Messie (Ingenieur developpement full stack), Eric Burkel (Developpement international), Mathilde Trennert (Responsable E-commerce et communication B2C), Assia Suchier (Responsable Administrative), Sarah de Veron (Responsable de projets), Bertrand Eichinger (Directeur Commercial), Benoit Buys (Responsable Industrialisation et Qualite), Mathias Manteca (Charge marketing digital B2B), Aina Foz (Chargee Sav et Logistique), Joris Saladin (Ingenieur en alternance), Ricardo Coppel-Vizcarra (Ingenieur de recherche et developpement), Corentin Le Saint (Commercial en alternance)." },
+    ],
+  },
+  synthese: {
+    titre: "La présentation de l'unité commerciale et de la clientèle",
+    proposition: ['B2B', 'B2C', 'Partenaires', 'Marchand', 'Non marchand', 'Concurrents'],
+    racine: {
+      id: 'racine',
+      texte: "Mission 1 - Hydrao",
+      enfants: [
+        { id: 'ent', texte: "L'entreprise et sa clientèle", enfants: [
+          { id: 'e-1', texte: null, reponse: 'B2B' },
+          { id: 'e-2', texte: null, reponse: 'B2C' },
+          { id: 'e-3', texte: null, reponse: 'Partenaires' },
+        ] },
+        { id: 'mar', texte: "Le marché", enfants: [
+          { id: 'm-1', texte: null, reponse: 'Marchand' },
+          { id: 'm-2', texte: null, reponse: 'Non marchand' },
+          { id: 'm-3', texte: null, reponse: 'Concurrents' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier l'entreprise et sa clientèle", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas identifier une entreprise." },
+        { niveau: 'debrouille', description: "Je relève les informations d'identité principales." },
+        { niveau: 'averti', description: "Je distingue les clientèles B2B et B2C." },
+        { niveau: 'expert', description: "Je réalise la carte d'identité complète de l'entreprise." },
+      ] },
+      { id: 'c2', intitule: "Analyser le marché de l'entreprise", indicateurs: [
+        { niveau: 'novice', description: "Je ne distingue pas biens et services." },
+        { niveau: 'debrouille', description: "Je liste les services et les biens." },
+        { niveau: 'averti', description: "Je distingue services marchands et non marchands." },
+        { niveau: 'expert', description: "J'identifie les concurrents et je réalise l'organigramme." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "B2C (BtoC)", definition: "Business to Consumer : echanges commerciaux entre les entreprises et les particuliers (grand public)." },
+      { terme: "B2B (BtoB)", definition: "Business to Business : echanges de professionnels a professionnels (entre entreprises)." },
+      { terme: "Partenaire", definition: "Entreprise ou organisme qui collabore avec Hydrao." },
+      { terme: "Bien marchand", definition: "Bien ou service vendu contre un prix." },
+      { terme: "Service non marchand", definition: "Service fourni gratuitement ou inclus, sans prix specifique." },
+      { terme: "Concurrent", definition: "Entreprise qui propose des produits similaires sur le meme marche." },
+      { terme: "Organigramme", definition: "Schema qui represente la structure et les fonctions d'une entreprise." },
+      { terme: "SIRET", definition: "Numero qui identifie un etablissement d'une entreprise." },
+      { terme: "Code NAF", definition: "Code qui identifie l'activite principale d'une entreprise." },
+      { terme: "SAS", definition: "Societe par actions simplifiee, une forme juridique d'entreprise." },
+    ],
+    flashcards: [
+      { recto: "Que signifie B2C ?", verso: "Business to Consumer : de l'entreprise aux particuliers." },
+      { recto: "Que signifie B2B ?", verso: "Business to Business : de professionnels a professionnels." },
+      { recto: "Quelle est la raison sociale d'Hydrao ?", verso: "SMART AND BLUE (enseigne : HYDRAO)." },
+      { recto: "Ou se situe le siège d'Hydrao ?", verso: "12 rue Jules Horowitz - 38000 Grenoble." },
+      { recto: "Qui dirige Hydrao ?", verso: "Gabriel Della-Monica, Président de SAS." },
+      { recto: "Cite deux partenaires d'Hydrao.", verso: "EDF, Veolia (Home Friend), eau de Paris, Schneider Electric, PUB..." },
+      { recto: "Les 4 services d'Hydrao sont-ils marchands ?", verso: "Non, ils sont non marchands (gratuits / inclus)." },
+      { recto: "Cite un concurrent d'Hydrao.", verso: "SmartEmbed (eddo.drop) ou Inman (In-Sens)." },
+      { recto: "Quelle est la forme juridique d'Hydrao ?", verso: "SAS (société par actions simplifiée)." },
+      { recto: "Que représentent les échanges B2B dans le monde ?", verso: "La majorité des échanges commerciaux dans le monde." },
+    ],
+    quiz: [
+      { type: 'unique', question: "B2C signifie :", options: ['Business to Consumer', 'Business to Company', 'Buy to Consumer', 'Back to Client'], bonne: 0 },
+      { type: 'unique', question: "B2B concerne :", options: ['Les professionnels entre eux', 'Les particuliers', 'Les associations', 'Les collectivités'], bonne: 0 },
+      { type: 'unique', question: "La raison sociale d'Hydrao est :", options: ['SMART AND BLUE', 'HYDRAO SA', 'AQUA BLUE', 'SMART WATER'], bonne: 0 },
+      { type: 'unique', question: "Le siège d'Hydrao est à :", options: ['Grenoble', 'Paris', 'Lyon', 'La Rochelle'], bonne: 0 },
+      { type: 'unique', question: "Le dirigeant d'Hydrao est :", options: ['Gabriel Della-Monica', 'David Couthon', 'Xavier Niel', 'Loïc Brun'], bonne: 0 },
+      { type: 'unique', question: "La forme juridique d'Hydrao est :", options: ['SAS', 'SARL', 'SA', 'EURL'], bonne: 0 },
+      { type: 'unique', question: "Les services (livraison, garantie...) sont :", options: ['Non marchands', 'Marchands', 'Payants', 'Interdits'], bonne: 0 },
+      { type: 'unique', question: "Un concurrent d'Hydrao est :", options: ['SmartEmbed', 'EDF', 'Veolia', 'Schneider'], bonne: 0 },
+      { type: 'unique', question: "Le produit le plus cher d'Hydrao est :", options: ['La colonne de douche (399 €)', 'Le support mural (15 €)', 'Le flexible (25 €)', 'Le pommeau (69,90 €)'], bonne: 0 },
+      { type: 'unique', question: "Les échanges B2B représentent :", options: ['La majorité des échanges commerciaux', 'Une minorité', 'Rien', 'Les associations'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque élément à la bonne catégorie.",
+      etiquettes: ['Clientèle', 'Partenaire', 'Concurrent'],
+      zones: [
+        { libelle: 'B2C (particuliers)', etiquetteIndex: 0 },
+        { libelle: 'B2B (professionnels)', etiquetteIndex: 0 },
+        { libelle: 'EDF', etiquetteIndex: 1 },
+        { libelle: 'Veolia (Home Friend)', etiquetteIndex: 1 },
+        { libelle: 'eau de Paris', etiquetteIndex: 1 },
+        { libelle: 'Schneider Electric', etiquetteIndex: 1 },
+        { libelle: 'SmartEmbed', etiquetteIndex: 2 },
+        { libelle: 'Inman', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const HYDRAO_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Participez a une operation de prospection : calculez le cout de la location d'un stand a la Foire de Paris, chiffrez les frais des commerciaux presents, completez l'etat des frais professionnels, puis rendez compte a votre tuteur par e-mail.",
+    contexte:
+      "Votre tuteur souhaite participer a la foire de Paris qui aura lieu en avril. Ce sera pour lui non seulement l'occasion de toucher une vaste clientele mais ce sera surtout un lieu de choix pour presenter ses nouveaux modeles de pommeaux de douches ecologiques et connectes. Il vous demande de vous occuper de la location du stand. Pour cela, il vous transmet tous les documents de renseignements qui lui ont ete envoye par mail par une societe specialisee.",
+    documents: [
+      { numero: 1, titre: "Les consignes de M. Della-Monica", texte: [
+        { noteDirection: { titre: "Consignes", puces: [], paragraphe: "Pour la Foire de Paris, je souhaite un stand parapluie sur mesure de 12 m2. Il faudra l'amenager : 2 kakemonos, 6 spots orientables repartis sur cable de 15 m, 2 presentoirs de documents, 1 comptoir, 3 tabourets, 12 m2 de jonc de mer, 2 rubans LED de 5 m. Pour la promotion, prevoyez 300 brochures. Pensez aussi a l'electricite et a Internet pendant toute la duree du salon." } },
+      ] },
+      { numero: 2, titre: "Mail de la societe Expo Exhibition Stands", texte: [
+        { mailLecture: {
+          de: 'info@expoexhibitionstand.fr',
+          a: 'gabriel.della-monica@hydrao.fr',
+          objet: "Plaquette des tarifs pour la location d'un stand",
+          corps: [
+            "Monsieur,",
+            "Nous avons bien recu votre mail du 8 janvier dans lequel vous demandez les tarifs pour la location d'un stand lors de la Foire de Paris qui se teindra du 17 au 24.",
+            "C'est avec un grand plaisir que je vous envoie en piece jointe notre grille tarifaire. Vos demandes devront nous parvenir le 20 fevrier au plus tard.",
+            "En vous remerciant de l'interet que vous nous portez. Cordialement,",
+            "Foire de Paris",
+          ],
+        } },
+      ] },
+      { numero: 3, titre: "Catalogue des prix", texte: [
+        { docRiche: {
+          site: 'www.expoexhibitionstand.fr', marque: 'Expo Exhibition Stands', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: 'Catalogue des prix' },
+            { type: 'paragraphe', texte: "Stands personnalise ou modulable, ils doivent capter le regard du visiteur. Le stand est une vitrine ephemere qui permet de faire la promotion d'une marque, d'un produit ou d'un concept. Il vehiculera l'image de l'exposant au travers un agencement bien defini." },
+            { type: 'paragraphe', texte: "L'achat d'un stand varie selon le type de stand que l'exposant aura choisi. La superficie et l'agencement de ce dernier auront egalement un impact important sur le prix." },
+            { type: 'sousTitre', texte: "Le prix d'un stand" },
+            { type: 'tableau', entetes: ['Type de stand', 'Prix', 'Observation'], lignes: [
+              ['Stand pliable / parapluie / pack', '500 €', "Pour une entree de gamme"],
+              ['Stand parapluie de 9 m2', '1000 € a 1800 €', "Pour un stand parapluie de 9 m2"],
+              ['Stand modulaire (9 m2)', '2500 €', 'Surface de 9 m2'],
+              ['Stand modulaire (18 m2)', '8000 €', 'Surface de 18 m2'],
+              ['Stand modulaire (18 m2 et plus)', '17 000 €', 'Surface de 18 m2 et plus / haut de gamme'],
+              ['Stand sur mesure (9 m2)', '1000 a 1500 €', 'Surface de 9 m2'],
+              ['Stand sur mesure (18 m2)', '15 000 €', 'Surface de 18 m2'],
+              ['Stand sur mesure (grande taille)', '10 000 a 30 000 €', 'Surface de grande taille - 300 m2'],
+            ] },
+            { type: 'sousTitre', texte: "Cout de l'agencement d'un stand" },
+            { type: 'tableau', entetes: ['Decoration / mobilier stand', 'Prix'], lignes: [
+              ['Kakemono', '450 €'], ['Totem', '600 €'], ['Enrouleur', '300 €'], ['Stop trottoir', '350 €'],
+              ['Presentoir de documents', '500 €'], ['Bar', '1000 €'], ['Comptoir', '400 €'], ['Mange-debout', '300 €'],
+              ['Table haute', '150 €'], ['Tabouret', '100 €'],
+            ] },
+            { type: 'sousTitre', texte: "Eclairage stand" },
+            { type: 'tableau', entetes: ['Eclairage', 'Prix'], lignes: [
+              ['Pont lumiere', '200 €'], ['Ruban LED de 5 m', '150 €'], ['LED', '20 €'], ['Spot LED encastrable', '50 €'],
+              ['6 spots orientables repartis sur cable de 15 m', '250 €'], ['6 spots sur rail', '75 €'],
+              ['Ballon eclairant', '400 €'], ['Cone, colonne et arche lumineux', '120 €'],
+            ] },
+            { type: 'sousTitre', texte: "Moquette stand" },
+            { type: 'tableau', entetes: ['Sol', 'Prix'], lignes: [
+              ['Moquette', '7 € / m2'], ['Gazon synthetique', '10 € / m2'], ['Sol PVC', '8 € / m2'], ['Sisal ou jonc de mer', '9 € / m2'],
+            ] },
+            { type: 'sousTitre', texte: "Les frais d'amenagement techniques - Autres frais annexes" },
+            { type: 'tableau', entetes: ['Frais', 'Prix'], lignes: [
+              ['Electricite', '41 € / jour'], ['Eau', '29 € / jour'], ['Telephone', '62 € / jour'], ['Internet', '22 € / jour'],
+            ] },
+            { type: 'sousTitre', texte: "La promotion des produits" },
+            { type: 'tableau', entetes: ['Support', 'Prix'], lignes: [
+              ['Plaquettes', 'Par tranche de 200, 1300 €'], ['Catalogues', 'Par tranche de 100, 1800 €'],
+              ['Brochures', 'Par tranche de 150, 800 €'], ['Affiches', "250 € l'unite"],
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 4, titre: "Note de M. Della-Monica", texte: [
+        { noteDirection: { titre: "NOTE", signature: 'G.D-M', puces: [], paragraphe: "\"La Foire est a Paris et se trouve 1 Place de la Porte de Versailles 75015 Paris. J'ai choisi 3 d'entre vous pour tenir le stand : Helene, Bernard et toi. Vous partirez la veille aux environs de 14h avec la voiture de Bernard et vous reviendrez le lendemain de la foire toujours par la route. Chacun de vous aura sa propre chambre a l'hotel Mercure Paris Vaugirard qui se trouve a cote du parc des Expo de la Porte de Versailles car nous sommes membres du programme de fidelite. Il est evident que vos frais de restauration seront pris en charge par l'entreprise. J'allais oublier, Helene elle n'arrivera sur le stand que le 19 avril car nous avons un rendez-vous important avec l'un de nos partenaires. Elle prendra donc un train le 18 avril apres 21h30h. Elle reviendra en voiture avec vous pour la reunion de 10h. Fais-moi un calcul de tout ce que cela va nous couter et tu me tiendras au courant. \"" } },
+      ] },
+      { numero: 5, titre: "Mail du service administratif", texte: [
+        { mailLecture: {
+          de: 'assia.suchier@hydrao.fr',
+          a: 'personnels@hydrao.fr',
+          objet: 'Remboursement des frais',
+          corps: [
+            "Bonjour,",
+            "Nous rappelons a l'ensemble des personnels que le remboursement des frais se fait de la facon suivante :",
+            "Indemnite kilometrique : 0,15 cts par kilometre parcouru ;",
+            "Hebergement : remboursement sur justificatif",
+            "Repas : pour le dejeuner et le diner le remboursement des frais sera forfaitaire. 15€ le midi et 25 € le soir ;",
+            "Parking : remboursement sur justificatif",
+            "Peage : remboursement sur remise des justificatifs originaux.",
+            "Pour un traitement rapide, merci de remettre tous vos justificatifs au maximum 48h apres votre retour en entreprise. Je vous souhaite beaucoup de ventes,",
+            "Assia SUCHIER - Responsable Administrative",
+          ],
+        } },
+      ] },
+      { numero: 6, titre: "Prix billet de train d'Helene", texte: [
+        { docRiche: {
+          site: 'www.sncf-connect.com', couleurHeader: '#12233A',
+          sections: [
+            { type: 'billetTrain', prix: '61,30 €', passagers: '1 passager', co2: '4,5 kg',
+              segments: [
+                { depart: '18h52', arrivee: '20h14', villeDepart: 'Grenoble', villeArrivee: 'Lyon Part-Dieu', operateur: 'SNCF', numero: 'TER 17638', classe: '2nde' },
+                { depart: '20h34', arrivee: '22h32', villeDepart: 'Lyon Part-Dieu', villeArrivee: 'Paris Gare de Lyon', operateur: 'TGV INOUI', numero: '6674', classe: '2nde' },
+              ],
+              correspondance: '20 min de correspondance',
+              passagerLignes: { titre: '1 Adulte', prix: '61,30 €', conditions: [
+                { label: 'SECONDE', texte: "Billet echangeable (ajustement au tarif en vigueur) et remboursable uniquement avant depart : 50% du prix le jour du depart (max 12 €). Des 30 min avant depart, billet echangeable 2 fois max (meme jour, meme trajet) et non remboursable apres 1 echange." },
+                { label: "PREM'S", texte: "Billet echangeable (ajustement au tarif en vigueur) et remboursable uniquement avant depart : 5 € de frais des 30 jours avant depart, puis 15 € 2 jours avant depart. Des 30 min avant depart, billet echangeable 2 fois max (meme jour, meme trajet) et non remboursable apres 1 echange." },
+              ] } },
+          ],
+        } },
+      ] },
+      { numero: 7, titre: "Reservation des chambres d'hotel", texte: [
+        { docRiche: {
+          site: 'www.all.accor.com', couleurHeader: '#2A2A6C',
+          sections: [
+            { type: 'resaHotel', nom: 'Chambre Classique - 1 lit double', capacite: 'maximum : 2 adultes', surface: '22 m²', tarifMembre: '190,95 €', tarifPublic: '201,00 €', photo: '/docs/hydrao-m2/doc7_hotel.jpg' },
+          ],
+        } },
+      ] },
+      { numero: 8, titre: "Trajet Grenoble - Paris", texte: [
+        { docRiche: {
+          site: 'www.google.com/maps', couleurHeader: '#FFFFFF',
+          sections: [
+            { type: 'itineraire', depart: '12 Rue Jules Horowitz', arrivee: '1 Place de la Porte de Versailles',
+              modes: [ { icone: '🚗', duree: '5 h 13' }, { icone: '🚆', duree: '4 h 12' }, { icone: '🚶', duree: '5 j.' }, { icone: '🚴', duree: '1 j.' } ],
+              dureeKm: '5 h 13 min (571 km)', note: 'Le plus rapide, conditions de circulation normales',
+              carte: '/docs/hydrao-m2/doc8_trajet.jpg' },
+          ],
+        } },
+      ] },
+      { numero: 9, titre: "Declaration etat des frais professionnels", texte: [
+        { docRiche: {
+          site: 'www.quiziniere.com', marque: 'HYDRAO', logo: '/docs/hydrao-m2/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: 'ETAT DES FRAIS PROFESSIONNELS' },
+            { type: 'paragraphe', texte: "Ne selectionnez que les items qui vous concernent. Si un items ne vous concerne pas, laissez la case vide." },
+            { type: 'paragraphe', texte: "Le formulaire interactif a completer se trouve dans la question 3 ci-dessous (annexe du document 9)." },
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Calculer le cout de la location et de l'amenagement d'un stand.",
+      "Chiffrer les frais lies a la participation des commerciaux (hotel, repas, transport).",
+      "Completer un etat des frais professionnels sur un logiciel.",
+      "Rendre compte a sa hierarchie par e-mail.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 4B',
+      intitule: 'Mettre en oeuvre une operation de prospection',
+      detail: "C.4B.3 - Mettre en oeuvre une operation de prospection.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - La participation a un salon",
+        contexte: "Vous vous occupez de la location du stand pour la Foire de Paris.",
+        questions: [
+          { numero: 1, consigne: "Calculez le cout de la location d'un stand pour la participation a la Foire de Paris.", ressources: "Lire les documents 1, 2 et 3, completer l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Les frais lies a la participation des commerciaux au salon",
+        contexte: "Votre tuteur vous laisse une note pour calculer les frais de la force de vente.",
+        questions: [
+          { numero: 2, consigne: "Calculez les frais a prevoir pour la participation a la Foire de Paris.", ressources: "Lire les documents 4, 5, 6, 7, 8, completer l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Completez votre etat de frais sur le logiciel de l'entreprise.", ressources: "Consulter l'annexe 2, completer le document 9.", annexeId: 'annexe0doc9' },
+        ],
+      },
+      {
+        titre: "Activite 3 - Rendre compte",
+        contexte: "Vous avez calcule tous les couts de la participation et vous rendez compte a votre tuteur.",
+        questions: [
+          { numero: 4, consigne: "Redigez l'e-mail a votre tuteur M. Della Monica pour lui rendre compte des couts (cout du stand, frais des commerciaux et budget total).", ressources: "Completer l'annexe 3 (ou l'annexe 4 via le lien).", annexeId: 'annexe3' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 - Calcul du coût de la participation au salon", colonnes: ['Éléments', 'Calculs', 'Résultats'], nbLignes: 14, largeurs: ['46%','27%','27%'], reponseMultiligne: false, prerempli: [
+        ['Le prix d\'un stand', '', ''],
+        ['Stand parapluie 12 m2 (sur mesure)', '', ''],
+        ['Coût de l\'agencement d\'un stand', '', ''],
+        ['2 kakémonos', '', ''],
+        ['6 spots orientables', '', ''],
+        ['2 présentoirs de documents', '', ''],
+        ['1 comptoir', '', ''],
+        ['3 tabourets', '', ''],
+        ['12 m2 de jonc de mer', '', ''],
+        ['2 rubans LED de 5 m', '', ''],
+        ['Autres frais annexes', '', ''],
+        ['300 brochures', '', ''],
+        ['Électricité (du 17 au 24)', '', ''],
+        ['Internet (du 17 au 24)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 - Prévision des frais", colonnes: ['Nom', 'Date de présence', 'Nb nuitées', 'Coût nuits d\'hôtel', 'Déjeuner', 'Dîner', 'Nb km', 'Transport aller', 'Transport retour'], nbLignes: 5, largeurs: ['12%','12%','9%','14%','10%','10%','8%','12%','13%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Bernard', '', '', '', '', '', '', '', ''],
+        ['Stagiaire', '', '', '', '', '', '', '', ''],
+        ['Hélène', '', '', '', '', '', '', '', ''],
+        ['Sous-total', '', '', '', '', '', '', '', ''],
+        ['Total (montant des frais à prévoir)', '', '', '', '', '', '', '', ''],
+      ] },
+      { type: 'etatFrais', id: 'annexe0doc9', titre: "Document 9 - État des frais professionnels" },
+      { type: 'mail', id: 'annexe3', titre: "Annexe 3 - L'e-mail à M. Della Monica", deParDefaut: '', aParDefaut: 'gabriel.della-monica@hydrao.fr' },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Calcul du coût de la participation au salon (annexe 1).", documents: ['Documents 1, 2 et 3', 'Annexe 1'], bareme: 14,
+        reponse: "TOTAL = 8062 €.",
+        tableau: { colonnes: ['Éléments', 'Calculs', 'Résultats'], lignes: [
+          ['Stand parapluie 12 m2 (sur mesure)', '12 x 300', '3600'],
+          ['2 kakémonos', '450 x 2', '900'],
+          ['6 spots orientables', '', '250'],
+          ['2 présentoirs de documents', '500 x 2', '1000'],
+          ['1 comptoir', '', '400'],
+          ['3 tabourets', '100 x 3', '300'],
+          ['12 m2 de jonc de mer', '12 x 9', '108'],
+          ['2 rubans LED de 5 m', '150 x 2', '300'],
+          ['300 brochures', '800 x 2', '1600'],
+          ['Électricité (du 17 au 24, v. doc 2)', '41 x 8', '328'],
+          ['Internet (du 17 au 24, v. doc 2)', '22 x 8', '176'],
+          ['TOTAL', '', '8062 €'],
+        ] } },
+      { intitule: "Prévision des frais (annexe 2).", documents: ['Documents 4 à 8', 'Annexe 2'], bareme: 14,
+        reponse: "Montant des frais à prévoir = 5964,60 €. Hôtel 190,95 €/nuit ; repas 15 € midi et 25 € soir ; indemnité kilométrique 0,15 €/km ; trajet Grenoble-Paris 571 km ; billet de train d'Hélène 61,30 € (aller).",
+        tableau: { colonnes: ['Nom', 'Présence', 'Nuitées', 'Coût hôtel', 'Déjeuner', 'Dîner', 'Km', 'Aller', 'Retour'], lignes: [
+          ['Bernard', 'Du 17 au 24', 'Du 16 au 25 donc 9', '190,95 x 9 = 1718,55', '15 x 9 = 135', '25 x 9 = 225', '571', '571 x 0,15 = 85,65', '571 x 0,15 = 85,65'],
+          ['Stagiaire', 'Du 17 au 24', 'Du 16 au 25 donc 9', '190,95 x 9 = 1718,55', '15 x 9 = 135', '25 x 9 = 225', '571', '571 x 0,15 = 85,65', '571 x 0,15 = 85,65'],
+          ['Hélène', 'Du 19 au 24', 'Du 18 au 25 donc 7', '190,95 x 7 = 1334,90', '15 x 6 = 90', '25 x 6 = 150', '0', '61,30', '571 x 0,15 = 85,65'],
+          ['Sous-total', '', '', '4772', '360', '600', '', '146,95', '85,65'],
+          ['Total', '', '', 'Le montant des frais à prévoir est de : 5964,60 €', '', '', '', '', ''],
+        ] } },
+      { intitule: "État des frais professionnels (document 9).", documents: ['Annexe 2', 'Document 9'], bareme: 6,
+        reponse: "L'élève reporte ses propres frais dans le formulaire (dates de départ/retour, nuits d'hôtel 190,95 € x nombre de nuits, repas 15 €/25 €, transport en voiture avec les noms des passagers et le nombre de km, ou en train avec le prix aller-retour)." },
+      { intitule: "L'e-mail à M. Della Monica (annexe 3).", documents: ['Annexe 3'], bareme: 8,
+        reponse: "Objet : Participation à la Foire de Paris.\n\nBonjour M. Della Monica,\nSuite à votre demande, j'ai fait le calcul de ce que coûtera à l'entreprise l'ensemble de sa participation à la Foire de Paris qui se tiendra du 17 au 24 avril 202N.\nPar rapport aux consignes que vous m'avez données, la participation à la Foire de Paris s'élève à : 8062 €.\nPour ce qui concerne les frais professionnels, ceux-ci s'élèvent à : 5964,60 €.\nAu total, il faudra donc prévoir un budget de : 14026,60 € TTC.\nCordialement,\nPrénom NOM de l'élève." },
+    ],
+  },
+  synthese: {
+    titre: "La participation a une operation de prospection",
+    proposition: ['Prospection', 'Salon', 'Stand', 'Frais professionnels', 'Indemnite kilometrique', 'Rendre compte'],
+    racine: {
+      id: 'racine',
+      texte: "Mission 2 - Operation de prospection",
+      enfants: [
+        { id: 'sal', texte: "Le salon", enfants: [
+          { id: 's-1', texte: null, reponse: 'Prospection' },
+          { id: 's-2', texte: null, reponse: 'Salon' },
+          { id: 's-3', texte: null, reponse: 'Stand' },
+        ] },
+        { id: 'fr', texte: "Les frais", enfants: [
+          { id: 'f-1', texte: null, reponse: 'Frais professionnels' },
+          { id: 'f-2', texte: null, reponse: 'Indemnite kilometrique' },
+          { id: 'f-3', texte: null, reponse: 'Rendre compte' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Chiffrer une operation de prospection", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas calculer le cout d'un stand." },
+        { niveau: 'debrouille', description: "Je releve les prix dans le catalogue." },
+        { niveau: 'averti', description: "Je calcule le cout complet du stand amenage." },
+        { niveau: 'expert', description: "Je chiffre aussi les frais des commerciaux et le budget total." },
+      ] },
+      { id: 'c2', intitule: "Gerer les frais et rendre compte", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les regles de remboursement." },
+        { niveau: 'debrouille', description: "J'applique les forfaits repas et l'indemnite kilometrique." },
+        { niveau: 'averti', description: "Je complete l'etat des frais professionnels." },
+        { niveau: 'expert', description: "Je rends compte clairement par e-mail avec les montants." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Prospection", definition: "Ensemble des actions pour trouver de nouveaux clients." },
+      { terme: "Salon / Foire", definition: "Evenement commercial ou les entreprises exposent leurs produits." },
+      { terme: "Stand", definition: "Espace loue et amenage par un exposant pour presenter ses produits." },
+      { terme: "Kakemono", definition: "Affiche verticale enroulable utilisee pour la signaletique d'un stand." },
+      { terme: "Force de vente", definition: "Ensemble des commerciaux qui vendent les produits de l'entreprise." },
+      { terme: "Frais professionnels", definition: "Depenses engagees par un salarie pour son travail (hotel, repas, transport)." },
+      { terme: "Indemnite kilometrique", definition: "Somme versee par km parcouru avec son vehicule (ici 0,15 €/km)." },
+      { terme: "Forfait repas", definition: "Montant fixe rembourse par repas (15 € le midi, 25 € le soir)." },
+      { terme: "Justificatif", definition: "Document (facture, ticket) prouvant une depense a rembourser." },
+      { terme: "Rendre compte", definition: "Informer sa hierarchie du resultat d'un travail." },
+    ],
+    flashcards: [
+      { recto: "Quel type de stand est choisi ?", verso: "Un stand parapluie sur mesure de 12 m2." },
+      { recto: "Combien coûte le stand (12 m2 à 300 €/m2) ?", verso: "12 x 300 = 3600 €." },
+      { recto: "Quel est le coût total du stand aménagé ?", verso: "8062 €." },
+      { recto: "Quel est le prix d'une nuit d'hôtel ?", verso: "190,95 €." },
+      { recto: "Quels sont les forfaits repas ?", verso: "15 € le midi, 25 € le soir." },
+      { recto: "Quelle est l'indemnité kilométrique ?", verso: "0,15 € par kilomètre parcouru." },
+      { recto: "Combien de km entre Grenoble et Paris ?", verso: "571 km." },
+      { recto: "Combien coûte le billet de train d'Hélène ?", verso: "61,30 € (aller)." },
+      { recto: "Quel est le montant des frais des commerciaux ?", verso: "5964,60 €." },
+      { recto: "Quel est le budget total de la participation ?", verso: "14026,60 € (8062 + 5964,60)." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le stand choisi est :", options: ['Un stand parapluie sur mesure de 12 m2', 'Un stand pliable', 'Un stand de 300 m2', 'Un stand modulaire de 18 m2'], bonne: 0 },
+      { type: 'unique', question: "Le coût du stand (12 x 300) est :", options: ['3600 €', '360 €', '3000 €', '1200 €'], bonne: 0 },
+      { type: 'unique', question: "Le coût total du stand aménagé est :", options: ['8062 €', '5964,60 €', '14026,60 €', '3600 €'], bonne: 0 },
+      { type: 'unique', question: "Le prix d'une nuit d'hôtel est :", options: ['190,95 €', '90,15 €', '61,30 €', '150 €'], bonne: 0 },
+      { type: 'unique', question: "Le forfait repas du soir est :", options: ['25 €', '15 €', '40 €', '10 €'], bonne: 0 },
+      { type: 'unique', question: "L'indemnité kilométrique est :", options: ['0,15 €/km', '0,50 €/km', '1,5 €/km', '0,05 €/km'], bonne: 0 },
+      { type: 'unique', question: "La distance Grenoble-Paris est :", options: ['571 km', '751 km', '470 km', '620 km'], bonne: 0 },
+      { type: 'unique', question: "Le billet de train d'Hélène coûte :", options: ['61,30 €', '85,65 €', '190,95 €', '135 €'], bonne: 0 },
+      { type: 'unique', question: "Le montant des frais des commerciaux est :", options: ['5964,60 €', '8062 €', '4772 €', '14026,60 €'], bonne: 0 },
+      { type: 'unique', question: "Le budget total de la participation est :", options: ['14026,60 €', '8062 €', '5964,60 €', '13000 €'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque élément à la bonne catégorie.",
+      etiquettes: ['Coût du stand', 'Frais des commerciaux', 'Rendre compte'],
+      zones: [
+        { libelle: 'Stand parapluie 12 m2', etiquetteIndex: 0 },
+        { libelle: 'Kakémonos', etiquetteIndex: 0 },
+        { libelle: 'Jonc de mer', etiquetteIndex: 0 },
+        { libelle: 'Brochures', etiquetteIndex: 0 },
+        { libelle: 'Nuits d\'hôtel (190,95 €)', etiquetteIndex: 1 },
+        { libelle: 'Forfaits repas (15 € / 25 €)', etiquetteIndex: 1 },
+        { libelle: 'Indemnité kilométrique', etiquetteIndex: 1 },
+        { libelle: 'Billet de train d\'Hélène', etiquetteIndex: 1 },
+        { libelle: 'E-mail au tuteur', etiquetteIndex: 2 },
+        { libelle: 'Budget total 14026,60 €', etiquetteIndex: 2 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const HYDRAO_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Preparez la vente du pommeau HYDRAO Aloe : realisez sa fiche produit (caracteristiques techniques, commerciales et psychologiques), identifiez l'image de marque et les mobiles d'achat (SONCAS), puis construisez les arguments avec la methode C.A.P.",
+    contexte:
+      "Lorsque vous serez a la Foire de Paris, M. Della-Monica souhaite que soit mis en valeur la derniere creation phare de l'entreprise, le pommeau de douche HYDRAO Aloe. Il vous demande donc de realiser la fiche produit de ce pommeau de douche afin de pouvoir parler du produit lorsque vous serez sur le stand.",
+    documents: [
+      { numero: 1, titre: "Fiche produit - Pommeau de douche HYDRAO Aloe", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m3/logo-hydrao.png', couleurHeader: '#FFFFFF',
+          menu: ['BOUTIQUE', 'NOTRE CONCEPT', 'BESOIN D\'AIDE ?', 'HYDRAO', 'POUR LES PROS'],
+          sections: [
+            { type: 'ficheProduitWeb', badge: 'DISPONIBLE', nom: 'POMMEAU DE DOUCHE ALOE', accroche: 'Douche a main design, ecologique, economique et connectee', prix: '69,90 €', prixDetail: 'TTC Dont 0,14 € d\'eco-participation', image: '/docs/hydrao-m3/m3_pommeau.jpg', couleurs: ['CHROME', 'NOIR MAT'], note: '4.6/5', avis: 'Voir les avis (45)', arguments: [
+              'Moyenne de 20 L par douche (contre 60 L en France)',
+              'Apercu de la consommation d\'eau grace aux leds colorees',
+              'Confort de douche 3 jets',
+              '130€ d\'economies par an/personne (electricite et eau)',
+              'Application mobile de suivi de consommation',
+            ] },
+            { type: 'sousTitre', texte: 'Caracteristiques techniques' },
+            { type: 'tableau', entetes: ['Caracteristique', 'Detail'], lignes: [
+              ['Type de jet', 'Multi-jet - 3 positions: pluie, massage, mixte'],
+              ['Debit (entre 2,5 et 5 Bar)', '6,6L/min avec accessoire limiteur ET 9L/min sans accessoire limiteur'],
+              ['Economies d\'eau et d\'energie grace au debit ecologique HYDRAO', '45% par rapport a un pommeau de douche standard (12L/min)'],
+              ['Economies d\'eau et d\'energie grace a la pedagogie HYDRRAO', '+20% de reduction de consommation'],
+              ['Pression minimale requise pour HYDRAO', '0,8 bars en sortie de robinet'],
+              ['Nombre de LEDs', '5 LEDs indiquant les changements de seuils de consommation'],
+              ['Accessoires fournis', 'Joint grillage + limiteur'],
+              ['Compatibilite', 'Universelle (flexibles 1/2")'],
+              ['Finition chromee', 'Superieure (3 couches de chromage)'],
+              ['Dimensions (Hauteur/Diametre)', '220 mm/120 mm'],
+              ['Diffuseur anti-calcaire', 'Oui (en silicone, a picots souples)'],
+              ['Entretien anti-calcaire', 'Nettoyage avec du vinaigre blanc 2 a 4 fois par an selon la durete de l\'eau'],
+              ['Connecte (Bluetooth Low Energy 4.0)', 'Oui'],
+              ['Technologie brevetee', 'Oui'],
+              ['Certifications', 'Watersense, ACS, FCC et CE'],
+              ['Indice de Protection (IP)', 'IP65 (protection contre l\'humidite)'],
+              ['Garantie', '2 ans'],
+            ] },
+            { type: 'sousTitre', texte: 'Dimensions et poids' },
+            { type: 'tableau', entetes: ['Dimensions', 'Poids'], lignes: [['Hauteurs : 220 mm - Diametre : 120 mm', 'Pommeau : 250g']] },
+            { type: 'sousTitre', texte: 'Couleurs et materiaux' },
+            { type: 'tableau', entetes: ['Coloris', 'Matiere'], lignes: [['Chrome / Noir Mat / Nickel', 'ABS']] },
+            { type: 'sousTitre', texte: 'Caracteristiques pommeaux' },
+            { type: 'tableau', entetes: ['Multijet', 'Debit'], lignes: [['3 positions : Pluie / Massage / Mixte', '6,6L/min avec limiteur de debit (accessoire foumi) / 9L/min sans limiteur de debit']] },
+            { type: 'paragraphe', texte: 'Diffuseur anticalcaire : Picots souples en silicone.' },
+            { type: 'sousTitre', texte: 'Contenu du pack' },
+            { type: 'tableau', entetes: ['Contenu', ''], lignes: [['Pommeau Aloe, Limiteur de debit, Notice', 'Joint grillage, Sac debimetre']] },
+            { type: 'sousTitre', texte: 'Economies' },
+            { type: 'tableau', entetes: ['Grace au debit ecologique', 'Grace a la pedagogie'], lignes: [['25% avec un debit a 9L/min par rapport a un pommeau standard (12L/min) ; 45% avec un debit a 6,6L/min par rapport a un pommeau standard (12L/min)', '15 a 20% de reduction']] },
+            { type: 'sousTitre', texte: 'Installation & Entretien' },
+            { type: 'tableau', entetes: ['Pas de vis universel', 'Entretien anticalcaire'], lignes: [["S'adapte au format standard flexible 1/2\"", "Nettoyage avec du vinaigre blanc 2 a 4 fois par an selon la durete de l'eau"]] },
+            { type: 'sousTitre', texte: 'Technologies' },
+            { type: 'tableau', entetes: ['Caracteristique', 'Detail'], lignes: [
+              ['Nombre de LEDs', '5 LEDs indiquant les changement de seuils de consommation'],
+              ['Auto Alimente', 'Grace a une turbine activee par le flux de l\'eau'],
+              ['Pression minimal requise pour alimenter le pommeau', '0.8 bars en sortie de robinet soit environ 4.5L/min de debit sortant'],
+              ['Technologie Brevetee', 'Oui'],
+              ['Indice de Protection', 'IP65 (protection contre l\'humidite)'],
+            ] },
+            { type: 'sousTitre', texte: 'Connectivite' },
+            { type: 'tableau', entetes: ['Bluetooth', 'Application'], lignes: [['Low Energy 4.0', 'IOS / Android']] },
+            { type: 'sousTitre', texte: 'Compatibilite smartphone' },
+            { type: 'tableau', entetes: ['Modeles incompatibles', ''], lignes: [
+              ['Xiaomi mi 9, Xiaomi A2 Lite, Xiaomi mi A1, Xiaomi Redmi 9, Xiaomi Redmi Note 8, Xiaomi Redmi Note 8 Pro', 'Samsung A8 2018, Samsung A20 e, Samsung A41 (SM-A415F), Oppo Reno 2Z (sous Android 10)'],
+            ] },
+            { type: 'sousTitre', texte: 'Certifications' },
+            { type: 'tableau', entetes: ['Certifications', ''], lignes: [['ACS, CE, WRAS', 'Watersense, FCC, Watermark']] },
+            { type: 'servicesIcones', services: [
+              { icone: 'livraison', titre: 'Livraison gratuite', detail: 'Partout en france, sous 4 jours ouvres' },
+              { icone: 'garantie', titre: 'Garantie satisfait ou rembourse', detail: 'Retour sous 15 jours' },
+              { icone: 'serviceclient', titre: 'Service client francais' },
+              { icone: 'paiement', titre: 'Paiement securise', detail: 'Carte bancaire, PayPal' },
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 2, titre: "HYDRAO, le pommeau de douche ecologique et connecte", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m3/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['BOUTIQUE', 'NOTRE CONCEPT', 'BESOIN D\'AIDE ?', 'HYDRAO', 'POUR LES PROS'],
+          sections: [
+            { type: 'servicesIcones', services: [
+              { icone: 'livraison', titre: 'Livraison', detail: '2 a 4 jours ouvres' },
+              { icone: 'garantie', titre: 'Garantie 2 ans', detail: "Service client a l'ecoute et reactif" },
+              { icone: 'paiement', titre: 'Paiement securise', detail: 'Carte bancaire / PayPal' },
+              { icone: 'garantie', titre: 'Satisfait ou rembourse', detail: 'Retour sous 15 jours' },
+            ] },
+            { type: 'article', titre: 'Notre equipe', paragraphes: ["L'entreprise est portee par une equipe dynamique et pleine de talents Une equipe d'une quinzaine de collaborateurs passionnes par les defis ecologiques, en particulier dans le domaine de l'eau"], image: '/docs/hydrao-m3/m3_equipe.jpg' },
+            { type: 'titre', texte: 'HYDRAO le pommeau de douche ecologique et connecte' },
+            { type: 'image', src: '/docs/hydrao-m3/m3_video.jpg', alt: 'Video concept HYDRAO Pommeau & Appli', largeur: 360 },
+            { type: 'puces', items: [
+              'Avec HYDRAO, economiser l\'eau & l\'energie devient un jeu d\'enfant, jusqu\'a -70% par douche.',
+              'Achat rentabilise en 6 mois.',
+              'Simple et intuitif, pour apprendre a tous a economiser l\'eau & l\'energie sans contraintes.',
+              'Pour preserver nos ressources precieuses et votre budget eau/ energie !',
+            ] },
+            { type: 'titre', texte: "La pedagogie ludique et intuitive d'HYDRAO" },
+            { type: 'paragraphe', texte: "Un jeu de lumiere vous indique le volume d'eau consomme en temps reel." },
+            { type: 'image', src: '/docs/hydrao-m3/m3_leds.jpg', alt: '0L vert, 10L bleu, 20L violet, 30L rouge, 40L clignotant', largeur: 620 },
+            { type: 'paragraphe', texte: "C'est vous qui decidez quand arreter. Et c'est simple pour toute la famille. Que ce soit pour eduquer vos enfants a etre autonome et a respecter les ressources de la planete ou pour eviter que le dernier leve prenne une douche froide le matin, HYDRAO vous informe en temps reel de votre consommation d'eau." },
+            { type: 'sousTitre', texte: "La douche Hydrao, c'est : 130€ D'ECONOMIES constatees, par an par personne" },
+            { type: 'paragraphes', textes: [
+              "Une douche, c'est en moyenne 60L d'eau (chiffres de l'ADEME). Les utilisateurs d'HYDRAO Aloe, eux, utilisent 18L d'eau par douche.",
+              "Pour parvenir a ce resultat : HYDRAO associe conception basse consommation ET pedagogie lumineuse.",
+            ] },
+            { type: 'image', src: '/docs/hydrao-m3/m3_graphes.jpg', alt: 'Conso par douche : 60L moyenne nationale vs 18L Hydrao Aloe. 0,37€ d\'economie par douche : 20cts pour le chauffage, 17cts pour l\'eau.', largeur: 460 },
+          ],
+        } },
+      ] },
+      { numero: 3, titre: "Les mobiles d'achat", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m3/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: "Les mobiles d'achat (SONCASE)" },
+            { type: 'tableau', entetes: ['Typologie', 'Exemples'], lignes: [
+              ['S comme Securite', 'Produit solide, fiable, robuste, garantie, de qualite'],
+              ['O comme Orgueil', 'Produit prestigieux, de marque, qui permet de se distinguer des autres'],
+              ['N comme Nouveaute', 'Produit recent, a la mode, innovant, moderne'],
+              ['C comme Confort', "Produit pratique, facile d'utilisation, efficace"],
+              ['A comme Argent', 'Paiement en plusieurs fois, produit economique, en promotion'],
+              ['S comme Sympathie', "Plaisir procure par l'achat, attirance pour une couleur, forme particuliere"],
+              ['E comme Environnement', 'Produit durable, ecologique'],
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 4, titre: "Comment convaincre le client", texte: [
+        { docRiche: {
+          site: 'www.hydrao.fr', logo: '/docs/hydrao-m3/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: 'Comment convaincre le client' },
+            { type: 'paragraphe', texte: "Lorsque vous arrivez a l'etape de l'argumentation vous devez respecter la methode C.A.P. pour construire vos arguments. En integrant les mobiles d'achat emis." },
+            { type: 'sousTitre', texte: "La construction d'un argument avec les mobiles d'achat et la methode C.A.P." },
+            { type: 'tableau', entetes: ['Mobile d\'achat', 'Caracteristique', 'Avantage', 'Preuve'], lignes: [
+              ['Securite / Orgueil / Nouveaute / Confort / Argent / Sympathie / Environnement', '', '', ''],
+            ] },
+            { type: 'sousTitre', texte: 'Exemple - Le client' },
+            { type: 'paragraphe', texte: "\"Je recherche une voiture de deuxieme main, avec laquelle je pourrai facilement calculer mes trajets et a un bon prix parce qu'avec la conjoncture actuelle je ne veux pas me ruiner pour une voiture.\"" },
+            { type: 'tableau', entetes: ['Mobile', 'Caracteristique', 'Avantage', 'Preuve'], lignes: [
+              ['Confort', 'Commande vocale du GPS', 'Pas besoin de reglages manuel', 'Regardez comment je fais !'],
+              ['Argent', '99€ par mois', 'Un impact faible sur votre budget', 'Tableau de financement'],
+            ] },
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Realiser la fiche produit (technique, commerciale, psychologique).",
+      "Identifier l'image de marque d'une entreprise.",
+      "Reperer les mobiles d'achat (methode SONCAS/SONCASE).",
+      "Construire des arguments de vente avec la methode C.A.P.",
+    ],
+    competence: {
+      groupe: 'Groupe de competences 4B',
+      intitule: 'Mettre en oeuvre une operation de prospection',
+      detail: "C.4B.3 - Mettre en oeuvre une operation de prospection.",
+    },
+    activites: [
+      {
+        titre: "Activite 1 - La fiche produit",
+        contexte: "Vous realisez la fiche produit du pommeau HYDRAO Aloe pour la Foire de Paris.",
+        questions: [
+          { numero: 1, consigne: "Réalisez la fiche produit du pommeau HYDRAO Aloé : relevez les caractéristiques techniques, commerciales et psychologiques (SONCAS) en complétant les trois onglets de l'annexe 1.", ressources: "Consulter le document 1 (fiche produit), compléter les 3 onglets de l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activite 2 - Les mobiles d'achat",
+        contexte: "Vous etudiez l'image de marque et les mobiles d'achat mis en avant par Hydrao.",
+        questions: [
+          { numero: 2, consigne: "Dites, selon vous, quelle image renvoie aux clients la marque HYDRAO (image de vieux, jeune...), puis retrouvez les mobiles d'achat mis en avant par Hydrao.", ressources: "Lire les documents 2 et 3, completer l'annexe 4.", annexeId: 'annexe4' },
+        ],
+      },
+      {
+        titre: "Activite 3 - L'argumentation",
+        contexte: "Vous preparez les arguments a presenter aux prospects sur le stand.",
+        questions: [
+          { numero: 3, consigne: "Construisez les arguments pour chaque mobile. Replacez tous les mobiles d'achat dans le tableau, trouvez dans l'annexe 1 la caracteristique qui lui correspond, puis l'avantage et la preuve qui s'y rapporte.", ressources: "Lire le document 4, completer l'annexe 5.", annexeId: 'annexe5' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'ficheproduitpro', id: 'annexe1', titre: "Annexe 1 - La fiche produit du pommeau de douche Aloé",
+        entete: "Logiciel PIM - Fiche produit", produit: "Pommeau de douche HYDRAO Aloé", reference: "REF. ALOE-001", image: '/docs/hydrao-m3/m3_pommeau.jpg',
+        onglets: [
+          { id: 'tech', label: 'Caractéristiques techniques', lignes: [
+            { id: 't1', libelle: 'Débit' },
+            { id: 't2', libelle: "Économies d'eau et d'énergie grâce au débit écologique" },
+            { id: 't3', libelle: "Économies d'eau et d'énergie grâce au débit pédagogique" },
+            { id: 't4', libelle: 'Nombre de LED' },
+            { id: 't5', libelle: 'Accessoires fournis' },
+            { id: 't6', libelle: 'Compatibilité' },
+            { id: 't7', libelle: 'Finition chromée' },
+            { id: 't8', libelle: 'Dimensions (Hauteur/Diamètre)' },
+            { id: 't9', libelle: 'Entretien anticalcaire' },
+            { id: 't10', libelle: 'Type de connexion' },
+          ] },
+          { id: 'com', label: 'Caractéristiques commerciales', lignes: [
+            { id: 'c1', libelle: 'Prix' },
+            { id: 'c2', libelle: 'Certification' },
+            { id: 'c3', libelle: 'Garantie pour le produit' },
+            { id: 'c4', libelle: 'Garantie pour le client' },
+            { id: 'c5', libelle: 'Livraison' },
+          ] },
+          { id: 'psy', label: 'Techniques psychologiques', mode: 'soncas', colonneMenu: 'SONCAS',
+            options: ['Sécurité', 'Orgueil', 'Nouveauté', 'Confort', 'Argent', 'Sympathie', 'Environnement'],
+            lignes: [
+              { id: 's1', libelle: "Responsabilisez petits et grands et diminuez votre consommation d'eau chaude jusqu'à 70%." },
+              { id: 's2', libelle: "Économisez en moyenne 130€ par personne (par an) en eau & énergie. Soit 520€/an pour une famille de 4 personnes !" },
+              { id: 's3', libelle: "HYDRAO change de couleur en fonction du volume d'eau consommé & vous apprend à consommer la juste quantité d'eau pour stopper le gaspillage de façon simple." },
+              { id: 's4', libelle: "HYDRAO a eu les certifications Watersense - ACS - FCC - CE" },
+              { id: 's5', libelle: "Grâce à son application dédiée, HYDRAO est le premier pommeau de douche connecté en Bluetooth pour suivre sa consommation" },
+            ] },
+        ] },
+      { type: 'soncaspro', id: 'annexe4', titre: "Annexe 4 - Identification des mobiles d'achat d'Hydrao",
+        entete: "Argumenteur SONCAS - Identification des mobiles",
+        options: ['Sécurité', 'Orgueil', 'Nouveauté', 'Confort', 'Argent', 'Sympathie', 'Environnement'],
+        lignes: [
+          { id: 's1', affirmation: "Responsabilisez petits et grands et diminuez votre consommation d'eau chaude jusqu'à 70%." },
+          { id: 's2', affirmation: "Économisez en moyenne 130€ par personne (par an) en eau & énergie. Soit 520€/an pour une famille de 4 personnes !" },
+          { id: 's3', affirmation: "HYDRAO change de couleur en fonction du volume d'eau consommé & vous apprend à consommer la juste quantité d'eau pour stopper le gaspillage de façon simple." },
+          { id: 's4', affirmation: "HYDRAO a eu les certifications Watersense - ACS - FCC - CE" },
+          { id: 's5', affirmation: "Grâce à son application dédiée, HYDRAO est le premier pommeau de douche connecté en Bluetooth pour suivre sa consommation" },
+        ] },
+      { type: 'cap', id: 'annexe5', titre: "Annexe 5 - Construction des arguments à présenter pendant la foire", nbLignes: 5 },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Caractéristiques techniques (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 10,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Caractéristique', 'Réponse'], lignes: [
+          ['Débit', '6,6 L/min avec accessoire limiteur ET 9 L/min sans accessoire limiteur'],
+          ["Économies grâce au débit écologique", '45% par rapport à un pommeau de douche standard (12L/min)'],
+          ["Économies grâce au débit pédagogique", '+ 20% de réduction de consommation'],
+          ['Nombre de LED', '5 LED indiquant les changements de seuil de consommation'],
+          ['Accessoires fournis', 'Joint grillagé + limiteur'],
+          ['Compatibilité', 'Universel (flexible ½)'],
+          ['Finition chromée', 'Supérieur (3 couches de chromage)'],
+          ['Dimensions (Hauteur/Diamètre)', '220 mm / 120 mm'],
+          ['Entretien anticalcaire', "Nettoyage avec du vinaigre blanc 2 à 4 fois par an selon la dureté de l'eau"],
+          ['Type de connexion', 'Bluetooth Low Energy'],
+        ] } },
+      { intitule: "Caractéristiques commerciales (annexe 2).", documents: ['Document 1', 'Annexe 2'], bareme: 5,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Caractéristique', 'Réponse'], lignes: [
+          ['Prix', '69,90 € TTC'],
+          ['Certification', 'Watersense – ACS – FCC – CE'],
+          ['Garantie pour le produit', '2 ans'],
+          ['Garantie pour le client', 'Satisfait ou remboursé'],
+          ['Livraison', 'Partout en France sous 4 jours ouvrés'],
+        ] } },
+      { intitule: "Techniques psychologiques (annexe 3).", documents: ['Document 1', 'Annexe 3'], bareme: 5,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Affirmation', 'SONCAS'], lignes: [
+          ["« ...diminuez votre consommation d'eau chaude jusqu'à 70%. »", 'Environnement'],
+          ["« Économisez en moyenne 130€ par personne (par an)... »", 'Argent'],
+          ["« HYDRAO change de couleur... vous apprend à consommer la juste quantité d'eau... »", 'Confort'],
+          ["« HYDRAO a eu les certifications Watersense – ACS – FCC – CE »", 'Sécurité'],
+          ["« ...le premier pommeau de douche connecté en Bluetooth... »", 'Nouveauté'],
+        ] } },
+      { intitule: "Image de marque et mobiles d'achat (annexe 4).", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 6,
+        reponse: "Image de marque : entreprise dynamique. Mobiles d'achat mis en avant (sans justification demandée) : Sécurité (les certifications) ; Nouveauté (« Connecté (bluetooth) ») ; Confort (« Simple et intuitif ») ; Argent (« Achat rentabilisé en 6 mois », « 130€ d'économie », « 0,37cts d'économie par douche ») ; Environnement (« Économiser eau et énergie »)." },
+      { intitule: "Construction des arguments (annexe 5).", documents: ['Document 4', 'Annexe 5'], bareme: 10,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Mobile', 'Caractéristiques', 'Avantages', 'Preuves'], lignes: [
+          ['Environnement', 'Pommeau HYDRAO', "Diminution d'eau jusqu'à 70%", 'Voir histogramme (4e lien)'],
+          ['Argent', '-130 € par personne et par an', 'Ça permet de faire des économies', 'Voir graphique (4e lien)'],
+          ['Confort', '5 LED indiquant les changements de seuil de consommation', 'Pédagogie ludique et intuitive', 'Voir couleur (5e lien)'],
+          ['Sécurité', 'Watersense – ACS – FCC – CE', 'Produit de qualité', 'Montrer les caractéristiques au client'],
+          ['Nouveauté', 'Connecté (bluetooth)', "Informer en temps réel de la consommation d'eau", 'Voir phrase (5e lien)'],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "Les caractéristiques du produit et l'argumentation",
+    proposition: ['Fiche produit', 'Caractéristique', 'Mobile d\'achat', 'SONCAS', 'Méthode CAP', 'Argument'],
+    racine: {
+      id: 'racine',
+      texte: "Mission 3 - Produit et argumentation",
+      enfants: [
+        { id: 'pr', texte: "La fiche produit", enfants: [
+          { id: 'p-1', texte: null, reponse: 'Fiche produit' },
+          { id: 'p-2', texte: null, reponse: 'Caractéristique' },
+          { id: 'p-3', texte: null, reponse: 'Mobile d\'achat' },
+        ] },
+        { id: 'ar', texte: "L'argumentation", enfants: [
+          { id: 'a-1', texte: null, reponse: 'SONCAS' },
+          { id: 'a-2', texte: null, reponse: 'Méthode CAP' },
+          { id: 'a-3', texte: null, reponse: 'Argument' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Réaliser une fiche produit", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas relever les caractéristiques d'un produit." },
+        { niveau: 'debrouille', description: "Je relève les caractéristiques techniques." },
+        { niveau: 'averti', description: "Je distingue caractéristiques techniques, commerciales et psychologiques." },
+        { niveau: 'expert', description: "Je réalise une fiche produit complète et exploitable en vente." },
+      ] },
+      { id: 'c2', intitule: "Argumenter avec SONCAS et CAP", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les mobiles d'achat." },
+        { niveau: 'debrouille', description: "Je repère quelques mobiles d'achat (SONCAS)." },
+        { niveau: 'averti', description: "J'associe une affirmation à un mobile d'achat." },
+        { niveau: 'expert', description: "Je construis un argument complet avec la méthode C.A.P." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Fiche produit", definition: "Document qui recapitule les caracteristiques d'un produit." },
+      { terme: "Caracteristique technique", definition: "Element mesurable du produit (debit, dimensions, LED...)." },
+      { terme: "Caracteristique commerciale", definition: "Element lie a la vente (prix, garantie, livraison)." },
+      { terme: "Mobile d'achat", definition: "Raison psychologique qui pousse un client a acheter." },
+      { terme: "SONCAS(E)", definition: "Securite, Orgueil, Nouveaute, Confort, Argent, Sympathie, (Environnement)." },
+      { terme: "Methode C.A.P.", definition: "Caracteristique, Avantage, Preuve : structure d'un argument de vente." },
+      { terme: "Argument", definition: "Caracteristique du produit traduite en avantage pour le client, avec une preuve." },
+      { terme: "Preuve", definition: "Element qui demontre l'avantage annonce (chiffre, demonstration, document)." },
+      { terme: "Image de marque", definition: "Perception qu'ont les clients d'une entreprise (ici : dynamique)." },
+      { terme: "Debit ecologique", definition: "Debit reduit du pommeau qui limite la consommation d'eau." },
+    ],
+    flashcards: [
+      { recto: "Quel est le débit du pommeau Aloé ?", verso: "6,6 L/min avec limiteur, 9 L/min sans limiteur." },
+      { recto: "Quel est le prix du pommeau Aloé ?", verso: "69,90 € TTC." },
+      { recto: "Quelle est la garantie du produit ?", verso: "2 ans." },
+      { recto: "Combien de LED possède le pommeau ?", verso: "5 LED indiquant les changements de seuil de consommation." },
+      { recto: "Que signifie SONCAS(E) ?", verso: "Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie, (Environnement)." },
+      { recto: "Que signifie la méthode CAP ?", verso: "Caractéristique, Avantage, Preuve." },
+      { recto: "Quelle image de marque renvoie Hydrao ?", verso: "Une entreprise dynamique." },
+      { recto: "Quel mobile pour « connecté en Bluetooth » ?", verso: "Nouveauté." },
+      { recto: "Quel mobile pour « 130€ d'économie » ?", verso: "Argent." },
+      { recto: "Quel mobile pour les certifications Watersense-ACS-FCC-CE ?", verso: "Sécurité." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le débit du pommeau avec limiteur est :", options: ['6,6 L/min', '9 L/min', '12 L/min', '60 L/min'], bonne: 0 },
+      { type: 'unique', question: "Le prix du pommeau Aloé est :", options: ['69,90 € TTC', '59,90 € TTC', '79,90 € TTC', '130 € TTC'], bonne: 0 },
+      { type: 'unique', question: "La garantie produit est de :", options: ['2 ans', '1 an', '5 ans', '6 mois'], bonne: 0 },
+      { type: 'unique', question: "Le pommeau possède :", options: ['5 LED', '3 LED', '7 LED', '1 LED'], bonne: 0 },
+      { type: 'unique', question: "Que signifie le C de CAP ?", options: ['Caractéristique', 'Client', 'Confort', 'Certification'], bonne: 0 },
+      { type: 'unique', question: "« Connecté en Bluetooth » est un mobile :", options: ['Nouveauté', 'Argent', 'Sécurité', 'Confort'], bonne: 0 },
+      { type: 'unique', question: "« 130€ d'économie » est un mobile :", options: ['Argent', 'Environnement', 'Orgueil', 'Sympathie'], bonne: 0 },
+      { type: 'unique', question: "Les certifications relèvent du mobile :", options: ['Sécurité', 'Nouveauté', 'Confort', 'Argent'], bonne: 0 },
+      { type: 'unique', question: "L'image de marque d'Hydrao est :", options: ['Dynamique', 'Vieillissante', 'Luxueuse', 'Bas de gamme'], bonne: 0 },
+      { type: 'unique', question: "« Économiser eau et énergie » est un mobile :", options: ['Environnement', 'Argent', 'Sécurité', 'Orgueil'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque affirmation à son mobile d'achat (SONCAS).",
+      etiquettes: ['Sécurité', 'Nouveauté', 'Confort', 'Argent', 'Environnement'],
+      zones: [
+        { libelle: 'Certifications Watersense-ACS-FCC-CE', etiquetteIndex: 0 },
+        { libelle: 'Produit de qualité', etiquetteIndex: 0 },
+        { libelle: 'Connecté en Bluetooth', etiquetteIndex: 1 },
+        { libelle: 'Premier pommeau connecté', etiquetteIndex: 1 },
+        { libelle: 'Simple et intuitif', etiquetteIndex: 2 },
+        { libelle: '5 LED pédagogiques', etiquetteIndex: 2 },
+        { libelle: '130€ d\'économie', etiquetteIndex: 3 },
+        { libelle: 'Achat rentabilisé en 6 mois', etiquetteIndex: 3 },
+        { libelle: 'Économiser eau et énergie', etiquetteIndex: 4 },
+        { libelle: 'Diminution d\'eau jusqu\'à 70%', etiquetteIndex: 4 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const HYDRAO_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez-vous aux questions et affirmations des prospects sur la garantie : maîtrisez la garantie légale de conformité et l'extension de garantie, répondez aux questions de M. Della-Monica (annexe 1), puis validez des affirmations en Vrai/Faux justifié (annexe 2).",
+    contexte:
+      "Votre tuteur souhaite que vous vous prépariez aux questions éventuelles et aux affirmations de prospects à propos de la garantie. En effet, cette étape de proposition est importante pour l'entreprise car elle permet de faire augmenter le panier moyen.",
+    documents: [
+      { numero: 1, titre: "La garantie", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m4/logo-hydrao.png', couleurHeader: '#FFFFFF',
+          menu: ['BOUTIQUE', 'NOTRE CONCEPT', 'GARANTIES', 'BESOIN D\'AIDE ?', 'POUR LES PROS'],
+          sections: [
+            { type: 'titre', texte: "Protégez votre pommeau HYDRAO" },
+            { type: 'paragraphes', textes: [
+              "Hydrao vous propose une extension de garantie pour couvrir votre produit, et pour cela, de souscrire l'une des formules suivantes :",
+              "De couvrir votre produit contre le risque de Panne à l'issue de la garantie légale de conformité (soit 2 ans à compter de la date d'achat ou de livraison),",
+              "et/ou de couvrir vos biens contre le risque de Dommage matériel accidentel ; Vous avez le choix entre 2 formules :",
+            ] },
+            { type: 'tableau', entetes: ['Couverture', 'FORMULE 1 - Panne et Reprise', 'FORMULE 2 - Panne et Dommage Matériel Accidentel'], lignes: [
+              ['Panne', '✓', '✓'],
+              ['Reprise', '✓', '✓'],
+              ['Dommage matériel accidentel', '', '✓'],
+              ['Assistance', '✓', '✓'],
+            ] },
+            { type: 'paragraphe', texte: "Vous pouvez choisir de vous couvrir pour une durée de 1, 2 ou 3 ans selon la formule choisie :" },
+            { type: 'paragraphes', textes: [
+              "La garantie « Panne » prend effet à la fin de la garantie légale de conformité, qui dure 24 mois courant à partir de la date d'achat ou de livraison du produit. Après les 24 mois commence la garantie de 1, 2 ou 3 ans, selon l'option que vous avez choisie lors de l'adhésion.",
+              "La garantie « Dommage matériel accidentel » prend effet dès la date d'achat ou de livraison du produit. La garantie dure pendant une période de 1, 2 ou 3 ans, selon l'option que vous avez choisie lors de l'adhésion.",
+            ] },
+            { type: 'sousTitre', texte: "Les avantages" },
+            { type: 'paragraphes', textes: [
+              "Aucun frais : Nous prenons en charge l'ensemble des frais de réparation (pièces, main d'œuvre et déplacement) ou d'échange, ainsi que tous les frais liés au transport du produit.",
+            ] },
+            { type: 'sousTitre', texte: "Réparation, Échange à neuf ou Remboursement" },
+            { type: 'puces', items: [
+              "Pommeaux de douche - En cas de panne : nous réparons votre appareil ou s'il n'est pas réparable, nous vous contactons pour vous proposer un appareil équivalent.",
+              "Pommeaux de douche - En cas de casse : nous réparons votre appareil ou s'il n'est pas réparable, nous émettons un bon d'achat valable un an sur le site Hydrao.fr",
+              "Flexible - En cas de casse : nous vous contactons pour vous proposer un produit équivalent.",
+            ] },
+            { type: 'paragraphes', textes: [
+              "Service rapide : Nous diagnostiquons votre produit sous 48h et procédons ensuite à sa réparation, son échange ou son remboursement.",
+              "Assistance illimitée 7 jours sur 7 pour les produits neufs : Un problème d'installation de votre appareil ? De configuration ? Connectez-vous sur https://www.hydrao.com/fr/assistance/sav pour accéder à votre SAV ou au 0 800 81 15 15.",
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 2, titre: "Prix de l'extension de garantie", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m4/logo-hydrao.png', couleurHeader: '#0090D4',
+          menu: ['BOUTIQUE', 'NOTRE CONCEPT', 'GARANTIES', 'BESOIN D\'AIDE ?', 'POUR LES PROS'],
+          sections: [
+            { type: 'titre', texte: "Tarifs de l'extension de garantie" },
+            { type: 'paragraphe', texte: "Choisissez la formule et la durée de couverture adaptées à votre besoin." },
+            { type: 'tableau', entetes: ['', '1 an', '2 ans', '3 ans'], lignes: [
+              ['Formule 1', '19,90 €', '29,90 €', '39,90 €'],
+              ['Formule 2', '44,90 €', '54,90 €', '64,90 €'],
+            ] },
+            { type: 'servicesIcones', services: [
+              { icone: 'garantie', titre: 'Extension jusqu\'à 3 ans', detail: 'En complément de la garantie légale' },
+              { icone: 'serviceclient', titre: 'Assistance 7j/7', detail: 'Produits neufs' },
+              { icone: 'livraison', titre: 'Aucun frais', detail: 'Pièces, main d\'œuvre, transport' },
+              { icone: 'paiement', titre: 'Paiement sécurisé', detail: 'Carte bancaire, PayPal' },
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 3, titre: "La garantie légale", texte: [
+        { docRiche: {
+          site: 'www.service-public.fr', logo: '/docs/hydrao-m4/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: "La garantie légale de conformité" },
+            { type: 'paragraphes', textes: [
+              "Lorsque l'on décide d'acheter un produit, il est indispensable que celui-ci fonctionne et corresponde à nos attentes.",
+              "Le produit doit ainsi être à la fois conforme à la description qui en est faite par le vendeur, et à l'usage que l'on peut attendre de lui.",
+              "De ce fait, la loi a prévu une garantie permettant de protéger le consommateur en cas de défaut de conformité de la chose vendue.",
+              "Si l'acheteur constate un tel défaut, il peut faire jouer la garantie légale de conformité dans les deux ans à compter de la date de réception de l'appareil et obtenir la réparation, le remplacement ou le remboursement du bien défectueux. Point positif pour le consommateur : il n'a pas à prouver le défaut de conformité.",
+            ] },
+          ],
+        } },
+      ] },
+      { numero: 4, titre: "L'extension de garantie ou garantie conventionnelle", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m4/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: "L'extension de garantie ou garantie conventionnelle" },
+            { type: 'paragraphes', textes: [
+              "Au bout de ces deux ans, la garantie expire. Et le produit acheté n'est plus couvert.",
+              "C'est là que l'extension de garantie aussi appelée « garantie commerciale » ou « contractuelle » entre en jeu. Elle reprend les principales caractéristiques de la garantie légale de conformité et couvre la panne de l'appareil : réparation, coût des pièces de rechange, main d'œuvre voire son remplacement ou son remboursement.",
+              "L'extension de garantie est facultative et payante (elle peut toutefois être proposée gratuitement, mais c'est plus rare) contrairement à la garantie légale de conformité qui est gratuite et obligatoire.",
+            ] },
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Distinguer la garantie légale de conformité et l'extension de garantie.",
+      "Connaître la durée, le coût et le contenu de chaque garantie.",
+      "Répondre aux questions d'un prospect sur la garantie.",
+      "Valider ou réfuter des affirmations sur la garantie et les justifier.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 1',
+      intitule: 'Assurer la vente de produits et de services',
+      detail: "C.1.3 - Assurer l'exécution de la vente.",
+    },
+    activites: [
+      {
+        titre: "Activité 1 - Les questions de M. Della-Monica",
+        contexte: "Votre tuteur veut vérifier que vous maîtrisez la notion de garantie et vous interroge sur les documents qu'il vous a remis.",
+        questions: [
+          { numero: 1, consigne: "Votre tuteur veut vérifier que vous maîtrisez la notion de garantie et vous interroge sur les documents qu'il vous a remis.", ressources: "Lire les documents 1, 2, 3 et 4, compléter l'annexe 1.", annexeId: 'annexe1' },
+        ],
+      },
+      {
+        titre: "Activité 2 - Vrai ou faux",
+        contexte: "Vous vous préparez aux affirmations des prospects sur la garantie.",
+        questions: [
+          { numero: 2, consigne: "Pour chaque affirmation, cochez si elle est vraie ou fausse puis justifiez votre réponse.", ressources: "Lire les documents 1, 2, 3 et 4, compléter l'annexe 2.", annexeId: 'annexe2' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'faqpro', id: 'annexe1', titre: "Annexe 1 - Les questions de M. Della-Monica",
+        entete: "Base de connaissances SAV - Garanties HYDRAO",
+        sections: [
+          { id: 'legale', titre: 'La garantie légale', questions: [
+            { id: 'q1', question: "« Combien de temps dure la garantie prévue par la loi ? »" },
+            { id: 'q2', question: "« A partir de quel moment commence cette garantie légale ? »" },
+          ] },
+          { id: 'conv', titre: 'La garantie conventionnelle', questions: [
+            { id: 'q3', question: "« Combien de temps maximum un client peut-il augmenter la garantie de son produit acheté au-delà de la garantie légale ? »" },
+            { id: 'q4', question: "« Quels sont les 2 types de défauts couverts par l'extension de garantie ? »" },
+            { id: 'q5', question: "« Quelles sont les 3 solutions proposées en cas de défaut du produit ? »" },
+            { id: 'q6', question: "« Quelles sont les solutions d'assistance ? »" },
+            { id: 'q7', question: "« Combien coûte une extension de garantie pour la formule 1 pendant 2 ans et que couvre-t-elle ? »" },
+          ] },
+        ] },
+      { type: 'vraifaux', id: 'annexe2', titre: "Annexe 2 - Vrai ou faux",
+        entete: "Outil de validation - Affirmations prospects",
+        lignes: [
+          { id: 'a1', affirmation: "J'ai acheté un pommeau de douche HYDRAO il y a 1 an et demi. Les LED ne fonctionnent plus. Je vais devoir payer pour le faire réparer." },
+          { id: 'a2', affirmation: "La garantie légale est gratuite et obligatoire." },
+          { id: 'a3', affirmation: "Le flexible de la douche est cassé, HYDRAO va me le réparer." },
+          { id: 'a4', affirmation: "J'ai pris une extension de garantie de 3 ans. Elle commencera 1 an après mon achat." },
+          { id: 'a5', affirmation: "Le pommeau de douche que je viens d'acheter ne fonctionne pas. Je dois prouver le défaut de conformité pour le faire réparer ou remplacer." },
+          { id: 'a6', affirmation: "L'extension de garantie reprend les principales caractéristiques de la garantie légale." },
+          { id: 'a7', affirmation: "La formule 2 de l'extension de garantie prend en charge la panne, la reprise, les dommages matériels accidentels et l'assistance." },
+        ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Les questions de M. Della-Monica (annexe 1).", documents: ['Documents 1 à 4', 'Annexe 1'], bareme: 10,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Questions', 'Réponses'], lignes: [
+          ["« Combien de temps dure la garantie prévue par la loi ? »", "La garantie légale de conformité dure 24 mois courant."],
+          ["« A partir de quel moment commence cette garantie légale ? »", "A partir de la date d'achat ou de livraison du produit."],
+          ["« Combien de temps maximum un client peut-il augmenter la garantie au-delà de la garantie légale ? »", "Après les 24 mois commence la garantie de 1, 2 ou 3 ans."],
+          ["« Quels sont les 2 types de défauts couverts par l'extension de garantie ? »", "La garantie « Panne » et la garantie « Dommage matériel accidentel »."],
+          ["« Quelles sont les 3 solutions proposées en cas de défaut du produit ? »", "Réparation, Échange à neuf, Remboursement."],
+          ["« Quelles sont les solutions d'assistance ? »", "Connectez-vous sur https://www.hydrao.com/fr/assistance/sav pour accéder à votre SAV ou au 0 800 81 15 15."],
+          ["« Combien coûte une extension pour la formule 1 pendant 2 ans et que couvre-t-elle ? »", "Elle coûte 29,90 €. Elle couvre : la panne, la reprise et l'assistance."],
+        ] } },
+      { intitule: "Vrai ou faux (annexe 2).", documents: ['Documents 1 à 4', 'Annexe 2'], bareme: 10,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Affirmation', 'Vrai/Faux', 'Justification'], lignes: [
+          ["Pommeau acheté il y a 1 an et demi, LED en panne : je vais devoir payer.", 'Faux', "Le produit est garanti deux ans donc il sera réparé gratuitement."],
+          ["La garantie légale est gratuite et obligatoire.", 'Vrai', ""],
+          ["Le flexible est cassé, HYDRAO va me le réparer.", 'Faux', "Un produit équivalent est proposé en cas de casse."],
+          ["Extension de 3 ans : elle commencera 1 an après mon achat.", 'Faux', "La garantie légale dure 2 ans, donc l'extension commencera après les 2 ans."],
+          ["Pommeau qui ne fonctionne pas : je dois prouver le défaut de conformité.", 'Faux', "Le consommateur est couvert pendant 2 ans et n'a donc pas à prouver le défaut de conformité."],
+          ["L'extension de garantie reprend les principales caractéristiques de la garantie légale.", 'Vrai', ""],
+          ["La formule 2 prend en charge panne, reprise, dommages matériels accidentels et assistance.", 'Faux', "La formule 2 prend bien en charge ces 4 éléments : cette affirmation est en réalité vraie pour la formule 2. Attention : c'est la formule 1 qui ne couvre pas le dommage matériel accidentel."],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "La garantie légale de conformité et l'extension de garantie",
+    proposition: ['Garantie légale', 'Extension de garantie', '24 mois', 'Gratuite et obligatoire', 'Facultative et payante', 'Défaut de conformité'],
+    racine: {
+      id: 'racine',
+      texte: "Mission 4 - Les garanties",
+      enfants: [
+        { id: 'gl', texte: "La garantie légale de conformité", enfants: [
+          { id: 'gl-1', texte: null, reponse: 'Garantie légale' },
+          { id: 'gl-2', texte: null, reponse: '24 mois' },
+          { id: 'gl-3', texte: null, reponse: 'Gratuite et obligatoire' },
+        ] },
+        { id: 'ge', texte: "L'extension de garantie", enfants: [
+          { id: 'ge-1', texte: null, reponse: 'Extension de garantie' },
+          { id: 'ge-2', texte: null, reponse: 'Facultative et payante' },
+          { id: 'ge-3', texte: null, reponse: 'Défaut de conformité' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Distinguer les types de garantie", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est une garantie." },
+        { niveau: 'debrouille', description: "Je connais la garantie légale de conformité." },
+        { niveau: 'averti', description: "Je distingue garantie légale et extension de garantie." },
+        { niveau: 'expert', description: "Je maîtrise durée, coût et contenu de chaque garantie." },
+      ] },
+      { id: 'c2', intitule: "Répondre aux questions d'un prospect sur la garantie", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas répondre aux questions sur la garantie." },
+        { niveau: 'debrouille', description: "Je réponds à quelques questions simples." },
+        { niveau: 'averti', description: "Je réponds à la plupart des questions avec justification." },
+        { niveau: 'expert', description: "Je réponds à toutes les questions et je justifie des affirmations vraies/fausses." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Garantie légale de conformité", definition: "Garantie prévue par la loi, gratuite et obligatoire, qui dure 24 mois." },
+      { terme: "Extension de garantie", definition: "Garantie commerciale ou contractuelle, facultative et payante, qui prolonge la couverture." },
+      { terme: "Défaut de conformité", definition: "Produit non conforme à la description ou à l'usage attendu." },
+      { terme: "Panne", definition: "Dysfonctionnement du produit couvert par la garantie." },
+      { terme: "Dommage matériel accidentel", definition: "Dégât matériel accidentel couvert par la formule 2." },
+      { terme: "Reprise", definition: "Prise en charge du produit défectueux par le vendeur." },
+      { terme: "Assistance", definition: "Aide au SAV (téléphone, site) pour l'installation ou la configuration." },
+      { terme: "Panier moyen", definition: "Montant moyen dépensé par un client ; l'extension de garantie le fait augmenter." },
+      { terme: "Formule 1", definition: "Extension couvrant la panne, la reprise et l'assistance." },
+      { terme: "Formule 2", definition: "Extension couvrant la panne, la reprise, le dommage matériel accidentel et l'assistance." },
+    ],
+    flashcards: [
+      { recto: "Combien de temps dure la garantie légale de conformité ?", verso: "24 mois (2 ans)." },
+      { recto: "La garantie légale est-elle gratuite ?", verso: "Oui, elle est gratuite et obligatoire." },
+      { recto: "À partir de quand commence la garantie légale ?", verso: "À partir de la date d'achat ou de livraison du produit." },
+      { recto: "L'extension de garantie est-elle obligatoire ?", verso: "Non, elle est facultative et payante." },
+      { recto: "Quand commence l'extension « Panne » ?", verso: "À la fin de la garantie légale, après les 24 mois." },
+      { recto: "Quels sont les 2 types de défauts couverts par l'extension ?", verso: "La panne et le dommage matériel accidentel." },
+      { recto: "Quelles sont les 3 solutions en cas de défaut ?", verso: "Réparation, échange à neuf, remboursement." },
+      { recto: "Le consommateur doit-il prouver le défaut de conformité ?", verso: "Non, sur la garantie légale il n'a pas à le prouver." },
+      { recto: "Combien coûte la formule 1 pendant 2 ans ?", verso: "29,90 €." },
+      { recto: "Que couvre la formule 2 ?", verso: "Panne, reprise, dommage matériel accidentel et assistance." },
+    ],
+    quiz: [
+      { type: 'unique', question: "La garantie légale de conformité dure :", options: ['24 mois', '12 mois', '36 mois', '6 mois'], bonne: 0 },
+      { type: 'unique', question: "La garantie légale est :", options: ['Gratuite et obligatoire', 'Payante et obligatoire', 'Gratuite et facultative', 'Payante et facultative'], bonne: 0 },
+      { type: 'unique', question: "L'extension de garantie est :", options: ['Facultative et payante', 'Obligatoire et gratuite', 'Obligatoire et payante', 'Facultative et gratuite'], bonne: 0 },
+      { type: 'unique', question: "La garantie légale commence :", options: ["À la date d'achat ou de livraison", 'Après 24 mois', 'Après réparation', 'À la première panne'], bonne: 0 },
+      { type: 'unique', question: "Sur la garantie légale, le consommateur :", options: ["N'a pas à prouver le défaut", 'Doit prouver le défaut', 'Paie la réparation', 'Attend 3 ans'], bonne: 0 },
+      { type: 'unique', question: "L'extension « Panne » prend effet :", options: ['Après les 24 mois', "Le jour de l'achat", 'Après 3 ans', 'À la première casse'], bonne: 0 },
+      { type: 'unique', question: "La formule 1 pendant 2 ans coûte :", options: ['29,90 €', '19,90 €', '39,90 €', '54,90 €'], bonne: 0 },
+      { type: 'unique', question: "La formule 2 couvre en plus de la formule 1 :", options: ['Le dommage matériel accidentel', "L'assistance", 'La reprise', 'La panne'], bonne: 0 },
+      { type: 'unique', question: "Les 3 solutions en cas de défaut sont :", options: ['Réparation, échange, remboursement', 'Réparation, reprise, panne', 'Échange, assistance, casse', 'Panne, reprise, dommage'], bonne: 0 },
+      { type: 'unique', question: "L'extension de garantie est aussi appelée :", options: ['Garantie commerciale ou contractuelle', 'Garantie légale', 'Garantie de conformité', 'Garantie constructeur obligatoire'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Classez chaque élément selon qu'il relève de la garantie légale ou de l'extension de garantie.",
+      etiquettes: ['Garantie légale', 'Extension de garantie'],
+      zones: [
+        { libelle: 'Gratuite', etiquetteIndex: 0 },
+        { libelle: 'Obligatoire', etiquetteIndex: 0 },
+        { libelle: 'Dure 24 mois', etiquetteIndex: 0 },
+        { libelle: 'Pas de preuve du défaut à fournir', etiquetteIndex: 0 },
+        { libelle: 'Prévue par la loi', etiquetteIndex: 0 },
+        { libelle: 'Facultative', etiquetteIndex: 1 },
+        { libelle: 'Payante', etiquetteIndex: 1 },
+        { libelle: 'Durée de 1, 2 ou 3 ans', etiquetteIndex: 1 },
+        { libelle: 'Couvre le dommage matériel accidentel (formule 2)', etiquetteIndex: 1 },
+        { libelle: 'Aussi appelée garantie commerciale', etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const TECH_OBJ = [
+  ['Oui… mais', "Le commercial donne raison au client puis avance un argument", "« Oui, je comprends mais… »"],
+  ['Affaiblissement', "Le commercial montre au client que ce qu'il pense être un point faible est en fait un point fort", "« Le coffre a été conçu pour s'ouvrir facilement dans les cas où le client peut avoir les mains prises. »"],
+  ['Témoignage', "Le commercial utilise l'expérience d'un autre client pour argumenter", "« On peut demander à ma collègue. Elle a offert le même GPS à sa mère de 70 ans et elle le trouve très simple à utiliser. »"],
+  ['Compensation', "Le commercial montre que les points forts sont plus nombreux que les points faibles détectés par le client", "« Il n'y a que cette fonctionnalité qui manque, car il y a tout de même un toit ouvrant, le siège chauffant et le GPS intégré. »"],
+  ['Anticipation', "Le commercial devance l'objection du client en avançant un argument", "« Je sais que vous allez me dire que… »"],
+]
+const PRIX_OBJ = [
+  ["L'addition", "Le commercial cite tous les avantages du produit qui justifient son prix.", ""],
+  ["La soustraction", "Le commercial montre au client/prospect ce qu'il perd s'il n'achète pas le produit.", ""],
+  ["La multiplication", "Le commercial montre au client/prospect que le prix est justifié par rapport à l'avantage qu'il gagnera dans le temps.", "Ex : « Cette veste en cuir coûte 800€ mais vous la garderez au moins 10 ans »."],
+  ["La division", "Le commercial divise le prix du produit par 12 mois ou 30 jours par exemple, et compare cette division avec le prix d'un produit courant pour montrer qu'il n'est pas cher.", "Ex : « 60 euros par mois c'est le prix de deux baguettes par jour pendant 1 mois »."],
+]
+
+const HYDRAO_M5: ContenuMission = {
+  travaux: {
+    consigne: "Traitez les objections des prospects sur le produit et sur le prix en appliquant la bonne technique de réponse (annexe unique).",
+    contexte: "C'est votre premier jour à la Foire de Paris et vous êtes sur votre stand avec votre collègue Bernard. Face à la mise en valeur de vos produits, plusieurs prospects intrigués par ce pommeau de douche se sont arrêtés pour vous écouter dérouler l'argumentaire que vous aviez préparé, tout en regardant votre démonstration. Suite à vos arguments convaincants, le sourire et le hochement de tête des prospects amassés devant vous démontrent qu'un certain nombre d'entre eux semble conquis par cette nouveauté. D'autres sont intéressés mais ont besoin d'être rassurés et émettent des objections.",
+    documents: [
+      { numero: 1, titre: "La construction d'un argument", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'paragraphe', texte: "Il arrive que pendant le dialogue de vente le client ait des doutes ou des inquiétudes quant au produit qui lui est proposé. Il appartient au commercial de les lever pour faciliter la vente." },
+            { type: 'sousTitre', texte: "1 - Techniques de traitement des objections" },
+            { type: 'tableau', entetes: ['Techniques', 'Définitions', 'Exemples'], lignes: TECH_OBJ },
+            { type: 'sousTitre', texte: "2 - Le traitement des objections sur le prix" },
+            { type: 'tableau', entetes: ['Les objections', 'Définition', 'Exemple'], lignes: PRIX_OBJ },
+          ],
+        } },
+      ] },
+      { numero: 2, titre: "Les services", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['BOUTIQUE', 'CONCEPT', 'ASSISTANCE', 'À PROPOS', 'PARRAINAGE', 'BLOG', 'SOLUTIONS PRO'],
+          sections: [
+            { type: 'servicesIcones', services: [
+              { icone: 'livraison', titre: 'Livraison', detail: '2 à 4 jours ouvrés' },
+              { icone: 'garantie', titre: 'Garantie satisfait ou remboursé', detail: 'Retour sous 15 jours' },
+              { icone: 'paiement', titre: 'Paiement sécurisé', detail: 'Carte bancaire, PayPal' },
+            ] },
+          ] } },
+      ] },
+      { numero: 3, titre: "Le pack Aloé + flexible PVC 1.5 cm", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'packProduit', badges: ['PACK', '-10%'], image: '/docs/hydrao-m5/pack_clean.png',
+              nom: 'Aloe + Flexible PVC 1.5m', ancienPrix: '95,00 €', prix: '85,00 €', economie: 'ÉCONOMISEZ 10,00 €', auLieuDe: 'Au lieu de 94,90 €',
+              mentionTtc: "TTC Dont 0,14 € d'éco-participation (ne sera pas compris dans la réduction)",
+              contient: [
+                { image: '/docs/hydrao-m5/aloe_clean.png', nom: 'Pommeau de douche Aloé', prix: '69,90 €', quantite: 'x 1' },
+                { nom: 'Flexible PVC Argent 1.5m', prix: '25,00 €', quantite: 'x 1' },
+              ], stock: 'En stock' },
+          ] } },
+      ] },
+      { numero: 4, titre: "Le fonctionnement", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'paragraphe', texte: "Les pommeaux HYDRAO ont un débit écologique de 6,6L/min (avec accessoire limiteur) ou de 9L/min (sans limiteur) en comparaison avec un pommeau de douche standard (débit de 12L/minute)." },
+            { type: 'servicesIcones', services: [
+              { icone: 'serviceclient', titre: 'Multi-jet', detail: '3 positions' },
+              { icone: 'paiement', titre: 'Débit écologique', detail: 'Débit max 6.6L/min sous 2 à 5 bar' },
+              { icone: 'garantie', titre: 'Installation facile', detail: 'Remplace votre pommeau actuel et fonctionne automatiquement' },
+              { icone: 'livraison', titre: 'Fonctionne sans pile', detail: "Grâce à sa turbine autoalimentée par l'eau qui coule pour un fonctionnement autonome et sans entretien" },
+            ] },
+          ] } },
+      ] },
+      { numero: 5, titre: "Avantage", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#1E2A38',
+          menu: ['BOUTIQUE', 'CONCEPT', 'ASSISTANCE', 'À PROPOS', 'PARRAINAGE', 'BLOG', 'SOLUTIONS PRO'],
+          sections: [
+            { type: 'titre', texte: "Responsabilisez facilement petits et grands et mettez-vous au défi avec HYDRAO !" },
+            { type: 'servicesIcones', services: [
+              { icone: 'paiement', titre: '130 €', detail: "d'économie/an par personne en eau + énergie" },
+              { icone: 'garantie', titre: 'Investissement rentabilisé', detail: 'en 6 mois' },
+            ] },
+          ] } },
+      ] },
+      { numero: 6, titre: "Garantie", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#FFFFFF',
+          menu: ['BOUTIQUE', 'CONCEPT', 'ASSISTANCE', 'À PROPOS', 'PARRAINAGE', 'BLOG', 'SOLUTIONS PRO'],
+          sections: [
+            { type: 'tableau', entetes: ['Caractéristique', 'Détail'], lignes: [
+              ['Diffuseur anti-calcaire', '✔ (en silicone, à picots souples)'],
+              ['Entretien anti-calcaire', "Nettoyage avec du vinaigre blanc 2 à 4 fois par an selon la dureté de l'eau"],
+              ['Connecté (Bluetooth Low Energy 4.0)', '✔'],
+              ['Technologie brevetée', '✔'],
+              ['Accessoires fournis', 'Joint grillagé'],
+              ['Certifications', 'Watersense, ACS, FCC et CE'],
+              ['Indice de Protection (IP)', "IP65 (protection contre l'humidité)"],
+              ['Garantie', '2 ans'],
+            ] },
+          ] } },
+      ] },
+      { numero: 7, titre: "Garantie", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'article', titre: "Pommeau de douche Aloé", image: '/docs/hydrao-m5/aloe_clean.png', paragraphes: [
+              "Facile d'installation ce pommeau de douche est compatible avec tous types de support grâce à son embout universel (mâle ½\").",
+              "Ce pommeau possède une technologie Multi-jet à 3 positions (pluie, massage et mixte).",
+              "Un limiteur de débit est fourni, mais son installation est optionnelle.",
+              "Le débit maximum de ce pommeau est de 6,6L / min avec limiteur installé soit une économie de 45% par rapport à un pommeau standard (12L / Min).",
+            ] },
+          ] } },
+      ] },
+      { numero: 8, titre: "Garantie", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'ficheProduitWeb', nom: 'Pommeau de douche Aloé', image: '/docs/hydrao-m5/produit_clean.png',
+              prix: '69,90 €', prixDetail: "TTC Dont 0,14 € d'éco-participation", accroche: 'Disponible',
+              note: '4.3/5', avis: 'Voir les avis (160)',
+              arguments: ["HYDRAO Aloé Chromé, le pommeau de douche écologique, économique & connecté au principe breveté."] },
+          ] } },
+      ] },
+      { numero: 9, titre: "Signes de qualité", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'image', src: '/docs/hydrao-m5/frenchtech_clean.png', alt: 'La French Tech - Technologie Brevetée, Conception Française', largeur: 460, legende: 'Technologie Brevetée - Conception Française' },
+          ] } },
+      ] },
+      { numero: 10, titre: "Les objections des prospects", texte: [
+        { docRiche: {
+          site: 'www.hydrao.com', logo: '/docs/hydrao-m5/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "Si d'ici un an par exemple, les LED de couleurs ne fonctionnent plus ou que le pommeau n'arrive plus à communiquer en Bluetooth avec l'application. Je suppose que je devrai en racheter un nouveau." },
+              { numero: '2', texte: "Franchement, je le trouve super ce pommeau de douche. Mais j'ai l'impression qu'il est un peu cher, non ?" },
+              { numero: '3', texte: "Ça m'intéresse, mais je crains que le pommeau ne soit pas compatible avec le flexible que j'ai déjà dans ma salle de bains !" },
+              { numero: '4', texte: "Ah ! C'est vendu en pack c'est dommage car moi…" },
+              { numero: '5', texte: "J'ai 75 ans, je ne sais pas si je serai capable d'installer ça toute seule. Mon fils habite loin. Il ne vient pas très souvent donc je ne sais pas trop…" },
+              { numero: '6', texte: "Si au final ça ne me plaît pas, j'ai peur de ne pas être remboursée." },
+              { numero: '7', texte: "C'est bien mais je vois que c'est fabriqué en France. Du coup ça va coûter cher !" },
+              { numero: '8', texte: "Pour faire fonctionner le pommeau, pas besoin de pile, ni d'électricité ? Mais alors comment…" },
+            ] },
+          ],
+        } },
+      ] },
+    ],
+    objectifs: [
+      "Identifier une objection produit ou prix.",
+      "Choisir la technique de traitement adaptée.",
+      "Rédiger une réponse à l'objection en appliquant la technique imposée.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4B',
+      intitule: 'Prospecter et valoriser',
+      detail: "C.4B.3 - Mettre en œuvre une opération de prospection.",
+    },
+    activites: [
+      {
+        titre: "Activité - La réponse aux objections sur le produit et sur le prix",
+        contexte: "Sur le stand de la Foire de Paris, vous devez répondre aux objections des prospects en appliquant la technique imposée.",
+        questions: [
+          { numero: 1, consigne: "Traitez les objections des prospects en appliquant la technique de réponse imposée pour chacun.", ressources: "Lire les documents 1 à 10, compléter l'annexe.", annexeId: 'annexe1' },
+        ],
+      },
+    ],
+    annexes: [
+      { type: 'objectionscrm', id: 'annexe1', titre: "Annexe - La réponse aux objections",
+        entete: "CRM Foire de Paris - Traitement des objections",
+        clients: [
+          { id: 'c1', numero: '1', technique: 'Oui… mais', objection: "Si d'ici un an par exemple, les LED de couleurs ne fonctionnent plus ou que le pommeau n'arrive plus à communiquer en Bluetooth avec l'application. Je suppose que je devrai en racheter un nouveau." },
+          { id: 'c2', numero: '2', technique: 'Compensation', objection: "Franchement, je le trouve super ce pommeau de douche. Mais j'ai l'impression qu'il est un peu cher, non ?" },
+          { id: 'c3', numero: '3', technique: 'Oui… mais', objection: "Ça m'intéresse, mais je crains que le pommeau ne soit pas compatible avec le flexible que j'ai déjà dans ma salle de bains !" },
+          { id: 'c4', numero: '4', technique: 'Anticipation', objection: "Ah ! C'est vendu en pack c'est dommage car moi…" },
+          { id: 'c5', numero: '5', technique: 'Témoignage', objection: "J'ai 75 ans, je ne sais pas si je serai capable d'installer ça toute seule. Mon fils habite loin. Il ne vient pas très souvent donc je ne sais pas trop…" },
+          { id: 'c6', numero: '6', technique: 'Oui… mais', objection: "Si au final ça ne me plaît pas, j'ai peur de ne pas être remboursée." },
+          { id: 'c7', numero: '7', technique: 'Affaiblissement', objection: "C'est bien mais je vois que c'est fabriqué en France. Du coup ça va coûter cher !" },
+          { id: 'c8', numero: '8', technique: 'Anticipation', objection: "Pour faire fonctionner le pommeau, pas besoin de pile, ni d'électricité ? Mais alors comment…" },
+        ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "La réponse aux objections (annexe unique).", documents: ['Documents 1 à 10', 'Annexe'], bareme: 20,
+        reponse: "Voir tableau.",
+        tableau: { colonnes: ['Client', 'Technique à utiliser', 'Réponses aux objections'], lignes: [
+          ['1', 'Oui… mais', "Oui je comprends votre interrogation, mais le pommeau est garanti pendant 2 ans."],
+          ['2', 'Compensation', "Il y a -10 % sur le pack, il vous fera économiser 130 € par an et par personne, c'est une fabrication française…"],
+          ['3', 'Oui… mais', "Oui je comprends votre inquiétude, mais l'embout est universel donc le pommeau s'adapte à tous les types de flexible."],
+          ['4', 'Anticipation', "Vous allez me dire que vous ne voulez que le pommeau. Eh bien il est vendu seul aussi."],
+          ['5', 'Témoignage', "Le père de mon collègue Bernard en a un et il l'a installé tout seul. Je vous assure que c'est vraiment très facile à installer."],
+          ['6', 'Oui… mais', "Oui je comprends votre peur, mais chez HYDRAO, c'est Satisfait ou Remboursé. Vous avez 15 jours pour cela."],
+          ['7', 'Affaiblissement', "C'est français et c'est un produit de qualité."],
+          ['8', 'Anticipation', "Je sais ce que vous allez me demander. Alors comment ça fonctionne ? Grâce à sa turbine autoalimentée par l'eau qui coule."],
+        ] } },
+    ],
+  },
+  synthese: {
+    titre: "La réponse aux objections sur le produit et sur le prix",
+    proposition: ['Oui… mais', 'Affaiblissement', 'Témoignage', 'Compensation', 'Anticipation', 'Objection prix'],
+    racine: {
+      id: 'racine', texte: "Mission 5 - Le traitement des objections",
+      enfants: [
+        { id: 'prod', texte: "Objections sur le produit", enfants: [
+          { id: 'p1', texte: null, reponse: 'Oui… mais' },
+          { id: 'p2', texte: null, reponse: 'Affaiblissement' },
+          { id: 'p3', texte: null, reponse: 'Témoignage' },
+          { id: 'p4', texte: null, reponse: 'Compensation' },
+          { id: 'p5', texte: null, reponse: 'Anticipation' },
+        ] },
+        { id: 'prix', texte: "Objections sur le prix", enfants: [
+          { id: 'x1', texte: null, reponse: 'Objection prix' },
+        ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier une objection", indicateurs: [
+        { niveau: 'novice', description: "Je ne reconnais pas une objection." },
+        { niveau: 'debrouille', description: "Je repère une objection simple." },
+        { niveau: 'averti', description: "Je distingue objection produit et objection prix." },
+        { niveau: 'expert', description: "J'identifie précisément le type d'objection et la technique adaptée." },
+      ] },
+      { id: 'c2', intitule: "Répondre à une objection", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas répondre à une objection." },
+        { niveau: 'debrouille', description: "Je réponds sans appliquer de technique précise." },
+        { niveau: 'averti', description: "J'applique la bonne technique à la plupart des objections." },
+        { niveau: 'expert', description: "Je réponds à toutes les objections en appliquant la technique imposée." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Objection", definition: "Doute ou inquiétude exprimé par le client sur le produit ou le prix." },
+      { terme: "Oui… mais", definition: "Donner raison au client puis avancer un argument." },
+      { terme: "Affaiblissement", definition: "Montrer qu'un point faible est en fait un point fort." },
+      { terme: "Témoignage", definition: "Utiliser l'expérience d'un autre client pour argumenter." },
+      { terme: "Compensation", definition: "Montrer que les points forts sont plus nombreux que les points faibles." },
+      { terme: "Anticipation", definition: "Devancer l'objection du client en avançant un argument." },
+      { terme: "L'addition", definition: "Citer tous les avantages du produit qui justifient son prix." },
+      { terme: "La soustraction", definition: "Montrer ce que le client perd s'il n'achète pas." },
+      { terme: "La multiplication", definition: "Montrer que le prix est justifié par l'avantage gagné dans le temps." },
+      { terme: "La division", definition: "Diviser le prix par jour ou par mois pour montrer qu'il n'est pas cher." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une objection ?", verso: "Un doute ou une inquiétude du client sur le produit ou le prix." },
+      { recto: "Technique « Oui… mais » ?", verso: "Donner raison au client puis avancer un argument." },
+      { recto: "Technique « Affaiblissement » ?", verso: "Montrer qu'un point faible est en fait un point fort." },
+      { recto: "Technique « Témoignage » ?", verso: "Utiliser l'expérience d'un autre client." },
+      { recto: "Technique « Compensation » ?", verso: "Montrer que les points forts l'emportent sur les points faibles." },
+      { recto: "Technique « Anticipation » ?", verso: "Devancer l'objection en avançant un argument." },
+      { recto: "Objection prix : « L'addition » ?", verso: "Citer tous les avantages qui justifient le prix." },
+      { recto: "Objection prix : « La division » ?", verso: "Diviser le prix par jour/mois pour montrer qu'il n'est pas cher." },
+      { recto: "Réponse à « c'est trop cher » avec le pack ?", verso: "-10 % sur le pack, 130 € d'économie/an/personne, fabrication française (compensation)." },
+      { recto: "Réponse à « fabriqué en France donc cher » ?", verso: "C'est français et c'est un produit de qualité (affaiblissement)." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Une objection est :", options: ["Un doute ou une inquiétude du client", "Une commande", "Un argument du vendeur", "Un mode de paiement"], bonne: 0 },
+      { type: 'unique', question: "« Oui, je comprends mais… » correspond à :", options: ['Oui… mais', 'Témoignage', 'Compensation', 'Anticipation'], bonne: 0 },
+      { type: 'unique', question: "Utiliser l'expérience d'un autre client, c'est :", options: ['Témoignage', 'Affaiblissement', 'Addition', 'Division'], bonne: 0 },
+      { type: 'unique', question: "Montrer qu'un point faible est un point fort, c'est :", options: ['Affaiblissement', 'Anticipation', 'Compensation', 'Soustraction'], bonne: 0 },
+      { type: 'unique', question: "Devancer l'objection du client, c'est :", options: ['Anticipation', 'Témoignage', 'Addition', 'Oui… mais'], bonne: 0 },
+      { type: 'unique', question: "Citer tous les avantages qui justifient le prix, c'est :", options: ["L'addition", 'La division', 'La soustraction', 'La multiplication'], bonne: 0 },
+      { type: 'unique', question: "« 60 € par mois, le prix de 2 baguettes par jour », c'est :", options: ['La division', "L'addition", 'La multiplication', 'La soustraction'], bonne: 0 },
+      { type: 'unique', question: "Réponse à « le flexible est-il compatible ? » :", options: ["L'embout est universel", "Le pommeau est garanti 2 ans", "C'est satisfait ou remboursé", "C'est fabriqué en France"], bonne: 0 },
+      { type: 'unique', question: "Le pack Aloé + flexible bénéficie d'une remise de :", options: ['-10 %', '-20 %', '-5 %', '-15 %'], bonne: 0 },
+      { type: 'unique', question: "La garantie « Satisfait ou Remboursé » dure :", options: ['15 jours', '30 jours', '7 jours', '48 heures'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque réponse à la technique de traitement d'objection utilisée.",
+      etiquettes: ['Oui… mais', 'Compensation', 'Témoignage', 'Anticipation', 'Affaiblissement'],
+      zones: [
+        { libelle: "« Oui je comprends, mais le pommeau est garanti 2 ans. »", etiquetteIndex: 0 },
+        { libelle: "« Oui, mais l'embout est universel, il s'adapte à tous les flexibles. »", etiquetteIndex: 0 },
+        { libelle: "« -10 % sur le pack, 130 € d'économie/an, fabrication française… »", etiquetteIndex: 1 },
+        { libelle: "« Le père de Bernard l'a installé tout seul, c'est très facile. »", etiquetteIndex: 2 },
+        { libelle: "« Vous allez me dire que vous ne voulez que le pommeau : il est vendu seul aussi. »", etiquetteIndex: 3 },
+        { libelle: "« Je sais ce que vous allez demander : comment ça fonctionne ? »", etiquetteIndex: 3 },
+        { libelle: "« C'est français et c'est un produit de qualité. »", etiquetteIndex: 4 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const HYDRAO_M7: ContenuMission = {
+  travaux: {
+    consigne: "Collectez, mesurez et analysez la satisfaction des clients ayant acheté un pommeau HYDRAO à la Foire de Paris : créez le questionnaire, rédigez le mail d'invitation, transformez les résultats en pourcentages, analysez et rédigez le compte rendu.",
+    contexte: "Lors de votre présence à la Foire de Paris, vous avez vendu pendant cette semaine-là 1063 produits à 942 prospects. Nous sommes le 9 mai, deux semaines après la Foire, et votre tuteur souhaite que vous réalisiez une enquête afin de connaître le degré de satisfaction de tous ceux qui ont acheté des pommeaux de douche.",
+    documents: [
+      { numero: 1, titre: "Les thèmes à aborder dans le questionnaire", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'citation', texte: "« Il n'est pas simple de créer un questionnaire et c'est la raison pour laquelle je vais t'aiguiller sur les questions que je veux que tu poses aux clients. Il y aura 6 grandes parties et des questions dans chacune d'elles. »" },
+          ] } },
+      ] },
+      { numero: 2, titre: "Composition du questionnaire", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#7AA85C',
+          sections: [
+            { type: 'sousTitre', texte: "PARTIE 1 - INTRODUCTION" },
+            { type: 'paragraphe', texte: "Poser des questions À RÉPONSE UNIQUE au client quant à son degré de satisfaction par rapport aux aspects suivants :" },
+            { type: 'puces', items: ["L'accueil sur le stand ;", "La tenue du stand ;", "Les prix."] },
+            { type: 'sousTitre', texte: "PARTIE 2 - STAND" },
+            { type: 'paragraphe', texte: "Poser des questions À MATRICE au client quant à son degré de satisfaction par rapport aux aspects suivants :" },
+            { type: 'puces', items: ["L'attractivité ;", "La décoration ;", "La propreté."] },
+            { type: 'sousTitre', texte: "PARTIE 3 - PERSONNEL" },
+            { type: 'paragraphe', texte: "Poser des questions À ÉVALUATION au client quant à son degré de satisfaction par rapport aux aspects suivants :" },
+            { type: 'puces', items: ["Le professionnalisme ;", "L'efficacité ;", "La disponibilité."] },
+            { type: 'sousTitre', texte: "PARTIE 4 - PRODUIT" },
+            { type: 'paragraphe', texte: "Poser des questions À RÉPONSE UNIQUE au client quant à son degré de satisfaction par rapport aux aspects suivants :" },
+            { type: 'puces', items: [
+              "Le nombre de temps qu'il possède le produit (- d'un mois, entre 1 et 6 mois, entre 6 mois et 1 an, Entre 1 et deux ans, plus de 2 ans) ;",
+              "Le degré de satisfaction du produit (Extrêmement satisfait, très satisfait, satisfait, peu satisfait, pas satisfait) ;",
+              "La recommandation du produit (Certainement, probablement, peut-être, probablement pas, certainement pas).",
+            ] },
+            { type: 'sousTitre', texte: "PARTIE 5 - SATISFACTION SUR DIFFERENTS ASPECTS" },
+            { type: 'paragraphe', texte: "Poser des questions À RÉPONSE UNIQUE au client quant à son degré de satisfaction par rapport à différents aspects :" },
+            { type: 'puces', items: [
+              "Qualité du produit (Très important, important, peu important, pas du tout important) ;",
+              "Rapport / Qualité prix (Très important, important, peu important, pas du tout important) ;",
+              "Service d'après-vente (Très important, important, peu important, pas du tout important).",
+            ] },
+            { type: 'sousTitre', texte: "PARTIE 6 - INFORMATION SUR L'ENQUETE" },
+            { type: 'paragraphe', texte: "Poser une question À RÉPONSE UNIQUE au client sur lui-même." },
+            { type: 'puces', items: [
+              "Sexe (homme - femme) ;",
+              "Tranche d'âge (20-30 ans, 30-40 ans, 40-50 ans, plus de 50 ans)",
+              "CSP (catégorie socio-professionnelle = métier) (Ouvrier, employé, cadre, profession libérale, inactif)",
+            ] },
+          ] } },
+      ] },
+      { numero: 3, titre: "Les différents types de questions", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'tableau', entetes: ['Types de questions', 'Définition', 'Exemple'], lignes: [
+              ['Ouverte « O »', "Elle laisse le client s'exprimer.", "Pourquoi préférez-vous ce type d'enjoliveur ?"],
+              ['À réponse unique', "La question comporte plusieurs propositions de réponses mais elle ne permet qu'une seule réponse.", "Très satisfait / Satisfait / Peu satisfait / Pas du tout satisfait"],
+              ['Question à matrice', "Elle permet au client d'évaluer avec des chiffres.", "0 - 1 - 2 - 3 - 4 - 5"],
+              ['Question évaluation', "Elle permet au client d'évaluer avec des étoiles.", "★ ★ ★ ★ ★"],
+            ] },
+          ] } },
+      ] },
+      { numero: 4, titre: "Procédure : créer un questionnaire efficace", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'titre', texte: "Comment construire un bon questionnaire de satisfaction" },
+            { type: 'paragraphe', texte: "Un questionnaire efficace se prépare avant d'être rédigé. Suivez ces étapes pour obtenir des réponses fiables et exploitables." },
+            { type: 'procedureEtapes', etapes: [
+              { titre: "Définir l'objectif", detail: "Déterminez ce que vous voulez mesurer (la satisfaction sur le stand, le personnel, le produit) et à qui vous vous adressez." },
+              { titre: "Structurer en grandes parties", detail: "Regroupez les questions par thème et allez du général au particulier, en terminant par les informations sur le répondant." },
+              { titre: "Choisir le bon type de question", detail: "Adaptez le type (réponse unique, matrice, évaluation, question ouverte) à l'information recherchée." },
+              { titre: "Rédiger des questions claires", detail: "Une seule idée par question, un vocabulaire simple, des formulations neutres qui n'orientent pas la réponse." },
+              { titre: "Équilibrer les modalités de réponse", detail: "Proposez des échelles équilibrées (autant de réponses positives que négatives) et des choix qui couvrent tous les cas." },
+              { titre: "Limiter la longueur", detail: "Un questionnaire court se remplit mieux : ne gardez que les questions utiles à votre objectif." },
+              { titre: "Tester puis diffuser", detail: "Relisez et testez le questionnaire, corrigez les questions ambiguës, puis diffusez-le et prévoyez comment recueillir les réponses." },
+            ] },
+          ] } },
+      ] },
+      { numero: 5, titre: "Note de Mathilde", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'article', titre: "NOTE", paragraphes: [
+              "Quelques conseils pour la rédaction du corps du courriel de satisfaction :",
+              "Expliquez au client que pour s'améliorer HYDRAO a mis en place une enquête ;",
+              "Indiquez au client que son avis compte pour HYDRAO ;",
+              "Indiquez qu'il est contacté suite à l'achat d'un produit HYDRAO ;",
+              "Indiquez au client que le questionnaire dure moins de 5 minutes ;",
+              "Remercier le client pour sa participation ;",
+              "Indiquez au client que c'est un questionnaire en ligne et que pour y répondre il doit cliquer ici (« cliquez ici » sera écrit d'une autre couleur et souligné).",
+              "Mathilde",
+            ] },
+          ] } },
+      ] },
+      { numero: 6, titre: "Les résultats de l'enquête", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'sousTitre', texte: "1 - Introduction" },
+            { type: 'tableau', entetes: ["L'accueil sur le stand", 'Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'], lignes: [['Effectifs', '527', '358', '45', '12']] },
+            { type: 'tableau', entetes: ['La tenue du stand', 'Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'], lignes: [['Effectifs', '678', '152', '98', '14']] },
+            { type: 'tableau', entetes: ['Les prix', 'Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'], lignes: [['Effectifs', '157', '290', '333', '162']] },
+            { type: 'sousTitre', texte: "2 - Stand" },
+            { type: 'tableau', entetes: ["L'attractivité", '0', '1', '2', '3', '4', '5'], lignes: [['Effectifs', '14', '34', '94', '207', '301', '292']] },
+            { type: 'tableau', entetes: ['La décoration', '0', '1', '2', '3', '4', '5'], lignes: [['Effectifs', '1', '19', '50', '105', '509', '258']] },
+            { type: 'tableau', entetes: ['La propreté', '0', '1', '2', '3', '4', '5'], lignes: [['Effectifs', '0', '47', '612', '79', '100', '104']] },
+            { type: 'sousTitre', texte: "3 - Le personnel" },
+            { type: 'tableau', entetes: ['Le professionnalisme', '★', '★★', '★★★', '★★★★', '★★★★★'], lignes: [['Effectifs', '3', '69', '207', '522', '141']] },
+            { type: 'tableau', entetes: ["L'efficacité", '★', '★★', '★★★', '★★★★', '★★★★★'], lignes: [['Effectifs', '37', '97', '8', '141', '659']] },
+            { type: 'tableau', entetes: ['La disponibilité', '★', '★★', '★★★', '★★★★', '★★★★★'], lignes: [['Effectifs', '47', '483', '109', '177', '126']] },
+            { type: 'sousTitre', texte: "4 - Produits" },
+            { type: 'tableau', entetes: ['Temps de possession', "Moins d'un mois", 'Entre 1 et 6 mois', 'Entre 6 mois et 1 an', 'Entre 1 an et 2 ans', 'Plus de 2 ans'], lignes: [['Effectifs', '940', '0', '0', '0', '0']] },
+            { type: 'tableau', entetes: ['Degré de satisfaction', 'Extrêmement satisfait', 'Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'], lignes: [['Effectifs', '584', '141', '2', '158', '57']] },
+            { type: 'tableau', entetes: ['Recommandation', 'Certainement', 'Probablement', 'Peut-être', 'Probablement pas', 'Certainement pas'], lignes: [['Effectifs', '207', '301', '292', '98', '44']] },
+            { type: 'sousTitre', texte: "5 - Satisfaction sur différents aspects" },
+            { type: 'tableau', entetes: ['La qualité du produit', 'Très important', 'Important', 'Peu important', 'Pas du tout important'], lignes: [['Effectifs', '820', '117', '5', '0']] },
+            { type: 'tableau', entetes: ['Le rapport qualité/prix', 'Très important', 'Important', 'Peu important', 'Pas du tout important'], lignes: [['Effectifs', '722', '203', '17', '0']] },
+            { type: 'tableau', entetes: ['Le service après-vente', 'Très important', 'Important', 'Peu important', 'Pas du tout important'], lignes: [['Effectifs', '923', '19', '0', '0']] },
+            { type: 'sousTitre', texte: "6 - Information sur l'enquête" },
+            { type: 'tableau', entetes: ['Le sexe', 'Homme', 'Femme'], lignes: [['Effectifs', '706', '236']] },
+            { type: 'tableau', entetes: ["La tranche d'âge", '20-30 ans', '30-40 ans', '40-50 ans', 'Plus de 50 ans'], lignes: [['Effectifs', '377', '283', '188', '94']] },
+            { type: 'tableau', entetes: ['CSP', 'Ouvriers', 'Employés', 'Cadres', 'Professions libérales', 'Inactifs', 'Non déterminés'], lignes: [['Effectifs', '94', '334', '240', '170', '104', '103']] },
+          ] } },
+      ] },
+      { numero: 7, titre: "Comment analyser une enquête", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: "Les consignes pour analyser une enquête de satisfaction" },
+            { type: 'paragraphe', texte: "Pour l'analyse, vous commencerez par répartir les opinions de la façon suivante :" },
+            { type: 'tableau', entetes: ['Opinions négatives clients', 'Opinions positives clients'], lignes: [
+              ['Peu satisfait', 'Extrêmement satisfait'],
+              ['Pas satisfait', 'Très satisfait'],
+              ['', 'Satisfait'],
+              ['0 - 1 - 2', '3 - 4 - 5'],
+              ['★ ★', '★ ★ ★'],
+              ['Peu important', 'Très important'],
+              ['Pas du tout important', 'Important'],
+            ] },
+            { type: 'paragraphe', texte: "Puis, pour chaque question, vous devez additionner tous les pourcentages négatifs d'un côté et les opinions positives de l'autre. C'est le pourcentage le plus important parmi les 2 qui sera retenu et qui sera considéré comme une opinion positive ou négative des clients." },
+            { type: 'paragraphe', texte: "Mathilde" },
+          ] } },
+      ] },
+      { numero: 8, titre: "Note de Mathilde", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m7/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'article', titre: "Quelques conseils pour rédiger votre compte rendu suite à votre analyse de l'enquête", paragraphes: [
+              "Rédiger une introduction expliquant les raisons pour lesquelles l'enquête a été réalisée ;",
+              "Indiquez le profil de la clientèle de l'entreprise ;",
+              "Lister tous les points forts (pourcentages positifs) ;",
+              "Listez les points faibles (pourcentages négatifs) ;",
+              "Faire une conclusion en proposant des solutions pour améliorer les points négatifs détectés ;",
+              "Pour chaque partie, mettez un titre apparent ;",
+              "Aérez votre compte-rendu en espaçant les différentes parties.",
+              "Mathilde",
+            ] },
+          ] } },
+      ] },
+    ],
+    objectifs: [
+      "Concevoir un questionnaire de satisfaction structuré.",
+      "Rédiger un courriel incitant les clients à répondre.",
+      "Transformer des résultats bruts en pourcentages.",
+      "Analyser la satisfaction et rédiger un compte rendu.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 4C',
+      intitule: 'Analyser et rendre compte',
+      detail: "Collecter les informations, mesurer et analyser la satisfaction client.",
+    },
+    activites: [
+      { titre: "Activité 1 - La collecte d'informations de la satisfaction client",
+        contexte: "Votre tuteur Bernard vous donne des indications pour la création du questionnaire, puis Mathilde vous demande de concevoir le mail d'invitation.",
+        questions: [
+          { numero: 1, consigne: "Créez le questionnaire en suivant la procédure.", ressources: "Consulter les documents 1 à 3, lire le document 4, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Rédigez le mail incitant les clients à répondre à l'enquête de satisfaction.", ressources: "Lire le document 5, compléter l'annexe 2.", annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 - La mesure de la satisfaction du client",
+        contexte: "Mathilde vous convoque dans son bureau afin de vous soumettre les résultats de l'enquête.",
+        questions: [
+          { numero: 3, consigne: "Transformez les résultats de l'enquête en pourcentage.", ressources: "Lire le document 6, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ] },
+      { titre: "Activité 3 - L'analyse de la satisfaction du client",
+        contexte: "Mathilde vous demande d'analyser les résultats puis de rédiger le compte rendu.",
+        questions: [
+          { numero: 4, consigne: "Indiquez le profil de la clientèle qui achète des produits Hydrao. Justifiez votre réponse en citant les pourcentages pertinents.", ressources: "Consulter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Analysez l'enquête de satisfaction.", ressources: "Lire le document 7, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Pourquoi selon vous, à la question du temps que le client possède le produit, 100% d'entre eux répondent depuis moins d'un mois ?", ressources: "Compléter l'annexe 6.", annexeId: 'annexe6' },
+          { numero: 7, consigne: "Rédigez le compte rendu d'enquête.", ressources: "Lire le document 8, compléter l'annexe 7.", annexeId: 'annexe7' },
+        ] },
+    ],
+    annexes: [
+      { type: 'questionnairebuilder', id: 'annexe1', titre: "Annexe 1 - La création du questionnaire",
+        entete: "Logiciel d'enquête - Constructeur de questionnaire",
+        parties: [
+          { id: 'p1', titre: 'Introduction', typeQuestion: 'Réponse unique', items: [
+            { id: 'i1', libelle: "L'accueil sur le stand" }, { id: 'i2', libelle: 'La tenue du stand' }, { id: 'i3', libelle: 'Les prix' } ] },
+          { id: 'p2', titre: 'Stand', typeQuestion: 'Matrice', items: [
+            { id: 'i1', libelle: "L'attractivité" }, { id: 'i2', libelle: 'La décoration' }, { id: 'i3', libelle: 'La propreté' } ] },
+          { id: 'p3', titre: 'Personnel', typeQuestion: 'Évaluation', items: [
+            { id: 'i1', libelle: 'Le professionnalisme' }, { id: 'i2', libelle: "L'efficacité" }, { id: 'i3', libelle: 'La disponibilité' } ] },
+          { id: 'p4', titre: 'Produit', typeQuestion: 'Réponse unique', items: [
+            { id: 'i1', libelle: 'Le temps de possession du produit' }, { id: 'i2', libelle: 'Le degré de satisfaction du produit' }, { id: 'i3', libelle: 'La recommandation du produit' } ] },
+          { id: 'p5', titre: 'Satisfaction sur différents aspects', typeQuestion: 'Réponse unique', items: [
+            { id: 'i1', libelle: 'La qualité du produit' }, { id: 'i2', libelle: 'Le rapport qualité/prix' }, { id: 'i3', libelle: "Le service d'après-vente" } ] },
+          { id: 'p6', titre: "Information sur l'enquête", typeQuestion: 'Réponse unique', items: [
+            { id: 'i1', libelle: 'Le sexe' }, { id: 'i2', libelle: "La tranche d'âge" }, { id: 'i3', libelle: 'La CSP' } ] },
+        ] },
+      { type: 'mail', id: 'annexe2', titre: "Annexe 2 - Le mail de satisfaction", deParDefaut: 'hydrao@info-hydrao.fr', aParDefaut: 'listing-client' },
+      { type: 'pourcentagestepper', id: 'annexe3', titre: "Annexe 3 - Calculs des résultats de l'enquête",
+        entete: "Logiciel d'analyse - Calcul des pourcentages", colonnes: ['Thèmes', 'Élément de satisfaction', '%'],
+        etapes: [
+          { theme: "L'accueil sur le stand", lignes: ['Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'] },
+          { theme: "La tenue du stand", lignes: ['Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'] },
+          { theme: "Les prix", lignes: ['Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'] },
+          { theme: "L'attractivité", lignes: ['0', '1', '2', '3', '4', '5'] },
+          { theme: "La décoration", lignes: ['0', '1', '2', '3', '4', '5'] },
+          { theme: "La propreté du stand", lignes: ['0', '1', '2', '3', '4', '5'] },
+          { theme: "Le professionnalisme", lignes: ['★', '★★', '★★★', '★★★★', '★★★★★'] },
+          { theme: "L'efficacité", lignes: ['★', '★★', '★★★', '★★★★', '★★★★★'] },
+          { theme: "La disponibilité", lignes: ['★', '★★', '★★★', '★★★★', '★★★★★'] },
+          { theme: "Le nombre de temps qu'il possède le produit", lignes: ["Moins d'un moins", 'Entre 1 et 6 mois', 'Entre 6 mois et 1 an', 'Entre 1 an et 2 ans', 'Plus de 2 ans'] },
+          { theme: "Le degré de satisfaction du produit", lignes: ['Extrêmement satisfait', 'Très satisfait', 'Satisfait', 'Peu satisfait', 'Pas satisfait'] },
+          { theme: "La recommandation du produit", lignes: ['Certainement', 'Probablement', 'Peut-être', 'Probablement pas', 'Certainement pas'] },
+          { theme: "La qualité du produit", lignes: ['Très important', 'Important', 'Peu important', 'Pas du tout important'] },
+          { theme: "Le rapport qualité/prix", lignes: ['Très important', 'Important', 'Peu important', 'Pas du tout important'] },
+          { theme: "Le service après-vente", lignes: ['Très important', 'Important', 'Peu important', 'Pas du tout important'] },
+          { theme: "Le sexe", lignes: ['Homme', 'Femme'] },
+          { theme: "La tranche d'âge", lignes: ['20 - 30 ans', '30 - 40 ans', '40 - 50 ans', 'Plus de 50 ans'] },
+          { theme: "La catégorie socio-professionnelle", lignes: ['Ouvriers', 'Employés', 'Cadres', 'Professions libérales', 'Inactifs'] },
+        ] },
+      { type: 'tableaupct', id: 'annexe4', titre: "Annexe 4 - Le profil de la clientèle",
+        entete: "Fiche profil client - Synthèse", colonnes: ['Le profil type client Hydrao', 'Éléments de profilage', 'Pourcentage'],
+        groupes: [
+          { theme: "Le profil type client Hydrao", lignes: ['Sexe', 'Age', 'Catégorie socio-professionnelle'] },
+        ] },
+      { type: 'tableaupct', id: 'annexe5', titre: "Annexe 5 - Le degré de satisfaction",
+        entete: "Tableau de synthèse - Degré de satisfaction", colonnes: ['Thèmes', 'Éléments de satisfaction', '% le plus élevé'],
+        groupes: [
+          { theme: "INTRODUCTION", lignes: ["L'accueil sur le stand", 'La tenue du stand', 'Les prix'] },
+          { theme: "STAND", lignes: ["L'attractivité", 'La décoration', 'La propreté du stand'] },
+          { theme: "PERSONNEL", lignes: ['Le professionnalisme', "L'efficacité", 'La disponibilité'] },
+          { theme: "PRODUIT", lignes: ["Le nombre de temps qu'il possède le produit", 'Le degré de satisfaction du produit', 'La recommandation du produit'] },
+          { theme: "SATISFACTION SUR DIFFERENTS ASPECTS", lignes: ['La qualité du produit', 'Le rapport qualité/prix', 'Le service après-vente'] },
+        ] },
+      { type: 'grille', id: 'annexe6', titre: "Annexe 6 - Commentaire de l'item « le temps que le client possède le produit »", colonnes: ['Votre commentaire'], nbLignes: 1, largeurs: ['100%'], reponseMultiligne: true, lignesReponse: 5, prerempli: [['']] },
+      { type: 'compterendu', id: 'annexe7', titre: "Annexe 7 - Le compte rendu d'enquête",
+        entete: "Éditeur de compte-rendu - Analyse d'enquête",
+        champsEntete: [ { id: 'date', label: 'Date' }, { id: 'lieu', label: 'Lieu' }, { id: 'emetteur', label: 'Émetteur' }, { id: 'destinataire', label: 'Destinataire' } ],
+        sections: [
+          { id: 's1', titre: 'Introduction', indice: "Expliquez pourquoi l'enquête a été réalisée." },
+          { id: 's2', titre: 'Profil de la clientèle', indice: "Décrivez le profil type du client Hydrao." },
+          { id: 's3', titre: 'Points forts', indice: 'Listez les pourcentages positifs.' },
+          { id: 's4', titre: 'Points faibles', indice: 'Listez les pourcentages négatifs.' },
+          { id: 's5', titre: 'Conclusion et solutions', indice: 'Proposez des solutions pour améliorer les points négatifs.' },
+        ] },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "La création du questionnaire (annexe 1).", documents: ['Documents 1 à 4', 'Annexe 1'], bareme: 5, reponse: "Le questionnaire reprend les 6 parties imposées, avec le type de question imposé pour chaque partie (réponse unique, matrice, évaluation) et les modalités de réponse indiquées au document 1." },
+      { intitule: "Le mail de satisfaction (annexe 2).", documents: ['Document 5', 'Annexe 2'], bareme: 3, reponse: "Objet : Enquête de satisfaction / Votre avis nous intéresse. Corps : Cher Client, dans le cadre de l'amélioration continue de nos produits, nous avons mis en place cette enquête. Votre avis est très important pour nous afin de comprendre comment mieux vous satisfaire suite à votre achat d'un produit HYDRAO. Nous vous proposons de bien vouloir consacrer moins de 5 minutes pour répondre à cette enquête. Nous vous remercions par avance pour votre participation. Pour accéder au questionnaire, cliquez ci-dessous : Cliquez ici." },
+      { intitule: "Le profil de la clientèle (annexe 4).", documents: ['Annexe 4'], bareme: 3, reponse: "Voir tableau.",
+        tableau: { colonnes: ['Éléments de profilage', 'Pourcentage'], lignes: [
+          ['Sexe', '53,72 %'], ['Âge', '40,02 %'], ['Catégorie socio-professionnelle', '35,46 %'],
+        ] } },
+      { intitule: "Le degré de satisfaction (annexe 5).", documents: ['Document 7', 'Annexe 5'], bareme: 5, reponse: "Voir tableau. Un pourcentage négatif signale une opinion négative dominante.",
+        tableau: { colonnes: ['Thèmes', 'Élément', '% le plus élevé'], lignes: [
+          ['INTRODUCTION', "L'accueil sur le stand", '93,94'],
+          ['INTRODUCTION', 'La tenue du stand', '88,11'],
+          ['INTRODUCTION', 'Les prix', '-52,55'],
+          ['STAND', "L'attractivité", '84,92'],
+          ['STAND', 'La décoration', '95,57'],
+          ['STAND', 'La propreté du stand', '-69,96'],
+          ['PERSONNEL', 'Le professionnalisme', '70,38'],
+          ['PERSONNEL', "L'efficacité", '84,93'],
+          ['PERSONNEL', 'La disponibilité', '-67,83'],
+          ['PRODUIT', 'Temps de possession', '100'],
+          ['PRODUIT', 'Degré de satisfaction', '75,06'],
+          ['PRODUIT', 'Recommandation', '94,92'],
+          ['SATISFACTION', 'Qualité du produit', '99,47'],
+          ['SATISFACTION', 'Rapport qualité/prix', '98,2'],
+          ['SATISFACTION', 'Service après-vente', '100'],
+        ] } },
+      { intitule: "Commentaire de l'item temps de possession (annexe 6).", documents: ['Annexe 6'], bareme: 2, reponse: "Tous les clients invités à compléter le questionnaire de satisfaction sont ceux qui ont acheté le produit lors de la Foire de Paris, qui a eu lieu il y a moins d'un mois puisque la situation précise que l'enquête a lieu « deux semaines après » la Foire." },
+      { intitule: "Le compte rendu d'enquête (annexe 7).", documents: ['Document 8', 'Annexe 7'], bareme: 2, reponse: "Date : 9 mai. Lieu : Moirans. Émetteur : l'élève. Destinataire : clients de la Foire de Paris. Introduction rappelant l'objectif de l'enquête, profil de la clientèle, points forts (pourcentages positifs), points faibles (les prix, la propreté du stand, la disponibilité), puis conclusion avec des solutions d'amélioration." },
+    ],
+  },
+  synthese: {
+    titre: "Collecter, mesurer et analyser la satisfaction client",
+    proposition: ['Questionnaire', 'Pourcentage', 'Opinion positive', 'Opinion négative', 'Compte rendu', 'Profil client'],
+    racine: {
+      id: 'racine', texte: "Mission 7 - La satisfaction client",
+      enfants: [
+        { id: 'col', texte: "Collecter", enfants: [ { id: 'c1', texte: null, reponse: 'Questionnaire' } ] },
+        { id: 'mes', texte: "Mesurer", enfants: [ { id: 'm1', texte: null, reponse: 'Pourcentage' } ] },
+        { id: 'ana', texte: "Analyser", enfants: [ { id: 'a1', texte: null, reponse: 'Opinion positive' }, { id: 'a2', texte: null, reponse: 'Opinion négative' }, { id: 'a3', texte: null, reponse: 'Compte rendu' } ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Collecter et mesurer la satisfaction", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas construire un questionnaire." },
+        { niveau: 'debrouille', description: "Je construis un questionnaire simple." },
+        { niveau: 'averti', description: "Je construis le questionnaire et je transforme les résultats en pourcentages." },
+        { niveau: 'expert', description: "Je conçois le questionnaire, le mail et je calcule tous les pourcentages sans erreur." },
+      ] },
+      { id: 'c2', intitule: "Analyser et rendre compte", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas analyser une enquête." },
+        { niveau: 'debrouille', description: "Je repère quelques points forts et faibles." },
+        { niveau: 'averti', description: "J'analyse les résultats et je dégage le profil client." },
+        { niveau: 'expert', description: "J'analyse, je rédige un compte rendu structuré et je propose des solutions." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Enquête de satisfaction", definition: "Étude permettant de mesurer le degré de satisfaction des clients." },
+      { terme: "Questionnaire", definition: "Ensemble de questions posées aux clients pour recueillir leur avis." },
+      { terme: "Question ouverte", definition: "Question qui laisse le client s'exprimer librement." },
+      { terme: "Question à réponse unique", definition: "Question à plusieurs propositions mais une seule réponse possible." },
+      { terme: "Question à matrice", definition: "Question qui permet d'évaluer avec des chiffres." },
+      { terme: "Question à évaluation", definition: "Question qui permet d'évaluer avec des étoiles." },
+      { terme: "Pourcentage", definition: "Effectif d'une modalité rapporté au total, multiplié par 100." },
+      { terme: "Opinion positive", definition: "Réponses favorables (satisfait, très satisfait, 3-4-5, important…)." },
+      { terme: "Opinion négative", definition: "Réponses défavorables (peu satisfait, pas satisfait, 0-1-2…)." },
+      { terme: "Compte rendu", definition: "Document de synthèse présentant les résultats et les solutions." },
+    ],
+    flashcards: [
+      { recto: "Combien de parties compte le questionnaire ?", verso: "6 parties." },
+      { recto: "Type de question de la partie Stand ?", verso: "À matrice (chiffres 0 à 5)." },
+      { recto: "Type de question de la partie Personnel ?", verso: "À évaluation (étoiles)." },
+      { recto: "Comment calcule-t-on un pourcentage ?", verso: "Effectif / total x 100." },
+      { recto: "Que regroupe-t-on dans les opinions positives ?", verso: "Extrêmement satisfait, très satisfait, satisfait, 3-4-5, important, très important." },
+      { recto: "Que regroupe-t-on dans les opinions négatives ?", verso: "Peu satisfait, pas satisfait, 0-1-2, peu important, pas du tout important." },
+      { recto: "Combien de clients ont répondu (base) ?", verso: "942 clients (acheteurs de la Foire de Paris)." },
+      { recto: "Pourquoi 100% possèdent le produit depuis moins d'un mois ?", verso: "L'enquête a lieu deux semaines après la Foire où ils ont acheté." },
+      { recto: "Le mail doit contenir quel lien ?", verso: "Un lien « Cliquez ici » vers le questionnaire en ligne." },
+      { recto: "Que contient un compte rendu d'analyse ?", verso: "Introduction, profil client, points forts, points faibles, conclusion et solutions." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Combien de parties compte le questionnaire ?", options: ['6', '4', '5', '8'], bonne: 0 },
+      { type: 'unique', question: "La partie Stand utilise des questions :", options: ['À matrice', 'À évaluation', 'Ouvertes', 'À réponse unique'], bonne: 0 },
+      { type: 'unique', question: "La partie Personnel utilise des questions :", options: ['À évaluation', 'À matrice', 'Ouvertes', 'À réponse unique'], bonne: 0 },
+      { type: 'unique', question: "Un pourcentage se calcule :", options: ['Effectif / total x 100', 'Total / effectif x 100', 'Effectif x total', 'Effectif + total'], bonne: 0 },
+      { type: 'unique', question: "« Peu satisfait » est une opinion :", options: ['Négative', 'Positive', 'Neutre', 'Ouverte'], bonne: 0 },
+      { type: 'unique', question: "« Extrêmement satisfait » est une opinion :", options: ['Positive', 'Négative', 'Neutre', 'Ouverte'], bonne: 0 },
+      { type: 'unique', question: "Combien de clients ont acheté à la Foire ?", options: ['942', '1063', '706', '527'], bonne: 0 },
+      { type: 'unique', question: "Pourquoi 100% possèdent le produit depuis moins d'un mois ?", options: ["L'enquête a lieu 2 semaines après la Foire", 'Le produit est neuf', 'Ils ont tous répondu vite', 'Erreur de saisie'], bonne: 0 },
+      { type: 'unique', question: "Le mail de satisfaction doit durer moins de :", options: ['5 minutes', '10 minutes', '1 minute', '15 minutes'], bonne: 0 },
+      { type: 'unique', question: "Le compte rendu se termine par :", options: ['Une conclusion avec des solutions', 'Le profil client', 'Les points forts', "L'introduction"], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Classez chaque élément selon qu'il constitue une opinion positive ou une opinion négative.",
+      etiquettes: ['Opinion positive', 'Opinion négative'],
+      zones: [
+        { libelle: 'Extrêmement satisfait', etiquetteIndex: 0 },
+        { libelle: 'Très satisfait', etiquetteIndex: 0 },
+        { libelle: 'Satisfait', etiquetteIndex: 0 },
+        { libelle: 'Note 3 - 4 - 5', etiquetteIndex: 0 },
+        { libelle: 'Très important', etiquetteIndex: 0 },
+        { libelle: 'Peu satisfait', etiquetteIndex: 1 },
+        { libelle: 'Pas satisfait', etiquetteIndex: 1 },
+        { libelle: 'Note 0 - 1 - 2', etiquetteIndex: 1 },
+        { libelle: 'Peu important', etiquetteIndex: 1 },
+        { libelle: 'Pas du tout important', etiquetteIndex: 1 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
+const HYDRAO_M6: ContenuMission = {
+  travaux: {
+    consigne: "Traitez les réclamations et assurez le service après-vente : répondez aux questions des clients à l'aide de la FAQ, complétez le document de prise en charge SAV, puis répondez par mail à la réclamation de M. Bou.",
+    contexte: "Votre tuteur veut que vous connaissiez le service assistance de l'entreprise, car selon lui cette expérience permet au commercial de savoir les détails sur lesquels il doit faire attention lorsqu'il se trouve avec des clients. Des clients ont souscrit une garantie pour pouvoir bénéficier d'une assistance téléphonique au 0 800 81 15 15.",
+    documents: [
+      { numero: 1, titre: "Les interrogations et les problèmes exprimés par des clients", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m6/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "Est-ce que j'ai besoin de me connecter après chaque douche pour récupérer les informations de consommation ?" },
+              { numero: '2', texte: "Pourriez-vous m'expliquer comment je fais pour enlever le limiteur de débit ?" },
+              { numero: '3', texte: "Pour l'entretien anti-calcaire, y-a-t-il des produits recommandés par Hydrao ?" },
+              { numero: '4', texte: "L'application Hydrao peut-elle gérer plusieurs équipements Hydrao ?" },
+              { numero: '5', texte: "Les équipements Hydrao coupent-ils l'eau lorsque le palier rouge clignotant est atteint ?" },
+              { numero: '6', texte: "Je suis en France, est-ce que je peux remplacer mon pommeau actuel par un Hydrao ?" },
+              { numero: '7', texte: "Pourquoi l'appli Hydrao requiert l'activation de la géolocalisation pour se connecter ?" },
+              { numero: '8', texte: "Le concept Hydrao va-t-il être adapté au robinet ?" },
+              { numero: '9', texte: "Mes données sont-elles stockées sur un serveur ? Respectez-vous la RGPD ?" },
+              { numero: '10', texte: "Les lumières LED du pommeau ne s'allument pas." },
+            ] },
+          ] } },
+      ] },
+      { numero: 2, titre: "La FAQ du site Hydrao (assistance)", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m6/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'faqOnglets',
+            rubriques: [
+            { id: 'appli', nom: 'Appli Hydrao - Fonctionnalités', qr: [
+              { q: "Est-ce que j'ai besoin de me connecter après chaque douche pour récupérer les informations de consommation ?", r: "Non, les équipements HYDRAO sont équipés d'une mémoire interne capable de sauvegarder jusqu'à 200 douches. Vous pouvez donc connecter occasionnellement votre appli HYDRAO au pommeau pour mettre à jour votre historique de douche." },
+              { q: "L'application Hydrao peut-elle gérer plusieurs équipements Hydrao ?", r: "Avec la nouvelle appli HYDRAO (logo goutte blanche sur fond bleu) vous pouvez gérer jusqu'à 15 équipements HYDRAO différents." },
+              { q: "L'application est-elle disponible sur iOS et Android ?", r: "Oui, l'application HYDRAO est téléchargeable gratuitement sur l'App Store et sur Google Play." },
+              { q: "Puis-je suivre ma consommation d'eau sur plusieurs semaines ?", r: "Oui, l'application conserve votre historique de douches et vous permet de visualiser votre consommation dans le temps sous forme de graphiques." },
+              { q: "L'application permet-elle de fixer un objectif de consommation ?", r: "Oui, vous pouvez définir un volume d'eau cible par douche ; les LED changent de couleur au fur et à mesure que vous approchez de cet objectif." },
+              { q: "Puis-je partager mes données de douche avec les autres membres du foyer ?", r: "Oui, chaque équipement peut être associé à plusieurs profils afin que chaque membre du foyer suive sa propre consommation." },
+              { q: "L'application est-elle gratuite ?", r: "Oui, l'application HYDRAO est entièrement gratuite et sans achat intégré." },
+            ] },
+            { id: 'connexion', nom: 'Appli Hydrao - Connexion', qr: [
+              { q: "Pourquoi l'appli Hydrao requiert l'activation de la géolocalisation pour se connecter ?", r: "Il est nécessaire d'activer la localisation dans une application pour lui permettre de lancer la recherche d'un appareil Bluetooth Low Energy." },
+              { q: "Comment connecter mon pommeau à l'application ?", r: "Ouvrez l'application, activez le Bluetooth et la localisation de votre téléphone, puis lancez une douche : l'application détecte automatiquement le pommeau à proximité." },
+              { q: "Mon téléphone ne trouve pas le pommeau, que faire ?", r: "Vérifiez que le Bluetooth et la localisation sont activés, que l'eau coule (le pommeau est autoalimenté) et que vous êtes à proximité de l'équipement." },
+              { q: "Faut-il rester connecté pendant toute la douche ?", r: "Non, la mémoire interne enregistre vos douches ; une connexion occasionnelle suffit pour synchroniser l'historique." },
+              { q: "L'application fonctionne-t-elle en Bluetooth ou en Wi-Fi ?", r: "La connexion se fait en Bluetooth Low Energy (BLE 4.0), sans besoin de réseau Wi-Fi." },
+              { q: "Plusieurs téléphones peuvent-ils se connecter au même pommeau ?", r: "Oui, plusieurs smartphones peuvent se connecter au même équipement, chacun avec son profil." },
+              { q: "La connexion consomme-t-elle beaucoup de batterie ?", r: "Non, le Bluetooth Low Energy est conçu pour consommer très peu d'énergie sur votre téléphone." },
+            ] },
+            { id: 'install', nom: 'Installation', qr: [
+              { q: "Pourriez-vous m'expliquer comment je fais pour enlever le limiteur de débit ?", r: "Le limiteur peut se retirer à l'aide d'un outil simple (ex : tire-bouchon ou tournevis)." },
+              { q: "Je suis en France, est-ce que je peux remplacer mon pommeau actuel par un Hydrao ?", r: "Oui, le pas de vis du pommeau HYDRAO First ou Aloé est universel et il s'adapte à tous les flexibles de douche. Il suffit de visser le pommeau HYDRAO à votre flexible, d'ouvrir le robinet et cela fonctionne." },
+              { q: "Faut-il un plombier pour installer le pommeau ?", r: "Non, l'installation se fait sans outil de plomberie : il suffit de dévisser votre ancien pommeau et de visser le pommeau HYDRAO à la main." },
+              { q: "Le pommeau est-il compatible avec un flexible de douche standard ?", r: "Oui, grâce à son embout universel (mâle ½\"), le pommeau HYDRAO se monte sur tous les flexibles de douche du marché." },
+              { q: "Dois-je installer le limiteur de débit fourni ?", r: "Le limiteur de débit est fourni mais son installation est optionnelle : il permet de réduire encore la consommation d'eau." },
+              { q: "Combien de temps prend l'installation ?", r: "L'installation prend moins d'une minute : elle consiste simplement à visser le pommeau sur votre flexible." },
+              { q: "Le pommeau fonctionne-t-il dès la première utilisation ?", r: "Oui, le pommeau fonctionne automatiquement dès qu'il est installé et que l'eau circule ; aucune configuration préalable n'est nécessaire." },
+            ] },
+            { id: 'usage', nom: 'Usage des équipements Hydrao', qr: [
+              { q: "Pour l'entretien anti-calcaire, y-a-t-il des produits recommandés par Hydrao ?", r: "Nous vous conseillons de tremper le pommeau Aloé / le ciel de pluie Yucca / la douche fixe Céreus dans un bain de vinaigre blanc 1 à 2 fois par an pour éviter l'accumulation de calcaire." },
+              { q: "Les équipements Hydrao coupent-ils l'eau lorsque le palier rouge clignotant est atteint ?", r: "Non, le pommeau HYDRAO ne coupe pas l'eau. La pédagogie lumineuse de HYDRAO a pour but de conscientiser sa consommation et d'alerter en douceur pour adopter de meilleures habitudes de façon intuitive et ludique." },
+              { q: "Les lumières LED du pommeau ne s'allument pas. Que faire ?", r: "Cela est sûrement dû à une pression insuffisante en sortie de robinet pour alimenter la turbine du pommeau HYDRAO First ou Aloé. N'hésitez donc pas à ouvrir davantage votre robinet.\nSi cela ne suffit pas, réalisez le test de pression suivant : ouvrez le robinet à fond et retournez la tête du pommeau HYDRAO afin de faire une fontaine vers le haut, puis mesurez la hauteur du jet d'eau. Celle-ci doit être supérieure à 70 cm (soit 0,8 bar) pour que le pommeau fonctionne correctement.\nSi la hauteur du jet est supérieure à 70 cm, vous avez assez de pression : veuillez contacter notre service SAV. Si elle est inférieure à 70 cm, la pression n'est pas suffisante pour activer la pédagogie des lumières et la connectivité Bluetooth." },
+              { q: "À quoi correspondent les couleurs des LED ?", r: "Les LED changent de couleur au fur et à mesure de la douche (du vert au rouge) pour vous indiquer le volume d'eau consommé et vous aider à réduire votre consommation." },
+              { q: "Le pommeau fonctionne-t-il sans pile ni électricité ?", r: "Oui, le pommeau est autoalimenté par une turbine actionnée par l'eau qui coule : il ne nécessite ni pile ni branchement électrique." },
+              { q: "Quel est le débit d'eau du pommeau ?", r: "Le débit maximum est de 6,6 L/min avec le limiteur installé, soit une économie d'environ 45 % par rapport à un pommeau standard (12 L/min)." },
+              { q: "Puis-je utiliser le pommeau avec un chauffe-eau instantané ?", r: "Oui, le pommeau HYDRAO est compatible avec la plupart des installations, y compris les chauffe-eau instantanés, à condition d'avoir une pression suffisante." },
+            ] },
+            { id: 'autres', nom: 'Autres', qr: [
+              { q: "Le concept Hydrao va-t-il être adapté au robinet ?", r: "C'est une idée à laquelle nous pensons. Le défi technique est de miniaturiser le concept technique (turbine + électronique)." },
+              { q: "Mes données sont-elles stockées sur un serveur ? Respectez-vous la RGPD ?", r: "Soucieux de préserver les données personnelles de nos clients, nous respectons la RGPD. Vos données ne sont pas revendues à des tiers et toutes les analyses que nous effectuons en interne pour améliorer nos produits sont faites sur des données anonymisées." },
+              { q: "HYDRAO est-elle une entreprise française ?", r: "Oui, HYDRAO est une entreprise française : nos produits sont de conception française et notre technologie est brevetée." },
+              { q: "Proposez-vous des solutions pour les professionnels (hôtels, campings) ?", r: "Oui, HYDRAO propose une offre dédiée aux professionnels via sa gamme Solutions Pro, adaptée aux hôtels, campings et résidences." },
+              { q: "Existe-t-il un programme de parrainage ?", r: "Oui, HYDRAO propose un programme de parrainage : en parrainant un proche, vous et votre filleul bénéficiez d'avantages sur la boutique en ligne." },
+              { q: "Où puis-je acheter les produits HYDRAO ?", r: "Les produits HYDRAO sont disponibles sur notre boutique en ligne ainsi que chez nos revendeurs partenaires." },
+              { q: "Quels sont les délais de livraison ?", r: "La livraison est assurée sous 2 à 4 jours ouvrés." },
+            ] },
+            ] },
+          ] } },
+      ] },
+      { numero: 3, titre: "Message client sur le site Hydrao", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m6/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'titre', texte: "Formulaire de contact - Réclamation" },
+            { type: 'fiche', lignes: [
+              { label: 'Prénom, Nom / Name, Surname', valeur: 'Alban Bou' },
+              { label: 'Je suis / I am', valeur: 'particulier / customer' },
+              { label: 'Email', valeur: 'alban.bou@gmail.com' },
+              { label: 'Téléphone / Phone number', valeur: '06 93 79 35 XX' },
+              { label: 'Pièce jointe', valeur: '1 Photo   2 Facture   3 Extension de garantie' },
+              { label: 'Object / Subject', valeur: 'Pommeau' },
+            ] },
+            { type: 'sousTitre', texte: "Message" },
+            { type: 'paragraphes', textes: [
+              "Bonjour,",
+              "J'ai acheté un pommeau Hydrao à la Foire de Paris il y a environ 2 ans et demi. Tout se passait bien jusqu'à ce que les LED arrêtent de fonctionner sans raison.",
+              "Mercredi dernier j'ai appelé l'assistance qui m'a expliqué comment procéder. Cela a fonctionné encore 2 jours, puis plus rien.",
+              "J'ai tout revérifié comme me l'avait expliqué l'opérateur que j'ai eu au téléphone, mais rien n'y fait.",
+              "Je veux donc savoir ce qui va se passer.",
+              "En pièce jointe je vous ai mis 2 photos du pommeau, la facture et l'extension de garantie d'un an que j'avais prise.",
+              "Merci pour votre réponse.",
+            ] },
+          ] } },
+      ] },
+      { numero: 4, titre: "Compte rendu du SAV", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m6/logo-hydrao.png', couleurHeader: '#1E2A38',
+          sections: [
+            { type: 'titre', texte: "COMPTE RENDU" },
+            { type: 'fiche', lignes: [
+              { label: 'Réf produit', valeur: 'HYD6589' },
+              { label: 'Technicien SAV', valeur: 'Arnaud' },
+            ] },
+            { type: 'paragraphe', texte: "Après un diagnostic minutieux, nous constatons que le produit du client n'est pas réparable et qu'une solution autre est à privilégier." },
+          ] } },
+      ] },
+      { numero: 5, titre: "Consignes pour répondre à un problème client", texte: [
+        { docRiche: { site: 'www.hydrao.com', logo: '/docs/hydrao-m6/logo-hydrao.png', couleurHeader: '#0090D4',
+          sections: [
+            { type: 'article', titre: "NOTE", paragraphes: [
+              "Pour répondre par mail au problème d'un client par rapport à un produit qu'il a acheté :",
+              "Remercier le client pour sa confiance dans la marque ;",
+              "S'excuser pour le problème que le client a rencontré ;",
+              "Faire part au client de la solution trouvée ;",
+              "Indiquer au client qu'il recevra son nouveau produit dans 72h maximum (hors jour férié et week-end).",
+            ] },
+          ] } },
+      ] },
+    ],
+    objectifs: [
+      "Identifier la rubrique et la réponse adaptée à une question client.",
+      "Compléter un document de prise en charge SAV.",
+      "Rédiger une réponse par mail à une réclamation.",
+    ],
+    competence: {
+      groupe: 'Groupe de compétences 2',
+      intitule: 'Assurer le suivi de la vente',
+      detail: "C.2.3 - Traiter les retours et les réclamations du client.",
+    },
+    activites: [
+      { titre: "Activité 1 - Le traitement des réclamations",
+        contexte: "Des clients ont souscrit une garantie pour bénéficier d'une assistance téléphonique. Vous devez répondre à leurs questions à l'aide de la FAQ du site Hydrao.",
+        questions: [
+          { numero: 1, consigne: "Pour répondre aux questions des clients, indiquez la rubrique dans laquelle se trouve la réponse puis écrivez la réponse à lui donner.", ressources: "Lire le document 1, consulter la FAQ (document 2), compléter l'annexe 1.", annexeId: 'annexe1' },
+        ] },
+      { titre: "Activité 2 - Le service après-vente",
+        contexte: "Nous sommes lundi et vous traitez le problème qu'un client vous a soumis jeudi sur le site d'Hydrao.",
+        questions: [
+          { numero: 2, consigne: "Complétez le document de prise en charge en relisant la Mission 4 (document 1 : la garantie) puis en lisant les documents 3 et 4.", ressources: "Documents 3 et 4, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Traitez le problème du client en répondant à son message par mail.", ressources: "Lire le document 5, compléter l'annexe 3.", annexeId: 'annexe3' },
+        ] },
+    ],
+    annexes: [
+      { type: 'faqreponses', id: 'annexe1', titre: "Annexe 1 - Les réponses apportées",
+        entete: "Logiciel SAV HYDRAO - Réponses aux réclamations",
+        rubriques: ['Usage des équipements Hydrao', 'Installation', 'Appli Hydrao - Connexion', 'Appli Hydrao - Fonctionnalités', 'Autres'],
+        clients: [
+          { id: 'c1', numero: '1', question: "Est-ce que j'ai besoin de me connecter après chaque douche pour récupérer les informations de consommation ?" },
+          { id: 'c2', numero: '2', question: "Pourriez-vous m'expliquer comment je fais pour enlever le limiteur de débit ?" },
+          { id: 'c3', numero: '3', question: "Pour l'entretien anti-calcaire, y-a-t-il des produits recommandés par Hydrao ?" },
+          { id: 'c4', numero: '4', question: "L'application Hydrao peut-elle gérer plusieurs équipements Hydrao ?" },
+          { id: 'c5', numero: '5', question: "Les équipements Hydrao coupent-ils l'eau lorsque le palier rouge clignotant est atteint ?" },
+          { id: 'c6', numero: '6', question: "Je suis en France, est-ce que je peux remplacer mon pommeau actuel par un Hydrao ?" },
+          { id: 'c7', numero: '7', question: "Pourquoi l'appli Hydrao requiert l'activation de la géolocalisation pour se connecter ?" },
+          { id: 'c8', numero: '8', question: "Le concept Hydrao va-t-il être adapté au robinet ?" },
+          { id: 'c9', numero: '9', question: "Mes données sont-elles stockées sur un serveur ? Respectez-vous la RGPD ?" },
+          { id: 'c10', numero: '10', question: "Les lumières LED du pommeau ne s'allument pas." },
+        ] },
+      { type: 'savprisencharge', id: 'annexe2', titre: "Annexe 2 - Document de prise en charge SAV",
+        entete: "Logiciel SAV HYDRAO - Prise en charge",
+        lignes: [
+          { id: 'l1', produit: 'Pommeau', probleme: 'Panne' },
+          { id: 'l2', produit: 'Pommeau', probleme: 'Casse' },
+          { id: 'l3', produit: 'Flexible', probleme: 'Casse' },
+        ] },
+      { type: 'mail', id: 'annexe3', titre: "Annexe 3 - La réponse à M. Bou", deParDefaut: 'contact@hydrao.fr', aParDefaut: 'alban.bou@gmail.com' },
+    ],
+  },
+  corrige: {
+    questions: [
+      { intitule: "Les réponses apportées (annexe 1).", documents: ['Document 1', 'Document 2 (FAQ)', 'Annexe 1'], bareme: 10, reponse: "Voir tableau.",
+        tableau: { colonnes: ['Client', 'Rubrique', 'Réponse'], lignes: [
+          ['1', 'Appli Hydrao - Fonctionnalités', "Non, les équipements HYDRAO sont équipés d'une mémoire interne capable de sauvegarder jusqu'à 200 douches. Vous pouvez connecter occasionnellement votre appli au pommeau pour mettre à jour votre historique."],
+          ['2', 'Installation', "Le limiteur peut se retirer à l'aide d'un outil simple (ex : tire-bouchon ou tournevis)."],
+          ['3', 'Usage des équipements Hydrao', "Nous vous conseillons de tremper le pommeau Aloé / le ciel de pluie Yucca / la douche fixe Céreus dans un bain de vinaigre blanc 1 à 2 fois par an."],
+          ['4', 'Appli Hydrao - Fonctionnalités', "Avec la nouvelle appli HYDRAO vous pouvez gérer jusqu'à 15 équipements HYDRAO différents."],
+          ['5', 'Usage des équipements Hydrao', "Non, le pommeau HYDRAO ne coupe pas l'eau. La pédagogie lumineuse a pour but de conscientiser sa consommation et d'alerter en douceur."],
+          ['6', 'Installation', "Oui, le pas de vis du pommeau HYDRAO First ou Aloé est universel et s'adapte à tous les flexibles de douche."],
+          ['7', 'Appli Hydrao - Connexion', "Il est nécessaire d'activer la localisation pour permettre à l'application de lancer la recherche d'un appareil Bluetooth Low Energy."],
+          ['8', 'Autres', "C'est une idée à laquelle nous pensons. Le défi technique est de miniaturiser le concept (turbine + électronique)."],
+          ['9', 'Autres', "Soucieux de préserver les données personnelles, nous respectons la RGPD ; vos données ne sont pas revendues et les analyses internes sont faites sur des données anonymisées."],
+          ['10', 'Usage des équipements Hydrao', "Cela est sûrement dû à une pression insuffisante en sortie de robinet. Ouvrez davantage le robinet, puis réalisez le test de pression (jet supérieur à 70 cm = 0,8 bar)."],
+        ] } },
+      { intitule: "Document de prise en charge SAV (annexe 2).", documents: ['Documents 3 et 4', 'Annexe 2'], bareme: 5, reponse: "Client : NOM BOU, PRÉNOM Alban. Ligne 1 : Pommeau, Panne, Non réparable. Solution : envoyer un nouveau pommeau au client puisqu'il a souscrit une extension de garantie." },
+      { intitule: "La réponse à M. Bou (annexe 3).", documents: ['Document 5', 'Annexe 3'], bareme: 5, reponse: "Objet : Réponse à votre réclamation. Bonjour M. Bou, nous tenons tout d'abord à vous remercier d'avoir acheté un produit de la marque HYDRAO. Nous nous excusons pour les difficultés que vous rencontrez avec notre pommeau de douche modèle Aloé. Après l'étude de votre dossier, votre article étant toujours sous garantie, nous vous enverrons un nouveau pommeau de douche dans le délai de 72h (hors jour férié et week-end). Cordialement, Prénom et NOM." },
+    ],
+  },
+  synthese: {
+    titre: "Le traitement des réclamations et le service après-vente",
+    proposition: ['Réclamation', 'FAQ', 'Prise en charge SAV', 'Garantie', 'Réponse par mail'],
+    racine: {
+      id: 'racine', texte: "Mission 6 - Réclamations et SAV",
+      enfants: [
+        { id: 'rec', texte: "Traiter la réclamation", enfants: [ { id: 'r1', texte: null, reponse: 'FAQ' }, { id: 'r2', texte: null, reponse: 'Réclamation' } ] },
+        { id: 'sav', texte: "Assurer le SAV", enfants: [ { id: 's1', texte: null, reponse: 'Prise en charge SAV' }, { id: 's2', texte: null, reponse: 'Garantie' }, { id: 's3', texte: null, reponse: 'Réponse par mail' } ] },
+      ],
+    },
+  },
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Traiter une réclamation", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas où trouver la réponse à une question client." },
+        { niveau: 'debrouille', description: "Je trouve la réponse à quelques questions simples." },
+        { niveau: 'averti', description: "J'identifie la bonne rubrique et la réponse adaptée." },
+        { niveau: 'expert', description: "Je réponds à toutes les questions avec la bonne rubrique et la bonne réponse." },
+      ] },
+      { id: 'c2', intitule: "Assurer le service après-vente", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas remplir un document SAV." },
+        { niveau: 'debrouille', description: "Je remplis partiellement la prise en charge." },
+        { niveau: 'averti', description: "Je complète la prise en charge et je propose une solution." },
+        { niveau: 'expert', description: "Je complète le SAV et je rédige une réponse mail professionnelle." },
+      ] },
+    ],
+  },
+  activites: {
+    glossaire: [
+      { terme: "Réclamation", definition: "Expression d'un mécontentement ou d'un problème par un client." },
+      { terme: "Service après-vente (SAV)", definition: "Ensemble des services assurés après l'achat (assistance, réparation, échange)." },
+      { terme: "FAQ", definition: "Foire aux questions : rubriques regroupant les questions fréquentes et leurs réponses." },
+      { terme: "Prise en charge", definition: "Enregistrement et traitement du problème d'un client par le SAV." },
+      { terme: "Garantie", definition: "Engagement de prise en charge d'un défaut pendant une durée déterminée." },
+      { terme: "Extension de garantie", definition: "Garantie commerciale payante qui prolonge la garantie légale." },
+      { terme: "Compte rendu SAV", definition: "Document du technicien indiquant le diagnostic et la solution." },
+      { terme: "Produit non réparable", definition: "Produit qui ne peut être réparé et doit être remplacé ou remboursé." },
+      { terme: "Assistance téléphonique", definition: "Service d'aide au client par téléphone (ici au 0 800 81 15 15)." },
+      { terme: "RGPD", definition: "Règlement encadrant la protection des données personnelles." },
+    ],
+    flashcards: [
+      { recto: "Que faire en premier dans une réponse à une réclamation ?", verso: "Remercier le client pour sa confiance dans la marque." },
+      { recto: "Que faut-il faire après avoir remercié le client ?", verso: "S'excuser pour le problème rencontré." },
+      { recto: "Sous quel délai le nouveau produit est-il envoyé ?", verso: "72h maximum (hors jour férié et week-end)." },
+      { recto: "Combien de douches la mémoire interne sauvegarde-t-elle ?", verso: "Jusqu'à 200 douches." },
+      { recto: "Combien d'équipements l'appli peut-elle gérer ?", verso: "Jusqu'à 15 équipements." },
+      { recto: "Comment retirer le limiteur de débit ?", verso: "À l'aide d'un outil simple (tire-bouchon ou tournevis)." },
+      { recto: "Le pommeau coupe-t-il l'eau au palier rouge ?", verso: "Non, il alerte seulement par la pédagogie lumineuse." },
+      { recto: "Entretien anti-calcaire recommandé ?", verso: "Tremper dans du vinaigre blanc 1 à 2 fois par an." },
+      { recto: "Hauteur de jet minimale pour que le pommeau fonctionne ?", verso: "Supérieure à 70 cm (soit 0,8 bar)." },
+      { recto: "Que faire si le produit n'est pas réparable et sous garantie ?", verso: "Envoyer un nouveau produit au client." },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le numéro d'assistance téléphonique est le :", options: ['0 800 81 15 15', '0 800 15 81 15', '0 800 81 51 15', '0 800 18 15 15'], bonne: 0 },
+      { type: 'unique', question: "La mémoire interne sauvegarde jusqu'à :", options: ['200 douches', '100 douches', '50 douches', '15 douches'], bonne: 0 },
+      { type: 'unique', question: "L'appli Hydrao peut gérer jusqu'à :", options: ['15 équipements', '10 équipements', '5 équipements', '200 équipements'], bonne: 0 },
+      { type: 'unique', question: "Le limiteur de débit se retire avec :", options: ['Un tire-bouchon ou tournevis', 'Un marteau', 'Une pince coupante', 'Rien, il est fixe'], bonne: 0 },
+      { type: 'unique', question: "Au palier rouge clignotant, le pommeau :", options: ["Ne coupe pas l'eau", "Coupe l'eau", "Réduit la pression", "S'éteint"], bonne: 0 },
+      { type: 'unique', question: "Pour l'entretien anti-calcaire, on utilise :", options: ['Du vinaigre blanc', 'De la javel', 'Du savon noir', 'De l\'huile'], bonne: 0 },
+      { type: 'unique', question: "La hauteur de jet minimale est de :", options: ['70 cm', '50 cm', '90 cm', '30 cm'], bonne: 0 },
+      { type: 'unique', question: "Une réponse à une réclamation commence par :", options: ['Remercier le client', "S'excuser", 'Donner la solution', 'Indiquer le délai'], bonne: 0 },
+      { type: 'unique', question: "Le nouveau produit est envoyé sous :", options: ['72h maximum', '24h', '1 semaine', '15 jours'], bonne: 0 },
+      { type: 'unique', question: "Le produit de M. Bou est :", options: ['Non réparable et sous garantie', 'Réparable', 'Hors garantie', 'Non concerné'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque question client à la bonne rubrique de la FAQ.",
+      etiquettes: ['Appli Hydrao - Fonctionnalités', 'Appli Hydrao - Connexion', 'Installation', 'Usage des équipements Hydrao', 'Autres'],
+      zones: [
+        { libelle: "Se connecter après chaque douche ?", etiquetteIndex: 0 },
+        { libelle: "Gérer plusieurs équipements ?", etiquetteIndex: 0 },
+        { libelle: "Activation de la géolocalisation ?", etiquetteIndex: 1 },
+        { libelle: "Connecter le pommeau en Bluetooth ?", etiquetteIndex: 1 },
+        { libelle: "Enlever le limiteur de débit ?", etiquetteIndex: 2 },
+        { libelle: "Remplacer mon pommeau actuel ?", etiquetteIndex: 2 },
+        { libelle: "Produits anti-calcaire recommandés ?", etiquetteIndex: 3 },
+        { libelle: "Le pommeau coupe-t-il l'eau ?", etiquetteIndex: 3 },
+        { libelle: "Concept adapté au robinet ?", etiquetteIndex: 4 },
+        { libelle: "Respect de la RGPD ?", etiquetteIndex: 4 },
+      ],
+    },
+  },
+}
+
+// ---------------------------------------------------------------------------
 const CONTENUS: Record<string, ContenuMission> = {
+  'hydrao-m1': HYDRAO_M1,
+  'hydrao-m2': HYDRAO_M2,
+  'hydrao-m3': HYDRAO_M3,
+  'hydrao-m4': HYDRAO_M4,
+  'hydrao-m5': HYDRAO_M5,
+  'hydrao-m6': HYDRAO_M6,
+  'hydrao-m7': HYDRAO_M7,
+  'mamie-and-co-m1': MAMIE_CO_M1,
+  'mamie-and-co-m2': MAMIE_CO_M2,
+  'mamie-and-co-m3': MAMIE_CO_M3,
+  'mamie-and-co-m4': MAMIE_CO_M4,
+  'mamie-and-co-m5': MAMIE_CO_M5,
+  'mamie-and-co-m6': MAMIE_CO_M6,
+  'mamie-and-co-m7': MAMIE_CO_M7,
+  'mamie-and-co-m8': MAMIE_CO_M8,
+  'chausson-m1': CHAUSSON_M1,
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,
@@ -12787,6 +21104,14 @@ const CONTENUS: Record<string, ContenuMission> = {
   'peugeot-m3': PEUGEOT_M3,
   'peugeot-m4': PEUGEOT_M4,
   'peugeot-m5': PEUGEOT_M5,
+  'peugeot-m6': PEUGEOT_M6,
+  'peugeot-m7': PEUGEOT_M7,
+  'peugeot-m8': PEUGEOT_M8,
+  'peugeot-m9': PEUGEOT_M9,
+  'peugeot-m10': PEUGEOT_M10,
+  'peugeot-m11': PEUGEOT_M11,
+  'peugeot-m12': PEUGEOT_M12,
+  'peugeot-m13': PEUGEOT_M13,
 }
 
 // Charge le contenu d'une mission, ou undefined si non encore redige.
