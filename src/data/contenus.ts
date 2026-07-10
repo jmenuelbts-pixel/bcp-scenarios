@@ -1017,7 +1017,60 @@ export interface AnnexeSuiviCommande {
   lignes: LigneSuiviCommande[]
 }
 
-export type Annexe = AnnexeSuiviCommande | AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
+// Comparateur de prestataires facon logiciel d'achat : chaque transporteur est
+// une colonne, chaque critere une ligne. L'eleve saisit le cout par critere,
+// coche la conformite, calcule le total, puis choisit et justifie. Le moins
+// cher ne satisfait pas tous les criteres : la selection n'est pas un tri.
+export interface CritereSelection {
+  cle: string
+  libelle: string
+  aide?: string
+  // Si vrai, la ligne est une contrainte eliminatoire (case conforme / non conforme)
+  eliminatoire?: boolean
+}
+export interface PrestataireSelection {
+  cle: string
+  nom: string
+  sousTitre?: string
+  // valeurs fixes affichees (non saisissables), indexees par cle de critere
+  donnees: Record<string, string>
+}
+export interface AnnexeSelectionPrestataire {
+  type: 'selectionprestataire'
+  id: string
+  titre: string
+  entete: string
+  criteres: CritereSelection[]
+  prestataires: PrestataireSelection[]
+  // libelle de la ligne de total a calculer par l'eleve
+  libelleTotal: string
+  // question finale de justification
+  libelleChoix: string
+}
+
+// Bon de livraison a signer facon document transporteur : lignes livrees,
+// trois cases exclusives (conforme / reserve / refus) par ligne, zone de
+// reserves manuscrites, et bloc de signature avec date et heure.
+export interface LigneBonLivraison {
+  id: string
+  reference: string
+  designation: string
+  quantite: string
+  etat?: string // constat fait a l'arrivee, affiche en clair
+}
+export interface AnnexeBonLivraisonReserves {
+  type: 'bonlivraisonreserves'
+  id: string
+  titre: string
+  entete: string
+  numeroBL: string
+  transporteur: string
+  chantier: string
+  lignes: LigneBonLivraison[]
+  rappel?: string[] // rappel des regles affiche au bas du bon
+}
+
+export type Annexe = AnnexeSelectionPrestataire | AnnexeBonLivraisonReserves | AnnexeSuiviCommande | AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
 
 export interface QuestionTravaux {
   numero: number
@@ -4703,6 +4756,1015 @@ const CHAUSSON_M3: ContenuMission = {
         bareme: 2,
         complement:
           "Barème total de la mission : 32 points.\n\nQuatre éléments sont exigibles. Le rappel de ce qui a été convenu. Les deux accords écrits demandés, distinctement. La date limite de réponse. La conséquence de l'absence de réponse.\n\nPénaliser le mail qui demande un accord sans dire ce qui se passe si le client ne répond pas. « Sans cet accord, aucune livraison ne pourra partir » n'est pas une menace, c'est une information. Le client doit pouvoir mesurer l'enjeu de sa réponse.\n\nCe qui se joue en mission 4 : la livraison partielle du lundi 16 mars, le choix du transporteur, et la palette de parpaings cassée à l'arrivée.",
+      },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 4 - Le prestataire de livraison et le
+// suivi de son execution
+// Bloc 2 - Suivre les ventes : mettre en oeuvre le ou les service(s) associe(s).
+// Suite directe de la mission 3 : l'accord ecrit de M. Kadri est obtenu, la
+// livraison partielle du lundi 16 mars doit maintenant etre organisee.
+// Source : chausson.fr (CGV, FAQ, modes de retrait et de livraison), consultes
+// le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, sélectionnez le transporteur qui peut réellement livrer le chantier de Colombes, organisez la livraison, puis traitez le désordre constaté à l'arrivée en portant les réserves qui s'imposent.",
+    contexte:
+      "Vendredi 13 mars, 17 h 20. M. Kadri a répondu par mail : il accepte la livraison partielle et confirme les dix panneaux de treillis. La commande est débloquée. Il reste à la livrer lundi 16 mars à 7 heures sur le chantier de Colombes. Karim Zemmouri vous a laissé un mot : « Le camion grue de l'agence est immobilisé jusqu'à mercredi, boîte de vitesses. Tu prends un transporteur référencé. Tu regardes le chantier avant de choisir. » M. Ferreira ajoute : « Et lundi matin, tu y vas. Tu réceptionnes avec le client. »",
+    documents: [
+      // ---- Document 1 : l'accord de M. Kadri ------------------------------
+      {
+        numero: 1,
+        titre: "La réponse de M. Kadri, reçue le vendredi 13 mars à 16 h 48",
+        texte: [
+          {
+            mailLecture: {
+              de: 'r.kadri@batirenov.fr',
+              a: 'stagiaire@chausson.fr',
+              objet: 'RE : Commande 2026-4471 - confirmation de notre échange du 13 mars et accords demandés',
+              corps: [
+                "C'est noté, et merci d'avoir appelé au lieu d'attendre lundi.",
+                "J'accepte la livraison partielle du lundi 16 mars : parpaings, ciment, sable, gravier, treillis.",
+                "Je confirme dix panneaux de treillis soudé ST25C, et non cent. Je n'ai jamais commandé cent panneaux.",
+                "Les trente chevrons le jeudi 19 mars au matin, d'accord.",
+                "Un point de vigilance sur l'accès. Le chantier est au 14 rue des Vallées. C'est une rue étroite, un sens unique, et il n'y a pas de quai ni de plateforme. Le camion doit décharger depuis la rue, par-dessus le mur de clôture. Sans grue, personne ne décharge douze palettes de parpaings à la main.",
+                "Je serai sur place à 7 heures avec Youssef, mon chef de chantier. C'est lui qui signera le bon si je suis au téléphone.",
+                'Rachid Kadri',
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 2 : les contraintes du chantier -----------------------
+      {
+        numero: 2,
+        titre: "Les contraintes du chantier de Colombes, relevées par la commerciale itinérante",
+        texte: [
+          {
+            paragraphes: [
+              "Fiche établie par Marion Leclerc, commerciale itinérante, lors de sa visite du chantier le 6 mars 2026. Cette fiche est consultable dans le dossier client. Elle n'a pas été lue lors de la saisie de la commande.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Élément relevé', 'Constat', 'Conséquence pour la livraison'],
+              lignes: [
+                ['Adresse', '14 rue des Vallées, 92700 Colombes', 'Distance agence de Gennevilliers : 6 km'],
+                ['Largeur de la rue', '3,20 mètres, sens unique', 'Un semi-remorque ne passe pas. Porteur uniquement.'],
+                ['Stationnement', 'Interdit sauf livraison, 30 minutes maximum', 'Le déchargement doit être rapide'],
+                ['Quai de déchargement', 'Aucun', 'Le camion doit décharger depuis la chaussée'],
+                ['Plateforme de retournement', 'Aucune', 'Le camion repart en marche arrière sur 40 mètres'],
+                ['Obstacle', 'Mur de clôture de 1,80 mètre entre la rue et le terrain', 'Les palettes doivent être levées par-dessus le mur'],
+                ['Engin de levage sur place', 'Grue de location, en service à partir de 8 heures', 'Indisponible à 7 heures, heure de la livraison'],
+                ['Main-d\u2019œuvre disponible', 'Six compagnons, occupés au mur porteur', 'Aucun déchargement manuel possible'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Le poids et le volume à livrer le lundi 16 mars',
+          },
+          {
+            tableau: {
+              colonnes: ['Référence', 'Désignation', 'Quantité', 'Unité de manutention', 'Poids'],
+              lignes: [
+                ['OBR-PAR20', 'Parpaing creux 20x20x50', '12 palettes', '12 palettes', '12 x 1 080 kg = 12 960 kg'],
+                ['OBR-CIM35', 'Ciment CEM II, sac de 35 kg', '80 sacs', '2 palettes', '2 800 kg'],
+                ['OBR-SAB01', 'Sable à maçonner, big bag', '6 big bags', '6 big bags', '6 000 kg'],
+                ['OBR-GRA02', 'Gravier 4/20, big bag', '4 big bags', '4 big bags', '4 000 kg'],
+                ['OBR-TRE10', 'Treillis soudé ST25C, 6x2,40 m', '10 panneaux', '1 fardeau', '480 kg'],
+                ['', 'TOTAL', '', '25 unités de manutention', '26 240 kg'],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Une palette de 60 parpaings creux de 20x20x50 pèse environ 1 080 kilogrammes. Un big bag de sable ou de gravier pèse une tonne. Additionnez avant de choisir un camion : la limite de charge n'est pas une recommandation.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : les trois transporteurs referencés -----------------
+      {
+        numero: 3,
+        titre: "Les trois transporteurs référencés par l'agence",
+        texte: [
+          {
+            offresPrestation: [
+              {
+                titre: 'TRANSPORTS MERCIER',
+                prix: '210,00 € HT',
+                prixLibelle: 'forfait pour la zone 1',
+                filAriane: 'Transporteur référencé, niveau 3',
+                note: '4,1',
+                avis: '58 livraisons réalisées pour l\u2019agence en 2025',
+                details: [
+                  'Semi-remorque plateau, 30 tonnes de charge utile',
+                  'Longueur du véhicule : 16,50 mètres',
+                  'Aucun moyen de levage embarqué',
+                  'Déchargement à la charge du destinataire',
+                  'Zone 1 : jusqu\u2019à 20 km de l\u2019agence',
+                ],
+                conditions: [
+                  'Créneau de livraison garanti à une demi-journée près',
+                  'Temps d\u2019attente facturé 45 € HT par demi-heure au-delà de 30 minutes',
+                ],
+                engagements: [
+                  { titre: 'Charge utile', texte: '30 000 kg' },
+                  { titre: 'Hayon ou grue', texte: 'Non' },
+                  { titre: 'Largeur de rue minimale', texte: '4,50 mètres' },
+                ],
+              },
+              {
+                titre: 'STL LOGISTIQUE',
+                prix: '295,00 € HT',
+                prixLibelle: 'forfait pour la zone 1',
+                filAriane: 'Transporteur référencé, niveau 2',
+                note: '4,4',
+                avis: '31 livraisons réalisées pour l\u2019agence en 2025',
+                details: [
+                  'Porteur 26 tonnes avec hayon élévateur arrière',
+                  'Longueur du véhicule : 9,80 mètres',
+                  'Hayon : capacité de levage 2 000 kg, hauteur de levée 1,40 mètre',
+                  'Déchargement au sol, à l\u2019arrière du véhicule',
+                  'Zone 1 : jusqu\u2019à 20 km de l\u2019agence',
+                ],
+                conditions: [
+                  'Créneau de livraison garanti à une heure près',
+                  'Temps d\u2019attente facturé 38 € HT par demi-heure au-delà de 30 minutes',
+                ],
+                engagements: [
+                  { titre: 'Charge utile', texte: '17 500 kg' },
+                  { titre: 'Hayon ou grue', texte: 'Hayon, levée 1,40 m' },
+                  { titre: 'Largeur de rue minimale', texte: '3,00 mètres' },
+                ],
+              },
+              {
+                titre: 'GRUTAGE SEINE-NORD',
+                prix: '380,00 € HT',
+                prixLibelle: 'forfait pour la zone 1',
+                filAriane: 'Transporteur référencé, niveau 1',
+                note: '4,6',
+                avis: '17 livraisons réalisées pour l\u2019agence en 2025',
+                details: [
+                  'Porteur 26 tonnes équipé d\u2019une grue auxiliaire',
+                  'Longueur du véhicule : 10,20 mètres',
+                  'Grue : portée 8 mètres, capacité 3 000 kg à 5 mètres',
+                  'Déchargement par-dessus obstacle possible',
+                  'Zone 1 : jusqu\u2019à 20 km de l\u2019agence',
+                ],
+                conditions: [
+                  'Créneau de livraison garanti à une heure près',
+                  'Temps d\u2019attente facturé 52 € HT par demi-heure au-delà de 30 minutes',
+                  'Deux rotations nécessaires si la charge dépasse la charge utile',
+                ],
+                engagements: [
+                  { titre: 'Charge utile', texte: '15 500 kg' },
+                  { titre: 'Hayon ou grue', texte: 'Grue, portée 8 m' },
+                  { titre: 'Largeur de rue minimale', texte: '3,10 mètres' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 4 : la grille de facturation des rotations -------------
+      {
+        numero: 4,
+        titre: 'La règle de facturation des rotations et des majorations',
+        texte: [
+          {
+            paragraphes: [
+              "Le forfait annoncé par chaque transporteur couvre une rotation, c'est-à-dire un aller et un retour, dans la limite de sa charge utile. Toute rotation supplémentaire est facturée au même tarif que la première.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Élément facturé', 'Règle', 'Montant'],
+              lignes: [
+                ['Rotation supplémentaire', 'Charge à livrer supérieure à la charge utile du véhicule', 'Forfait complet, par rotation'],
+                ['Livraison avant 8 heures', 'Majoration horaire matinale', '+ 60,00 € HT par rotation'],
+                ['Attente sur site', 'Au-delà de 30 minutes', 'Selon le tarif de chaque transporteur'],
+                ['Rue de moins de 3,50 mètres', 'Manœuvre difficile', '+ 40,00 € HT par rotation'],
+                ['Annulation moins de 24 h avant', 'Créneau réservé non honoré', '50 % du forfait'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Ce que dit la note de la direction sur les frais de transport',
+          },
+          {
+            noteDirection: {
+              titre: "Frais de livraison et refacturation au client",
+              intro: "Note applicable aux agences de la région Île-de-France.",
+              paragraphe:
+                "Les frais de transport ne sont pas un poste secondaire. Sur une commande de matériaux, ils représentent souvent la différence entre une affaire rentable et une affaire à perte.",
+              puces: [
+                "Le forfait de livraison facturé au client professionnel est celui qui figure au devis. Il ne peut être modifié après la signature du client.",
+                "Tout dépassement du forfait facturé au client est supporté par l'agence, et impute sa marge.",
+                "Le choix du transporteur relève du commercial en charge de la commande. Il engage l'agence.",
+                "Un transporteur qui ne peut matériellement pas accéder au chantier ou décharger la marchandise n'est pas une option, quel que soit son prix. Un camion qui repart chargé coûte le forfait, plus la relivraison, plus le client.",
+                "Ne jamais retenir un prestataire sur le seul critère du prix. Vérifier d'abord l'accès, le déchargement et la charge utile. Comparer ensuite les prix entre les prestataires qui restent.",
+              ],
+              conclusion:
+                "Un devis de transport se lit du bas vers le haut : les contraintes d'abord, le prix ensuite.",
+              signature: 'Direction régionale Île-de-France',
+            },
+          },
+          {
+            intertitre: 'Ce qui a été facturé au client',
+          },
+          {
+            paragraphes: [
+              "Le devis DV-2026-1187, signé par M. Kadri le 11 mars, porte une ligne « Livraison sur chantier, forfait » d'un montant de 280,00 euros hors taxes. Ce montant est ferme.",
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 5 : le bon de livraison type et ses mentions -----------
+      {
+        numero: 5,
+        titre: "Le bon de livraison et la valeur des réserves",
+        texte: [
+          {
+            docRiche: {
+              site: 'www.chausson.fr/pages/faq',
+              marque: 'Chausson Matériaux',
+              couleurHeader: '#005CA9',
+              menu: ['Aide', 'Mes commandes', 'Nous contacter'],
+              sections: [
+                { type: 'titre', texte: 'À la réception de votre marchandise' },
+                {
+                  type: 'paragraphe',
+                  texte:
+                    "En présence du livreur, vérifiez bien l'état et le contenu de votre colis.",
+                },
+                {
+                  type: 'puces',
+                  items: [
+                    "N'hésitez pas à notifier précisément sur le bordereau du transporteur toute anomalie : ouvert, endommagé, mouillé, re-scotché, produit manquant.",
+                    'La mention « Sous réserve de déballage » n\u2019est pas suffisante.',
+                    "Pour toute réception de marchandise, spécifiquement si celle-ci est encombrante et coûteuse, veillez à bien vérifier l'état extérieur ET intérieur du colis avant de l'accepter.",
+                    'Si vous refusez la marchandise, notez la mention « refusé pour avarie » sur le bon du transporteur.',
+                  ],
+                },
+                { type: 'sousTitre', texte: 'Ce que disent les conditions générales de vente' },
+                {
+                  type: 'paragraphes',
+                  textes: [
+                    "Les réserves prises par le destinataire à la livraison constituent des moyens de preuve de l'existence et de l'importance du dommage.",
+                    "L'Acheteur doit veiller à identifier le produit par sa nature ou sa référence et être le plus précis possible sur les réserves émises. La simple mention « sous réserve de déballage » est considérée comme trop générale et imprécise.",
+                  ],
+                },
+                {
+                  type: 'procedureEtapes',
+                  etapes: [
+                    { titre: 'Identifier le produit', detail: "Par sa nature ou sa référence. « Une palette abîmée » ne suffit pas. « Palette n° 7, référence OBR-PAR20 » est une réserve." },
+                    { titre: 'Décrire précisément le dommage', detail: "Nombre d'unités concernées, nature du dommage, localisation. Chiffrez." },
+                    { titre: 'Faire co-signer par le transporteur', detail: "Une réserve non co-signée par le chauffeur perd sa valeur de preuve." },
+                    { titre: 'Informer le vendeur dans les délais', detail: "Dans un délai de trois jours ouvrés suivant la livraison, par courrier recommandé ou en contactant le service client, en précisant le numéro de la commande concernée." },
+                  ],
+                },
+                { type: 'sousTitre', texte: 'La réclamation du client professionnel' },
+                {
+                  type: 'paragraphe',
+                  texte:
+                    "En cas de livraison non conforme ou sujette à litige, les réclamations doivent nous être adressées par écrit dans les huit jours qui suivent la réception de la marchandise et avant toute mise en œuvre.",
+                },
+                {
+                  type: 'citation',
+                  texte:
+                    "Les risques de dégradation, destruction ou perte de marchandises, même par cas fortuit ou cas de force majeure, sont transférés au client dès la livraison des marchandises vendues sous réserve de propriété.",
+                  auteur: 'Conditions générales de vente, clause de réserve de propriété',
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 6 : la livraison du lundi matin ------------------------
+      {
+        numero: 6,
+        titre: 'Ce qui se passe le lundi 16 mars à 7 h 05 sur le chantier',
+        texte: [
+          {
+            paragraphes: [
+              "Vous êtes sur place avec Youssef Ben Amar, chef de chantier de BATIRENOV. M. Kadri est au téléphone avec un fournisseur, à vingt mètres. Le camion est arrivé à 6 h 58. Le chauffeur commence le déchargement.",
+            ],
+          },
+          {
+            dialogue: [
+              { locuteur: 'Le chauffeur', texte: "Voilà, j'ai tout posé derrière le mur. Vous me signez le bon ?" },
+              { locuteur: 'Youssef', texte: "Attendez. La septième palette, là, celle du fond. Regardez le coin." },
+              { locuteur: 'Le chauffeur', texte: "Ah oui. Le film est déchiré, ça a dû bouger au freinage." },
+              { locuteur: 'Youssef', texte: "Ça n'a pas bougé, ça s'est cassé. Il y a des parpaings fendus dessous." },
+              { locuteur: 'Vous', texte: "On compte." },
+              { locuteur: 'Youssef', texte: "Neuf. Neuf parpaings fendus sur la palette 7. Les autres palettes sont bonnes." },
+              { locuteur: 'Le chauffeur', texte: "Bon, écoutez, moi j'ai une autre livraison à 8 h. Vous notez « sous réserve de déballage » et on n'en parle plus. C'est ce qu'on fait d'habitude." },
+              { locuteur: 'Youssef', texte: "Je ne signe pas ça. Le patron va me tuer." },
+              { locuteur: 'Le chauffeur', texte: "Alors vous refusez toute la livraison ? Douze palettes ? Vous voulez que je remballe ?" },
+              { locuteur: 'Vous', texte: '[C\u2019est à vous de décider]' },
+            ],
+          },
+          {
+            intertitre: 'Les éléments à connaître avant de décider',
+          },
+          {
+            encadresListes: [
+              {
+                titre: 'La palette 7',
+                lignes: [
+                  'Palette de 60 parpaings creux, référence OBR-PAR20.',
+                  'Neuf parpaings fendus, constatés visuellement, film de protection déchiré sur un angle.',
+                  'Cinquante et un parpaings intacts sur la même palette.',
+                  'Valeur unitaire du parpaing : 148,00 € HT la palette de 60, soit 2,47 € HT par parpaing avant remise.',
+                ],
+              },
+              {
+                titre: 'Le chantier',
+                lignes: [
+                  'Six compagnons montent le mur porteur ce jour, à partir de 8 heures.',
+                  'La grue de location est facturée à la journée, présente à partir de 8 heures.',
+                  "M. Kadri a chiffré à 1 400 euros le coût d'une journée perdue.",
+                  "Le mur porteur nécessite environ 640 parpaings. Douze palettes en fournissent 720.",
+                ],
+              },
+              {
+                titre: "Le camion et l'heure",
+                lignes: [
+                  'Le stationnement est autorisé 30 minutes maximum. Il est 7 h 05.',
+                  "Le chauffeur annonce une autre livraison à 8 heures.",
+                  'Le temps d\u2019attente au-delà de 30 minutes est facturé à l\u2019agence, pas au client.',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 7 : les trois issues possibles -------------------------
+      {
+        numero: 7,
+        titre: 'Les trois décisions possibles et leurs conséquences',
+        texte: [
+          {
+            paragraphes: [
+              "Trois décisions sont matériellement possibles à 7 h 05. Une seule est professionnellement correcte. Chacune a un coût, un risque et une trace.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Décision', 'Ce qui se passe immédiatement', 'Ce qui se passe ensuite', 'Coût pour le client', "Coût pour l'agence"],
+              lignes: [
+                [
+                  'A. Signer sans réserve',
+                  'Le chauffeur repart, le chantier démarre à 8 heures.',
+                  "Aucune preuve du dommage. Les CGV transfèrent les risques au client dès la livraison. Toute réclamation ultérieure est irrecevable.",
+                  '9 parpaings perdus, non remboursés',
+                  'Aucun coût immédiat. Un client qui découvre le piège.',
+                ],
+                [
+                  'B. Refuser la totalité de la livraison',
+                  'Le camion repart chargé. Le chantier ne démarre pas.',
+                  "Relivraison à organiser, au plus tôt le mardi 17. Le forfait de la rotation reste dû.",
+                  '1 400 € de journée perdue, plus la grue',
+                  'Forfait de transport perdu, plus une relivraison',
+                ],
+                [
+                  'C. Accepter avec réserve précise sur la palette 7',
+                  "Le chauffeur repart, le chantier démarre à 8 heures avec 711 parpaings intacts.",
+                  "La réserve co-signée fait preuve. Le vendeur est informé dans les trois jours ouvrés. L'avoir ou le remplacement est traité au titre du bloc 2.",
+                  'Aucun. Le mur nécessite 640 parpaings.',
+                  '9 parpaings à créditer, recours possible contre le transporteur',
+                ],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Le chauffeur propose la mention « sous réserve de déballage ». Les conditions générales de vente et la FAQ de l'entreprise disent toutes deux, dans les mêmes termes, que cette mention est trop générale et imprécise. Elle ne vaut rien. Le chauffeur ne le sait peut-être pas. Vous, si.",
+              ],
+            },
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: 'Activité 1 - Sélectionner le transporteur',
+        contexte:
+          "Le camion grue de l'agence est immobilisé. Trois transporteurs sont référencés. Le moins cher est à 210 euros, le plus cher à 380. Karim Zemmouri vous a dit de regarder le chantier avant de choisir. La fiche de Marion Leclerc est dans le dossier client depuis le 6 mars. Personne ne l'a ouverte.",
+        questions: [
+          {
+            numero: 1,
+            consigne:
+              "Pour chaque transporteur, reportez les données, vérifiez la conformité aux trois contraintes éliminatoires du chantier, calculez le coût total de la livraison, puis désignez le transporteur retenu et justifiez.",
+            ressources: "Lire les documents 2, 3 et 4, compléter l'annexe 1.",
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Le transporteur le moins cher est éliminé par trois contraintes distinctes. Nommez-les, et indiquez pour chacune ce qui se passerait concrètement si le camion se présentait rue des Vallées le lundi 16 mars à 7 heures.",
+            ressources: "Lire les documents 1, 2 et 3, compléter l'annexe 2.",
+            annexeId: 'annexe2',
+          },
+          {
+            numero: 3,
+            consigne:
+              "Calculez la marge de l'agence sur la ligne transport, sachant que le forfait facturé au client est de 280,00 euros HT et qu'il est ferme. Puis indiquez si ce dépassement pouvait être évité, et par qui.",
+            ressources: "Lire les documents 2, 3 et 4, compléter l'annexe 3.",
+            annexeId: 'annexe3',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 2 - Réceptionner et porter les réserves',
+        contexte:
+          "Lundi 16 mars, 7 h 05, rue des Vallées. Neuf parpaings sont fendus sur la palette 7. Le chauffeur veut repartir. Youssef refuse de signer une mention qu'il ne comprend pas. M. Kadri est au téléphone à vingt mètres. Vous avez trois minutes pour décider.",
+        questions: [
+          {
+            numero: 4,
+            consigne:
+              "Le chauffeur propose la mention « sous réserve de déballage ». Expliquez pourquoi vous la refusez, en citant les deux documents de l'entreprise qui la déclarent insuffisante.",
+            ressources: "Lire les documents 5 et 6, compléter l'annexe 4.",
+            annexeId: 'annexe4',
+          },
+          {
+            numero: 5,
+            consigne:
+              "Complétez le bon de livraison : pour chaque ligne, cochez conforme, réserve ou refus, et rédigez la réserve lorsqu'elle s'impose. Renseignez la date, l'heure, le signataire et la co-signature.",
+            ressources: "Lire les documents 5 et 6, compléter l'annexe 5.",
+            annexeId: 'annexe5',
+          },
+          {
+            numero: 6,
+            consigne:
+              "Comparez les trois décisions possibles. Pour chacune, indiquez le coût pour le client, le coût pour l'agence et le risque juridique. Désignez celle que vous retenez et justifiez en trois lignes.",
+            ressources: "Lire les documents 5, 6 et 7, compléter l'annexe 6.",
+            annexeId: 'annexe6',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 3 - Rendre compte de la livraison',
+        contexte:
+          "Il est 8 h 10. Le camion est parti, le chantier a démarré, la réserve est portée et co-signée. Vous rentrez à l'agence. M. Ferreira vous attend. Les conditions générales de vente imposent d'informer le vendeur dans les trois jours ouvrés.",
+        questions: [
+          {
+            numero: 7,
+            consigne:
+              "Rédigez le compte rendu de livraison à M. Ferreira : ce qui a été livré, ce qui a été constaté, la décision prise, les suites à donner et les délais à respecter.",
+            ressources: "Lire l'ensemble des documents, compléter l'annexe 7.",
+            annexeId: 'annexe7',
+          },
+          {
+            numero: 8,
+            consigne:
+              "Indiquez les trois délais que l'agence doit respecter après cette livraison, la date limite de chacun, et ce qui se passe si le délai n'est pas tenu.",
+            ressources: "Lire le document 5, compléter l'annexe 8.",
+            annexeId: 'annexe8',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'selectionprestataire',
+        id: 'annexe1',
+        titre: 'Annexe 1 - Comparateur des transporteurs référencés',
+        entete: 'CHAUSSON ACHATS - Sélection transporteur - Commande 2026-4471',
+        criteres: [
+          {
+            cle: 'largeur',
+            libelle: 'Largeur de rue minimale',
+            aide: 'La rue des Vallées mesure 3,20 m',
+            eliminatoire: true,
+          },
+          {
+            cle: 'dechargement',
+            libelle: 'Moyen de déchargement',
+            aide: 'Mur de 1,80 m à franchir, aucune main-d\u2019œuvre, aucune grue avant 8 h',
+            eliminatoire: true,
+          },
+          {
+            cle: 'charge',
+            libelle: 'Charge utile du véhicule',
+            aide: 'Charge à livrer : 26 240 kg',
+            eliminatoire: true,
+          },
+          { cle: 'forfait', libelle: 'Forfait de base par rotation', aide: 'En euros HT' },
+          { cle: 'rotations', libelle: 'Nombre de rotations nécessaires', aide: 'Charge à livrer divisée par charge utile, arrondi au supérieur' },
+          { cle: 'matinale', libelle: 'Majoration livraison avant 8 heures', aide: '60,00 € HT par rotation' },
+          { cle: 'rueEtroite', libelle: 'Majoration rue de moins de 3,50 m', aide: '40,00 € HT par rotation' },
+        ],
+        prestataires: [
+          {
+            cle: 'mercier',
+            nom: 'TRANSPORTS MERCIER',
+            sousTitre: 'Semi-remorque plateau',
+            donnees: {
+              largeur: 'Rue de 4,50 m minimum',
+              dechargement: 'Aucun moyen de levage embarqué',
+              charge: '30 000 kg',
+              forfait: '210,00 € HT',
+            },
+          },
+          {
+            cle: 'stl',
+            nom: 'STL LOGISTIQUE',
+            sousTitre: 'Porteur 26 t avec hayon',
+            donnees: {
+              largeur: 'Rue de 3,00 m minimum',
+              dechargement: 'Hayon, levée 1,40 m, capacité 2 000 kg',
+              charge: '17 500 kg',
+              forfait: '295,00 € HT',
+            },
+          },
+          {
+            cle: 'grutage',
+            nom: 'GRUTAGE SEINE-NORD',
+            sousTitre: 'Porteur 26 t avec grue',
+            donnees: {
+              largeur: 'Rue de 3,10 m minimum',
+              dechargement: 'Grue, portée 8 m, 3 000 kg à 5 m',
+              charge: '15 500 kg',
+              forfait: '380,00 € HT',
+            },
+          },
+        ],
+        libelleTotal: 'Coût total de la livraison en euros HT',
+        libelleChoix:
+          "Quel transporteur retenez-vous ? Justifiez en citant d'abord les contraintes, ensuite le prix, conformément à la note de la direction.",
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: "Annexe 2 - Pourquoi le moins cher est éliminé",
+        colonnes: ['Contrainte du chantier', 'Ce que propose Transports Mercier', 'Ce qui se passerait le 16 mars à 7 heures'],
+        nbLignes: 3,
+        prerempli: [
+          ['Contrainte n° 1 :', '', ''],
+          ['Contrainte n° 2 :', '', ''],
+          ['Contrainte n° 3 :', '', ''],
+        ],
+        largeurs: ['26%', '30%', '44%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe3',
+        titre: "Annexe 3 - La marge de l'agence sur la ligne transport",
+        colonnes: ['Libellé', 'Montant ou réponse'],
+        nbLignes: 6,
+        prerempli: [
+          ['Forfait de livraison facturé au client, ferme', ''],
+          ['Coût réel du transporteur retenu', ''],
+          ["Marge de l'agence sur la ligne transport", ''],
+          ['Ce résultat est-il un gain ou une perte ?', ''],
+          ['Ce dépassement pouvait-il être évité ? Comment ?', ''],
+          ["Qui aurait dû consulter la fiche de Marion Leclerc, et à quel moment ?", ''],
+        ],
+        largeurs: ['44%', '56%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'texte',
+        id: 'annexe4',
+        titre: "Annexe 4 - Le refus de la mention « sous réserve de déballage »",
+        lignes: 7,
+      },
+      {
+        type: 'bonlivraisonreserves',
+        id: 'annexe5',
+        titre: 'Annexe 5 - Le bon de livraison à compléter et à signer',
+        entete: 'BON DE LIVRAISON - À signer contradictoirement à la réception',
+        numeroBL: 'BL-2026-09934',
+        transporteur: 'GRUTAGE SEINE-NORD',
+        chantier: '14 rue des Vallées, 92700 Colombes',
+        lignes: [
+          { id: 'l1', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50, palettes 1 à 6', quantite: '6 palettes', etat: 'Films intacts, angles sains' },
+          { id: 'l2', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50, palette 7', quantite: '1 palette', etat: 'Film déchiré sur un angle. Neuf parpaings fendus constatés visuellement. Cinquante et un parpaings intacts.' },
+          { id: 'l3', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50, palettes 8 à 12', quantite: '5 palettes', etat: 'Films intacts, angles sains' },
+          { id: 'l4', reference: 'OBR-CIM35', designation: 'Ciment CEM II 32,5 R, sac de 35 kg', quantite: '80 sacs', etat: 'Sacs secs, aucun sac éventré' },
+          { id: 'l5', reference: 'OBR-SAB01', designation: 'Sable à maçonner 0/4, big bag 1 tonne', quantite: '6 big bags', etat: 'Big bags fermés, sangles intactes' },
+          { id: 'l6', reference: 'OBR-GRA02', designation: 'Gravier 4/20, big bag 1 tonne', quantite: '4 big bags', etat: 'Big bags fermés, sangles intactes' },
+          { id: 'l7', reference: 'OBR-TRE10', designation: 'Treillis soudé ST25C, panneau 6x2,40 m', quantite: '10 panneaux', etat: 'Fardeau cerclé, panneaux non déformés' },
+        ],
+        rappel: [
+          "Identifier le produit par sa nature ou sa référence. « Une palette abîmée » n'est pas une réserve.",
+          'Décrire précisément le dommage : nombre d\u2019unités, nature, localisation. Chiffrez.',
+          "La mention « sous réserve de déballage » est considérée comme trop générale et imprécise.",
+          'Faire co-signer les réserves par le transporteur, sans quoi elles perdent leur valeur de preuve.',
+          "Informer le vendeur dans un délai de trois jours ouvrés suivant la livraison.",
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe6',
+        titre: 'Annexe 6 - Comparaison des trois décisions',
+        colonnes: ['Décision', 'Coût pour le client', "Coût pour l'agence", 'Risque juridique'],
+        nbLignes: 4,
+        prerempli: [
+          ['A. Signer sans réserve', '', '', ''],
+          ['B. Refuser la totalité', '', '', ''],
+          ['C. Accepter avec réserve précise', '', '', ''],
+          ['Décision retenue et justification en trois lignes :', '', '', ''],
+        ],
+        largeurs: ['26%', '24%', '24%', '26%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'compterendu',
+        id: 'annexe7',
+        titre: 'Annexe 7 - Compte rendu de livraison à M. Ferreira',
+        entete: 'Note interne - Agence de Gennevilliers',
+        champsEntete: [
+          { id: 'objet', label: 'Objet' },
+          { id: 'date', label: 'Date et heure' },
+          { id: 'redacteur', label: 'Rédacteur' },
+        ],
+        sections: [
+          { id: 'livre', titre: 'Ce qui a été livré', indice: 'Références, quantités, transporteur retenu.' },
+          { id: 'constat', titre: 'Ce qui a été constaté', indice: 'Chiffrez. Nommez la palette et la référence.' },
+          { id: 'decision', titre: 'La décision prise sur place et sa justification', indice: 'Pourquoi ni A ni B.' },
+          { id: 'suites', titre: 'Les suites à donner, par qui et avant quand', indice: 'Trois délais à respecter.' },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe8',
+        titre: "Annexe 8 - Les trois délais à respecter",
+        colonnes: ['Délai', 'Ce qui doit être fait', 'Date limite', "Ce qui se passe si le délai n'est pas tenu"],
+        nbLignes: 3,
+        prerempli: [
+          ['Délai n° 1', '', '', ''],
+          ['Délai n° 2', '', '', ''],
+          ['Délai n° 3', '', '', ''],
+        ],
+        largeurs: ['12%', '30%', '22%', '36%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: 'Mettre en œuvre le service de livraison',
+    proposition: [
+      'Accès au chantier',
+      'Moyen de déchargement',
+      'Charge utile',
+      'Contraintes puis prix',
+      'Réserve précise',
+      'Co-signature',
+      'Trois jours ouvrés',
+      'Huit jours',
+      'Avoir ou remplacement',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Organiser et contrôler une livraison sur chantier',
+      enfants: [
+        {
+          id: 'choisir',
+          texte: 'Choisir le prestataire',
+          enfants: [
+            { id: 'ch-1', texte: null, reponse: 'Accès au chantier' },
+            { id: 'ch-2', texte: null, reponse: 'Moyen de déchargement' },
+            { id: 'ch-3', texte: null, reponse: 'Charge utile' },
+          ],
+        },
+        {
+          id: 'receptionner',
+          texte: 'Réceptionner la marchandise',
+          enfants: [
+            { id: 're-1', texte: null, reponse: 'Contraintes puis prix' },
+            { id: 're-2', texte: null, reponse: 'Réserve précise' },
+            { id: 're-3', texte: null, reponse: 'Co-signature' },
+          ],
+        },
+        {
+          id: 'suivre',
+          texte: 'Faire valoir les réserves',
+          enfants: [
+            { id: 'su-1', texte: null, reponse: 'Trois jours ouvrés' },
+            { id: 'su-2', texte: null, reponse: 'Huit jours' },
+            { id: 'su-3', texte: null, reponse: 'Avoir ou remplacement' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Sélectionner le prestataire le plus adapté',
+        indicateurs: [
+          { niveau: 'novice', description: "Je retiens le moins cher." },
+          { niveau: 'debrouille', description: "Je compare les prix et je regarde vaguement les caractéristiques." },
+          { niveau: 'averti', description: "Je vérifie d'abord les contraintes éliminatoires, je compare ensuite les prix entre les prestataires qui restent." },
+          { niveau: 'expert', description: "J'anticipe les majorations et les rotations, et je chiffre le coût réel avant de choisir." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: "Suivre l'exécution du service et en rendre compte",
+        indicateurs: [
+          { niveau: 'novice', description: "Je laisse le transporteur gérer et je signe ce qu'on me présente." },
+          { niveau: 'debrouille', description: "Je contrôle la marchandise mais je ne sais pas quoi écrire." },
+          { niveau: 'averti', description: "Je contrôle, je constate, je rédige une réserve identifiée et chiffrée." },
+          { niveau: 'expert', description: "Je fais co-signer la réserve et je déclenche l'information du vendeur dans les délais." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Rédiger une réserve opposable',
+        indicateurs: [
+          { niveau: 'novice', description: "J'écris « sous réserve de déballage »." },
+          { niveau: 'debrouille', description: "Je décris le dommage sans identifier le produit ni le chiffrer." },
+          { niveau: 'averti', description: "J'identifie le produit par sa référence, je chiffre le dommage, je localise." },
+          { niveau: 'expert', description: "Je fais co-signer par le transporteur et je sais ce que vaut une réserve non co-signée." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: 'Décider sous contrainte de temps et en rendre compte',
+        indicateurs: [
+          { niveau: 'novice', description: "Je cède à la pression du chauffeur ou je bloque tout." },
+          { niveau: 'debrouille', description: "Je prends une décision sans en mesurer le coût." },
+          { niveau: 'averti', description: "Je compare les issues, j'en chiffre le coût, je décide et je trace." },
+          { niveau: 'expert', description: "Je choisis l'issue qui protège à la fois le chantier du client et les droits de l'agence." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Charge utile', definition: "Poids maximum de marchandise qu'un véhicule peut transporter, hors poids du véhicule lui-même." },
+      { terme: 'Rotation', definition: "Un aller et un retour du véhicule entre le dépôt et le chantier. Chaque rotation est facturée." },
+      { terme: 'Hayon élévateur', definition: "Plateforme mobile à l'arrière d'un camion, qui descend la marchandise au niveau du sol." },
+      { terme: 'Grue auxiliaire', definition: "Bras de levage monté sur le camion, qui permet de déposer la charge par-dessus un obstacle." },
+      { terme: 'Réserve', definition: "Mention écrite portée sur le bon de livraison pour constater un dommage. Elle constitue un moyen de preuve." },
+      { terme: 'Co-signature', definition: "Signature du transporteur à côté de celle du client, qui donne à la réserve sa valeur de preuve." },
+      { terme: 'Jour ouvré', definition: "Jour effectivement travaillé, du lundi au vendredi. Le week-end n'est pas compté." },
+      { terme: 'Réserve de propriété', definition: "Clause selon laquelle le vendeur reste propriétaire jusqu'au paiement intégral, alors que les risques passent au client dès la livraison." },
+      { terme: 'Avoir', definition: "Document commercial par lequel le vendeur reconnaît devoir une somme au client, à déduire d'une facture." },
+      { terme: 'Contrainte éliminatoire', definition: "Critère dont le non-respect exclut d'emblée une option, quel que soit son prix." },
+    ],
+    flashcards: [
+      { recto: 'Quel est le premier critère de sélection d\u2019un transporteur ?', verso: "L'accès au chantier, le moyen de déchargement et la charge utile. Le prix vient ensuite." },
+      { recto: 'Que se passe-t-il si un camion ne peut pas décharger sur le chantier ?', verso: "Il repart chargé. Le forfait est dû, la relivraison est à organiser, le client perd sa journée." },
+      { recto: 'Combien pèse une palette de 60 parpaings creux de 20x20x50 ?', verso: 'Environ 1 080 kilogrammes.' },
+      { recto: "Que vaut la mention « sous réserve de déballage » ?", verso: "Rien. Les CGV et la FAQ la déclarent toutes deux trop générale et imprécise." },
+      { recto: 'Que doit contenir une réserve valable ?', verso: "L'identification du produit par sa référence, la description précise et chiffrée du dommage, sa localisation." },
+      { recto: 'Pourquoi faire co-signer une réserve par le transporteur ?', verso: 'Sans co-signature, la réserve perd sa valeur de preuve.' },
+      { recto: 'Dans quel délai informer le vendeur après une livraison avec réserve ?', verso: 'Trois jours ouvrés suivant la livraison.' },
+      { recto: 'Dans quel délai un client professionnel doit-il réclamer par écrit ?', verso: 'Huit jours suivant la réception, et avant toute mise en œuvre.' },
+      { recto: 'Quand les risques de dégradation passent-ils au client ?', verso: 'Dès la livraison, même sous réserve de propriété.' },
+      { recto: "Qui supporte un dépassement du forfait de transport facturé au client ?", verso: "L'agence. Le forfait au devis est ferme et impute sa marge." },
+      { recto: "Une rotation supplémentaire, c'est quoi, et combien ça coûte ?", verso: "Un second aller-retour, nécessaire si la charge dépasse la charge utile. Elle est facturée au forfait complet." },
+      { recto: "Le chauffeur dit « c'est ce qu'on fait d'habitude ». Que répondez-vous ?", verso: "L'habitude n'est pas la règle. La mention proposée ne vaut rien, je porte une réserve identifiée et chiffrée." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le premier critère de sélection d\u2019un transporteur est :', options: ["L'accès et le déchargement", 'Le prix', 'La note du transporteur'], bonne: 0 },
+      { type: 'unique', question: 'La charge à livrer est de 26 240 kg. Un porteur de 15 500 kg de charge utile nécessite :', options: ['2 rotations', '1 rotation', '3 rotations'], bonne: 0 },
+      { type: 'unique', question: "La mention « sous réserve de déballage » est :", options: ['Trop générale et imprécise, sans valeur', 'Suffisante', 'Obligatoire'], bonne: 0 },
+      { type: 'unique', question: 'Une réserve non co-signée par le transporteur :', options: ['Perd sa valeur de preuve', 'Reste opposable', "Vaut refus de la marchandise"], bonne: 0 },
+      { type: 'unique', question: 'Le vendeur doit être informé du dommage dans un délai de :', options: ['3 jours ouvrés', '3 jours calendaires', '30 jours'], bonne: 0 },
+      { type: 'unique', question: 'La réclamation écrite du client professionnel doit intervenir dans :', options: ['8 jours suivant la réception', '14 jours', '48 heures'], bonne: 0 },
+      { type: 'unique', question: 'Les risques de dégradation passent au client :', options: ['Dès la livraison', 'Au paiement intégral', "À la mise en œuvre"], bonne: 0 },
+      { type: 'qcm', question: "Quelles contraintes éliminent Transports Mercier ?", options: ['La largeur de rue', "L'absence de moyen de levage", "La longueur du semi-remorque", 'Le prix'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Que doit contenir une réserve valable ?', options: ['La référence du produit', 'Le nombre d\u2019unités endommagées', 'La localisation du dommage', "Le nom du chauffeur"], bonnes: [0, 1, 2] },
+      { type: 'unique', question: "Un dépassement du forfait de transport facturé au client est supporté par :", options: ["L'agence", 'Le client', 'Le transporteur'], bonne: 0 },
+      { type: 'trous', texte: 'Une {0} est une mention écrite portée sur le bon de livraison. Sans {1} du transporteur, elle perd sa valeur de preuve.', reponses: ['réserve', 'co-signature'] },
+      { type: 'trous', texte: "Un devis de transport se lit du bas vers le haut : les {0} d'abord, le {1} ensuite.", reponses: ['contraintes', 'prix'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément selon sa nature : contrainte éliminatoire, élément de coût, ou règle de preuve.',
+      etiquettes: ['Contrainte éliminatoire', 'Élément de coût', 'Règle de preuve'],
+      zones: [
+        { libelle: 'La rue mesure 3,20 mètres de large', etiquetteIndex: 0 },
+        { libelle: 'Majoration de 60 € HT pour une livraison avant 8 heures', etiquetteIndex: 1 },
+        { libelle: 'La réserve doit être co-signée par le transporteur', etiquetteIndex: 2 },
+        { libelle: 'Le camion doit franchir un mur de 1,80 mètre', etiquetteIndex: 0 },
+        { libelle: 'Une seconde rotation est facturée au forfait complet', etiquetteIndex: 1 },
+        { libelle: 'La mention « sous réserve de déballage » est trop imprécise', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule:
+          "Pour chaque transporteur, vérifiez la conformité aux contraintes du chantier, calculez le coût total, puis désignez le transporteur retenu.",
+        documents: ['Documents 2, 3 et 4', 'Annexe 1'],
+        reponse: '',
+        bareme: 6,
+        tableau: {
+          colonnes: ['Critère', 'Mercier', 'STL Logistique', 'Grutage Seine-Nord'],
+          lignes: [
+            ['Largeur de rue exigée (rue = 3,20 m)', '4,50 m\nNON CONFORME', '3,00 m\nConforme', '3,10 m\nConforme'],
+            ['Moyen de déchargement (mur de 1,80 m)', 'Aucun\nNON CONFORME', 'Hayon, levée 1,40 m\nNON CONFORME', 'Grue, portée 8 m\nConforme'],
+            ['Charge utile (26 240 kg à livrer)', '30 000 kg\nConforme', '17 500 kg\n2 rotations', '15 500 kg\n2 rotations'],
+            ['Forfait de base par rotation', '210,00 €', '295,00 €', '380,00 €'],
+            ['Nombre de rotations', '1', '2', '2'],
+            ['Majoration avant 8 h (60 € par rotation)', '60,00 €', '120,00 €', '120,00 €'],
+            ['Majoration rue étroite (40 € par rotation)', '40,00 €', '80,00 €', '80,00 €'],
+            ['COÛT TOTAL HT', '310,00 €\nÉLIMINÉ', '870,00 €\nÉLIMINÉ', '960,00 €\nRETENU'],
+          ],
+        },
+        complement:
+          "Détail du calcul pour Grutage Seine-Nord : 26 240 kg divisés par 15 500 kg de charge utile donnent 1,69, arrondi au supérieur, soit 2 rotations. Forfait 380 × 2 = 760 €. Majoration matinale 60 × 2 = 120 €. Majoration rue étroite 40 × 2 = 80 €. Total 960,00 € HT.\n\nLe transporteur retenu est le plus cher des trois, et de loin. Il est aussi le seul qui puisse matériellement effectuer la livraison. La note de la direction est explicite : « Un transporteur qui ne peut matériellement pas accéder au chantier ou décharger la marchandise n'est pas une option, quel que soit son prix. »\n\nAccepter que l'élève n'ait pas calculé le coût total de Mercier et de STL, dès lors qu'il les a éliminés sur les contraintes. C'est même le raisonnement le plus professionnel : on ne chiffre pas ce qui est impossible.",
+      },
+      {
+        intitule:
+          "Le transporteur le moins cher est éliminé par trois contraintes distinctes. Nommez-les et décrivez ce qui se passerait le 16 mars à 7 heures.",
+        documents: ['Documents 1, 2 et 3', 'Annexe 2'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Contrainte', 'Ce que propose Mercier', 'Ce qui se passerait rue des Vallées'],
+          lignes: [
+            [
+              'n° 1\nLargeur de la rue',
+              'Exige une rue de 4,50 m minimum. La rue des Vallées mesure 3,20 m.',
+              "Le semi-remorque de 16,50 mètres ne peut pas s'engager dans la rue. Il resterait bloqué à l'entrée, en sens unique, à 7 heures du matin. Aucune plateforme de retournement : il devrait reculer sur 40 mètres avec un semi.",
+            ],
+            [
+              'n° 2\nMoyen de déchargement',
+              "Aucun moyen de levage embarqué. Déchargement à la charge du destinataire.",
+              "Un mur de clôture de 1,80 mètre sépare la rue du terrain. Les six compagnons montent le mur porteur. La grue de location n'arrive qu'à 8 heures. Personne ne décharge 12 palettes de 1 080 kg à la main. Le camion repartirait chargé.",
+            ],
+            [
+              'n° 3\nStationnement et manœuvre',
+              "Semi-remorque de 16,50 mètres, créneau garanti à une demi-journée près.",
+              "Le stationnement est limité à 30 minutes. Un créneau garanti à la demi-journée près ne permet pas d'annoncer 7 heures au client, qui a une grue facturée à la journée et six compagnons sur place.",
+            ],
+          ],
+        },
+        complement:
+          "Accepter la troisième contrainte sous plusieurs formes : la longueur du véhicule, l'absence de plateforme de retournement, ou l'imprécision du créneau. Toutes ces réponses sont fondées.\n\nCe qui doit apparaître : Mercier est le moins cher sur le papier, à 310 € contre 960 €. Le retenir coûterait le forfait de 310 €, une relivraison le lendemain, et la journée perdue du client, chiffrée par lui-même à 1 400 € plus la grue. L'économie apparente de 650 € produit une perte réelle de plus de 2 000 €.",
+      },
+      {
+        intitule:
+          "Calculez la marge de l'agence sur la ligne transport, puis indiquez si ce dépassement pouvait être évité, et par qui.",
+        documents: ['Documents 2, 3 et 4', 'Annexe 3'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Libellé', 'Montant ou réponse'],
+          lignes: [
+            ['Forfait de livraison facturé au client, ferme', '280,00 € HT (devis DV-2026-1187)'],
+            ['Coût réel du transporteur retenu', '960,00 € HT'],
+            ["Marge de l'agence sur la ligne transport", '280,00 - 960,00 = - 680,00 € HT'],
+            ['Gain ou perte ?', "Une perte de 680,00 € HT, supportée intégralement par l'agence. Le forfait au devis est ferme et ne peut être modifié après signature du client."],
+            [
+              'Ce dépassement pouvait-il être évité ?',
+              "Oui. La fiche de Marion Leclerc, établie le 6 mars, décrit la rue étroite, l'absence de quai, le mur de 1,80 mètre et l'absence de grue avant 8 heures. Le devis a été chiffré le 11 mars sur un forfait de 280 €, sans que cette fiche soit consultée. Un devis établi après lecture de la fiche aurait porté un forfait de transport d'au moins 960 €, accepté ou refusé par le client en connaissance de cause.",
+            ],
+            [
+              'Qui aurait dû consulter la fiche, et quand ?',
+              "Bruno Ferreira, commercial sédentaire, au moment d'établir le devis, le 11 mars. La fiche était dans le dossier client depuis le 6 mars. L'information existait, elle était disponible, elle n'a pas été cherchée.",
+            ],
+          ],
+        },
+        complement:
+          "Question la plus importante de la mission sur le plan professionnel. La perte n'est pas due à un aléa : elle est due à une information disponible et non consultée.\n\nC'est le prolongement direct de la mission 1, où les élèves ont appris que la fiabilité et la disponibilité sont deux critères distincts d'une information exploitable. Ici, l'information était fiable et disponible. Elle n'a pas été mobilisée.\n\nValoriser l'élève qui remarque que l'immobilisation du camion grue de l'agence n'explique pas tout : même avec le camion grue, il aurait fallu deux rotations, et le forfait de 280 € aurait été insuffisant.",
+      },
+      {
+        intitule:
+          "Expliquez pourquoi vous refusez la mention « sous réserve de déballage », en citant les deux documents de l'entreprise.",
+        documents: ['Documents 5 et 6', 'Annexe 4'],
+        reponse:
+          "Les deux documents à citer.\n\nLa foire aux questions du site chausson.fr, rubrique réception de la marchandise : « La mention Sous réserve de déballage n'est pas suffisante. »\n\nLes conditions générales de vente : « L'Acheteur doit veiller à identifier le produit par sa nature ou sa référence et être le plus précis possible sur les réserves émises. La simple mention sous réserve de déballage est considérée comme trop générale et imprécise. »\n\nPourquoi elle ne vaut rien. Une réserve est un moyen de preuve. Elle prouve l'existence et l'importance du dommage au moment de la livraison. Une mention générale n'identifie aucun produit, ne chiffre aucun dommage, ne localise rien. Elle ne prouve donc rien. Le jour où l'agence voudra se retourner contre le transporteur, ou le client contre l'agence, il n'y aura aucune trace de ce qui a été constaté.\n\nCe que le chauffeur ne dit pas. Il propose cette mention parce qu'elle le dégage. Les conditions générales de vente transfèrent les risques au client dès la livraison. Une signature sans réserve précise vaut acceptation de la marchandise en l'état. Les neuf parpaings fendus deviennent la perte du client, et personne ne pourra plus prouver qu'ils l'étaient à l'arrivée.\n\n« C'est ce qu'on fait d'habitude » n'est pas une règle. C'est une habitude qui arrange celui qui la propose.",
+        bareme: 4,
+        complement:
+          "Exiger les deux citations. Un élève qui n'en donne qu'une n'a pas compris que l'entreprise dit la même chose à deux endroits, une fois pour ses clients, une fois dans son contrat. La concordance des deux sources est ce qui rend la règle incontestable face au chauffeur.\n\nValoriser l'élève qui identifie l'intérêt du chauffeur derrière sa proposition. Ce n'est pas de la malveillance, c'est un conflit d'intérêts ordinaire, et savoir le repérer fait partie du métier.",
+      },
+      {
+        intitule:
+          "Complétez le bon de livraison : décision par ligne, réserve rédigée, date, heure, signataire, co-signature.",
+        documents: ['Documents 5 et 6', 'Annexe 5'],
+        reponse: '',
+        bareme: 6,
+        tableau: {
+          colonnes: ['Ligne', 'Décision', 'Réserve à porter'],
+          lignes: [
+            ['OBR-PAR20, palettes 1 à 6', 'Conforme', 'Néant'],
+            [
+              'OBR-PAR20, palette 7',
+              'Réserve',
+              "« Palette n° 7, référence OBR-PAR20, parpaing creux 20x20x50 : film de protection déchiré sur l'angle. Neuf parpaings fendus constatés à l'ouverture, sur les soixante de la palette. Cinquante et un parpaings intacts et acceptés. Dommage constaté contradictoirement en présence du chauffeur, le lundi 16 mars 2026 à 7 h 15, avant tout déchargement complémentaire. »",
+            ],
+            ['OBR-PAR20, palettes 8 à 12', 'Conforme', 'Néant'],
+            ['OBR-CIM35, 80 sacs', 'Conforme', 'Néant'],
+            ['OBR-SAB01, 6 big bags', 'Conforme', 'Néant'],
+            ['OBR-GRA02, 4 big bags', 'Conforme', 'Néant'],
+            ['OBR-TRE10, 10 panneaux', 'Conforme', 'Néant'],
+          ],
+        },
+        complement:
+          "Bloc de signature attendu. Date : lundi 16 mars 2026. Heure : 7 h 15 environ, l'heure exacte du constat. Signataire pour le client : Youssef Ben Amar, chef de chantier, dûment habilité par M. Kadri qui l'a annoncé par écrit dans son mail du 13 mars. Réserves co-signées par le transporteur : oui, impérativement.\n\nGrille de correction. Deux points pour les six lignes conformes correctement cochées. Deux points pour la réserve de la palette 7, qui doit contenir la référence du produit, le numéro de la palette, le nombre exact d'unités endommagées, le nombre d'unités acceptées, et la nature du dommage. Un point pour l'horodatage et le nom du signataire. Un point pour la co-signature.\n\nRefuser toute réserve qui ne chiffre pas. « Palette abîmée » ne vaut rien. Refuser aussi la réserve portée sur la totalité des douze palettes : onze sont saines, les réserver toutes serait un abus qui affaiblirait la réserve réelle.\n\nPoint de vigilance sur le signataire. Un élève peut hésiter à faire signer Youssef plutôt que M. Kadri. Le mail du 13 mars règle la question : « C'est lui qui signera le bon si je suis au téléphone. » L'habilitation est écrite. C'est précisément pour cela qu'elle figure dans le document 1.",
+      },
+      {
+        intitule:
+          "Comparez les trois décisions possibles, désignez celle que vous retenez et justifiez.",
+        documents: ['Documents 5, 6 et 7', 'Annexe 6'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Décision', 'Coût pour le client', "Coût pour l'agence", 'Risque juridique'],
+          lignes: [
+            [
+              'A. Signer sans réserve',
+              "Neuf parpaings perdus, soit 22,23 € HT avant remise. Surtout : aucun recours.",
+              'Aucun coût immédiat.',
+              "Maximal pour le client. Les CGV transfèrent les risques dès la livraison. Une signature sans réserve vaut acceptation en l'état. Toute réclamation ultérieure est irrecevable, faute de preuve.",
+            ],
+            [
+              'B. Refuser la totalité',
+              "1 400 € de journée perdue, plus la location de la grue. Onze palettes saines refusées sans motif.",
+              "Forfait de 960 € perdu, relivraison à organiser, second forfait à payer.",
+              "Le refus de onze palettes conformes est abusif. Le transporteur et l'agence pourraient contester. Le client subit un préjudice sans faute de sa part.",
+            ],
+            [
+              'C. Accepter avec réserve précise',
+              "Aucun. Le mur porteur nécessite 640 parpaings, 711 sont intacts et livrés.",
+              "Neuf parpaings à créditer, soit environ 20,45 € HT après remise de 8 %. Recours possible contre le transporteur.",
+              "Nul. La réserve co-signée fait preuve. Le vendeur est informé dans les trois jours ouvrés. Les droits de tous sont préservés.",
+            ],
+          ],
+        },
+        complement:
+          "Décision retenue : C. Justification attendue en trois lignes.\n\nLe chantier n'est pas menacé : 711 parpaings intacts pour un besoin de 640. La réserve précise et co-signée conserve à l'agence et au client la totalité de leurs recours. Refuser onze palettes saines pour neuf parpaings fendus coûterait au client une journée entière et à l'agence un second forfait, sans rien réparer.\n\nLe calcul à faire apparaître : 12 palettes de 60 parpaings donnent 720 unités. Moins 9 fendues, il en reste 711. Le mur porteur en demande 640. La marge est de 71 parpaings. Le chantier tourne.\n\nC'est ce calcul, et lui seul, qui autorise à accepter. Un élève qui choisit C sans l'avoir fait a eu raison par hasard. Le lui dire.",
+      },
+      {
+        intitule: "Rédigez le compte rendu de livraison à M. Ferreira.",
+        documents: ['Ensemble des documents', 'Annexe 7'],
+        reponse:
+          "Objet : Livraison partielle commande 2026-4471 BATIRENOV, chantier de Colombes, lundi 16 mars.\n\nCe qui a été livré. Livraison partielle effectuée le lundi 16 mars à 7 h 05, transporteur Grutage Seine-Nord, deux rotations. Douze palettes de parpaings OBR-PAR20, quatre-vingts sacs de ciment OBR-CIM35, six big bags de sable OBR-SAB01, quatre big bags de gravier OBR-GRA02, dix panneaux de treillis OBR-TRE10. Transporteur retenu pour sa grue auxiliaire : la rue mesure 3,20 mètres, un mur de 1,80 mètre sépare la chaussée du terrain, et la grue de location du client n'arrivait qu'à 8 heures.\n\nCe qui a été constaté. Palette n° 7 sur douze, référence OBR-PAR20 : film déchiré sur un angle, neuf parpaings fendus sur soixante. Cinquante et un parpaings intacts sur cette palette. Les onze autres palettes et toutes les autres lignes sont conformes.\n\nLa décision prise sur place et sa justification. Acceptation de la livraison avec réserve précise portée sur la palette 7 et co-signée par le chauffeur. Le chauffeur proposait la mention « sous réserve de déballage », que j'ai refusée : les CGV et la FAQ la déclarent trop générale et imprécise. Je n'ai pas refusé la livraison : sept cent onze parpaings sont intacts pour un besoin de six cent quarante au mur porteur. Un refus total aurait coûté au client sa journée, chiffrée par lui à 1 400 euros, et à l'agence un second forfait de transport.\n\nLes suites à donner. Informer le service client dans les trois jours ouvrés suivant la livraison, soit avant le jeudi 19 mars, avec copie du bon co-signé. Établir un avoir ou organiser le remplacement des neuf parpaings, valeur 20,45 euros HT remise déduite. Engager le recours contre Grutage Seine-Nord sur la base de la réserve co-signée. Un point à signaler : le forfait transport facturé au client est de 280 euros au devis, le coût réel est de 960 euros. La perte de 680 euros vient de la fiche de Marion Leclerc du 6 mars, qui décrivait toutes les contraintes du chantier et qui n'a pas été consultée lors de l'établissement du devis.",
+        bareme: 2,
+        complement:
+          "Le dernier paragraphe est ce qui distingue le compte rendu du stagiaire de celui du bon stagiaire. Il ne se contente pas de relater : il signale une perte de 680 euros et il en désigne la cause, sans accuser personne nommément. Valoriser fortement.\n\nPénaliser le compte rendu qui oublie les trois délais, ou qui les mentionne sans les dater.",
+      },
+      {
+        intitule: "Indiquez les trois délais à respecter, leur date limite, et la sanction du dépassement.",
+        documents: ['Document 5', 'Annexe 8'],
+        reponse: '',
+        bareme: 1,
+        tableau: {
+          colonnes: ['Délai', 'Ce qui doit être fait', 'Date limite', "Si le délai n'est pas tenu"],
+          lignes: [
+            [
+              'n° 1\nImmédiat',
+              "Porter la réserve précise sur le bon de livraison et la faire co-signer par le transporteur, en présence de celui-ci.",
+              'Lundi 16 mars, avant le départ du chauffeur',
+              "La réserve devient impossible. Sans co-signature, elle perd sa valeur de preuve. Le dommage n'est plus opposable au transporteur.",
+            ],
+            [
+              'n° 2\nTrois jours ouvrés',
+              "Informer le vendeur du dommage, par courrier recommandé ou en contactant le service client, en précisant le numéro de la commande.",
+              'Jeudi 19 mars\n(16, 17, 18 mars sont les trois jours ouvrés)',
+              "La réserve portée sur le bon perd son effet. Le vendeur n'est pas réputé informé et peut opposer la tardiveté.",
+            ],
+            [
+              'n° 3\nHuit jours',
+              "Adresser la réclamation écrite au vendeur, avant toute mise en œuvre de la marchandise.",
+              'Lundi 23 mars\n(huit jours suivant la réception du 16)',
+              "La réclamation est irrecevable. Les CGV exigent l'écrit dans les huit jours et avant toute mise en œuvre.",
+            ],
+          ],
+        },
+        complement:
+          "Barème total de la mission : 32 points.\n\nPoint de vigilance sur le délai n° 2. Trois jours ouvrés à compter du lundi 16 mars donnent le jeudi 19 mars, puisque le 16, le 17 et le 18 sont les trois jours ouvrés. Un élève qui compte en jours calendaires annonce le jeudi 19 également, par hasard. Lui demander de justifier son calcul.\n\nPoint de vigilance sur le délai n° 3. « Avant toute mise en œuvre » est une contrainte plus forte que le délai de huit jours. Les compagnons montent le mur porteur dès le lundi 16 à 8 heures. Les parpaings fendus doivent être mis de côté et non maçonnés, sans quoi la réclamation devient irrecevable même dans le délai. Valoriser fortement l'élève qui le relève.\n\nCe qui se joue en mission 5 : la facture arrive, elle est fausse sur deux points, et le client ne paie pas.",
       },
     ],
   },
@@ -22817,6 +23879,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'chausson-m1': CHAUSSON_M1,
   'chausson-m2': CHAUSSON_M2,
   'chausson-m3': CHAUSSON_M3,
+  'chausson-m4': CHAUSSON_M4,
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,

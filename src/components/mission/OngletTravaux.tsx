@@ -65,6 +65,8 @@ import type {
   AnnexeFaqOnglets,
   AnnexeFaqReponses,
   AnnexeSuiviCommande,
+  AnnexeSelectionPrestataire,
+  AnnexeBonLivraisonReserves,
   AnnexeSavPriseEnCharge,
   AnnexeTableauPct,
   AnnexeVraiFaux,
@@ -2512,6 +2514,8 @@ function rendreAnnexe(
   if (annexe.type === 'ficheappel') return rendreFicheAppel(annexe, saisies, set, verrouille, couleur)
   if (annexe.type === 'mail') return rendreMail(annexe, saisies, set, verrouille)
   if (annexe.type === 'sms') return rendreSms(annexe, saisies, set, verrouille)
+  if (annexe.type === 'selectionprestataire') return <SelectionPrestataireVue a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
+  if (annexe.type === 'bonlivraisonreserves') return <BonLivraisonReservesVue a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
   if (annexe.type === 'suivicommande') return <SuiviCommandeVue a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
   if (annexe.type === 'faqreponses') return <FaqReponsesVue a={annexe} saisies={saisies} set={set} verrouille={verrouille} couleur={couleur} />
   if (annexe.type === 'faqonglets') return <FaqOngletsVue a={annexe} couleur={couleur} />
@@ -2792,6 +2796,170 @@ function MobilesProVue({ a, saisies, set, verrouille, couleur }: { a: AnnexeMobi
 }
 
 // Annexe "reponses apportees" : menu Rubrique + reponse (Hydrao M6 annexe 1).
+// Comparateur de prestataires (Chausson M4 annexe 1). Colonnes = transporteurs.
+// Lignes = criteres. L'eleve saisit les couts, coche la conformite des criteres
+// eliminatoires, calcule le total, puis choisit et justifie.
+function SelectionPrestataireVue({ a, saisies, set, verrouille, couleur }: { a: AnnexeSelectionPrestataire; saisies: Saisies; set: (id: string, v: string) => void; verrouille: boolean; couleur: string }) {
+  const champ: React.CSSProperties = { fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '6px 8px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1D4ED8', width: '100%', boxSizing: 'border-box' }
+  const th: React.CSSProperties = { background: couleur, color: '#FFFFFF', fontSize: 12, fontWeight: 700, padding: '8px', textAlign: 'left', border: '1px solid #C9D6E3' }
+  const td: React.CSSProperties = { border: '1px solid #C9D6E3', padding: '6px 8px', verticalAlign: 'top', fontFamily: 'Arial, sans-serif', fontSize: 12.5, color: '#374151' }
+  const Radio = ({ id, label, ok }: { id: string; label: string; ok: boolean }) => {
+    const on = (saisies[`${a.id}.${id}`] ?? '') === (ok ? 'oui' : 'non')
+    return (
+      <button type="button" disabled={verrouille} onClick={() => set(`${a.id}.${id}`, on ? '' : (ok ? 'oui' : 'non'))} style={{ cursor: verrouille ? 'default' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5, border: 'none', background: 'transparent', fontFamily: 'Arial, sans-serif', fontSize: 12, color: '#374151', padding: '1px 3px' }}>
+        <span style={{ width: 15, height: 15, borderRadius: '50%', border: `1.5px solid ${on ? (ok ? '#1B9E5A' : '#C0392B') : '#B7C2CF'}`, background: on ? (ok ? '#1B9E5A' : '#C0392B') : '#FFFFFF', display: 'inline-block' }} />
+        {label}
+      </button>
+    )
+  }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 12 }}>
+        <div style={{ border: '1px solid #C9D6E3', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+          <div style={{ background: '#16456E', color: '#FFFFFF', padding: '8px 12px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1B9E5A', display: 'inline-block' }} />
+            {a.entete}
+          </div>
+          <div style={{ padding: 12, overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #C9D6E3' }}>
+              <thead><tr>
+                <th style={{ ...th, minWidth: 170 }}>Critère</th>
+                {a.prestataires.map((p) => (
+                  <th key={p.cle} style={{ ...th, minWidth: 160 }}>
+                    {p.nom}
+                    {p.sousTitre ? <div style={{ fontWeight: 400, fontSize: 11.5, opacity: 0.85 }}>{p.sousTitre}</div> : null}
+                  </th>
+                ))}
+              </tr></thead>
+              <tbody>
+                {a.criteres.map((cr) => (
+                  <tr key={cr.cle}>
+                    <td style={{ ...td, background: '#F7FAFC' }}>
+                      <strong>{cr.libelle}</strong>
+                      {cr.aide ? <div style={{ fontSize: 11.5, color: '#6B7280', marginTop: 2 }}>{cr.aide}</div> : null}
+                    </td>
+                    {a.prestataires.map((p) => (
+                      <td key={p.cle} style={td}>
+                        <div style={{ marginBottom: 4 }}>{p.donnees[cr.cle] ?? '-'}</div>
+                        {cr.eliminatoire ? (
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <Radio id={`${p.cle}.${cr.cle}`} label="Conforme" ok />
+                            <Radio id={`${p.cle}.${cr.cle}`} label="Non conforme" ok={false} />
+                          </div>
+                        ) : (
+                          <input type="text" disabled={verrouille} value={saisies[`${a.id}.${p.cle}.${cr.cle}`] ?? ''} onChange={(ev) => set(`${a.id}.${p.cle}.${cr.cle}`, ev.target.value)} placeholder="Coût en €" style={champ} />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr>
+                  <td style={{ ...td, background: '#EEF3F8', fontWeight: 700 }}>{a.libelleTotal}</td>
+                  {a.prestataires.map((p) => (
+                    <td key={p.cle} style={{ ...td, background: '#EEF3F8' }}>
+                      <input type="text" disabled={verrouille} value={saisies[`${a.id}.${p.cle}.total`] ?? ''} onChange={(ev) => set(`${a.id}.${p.cle}.total`, ev.target.value)} placeholder="Total €" style={champ} />
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+            <div style={{ marginTop: 12 }}>
+              <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 12.5, fontWeight: 700, color: '#16456E', marginBottom: 6 }}>{a.libelleChoix}</div>
+              <textarea disabled={verrouille} rows={5} value={saisies[`${a.id}.choix`] ?? ''} onChange={(ev) => set(`${a.id}.choix`, ev.target.value)} style={{ ...champ, resize: 'vertical' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Bon de livraison a signer (Chausson M4 annexe 2). Trois cases exclusives par
+// ligne, zone de reserves manuscrites, bloc de signature date et horodate.
+function BonLivraisonReservesVue({ a, saisies, set, verrouille, couleur }: { a: AnnexeBonLivraisonReserves; saisies: Saisies; set: (id: string, v: string) => void; verrouille: boolean; couleur: string }) {
+  const champ: React.CSSProperties = { fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '6px 8px', borderRadius: 6, border: '1px solid #C9D6E3', background: verrouille ? '#F1F3F5' : '#FFFFFF', color: verrouille ? '#6B7280' : '#1D4ED8', width: '100%', boxSizing: 'border-box' }
+  const th: React.CSSProperties = { background: couleur, color: '#FFFFFF', fontSize: 12, fontWeight: 700, padding: '8px', textAlign: 'left', border: '1px solid #C9D6E3' }
+  const td: React.CSSProperties = { border: '1px solid #C9D6E3', padding: '6px 8px', verticalAlign: 'top', fontFamily: 'Arial, sans-serif', fontSize: 12.5, color: '#374151' }
+  const COULEURS: Record<string, string> = { conforme: '#1B9E5A', reserve: '#D98C00', refus: '#C0392B' }
+  const Choix = ({ ligne, valeur, label }: { ligne: string; valeur: string; label: string }) => {
+    const on = (saisies[`${a.id}.${ligne}.etat`] ?? '') === valeur
+    return (
+      <button type="button" disabled={verrouille} onClick={() => set(`${a.id}.${ligne}.etat`, on ? '' : valeur)} style={{ cursor: verrouille ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 5, border: 'none', background: 'transparent', fontFamily: 'Arial, sans-serif', fontSize: 12, color: '#374151', padding: '1px 2px' }}>
+        <span style={{ width: 15, height: 15, borderRadius: 3, border: `1.5px solid ${on ? COULEURS[valeur] : '#B7C2CF'}`, background: on ? COULEURS[valeur] : '#FFFFFF', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{on ? '✓' : ''}</span>
+        {label}
+      </button>
+    )
+  }
+  return (
+    <div style={{ border: '1px solid #DCE8F4', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#EEF3F8', padding: '6px 10px', fontSize: 13, fontWeight: 700, color: '#16456E' }}>{a.titre}</div>
+      <div style={{ padding: 12 }}>
+        <div style={{ border: '1px solid #C9D6E3', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
+          <div style={{ background: '#16456E', color: '#FFFFFF', padding: '8px 12px', fontSize: 13, fontWeight: 700 }}>{a.entete}</div>
+          <div style={{ padding: 12 }}>
+            <div style={{ background: '#F7FAFC', border: '1px solid #E3ECF4', borderRadius: 8, padding: '10px 12px', marginBottom: 12, display: 'flex', flexWrap: 'wrap', gap: 18 }}>
+              <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 12.5, color: '#374151' }}>Bon de livraison n° <strong style={{ color: '#16456E' }}>{a.numeroBL}</strong></span>
+              <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 12.5, color: '#374151' }}>Transporteur : <strong style={{ color: '#16456E' }}>{a.transporteur}</strong></span>
+              <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 12.5, color: '#374151' }}>Chantier : <strong style={{ color: '#16456E' }}>{a.chantier}</strong></span>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #C9D6E3' }}>
+                <thead><tr>
+                  {['Référence', 'Désignation', 'Qté', "État constaté à l'arrivée", 'Décision', 'Réserve à porter sur le bon'].map((h) => (<th key={h} style={th}>{h}</th>))}
+                </tr></thead>
+                <tbody>
+                  {a.lignes.map((l) => (
+                    <tr key={l.id}>
+                      <td style={td}>{l.reference}</td>
+                      <td style={td}>{l.designation}</td>
+                      <td style={{ ...td, textAlign: 'center' }}>{l.quantite}</td>
+                      <td style={{ ...td, minWidth: 170 }}>{l.etat ?? '-'}</td>
+                      <td style={{ ...td, minWidth: 120 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <Choix ligne={l.id} valeur="conforme" label="Conforme" />
+                          <Choix ligne={l.id} valeur="reserve" label="Réserve" />
+                          <Choix ligne={l.id} valeur="refus" label="Refus" />
+                        </div>
+                      </td>
+                      <td style={{ ...td, padding: 4, minWidth: 200 }}>
+                        <textarea disabled={verrouille} rows={3} value={saisies[`${a.id}.${l.id}.reserve`] ?? ''} onChange={(ev) => set(`${a.id}.${l.id}.reserve`, ev.target.value)} style={{ ...champ, resize: 'vertical' }} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {a.rappel && a.rappel.length ? (
+              <div style={{ marginTop: 12, background: '#FDF6E3', border: '1px solid #EBD9A6', borderRadius: 8, padding: '10px 12px' }}>
+                {a.rappel.map((r, i) => (<div key={i} style={{ fontFamily: 'Arial, sans-serif', fontSize: 12, color: '#6B5A16', marginBottom: 3 }}>- {r}</div>))}
+              </div>
+            ) : null}
+            <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+              <div style={{ flex: '1 1 180px' }}>
+                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 12, fontWeight: 700, color: '#16456E', marginBottom: 4 }}>Date de la livraison</div>
+                <input type="text" disabled={verrouille} value={saisies[`${a.id}.date`] ?? ''} onChange={(ev) => set(`${a.id}.date`, ev.target.value)} style={champ} />
+              </div>
+              <div style={{ flex: '1 1 180px' }}>
+                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 12, fontWeight: 700, color: '#16456E', marginBottom: 4 }}>Heure</div>
+                <input type="text" disabled={verrouille} value={saisies[`${a.id}.heure`] ?? ''} onChange={(ev) => set(`${a.id}.heure`, ev.target.value)} style={champ} />
+              </div>
+              <div style={{ flex: '1 1 220px' }}>
+                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 12, fontWeight: 700, color: '#16456E', marginBottom: 4 }}>Nom du signataire pour le client</div>
+                <input type="text" disabled={verrouille} value={saisies[`${a.id}.signataire`] ?? ''} onChange={(ev) => set(`${a.id}.signataire`, ev.target.value)} style={champ} />
+              </div>
+              <div style={{ flex: '1 1 220px' }}>
+                <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 12, fontWeight: 700, color: '#16456E', marginBottom: 4 }}>Réserves co-signées par le transporteur</div>
+                <input type="text" disabled={verrouille} value={saisies[`${a.id}.cosignature`] ?? ''} onChange={(ev) => set(`${a.id}.cosignature`, ev.target.value)} placeholder="Oui / Non" style={champ} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Ecran de suivi de commande facon ERP (Chausson M2 annexe 1).
 // Chaque ligne : reference, designation, quantites, statut a choisir, case
 // anomalie, commentaire. Rien ne signale la ligne en rupture : l'eleve compare
