@@ -1017,7 +1017,83 @@ export interface AnnexeSuiviCommande {
   lignes: LigneSuiviCommande[]
 }
 
-export type Annexe = AnnexeSuiviCommande | AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
+// Comparateur de prestataires facon logiciel d'achat : chaque transporteur est
+// une colonne, chaque critere une ligne. L'eleve saisit le cout par critere,
+// coche la conformite, calcule le total, puis choisit et justifie. Le moins
+// cher ne satisfait pas tous les criteres : la selection n'est pas un tri.
+export interface CritereSelection {
+  cle: string
+  libelle: string
+  aide?: string
+  // Si vrai, la ligne est une contrainte eliminatoire (case conforme / non conforme)
+  eliminatoire?: boolean
+}
+export interface PrestataireSelection {
+  cle: string
+  nom: string
+  sousTitre?: string
+  // valeurs fixes affichees (non saisissables), indexees par cle de critere
+  donnees: Record<string, string>
+}
+export interface AnnexeSelectionPrestataire {
+  type: 'selectionprestataire'
+  id: string
+  titre: string
+  entete: string
+  criteres: CritereSelection[]
+  prestataires: PrestataireSelection[]
+  // libelle de la ligne de total a calculer par l'eleve
+  libelleTotal: string
+  // question finale de justification
+  libelleChoix: string
+}
+
+// Bon de livraison a signer facon document transporteur : lignes livrees,
+// trois cases exclusives (conforme / reserve / refus) par ligne, zone de
+// reserves manuscrites, et bloc de signature avec date et heure.
+export interface LigneBonLivraison {
+  id: string
+  reference: string
+  designation: string
+  quantite: string
+  etat?: string // constat fait a l'arrivee, affiche en clair
+}
+export interface AnnexeBonLivraisonReserves {
+  type: 'bonlivraisonreserves'
+  id: string
+  titre: string
+  entete: string
+  numeroBL: string
+  transporteur: string
+  chantier: string
+  lignes: LigneBonLivraison[]
+  rappel?: string[] // rappel des regles affiche au bas du bon
+}
+
+// Echeancier de relance facon logiciel de recouvrement : chaque facture est une
+// ligne, avec son montant, sa date d'echeance et son nombre de jours de retard.
+// L'eleve choisit le niveau de relance dans une liste, indique la date d'envoi
+// et justifie. Se tromper de niveau est possible : rien ne l'en empeche.
+export interface LigneRelance {
+  id: string
+  numero: string
+  dateFacture: string
+  montant: string
+  dateEcheance: string
+  joursRetard: string
+}
+export interface AnnexeRelanceReglement {
+  type: 'relancereglement'
+  id: string
+  titre: string
+  entete: string
+  client: string
+  niveaux: string[] // options du menu deroulant
+  lignes: LigneRelance[]
+  rappel?: string[]
+}
+
+export type Annexe = AnnexeRelanceReglement | AnnexeSelectionPrestataire | AnnexeBonLivraisonReserves | AnnexeSuiviCommande | AnnexeFaqReponses | AnnexeFaqOnglets | AnnexeSavPriseEnCharge | AnnexePourcentageStepper | AnnexeTableauPct | AnnexeLienQr | AnnexeQuestionnaireBuilder | AnnexeCompteRendu | AnnexeObjectionsCrm | AnnexeFaqPro | AnnexeVraiFaux | AnnexeFicheProduitPro | AnnexeSoncasPro | AnnexeMobilesPro | AnnexeTableau | AnnexeHoraires | AnnexeOrganigramme | AnnexeGrille | AnnexeTexte | AnnexeFormulaire | AnnexeSaisieGeo | AnnexeCasesServices | AnnexeCritereSeg | AnnexePratiques | AnnexeQuestionnaire | AnnexeCourrier | AnnexeCroc | AnnexeFicheContact | AnnexeTableauAppels | AnnexeAgenda | AnnexeFichierClients | AnnexePowerPoint | AnnexeRedactionOral | AnnexeModeOperatoire | AnnexeFicheSignaletique | AnnexeGrilleTarifaire | AnnexeOrganigrammeAremplir | AnnexeHistogramme | AnnexeIdentiteEntreprise | AnnexeChoixPhotos | AnnexeParcours | AnnexeBonCommandeCalcule | AnnexeCarteVisite | AnnexeECarte | AnnexeCochage | AnnexeReformulation | AnnexeFicheAppel | AnnexeFicheTechnique | AnnexeReponseReseau | AnnexeArgumentaire | AnnexeMail | AnnexeSms | AnnexeFicheProduit | AnnexeCap | AnnexeConfigurateur | AnnexeDialogue | AnnexeSonCase | AnnexeObjections | AnnexeTraitObjections | AnnexeSimulateur | AnnexeCatalogue | AnnexeClientele | AnnexeConcurrents | AnnexeQuestionsReponses | AnnexeFreins | AnnexeFicheClient | AnnexePlanning | AnnexeBonCommande | AnnexeEtapesLivraison | AnnexeBulle | AnnexeMailLecture | AnnexeNote | AnnexeCrmClients | AnnexeEtatFrais
 
 export interface QuestionTravaux {
   numero: number
@@ -3844,6 +3920,2732 @@ const CHAUSSON_M2: ContenuMission = {
         bareme: 3,
         complement:
           "Barème total de la mission : 32 points.\n\nLe dernier paragraphe est le plus important, et c'est celui que les élèves oublient. « Je n'ai rien modifié dans le logiciel » : le stagiaire signale, il ne corrige pas. Il agit dans les limites de ses prérogatives, comme le prévoit le référentiel au groupe de compétences 2. Valoriser fortement l'élève qui écrit cette phrase ou son équivalent.\n\nCe qui se joue en mission 3 : le délai à annoncer à M. Kadri, et l'appel téléphonique à préparer.",
+      },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 3 - Informer le client des delais et
+// des modalites de mise a disposition
+// Bloc 2 - Suivre les ventes : assurer le suivi de la commande du produit.
+// Suite directe de la mission 2 : la rupture de la ligne 5 (chevrons) doit
+// maintenant etre annoncee a M. Kadri.
+// Source : chausson.fr (FAQ, modes de retrait et de livraison, CGV, fiches
+// produits bois), consultes le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, déterminez la date de livraison réaliste des chevrons, préparez l'appel téléphonique à M. Kadri, puis complétez la transcription de cet appel et confirmez par écrit.",
+    contexte:
+      "Vendredi 13 mars, 10 h 30. Vous avez signalé hier la rupture de la ligne 5 au responsable logistique. Karim Zemmouri vous a répondu par mail. M. Ferreira est toujours en rendez-vous extérieur, il vous a envoyé un message : « Tu appelles Kadri toi-même. Tu prépares avant. Tu ne raccroches pas sans une date et sans son accord écrit. » La livraison est annoncée au client pour lundi 16 mars à 7 heures. Il est encore temps de l'informer avant la date annoncée, comme l'exige la procédure interne.",
+    documents: [
+      // ---- Document 1 : la reponse du service logistique ------------------
+      {
+        numero: 1,
+        titre: 'La réponse de Karim Zemmouri, responsable logistique',
+        texte: [
+          {
+            mailLecture: {
+              de: 'k.zemmouri@chausson.fr',
+              a: 'stagiaire@chausson.fr',
+              objet: 'RE : Commande 2026-4471 BATIRENOV - rupture ligne 5 et deux écarts de saisie',
+              corps: [
+                'Bien vu pour le treillis. Cent panneaux, on aurait rigolé au chargement.',
+                "Sur les chevrons ELO-CHV14 : la commande fournisseur est bien partie. Réception annoncée au dépôt le mercredi 18 mars dans la matinée. Le fournisseur ne s'engage jamais sur l'heure, seulement sur la matinée.",
+                "Il faut compter la réception, le contrôle et la mise en stock. Ce n'est pas disponible à la vente le jour même de la réception. Compte une journée pleine.",
+                "Ensuite il faut une tournée. Les tournées de livraison chantier partent le matin, jamais l'après-midi. Regarde le planning du dépôt, il est à jour.",
+                "J'ai bloqué la préparation de la commande. Rien ne part tant que je n'ai pas l'accord écrit du client sur la livraison partielle.",
+                "Attention à ce que tu promets. Si tu annonces une date que le dépôt ne peut pas tenir, c'est moi qui prends l'appel du client, et c'est toi qui expliques à Vallois.",
+                'Karim',
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 2 : le planning du depot ------------------------------
+      {
+        numero: 2,
+        titre: "Le planning des tournées de livraison chantier du dépôt de Gennevilliers",
+        texte: [
+          {
+            paragraphes: [
+              "Extrait du planning de mars 2026. Les tournées de livraison sur chantier partent uniquement le matin. Chaque case indique le nombre de créneaux encore libres sur la tournée. Les créneaux se réservent au plus tard la veille à 16 heures.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Jour', 'Date', 'Tournée du matin', 'Après-midi'],
+              lignes: [
+                ['Vendredi', '13 mars', 'Tournée partie à 6 h 30', 'Pas de tournée chantier'],
+                ['Samedi', '14 mars', 'Dépôt fermé', 'Dépôt fermé'],
+                ['Dimanche', '15 mars', 'Dépôt fermé', 'Dépôt fermé'],
+                ['Lundi', '16 mars', '2 créneaux libres', 'Pas de tournée chantier'],
+                ['Mardi', '17 mars', '3 créneaux libres', 'Pas de tournée chantier'],
+                ['Mercredi', '18 mars', '1 créneau libre', 'Pas de tournée chantier'],
+                ['Jeudi', '19 mars', '4 créneaux libres', 'Pas de tournée chantier'],
+                ['Vendredi', '20 mars', '2 créneaux libres', 'Pas de tournée chantier'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Les trois règles du dépôt affichées au-dessus du planning',
+          },
+          {
+            puces: [
+              "Une marchandise reçue le jour J est disponible à la vente le jour J plus un, après réception, contrôle et mise en stock.",
+              "Les tournées de livraison sur chantier partent le matin uniquement.",
+              "Le dépôt est fermé le samedi et le dimanche. Ces jours ne comptent pas comme des jours ouvrés.",
+            ],
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Un jour ouvré est un jour travaillé par l'entreprise. Ici, du lundi au vendredi. Un jour calendaire est un jour du calendrier, week-end compris. Une date annoncée en jours calendaires est presque toujours fausse.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : les trois solutions de substitution ---------------
+      {
+        numero: 3,
+        titre: "Les produits de substitution disponibles en stock",
+        texte: [
+          {
+            paragraphes: [
+              "Le chevron commandé par M. Kadri est le ELO-CHV14, sapin 63x75 mm en longueur de 4 mètres, au prix unitaire de 18,40 euros HT. Trente unités sont nécessaires. Quatre sont en stock. Le dépôt propose trois produits disponibles immédiatement, en quantité suffisante.",
+            ],
+          },
+          {
+            catalogueProduits: {
+              intro: 'Cliquez sur un produit pour consulter sa fiche complète.',
+              produits: [
+                {
+                  ref: 'ELO-CHV18',
+                  nom: 'Chevron sapin 63x75 mm, longueur 4 m, classe 2 traité',
+                  prix: '23,60 € HT',
+                  ancienPrix: '18,40 € HT',
+                  badge: '42 en stock',
+                  accroche: 'Même section, même longueur, traitement classe 2 en supplément.',
+                  description: [
+                    "Chevron en sapin du Nord, section 63x75 mm, longueur 4 mètres.",
+                    "Traitement autoclave classe d'emploi 2 : usage en intérieur ou sous abri, protection contre les insectes et les champignons.",
+                    "Section et longueur strictement identiques au ELO-CHV14 commandé.",
+                  ],
+                  composition: [
+                    { titre: 'Essence', texte: 'Sapin du Nord' },
+                    { titre: 'Section', texte: '63 x 75 mm' },
+                    { titre: 'Longueur', texte: '4 mètres' },
+                    { titre: "Classe d'emploi", texte: 'Classe 2, traité autoclave' },
+                  ],
+                  infos: [
+                    'Disponible immédiatement, 42 unités en stock.',
+                    'Écart de prix : 5,20 € HT par unité, soit 156,00 € HT pour 30 unités avant remise.',
+                    "Le traitement classe 2 n'était pas demandé au devis.",
+                  ],
+                },
+                {
+                  ref: 'ELO-CHV12',
+                  nom: 'Chevron sapin 50x75 mm, longueur 4 m',
+                  prix: '15,10 € HT',
+                  ancienPrix: '18,40 € HT',
+                  badge: '68 en stock',
+                  accroche: 'Longueur identique, section réduite.',
+                  description: [
+                    "Chevron en sapin, section 50x75 mm, longueur 4 mètres.",
+                    "La section est inférieure de 13 millimètres en épaisseur au produit commandé.",
+                    "La résistance mécanique et la portée admissible sont réduites en conséquence.",
+                  ],
+                  composition: [
+                    { titre: 'Essence', texte: 'Sapin' },
+                    { titre: 'Section', texte: '50 x 75 mm' },
+                    { titre: 'Longueur', texte: '4 mètres' },
+                    { titre: "Classe d'emploi", texte: 'Classe 1, non traité' },
+                  ],
+                  infos: [
+                    'Disponible immédiatement, 68 unités en stock.',
+                    'Écart de prix : 3,30 € HT de moins par unité.',
+                    "La section n'est pas celle du devis. Toute substitution de section engage la responsabilité de celui qui la propose.",
+                  ],
+                },
+                {
+                  ref: 'ELO-CHV14',
+                  nom: 'Chevron sapin 63x75 mm, longueur 3 m',
+                  prix: '13,80 € HT',
+                  ancienPrix: '18,40 € HT',
+                  badge: '55 en stock',
+                  accroche: 'Section identique, longueur réduite à 3 mètres.',
+                  description: [
+                    "Chevron en sapin, section 63x75 mm, longueur 3 mètres.",
+                    "Section strictement identique au produit commandé, longueur inférieure d'un mètre.",
+                    "Trente chevrons de 3 mètres représentent 90 mètres linéaires, contre 120 mètres pour trente chevrons de 4 mètres.",
+                  ],
+                  composition: [
+                    { titre: 'Essence', texte: 'Sapin' },
+                    { titre: 'Section', texte: '63 x 75 mm' },
+                    { titre: 'Longueur', texte: '3 mètres' },
+                    { titre: "Classe d'emploi", texte: 'Classe 1, non traité' },
+                  ],
+                  infos: [
+                    'Disponible immédiatement, 55 unités en stock.',
+                    'Écart de prix : 4,60 € HT de moins par unité.',
+                    "Pour obtenir 120 mètres linéaires, il faudrait 40 chevrons de 3 mètres au lieu de 30.",
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 4 : la note de la direction ---------------------------
+      {
+        numero: 4,
+        titre: "Ce qu'on a le droit de promettre : note de la direction régionale",
+        texte: [
+          {
+            noteDirection: {
+              titre: "Engagements pris auprès des clients professionnels",
+              intro:
+                "Note à l'attention des commerciaux sédentaires et itinérants. Applicable à toutes les agences de la région Île-de-France.",
+              paragraphe:
+                "Un engagement pris oralement au téléphone engage l'agence au même titre qu'un engagement écrit. Le client ne fait pas la différence, et le juge non plus. Les règles ci-dessous ne sont pas des recommandations.",
+              puces: [
+                "Ne jamais annoncer une date de livraison qui n'a pas été confirmée par le dépôt. Le commercial ne dispose pas du planning des tournées.",
+                "Ne jamais annoncer une date fournisseur comme une date de disponibilité. Entre la réception et la mise en stock, il s'écoule au minimum une journée.",
+                "Ne jamais proposer un produit de substitution de section, de longueur ou de résistance différente sans l'accord écrit du client. La substitution engage la responsabilité de l'agence en cas de sinistre.",
+                "Ne jamais accorder un geste commercial supérieur à 500 euros hors taxes sans validation du responsable commercial.",
+                "Toujours annoncer la mauvaise nouvelle avant que le client ne la découvre. Un client informé la veille est un client mécontent. Un client informé le matin même est un client perdu.",
+                "Toujours confirmer par écrit, le jour même, ce qui a été convenu par téléphone.",
+              ],
+              conclusion:
+                "En cas de doute sur ce que vous pouvez promettre, ne promettez rien et rappelez le client dans l'heure. Un rappel est toujours moins coûteux qu'un engagement non tenu.",
+              signature: 'Direction régionale Île-de-France',
+            },
+          },
+        ],
+      },
+
+      // ---- Document 5 : la structure d'un appel difficile -----------------
+      {
+        numero: 5,
+        titre: "La méthode de l'appel sortant en cas de mauvaise nouvelle",
+        texte: [
+          {
+            parcours: {
+              etapes: [
+                {
+                  numero: '1',
+                  symbole: 'personnes',
+                  titre: 'Se présenter et vérifier la disponibilité',
+                  contenu: [
+                    "Nom, fonction, agence. Le client doit savoir immédiatement qui l'appelle et pourquoi.",
+                    "Demander s'il peut parler maintenant. Un artisan sur un chantier n'est pas toujours disponible.",
+                  ],
+                },
+                {
+                  numero: '2',
+                  symbole: 'cible',
+                  titre: "Annoncer l'objet de l'appel sans détour",
+                  contenu: [
+                    "Dire le problème dans la première minute. Ne pas le noyer dans des formules de politesse.",
+                    "Nommer précisément ce qui est concerné : le numéro de commande, la ligne, le produit.",
+                  ],
+                },
+                {
+                  numero: '3',
+                  symbole: 'interdit',
+                  titre: 'Assumer, sans se justifier ni accuser',
+                  contenu: [
+                    "Ne pas rejeter la faute sur le fournisseur, sur l'intérimaire, sur le logiciel. Le client a un contrat avec l'agence.",
+                    "Ne pas s'excuser trois fois. Une fois suffit, si elle est suivie d'une solution.",
+                  ],
+                },
+                {
+                  numero: '4',
+                  symbole: 'ampoule',
+                  titre: 'Proposer une solution, pas un choix vide',
+                  contenu: [
+                    "Arriver avec une solution construite et une alternative, pas avec une question ouverte.",
+                    "Chiffrer et dater. Une solution sans date n'est pas une solution.",
+                  ],
+                },
+                {
+                  numero: '5',
+                  symbole: 'coche',
+                  titre: "Obtenir un accord explicite et le tracer",
+                  contenu: [
+                    "Faire reformuler l'accord par le client, ou le reformuler soi-même et le faire confirmer.",
+                    "Annoncer l'écrit de confirmation avant de raccrocher, et l'envoyer le jour même.",
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 6 : la transcription de l'appel, avec trous -----------
+      {
+        numero: 6,
+        titre: "La transcription de l'appel, telle qu'enregistrée par le standard",
+        texte: [
+          {
+            paragraphes: [
+              "L'agence enregistre les appels sortants à des fins de formation. Voici la transcription de l'appel passé à M. Kadri le vendredi 13 mars à 11 h 04. Quatre répliques du commercial ont été effacées : ce sont celles que vous devrez rédiger.",
+            ],
+          },
+          {
+            transcription: {
+              entete: 'Appel sortant - Vendredi 13 mars 2026, 11 h 04 - Durée 4 min 12',
+              echanges: [
+                { numero: '1', locuteur: 'Vous', texte: '[Réplique 1 à rédiger : présentation, vérification de la disponibilité, objet de l\u2019appel]' },
+                { numero: '2', locuteur: 'M. Kadri', texte: "Allez-y, je vous écoute, je suis dans la voiture. Qu'est-ce qui se passe ?", entrant: true },
+                { numero: '3', locuteur: 'Vous', texte: "[Réplique 2 à rédiger : annonce du problème, précise et chiffrée]" },
+                { numero: '4', locuteur: 'M. Kadri', texte: "Attendez. Vous me dites ça un vendredi à 11 heures pour une livraison lundi matin ? J'ai six gars et une grue à 7 heures.", entrant: true },
+                { numero: '5', locuteur: 'Vous', texte: "Je vous le dis maintenant, monsieur Kadri, justement pour que vous ayez le temps. Rien de ce que vous attendez lundi matin n'est concerné." },
+                { numero: '6', locuteur: 'M. Kadri', texte: "Les parpaings ? Le ciment ?", entrant: true },
+                { numero: '7', locuteur: 'Vous', texte: "En stock, les deux. Le sable et le gravier aussi. Ce sont les chevrons qui manquent, et vous m'avez écrit vous-même qu'ils pouvaient suivre." },
+                { numero: '8', locuteur: 'M. Kadri', texte: "Bon. Ça, c'est vrai. Les chevrons, c'est pour la charpente, je n'y touche pas avant la semaine prochaine. Vous me les livrez quand ?", entrant: true },
+                { numero: '9', locuteur: 'Vous', texte: "[Réplique 3 à rédiger : la date de livraison des chevrons, justifiée]" },
+                { numero: '10', locuteur: 'M. Kadri', texte: "Et vous ne pouvez pas me trouver autre chose ? Vous devez bien avoir du chevron en stock, vous êtes un négoce de matériaux.", entrant: true },
+                { numero: '11', locuteur: 'Vous', texte: "[Réplique 4 à rédiger : réponse sur la substitution, conforme à la note de la direction]" },
+                { numero: '12', locuteur: 'M. Kadri', texte: "D'accord. Alors on fait comme ça : parpaings, ciment, sable, gravier lundi 7 heures. Les chevrons quand vous pourrez, dans la semaine.", entrant: true },
+                { numero: '13', locuteur: 'Vous', texte: "Je vous confirme tout ça par mail avant midi. Il me faut votre réponse écrite sur deux points : votre accord pour la livraison partielle, et la correction de la quantité de treillis, dix panneaux et non cent." },
+                { numero: '14', locuteur: 'M. Kadri', texte: "Cent panneaux ? Je n'ai jamais commandé cent panneaux.", entrant: true },
+                { numero: '15', locuteur: 'Vous', texte: "Je sais. C'est une erreur de saisie que nous avons détectée avant préparation. Le devis que vous avez signé porte bien dix panneaux. Rien ne partira avant votre réponse." },
+                { numero: '16', locuteur: 'M. Kadri', texte: "Très bien. Envoyez, je réponds ce soir.", entrant: true },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 7 : le rappel des faits de la mission 2 ---------------
+      {
+        numero: 7,
+        titre: 'Rappel de la situation de la commande 2026-4471',
+        texte: [
+          {
+            encadresListes: [
+              {
+                titre: "Ce qui est disponible en stock et peut partir lundi 16 mars",
+                lignes: [
+                  'OBR-PAR20, parpaing creux : 12 palettes commandées, 31 disponibles.',
+                  'OBR-CIM35, ciment CEM II : 80 sacs commandés, 240 disponibles.',
+                  'OBR-SAB01, sable à maçonner : 6 big bags commandés, 18 disponibles.',
+                  'OBR-GRA02, gravier 4/20 : 4 big bags commandés, 11 disponibles.',
+                  'OBR-TRE10, treillis soudé : 10 panneaux au devis signé, 46 disponibles.',
+                ],
+              },
+              {
+                titre: "Ce qui est en rupture",
+                lignes: [
+                  'ELO-CHV14, chevron sapin 63x75 mm longueur 4 m : 30 unités commandées, 4 disponibles.',
+                  'Il manque 26 unités.',
+                  'Commande fournisseur passée. Réception annoncée au dépôt le mercredi 18 mars, dans la matinée.',
+                ],
+              },
+              {
+                titre: 'Ce qui reste à obtenir du client',
+                lignes: [
+                  "Son accord écrit sur la livraison partielle. La case n'est pas cochée sur le bon de commande.",
+                  'Son accord écrit sur la correction de la ligne 6 : dix panneaux de treillis, et non cent.',
+                  "Ces deux accords doivent être obtenus avant le lundi 16 mars à 7 heures.",
+                ],
+              },
+            ],
+          },
+          {
+            intertitre: 'Ce que M. Kadri a écrit dans son mail du 13 mars à 7 h 12',
+          },
+          {
+            paragraphes: [
+              "« Je te le dis franchement : si les parpaings et le ciment ne sont pas là à 7 h, je perds la journée et la grue. Ça me coûte environ 1 400 euros. Le reste peut suivre dans la semaine, je n'en ai pas besoin tout de suite pour le treillis et les chevrons. »",
+            ],
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: 'Activité 1 - Déterminer la date réaliste',
+        contexte:
+          "Avant de décrocher le téléphone, vous devez savoir quelle date vous pouvez annoncer. Le fournisseur livre le dépôt le mercredi 18 mars dans la matinée. Ce n'est pas une date de livraison client. Le planning du dépôt et les trois règles affichées vous donnent tout ce qu'il faut.",
+        questions: [
+          {
+            numero: 1,
+            consigne:
+              "Reconstituez le raisonnement qui conduit de la date de réception fournisseur à la date de livraison chantier. Renseignez chaque étape et justifiez-la par la règle qui s'applique.",
+            ressources: "Lire les documents 1 et 2, compléter l'annexe 1.",
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Positionnez la livraison des chevrons sur le planning du dépôt, sur le créneau qui convient. Puis indiquez pourquoi les journées du samedi 14 et du dimanche 15 mars ne peuvent pas être comptées.",
+            ressources: "Lire le document 2, compléter l'annexe 2.",
+            annexeId: 'annexe2',
+          },
+          {
+            numero: 3,
+            consigne:
+              "Un collègue affirme : « Le fournisseur livre le 18, donc on peut livrer le client le 18. » Expliquez en trois lignes maximum pourquoi ce raisonnement est faux, et ce qu'il risque de coûter.",
+            ressources: "Lire les documents 1, 2 et 4, compléter l'annexe 3.",
+            annexeId: 'annexe3',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 2 - Traiter la question de la substitution',
+        contexte:
+          "M. Kadri va vous demander un produit de remplacement. Trois références sont disponibles en stock. Aucune n'est identique à celle qu'il a commandée. La note de la direction est formelle sur ce point.",
+        questions: [
+          {
+            numero: 4,
+            consigne:
+              "Pour chacun des trois produits de substitution, indiquez ce qui diffère du produit commandé, l'écart de prix unitaire, et si vous pouvez le proposer seul au client. Justifiez par la note de la direction.",
+            ressources: "Lire les documents 3 et 4, compléter l'annexe 4.",
+            annexeId: 'annexe4',
+          },
+          {
+            numero: 5,
+            consigne:
+              "Un seul des trois produits pourrait être proposé sans engager la responsabilité technique de l'agence, sous une condition. Indiquez lequel, la condition, et calculez le surcoût total pour 30 unités, remise de 8 % comprise.",
+            ressources: "Lire les documents 3 et 4, compléter l'annexe 5.",
+            annexeId: 'annexe5',
+          },
+        ],
+      },
+      {
+        titre: "Activité 3 - Préparer, mener et tracer l'appel",
+        contexte:
+          "Il est 10 h 55. Vous avez votre date, vous avez votre position sur la substitution. M. Ferreira a été clair : « Tu ne raccroches pas sans une date et sans son accord écrit. » Vous préparez votre appel, vous le passez, vous le confirmez.",
+        questions: [
+          {
+            numero: 6,
+            consigne:
+              "Préparez votre appel en renseignant la fiche d'appel : objectif, accroche, annonce du problème, solution proposée, objection anticipée, engagement obtenu.",
+            ressources: "Lire les documents 4, 5 et 7, compléter l'annexe 6.",
+            annexeId: 'annexe6',
+          },
+          {
+            numero: 7,
+            consigne:
+              "Rédigez les quatre répliques manquantes de la transcription. Respectez la méthode de l'appel sortant et la note de la direction.",
+            ressources: "Lire les documents 4, 5 et 6, compléter l'annexe 7.",
+            annexeId: 'annexe7',
+          },
+          {
+            numero: 8,
+            consigne:
+              "Rédigez le mail de confirmation envoyé à M. Kadri avant midi. Il doit contenir ce qui a été convenu, les deux accords écrits demandés, et la date limite de réponse.",
+            ressources: "Lire les documents 4, 6 et 7, compléter l'annexe 8.",
+            annexeId: 'annexe8',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'grille',
+        id: 'annexe1',
+        titre: "Annexe 1 - De la date fournisseur à la date de livraison chantier",
+        colonnes: ['Étape', 'Date ou créneau', "Règle qui s'applique"],
+        nbLignes: 5,
+        prerempli: [
+          ['Réception de la marchandise au dépôt', '', ''],
+          ['Réception, contrôle et mise en stock', '', ''],
+          ['Marchandise disponible à la vente', '', ''],
+          ['Première tournée de livraison chantier possible', '', ''],
+          ['Date et créneau annoncés au client', '', ''],
+        ],
+        largeurs: ['32%', '24%', '44%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'planning',
+        id: 'annexe2',
+        titre: 'Annexe 2 - Positionner la livraison des chevrons sur le planning du dépôt',
+        mois: [
+          {
+            titre: 'MARS 2026',
+            decalage: 6,
+            nbJours: 31,
+            creneaux: [
+              { jour: 13, creneau: 'matin', texte: 'Tournée partie 6 h 30' },
+              { jour: 13, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 14, creneau: 'matin', texte: 'Fermé', ferie: true },
+              { jour: 14, creneau: 'aprem', texte: 'Fermé', ferie: true },
+              { jour: 15, creneau: 'matin', texte: 'Fermé', ferie: true },
+              { jour: 15, creneau: 'aprem', texte: 'Fermé', ferie: true },
+              { jour: 16, creneau: 'matin', texte: '2 créneaux libres' },
+              { jour: 16, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 17, creneau: 'matin', texte: '3 créneaux libres' },
+              { jour: 17, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 18, creneau: 'matin', texte: '1 créneau libre' },
+              { jour: 18, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 19, creneau: 'matin' },
+              { jour: 19, creneau: 'aprem', texte: 'Pas de tournée' },
+              { jour: 20, creneau: 'matin', texte: '2 créneaux libres' },
+              { jour: 20, creneau: 'aprem', texte: 'Pas de tournée' },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'texte',
+        id: 'annexe3',
+        titre: 'Annexe 3 - Le raisonnement du collègue',
+        lignes: 5,
+      },
+      {
+        type: 'grille',
+        id: 'annexe4',
+        titre: 'Annexe 4 - Analyse des trois produits de substitution',
+        colonnes: ['Référence', 'Ce qui diffère du produit commandé', 'Écart de prix unitaire HT', 'Peut-il être proposé seul ? Justifiez.'],
+        nbLignes: 3,
+        prerempli: [
+          ['ELO-CHV18\n63x75, 4 m, classe 2', '', '', ''],
+          ['ELO-CHV12\n50x75, 4 m', '', '', ''],
+          ['ELO-CHV14\n63x75, 3 m', '', '', ''],
+        ],
+        largeurs: ['18%', '28%', '18%', '36%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe5',
+        titre: 'Annexe 5 - Le seul produit proposable et son surcoût',
+        colonnes: ['Question', 'Votre réponse'],
+        nbLignes: 6,
+        prerempli: [
+          ['Quel produit peut être proposé sans modifier la performance technique attendue ?', ''],
+          ['Sous quelle condition impérative ? Citez la note de la direction.', ''],
+          ['Prix unitaire HT du produit commandé, remise 8 % déduite', ''],
+          ['Prix unitaire HT du produit de substitution, remise 8 % déduite', ''],
+          ['Surcoût unitaire HT', ''],
+          ['Surcoût total HT pour 30 unités. Ce montant nécessite-t-il une validation hiérarchique ?', ''],
+        ],
+        largeurs: ['48%', '52%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'ficheappel',
+        id: 'annexe6',
+        titre: "Annexe 6 - Fiche de préparation de l'appel à M. Kadri",
+        sections: [
+          { cle: 'objectif', libelle: "Objectif de l'appel", aide: "Une phrase. Que dois-je avoir obtenu en raccrochant ?", lignes: 2 },
+          { cle: 'accroche', libelle: 'Accroche et vérification de disponibilité', aide: 'Nom, fonction, agence. Le client peut-il parler ?', lignes: 3 },
+          { cle: 'annonce', libelle: 'Annonce du problème', aide: 'Numéro de commande, ligne, produit, quantité manquante. Chiffrez.', lignes: 3 },
+          { cle: 'rassurance', libelle: 'Ce qui rassure immédiatement le client', aide: "Qu'est-ce qui n'est PAS concerné par la rupture ?", lignes: 3 },
+          { cle: 'solution', libelle: 'Solution proposée, datée', aide: 'La date de livraison des chevrons, et la livraison partielle de lundi.', lignes: 3 },
+          { cle: 'objection', libelle: 'Objection anticipée et réponse préparée', aide: "Il va demander un produit de remplacement. Que répondez-vous ?", lignes: 4 },
+          { cle: 'engagement', libelle: 'Engagement à obtenir avant de raccrocher', aide: 'Deux accords écrits. Lesquels, et pour quand ?', lignes: 3 },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe7',
+        titre: "Annexe 7 - Les quatre répliques manquantes de l'appel",
+        colonnes: ['Réplique', 'Ce que vous dites'],
+        nbLignes: 4,
+        prerempli: [
+          ["Réplique 1\nPrésentation, disponibilité, objet", ''],
+          ["Réplique 2\nAnnonce du problème, précise et chiffrée", ''],
+          ["Réplique 3\nLa date de livraison des chevrons, justifiée", ''],
+          ["Réplique 4\nLa réponse sur la substitution", ''],
+        ],
+        largeurs: ['30%', '70%'],
+        reponseMultiligne: true,
+        lignesReponse: 5,
+      },
+      {
+        type: 'mail',
+        id: 'annexe8',
+        titre: 'Annexe 8 - Mail de confirmation à M. Kadri',
+        deParDefaut: 'stagiaire@chausson.fr',
+        aParDefaut: 'r.kadri@batirenov.fr',
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: "Informer le client des délais et des modalités",
+    proposition: [
+      'Jours ouvrés',
+      'Mise en stock',
+      'Tournée du matin',
+      'Avant la date annoncée',
+      'Solution datée',
+      'Accord explicite',
+      'Section identique',
+      'Accord écrit du client',
+      'Confirmation le jour même',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Annoncer un délai à un client professionnel',
+      enfants: [
+        {
+          id: 'calculer',
+          texte: 'Calculer la date réelle',
+          enfants: [
+            { id: 'ca-1', texte: null, reponse: 'Jours ouvrés' },
+            { id: 'ca-2', texte: null, reponse: 'Mise en stock' },
+            { id: 'ca-3', texte: null, reponse: 'Tournée du matin' },
+          ],
+        },
+        {
+          id: 'annoncer',
+          texte: "Mener l'appel",
+          enfants: [
+            { id: 'an-1', texte: null, reponse: 'Avant la date annoncée' },
+            { id: 'an-2', texte: null, reponse: 'Solution datée' },
+            { id: 'an-3', texte: null, reponse: 'Accord explicite' },
+          ],
+        },
+        {
+          id: 'securiser',
+          texte: 'Sécuriser la substitution',
+          enfants: [
+            { id: 'se-1', texte: null, reponse: 'Section identique' },
+            { id: 'se-2', texte: null, reponse: 'Accord écrit du client' },
+            { id: 'se-3', texte: null, reponse: 'Confirmation le jour même' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Déterminer un délai réaliste de mise à disposition',
+        indicateurs: [
+          { niveau: 'novice', description: "Je reprends la date annoncée par le fournisseur." },
+          { niveau: 'debrouille', description: "J'ajoute un délai, mais je compte en jours calendaires." },
+          { niveau: 'averti', description: "Je compte en jours ouvrés et j'intègre le délai de mise en stock." },
+          { niveau: 'expert', description: "J'intègre également la contrainte des tournées et je vérifie la disponibilité du créneau." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Informer le client des délais et des modalités',
+        indicateurs: [
+          { niveau: 'novice', description: "J'attends que le client appelle, ou je préviens le jour de la livraison." },
+          { niveau: 'debrouille', description: "Je préviens à l'avance, mais je ne propose pas de solution." },
+          { niveau: 'averti', description: "Je préviens avant la date annoncée, j'annonce le problème et je propose une solution datée." },
+          { niveau: 'expert', description: "J'anticipe l'objection du client, je le rassure sur ce qui n'est pas concerné, et j'obtiens un accord explicite." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Agir dans les limites de mes prérogatives',
+        indicateurs: [
+          { niveau: 'novice', description: "Je promets pour rassurer le client sur le moment." },
+          { niveau: 'debrouille', description: "Je sais qu'il existe des limites, mais je ne sais pas où elles sont." },
+          { niveau: 'averti', description: "Je connais les seuils et je ne m'engage pas au-delà." },
+          { niveau: 'expert', description: "Je préfère rappeler le client dans l'heure plutôt que de prendre un engagement que je ne peux pas tenir." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: 'Tracer par écrit ce qui a été convenu oralement',
+        indicateurs: [
+          { niveau: 'novice', description: "Un accord téléphonique me suffit." },
+          { niveau: 'debrouille', description: "J'envoie un écrit, mais après plusieurs jours et sans reprendre les termes de l'accord." },
+          { niveau: 'averti', description: "Je confirme par écrit le jour même, en reprenant précisément ce qui a été convenu." },
+          { niveau: 'expert', description: "J'identifie ce qui doit être signé par le client, je le demande explicitement et je fixe une date limite." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Jour ouvré', definition: "Jour effectivement travaillé par l'entreprise, du lundi au vendredi. Le week-end n'est pas compté." },
+      { terme: 'Jour calendaire', definition: "Jour du calendrier, week-end et jours fériés inclus." },
+      { terme: 'Mise en stock', definition: "Opération de réception, de contrôle et d'enregistrement d'une marchandise, qui la rend disponible à la vente." },
+      { terme: 'Tournée de livraison', definition: "Circuit de livraison organisé par le dépôt, avec un nombre limité de créneaux, généralement le matin." },
+      { terme: 'Produit de substitution', definition: "Produit proposé en remplacement de celui qui a été commandé et qui n'est pas disponible." },
+      { terme: 'Section', definition: "Dimensions de la coupe transversale d'une pièce de bois, exprimée en millimètres. Elle détermine la résistance mécanique." },
+      { terme: 'Appel sortant', definition: "Appel passé par l'entreprise vers le client, par opposition à l'appel entrant." },
+      { terme: 'Reformulation', definition: "Fait de redire avec ses propres mots ce que l'interlocuteur a exprimé, pour vérifier la compréhension." },
+      { terme: 'Engagement', definition: "Promesse faite au client, qui lie l'entreprise, qu'elle soit écrite ou orale." },
+      { terme: 'Prérogative', definition: "Ce qu'un salarié a le droit de décider seul, dans les limites fixées par sa hiérarchie." },
+    ],
+    flashcards: [
+      { recto: 'Une marchandise reçue le mercredi est disponible à la vente quand ?', verso: 'Le jeudi. Il faut compter une journée pleine pour la réception, le contrôle et la mise en stock.' },
+      { recto: 'Les tournées de livraison chantier partent quand ?', verso: 'Le matin uniquement. Jamais l\u2019après-midi.' },
+      { recto: 'Le samedi et le dimanche comptent-ils comme des jours ouvrés ?', verso: 'Non. Le dépôt est fermé, ces jours ne sont pas comptés.' },
+      { recto: 'Peut-on annoncer au client la date de réception fournisseur ?', verso: "Non. Une date fournisseur n'est pas une date de disponibilité, et encore moins une date de livraison." },
+      { recto: 'Quand faut-il informer le client d\u2019un retard ?', verso: "Avant la date annoncée, jamais le matin même. Un client informé la veille est mécontent, un client informé le jour même est perdu." },
+      { recto: 'Un engagement oral au téléphone engage-t-il l\u2019agence ?', verso: "Oui, au même titre qu'un engagement écrit." },
+      { recto: "Peut-on proposer seul un produit de section différente ?", verso: "Non. Toute substitution de section, de longueur ou de résistance exige l'accord écrit du client." },
+      { recto: 'Au-delà de quel montant un geste commercial doit-il être validé ?', verso: '500 euros hors taxes, par le responsable commercial.' },
+      { recto: 'Que fait-on quand on ne sait pas ce qu\u2019on peut promettre ?', verso: "On ne promet rien et on rappelle le client dans l'heure." },
+      { recto: 'Dans quel délai confirme-t-on par écrit ce qui a été convenu par téléphone ?', verso: 'Le jour même.' },
+      { recto: 'Quelles sont les cinq étapes d\u2019un appel de mauvaise nouvelle ?', verso: "Se présenter, annoncer sans détour, assumer sans se justifier, proposer une solution datée, obtenir un accord explicite et le tracer." },
+      { recto: "Pourquoi ne faut-il pas rejeter la faute sur le fournisseur ?", verso: "Parce que le client a un contrat avec l'agence, pas avec le fournisseur." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Une marchandise reçue le mercredi 18 mars est disponible à la vente :', options: ['Le jeudi 19 mars', 'Le mercredi 18 mars', 'Le vendredi 20 mars'], bonne: 0 },
+      { type: 'unique', question: 'Les tournées de livraison sur chantier partent :', options: ['Le matin uniquement', "L'après-midi uniquement", 'À toute heure'], bonne: 0 },
+      { type: 'unique', question: 'La première livraison chantier possible pour les chevrons est :', options: ['Le jeudi 19 mars au matin', 'Le mercredi 18 mars au matin', 'Le mercredi 18 mars après-midi'], bonne: 0 },
+      { type: 'unique', question: 'Un engagement pris oralement au téléphone :', options: ["Engage l'agence comme un écrit", "N'engage à rien", 'Engage seulement le commercial'], bonne: 0 },
+      { type: 'unique', question: 'On informe le client d\u2019un retard :', options: ['Avant la date annoncée', 'Le matin de la livraison', 'Après la livraison'], bonne: 0 },
+      { type: 'unique', question: "Proposer un chevron de section 50x75 au lieu de 63x75 :", options: ["Exige l'accord écrit du client", 'Est sans conséquence', 'Relève du seul commercial'], bonne: 0 },
+      { type: 'unique', question: 'Un geste commercial supérieur à 500 € HT doit être validé par :', options: ['Le responsable commercial', 'Le magasinier', 'Personne'], bonne: 0 },
+      { type: 'qcm', question: "Quelles sont les étapes d'un appel de mauvaise nouvelle ?", options: ['Annoncer sans détour', 'Proposer une solution datée', 'Obtenir un accord explicite', 'Noyer le problème dans les politesses'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Que doit contenir la confirmation écrite ?', options: ['Ce qui a été convenu', 'Les accords écrits demandés', 'La date limite de réponse', "Le nom du fournisseur défaillant"], bonnes: [0, 1, 2] },
+      { type: 'unique', question: "Face à un client qui demande un produit de remplacement, le bon réflexe est :", options: ["Vérifier ce que j'ai le droit de proposer avant de répondre", 'Proposer le moins cher', "Dire qu'il n'y a rien"], bonne: 0 },
+      { type: 'trous', texte: "Un jour {0} est un jour travaillé par l'entreprise. Une date annoncée en jours {1} est presque toujours fausse.", reponses: ['ouvré', 'calendaires'] },
+      { type: 'trous', texte: "On confirme par {0} le jour même ce qui a été convenu par téléphone. Une solution sans {1} n'est pas une solution.", reponses: ['écrit', 'date'] },
+    ],
+    glisserDeposer: {
+      consigne: "Associez chaque phrase du commercial à l'étape de l'appel à laquelle elle appartient.",
+      etiquettes: ['Annoncer sans détour', 'Proposer une solution datée', 'Obtenir un accord et le tracer'],
+      zones: [
+        { libelle: "« Il manque 26 chevrons sur les 30 de la ligne 5. »", etiquetteIndex: 0 },
+        { libelle: "« Je vous les livre jeudi 19 mars au matin. »", etiquetteIndex: 1 },
+        { libelle: "« Je vous confirme tout ça par mail avant midi. »", etiquetteIndex: 2 },
+        { libelle: "« Rien de ce que vous attendez lundi matin n'est concerné. »", etiquetteIndex: 1 },
+        { libelle: "« Il me faut votre réponse écrite sur deux points. »", etiquetteIndex: 2 },
+        { libelle: "« Je vous appelle au sujet de la commande 2026-4471. »", etiquetteIndex: 0 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule:
+          "Reconstituez le raisonnement qui conduit de la date de réception fournisseur à la date de livraison chantier.",
+        documents: ['Documents 1 et 2', 'Annexe 1'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Étape', 'Date ou créneau', "Règle qui s'applique"],
+          lignes: [
+            ['Réception de la marchandise au dépôt', 'Mercredi 18 mars, matinée', "Mail de K. Zemmouri. Le fournisseur ne s'engage que sur la matinée, jamais sur l'heure."],
+            ['Réception, contrôle et mise en stock', 'Mercredi 18 mars, journée complète', "Règle du dépôt : compter une journée pleine. Ce n'est pas disponible à la vente le jour de la réception."],
+            ['Marchandise disponible à la vente', 'Jeudi 19 mars', "Une marchandise reçue le jour J est disponible le jour J plus un."],
+            ['Première tournée de livraison chantier possible', 'Jeudi 19 mars, matin', 'Les tournées chantier partent le matin uniquement. Le jeudi 19 au matin, 4 créneaux sont libres.'],
+            ['Date et créneau annoncés au client', 'Jeudi 19 mars, tournée du matin', 'Créneau à réserver au plus tard le mercredi 18 à 16 heures.'],
+          ],
+        },
+        complement:
+          "Trois pièges se succèdent, et chacun coûte une journée. Le premier : croire que la date fournisseur est la date de disponibilité. Le deuxième : oublier la journée de mise en stock. Le troisième : proposer une livraison l'après-midi, alors qu'aucune tournée chantier ne part l'après-midi.\n\nL'élève qui annonce le mercredi 18 a commis les trois erreurs. L'élève qui annonce le jeudi 19 après-midi n'en a commis qu'une. Seul le jeudi 19 au matin est juste.",
+      },
+      {
+        intitule:
+          "Positionnez la livraison des chevrons sur le planning, puis expliquez pourquoi les 14 et 15 mars ne comptent pas.",
+        documents: ['Document 2', 'Annexe 2'],
+        reponse:
+          "Positionnement attendu : jeudi 19 mars, créneau du matin. C'est la seule case du planning qui satisfasse les trois règles simultanément. Le mercredi 18 au matin ne convient pas : la marchandise arrive dans la matinée, elle n'est pas encore en stock. Le jeudi 19 est le premier jour de disponibilité, et le matin est le seul créneau de tournée chantier.\n\nPourquoi le samedi 14 et le dimanche 15 mars ne comptent pas : le dépôt est fermé ces deux jours. Aucune réception, aucune mise en stock, aucune tournée. Ces journées ne sont pas des jours ouvrés. Un délai exprimé en jours ouvrés ne les intègre pas.\n\nConséquence pratique : entre le vendredi 13 et le jeudi 19 mars, il s'écoule six jours calendaires mais seulement quatre jours ouvrés. Un commercial qui compte en jours calendaires annonce le mardi 17 au lieu du jeudi 19, et se trompe de deux jours.",
+        bareme: 4,
+        complement:
+          "Vérifier que l'élève a bien placé la livraison sur la ligne « matin » du jeudi 19, et non l'après-midi. Le planning ne propose aucune tournée l'après-midi : la case existe, mais elle porte la mention « Pas de tournée ».",
+      },
+      {
+        intitule:
+          "Un collègue affirme : « Le fournisseur livre le 18, donc on peut livrer le client le 18. » Expliquez pourquoi ce raisonnement est faux, et ce qu'il risque de coûter.",
+        documents: ['Documents 1, 2 et 4', 'Annexe 3'],
+        reponse:
+          "Pourquoi c'est faux : la date de réception au dépôt n'est pas une date de disponibilité à la vente. Entre les deux, il y a la réception, le contrôle et la mise en stock, soit une journée pleine. De plus, la marchandise arrive dans la matinée du 18, or les tournées chantier partent le matin. Le camion serait parti avant que le fournisseur ne livre. Enfin, le mercredi 18 au matin ne compte qu'un seul créneau libre.\n\nCe que ça coûte : la note de la direction est explicite, un engagement oral engage l'agence comme un écrit. Le mercredi 18, M. Kadri attend ses chevrons sur le chantier, avec les compagnons prévus pour la charpente. Rien n'arrive. Il perd une journée, et l'agence perd un client de quatre ans, qui parlera de l'incident aux autres maçons du secteur.\n\nLa faute sera imputée au commercial qui a annoncé la date, et non au dépôt qui ne l'a jamais confirmée. Karim Zemmouri l'écrit d'ailleurs dans son mail : « c'est moi qui prends l'appel du client, et c'est toi qui expliques à Vallois ».",
+        bareme: 3,
+        complement:
+          "Trois lignes maximum étaient demandées. Pénaliser la réponse trop longue. Accepter toute réponse qui identifie au moins deux des trois obstacles : la mise en stock, l'horaire de la tournée, la saturation du créneau du 18. Valoriser l'élève qui cite la note de la direction sur la valeur de l'engagement oral.",
+      },
+      {
+        intitule:
+          "Pour chacun des trois produits de substitution, indiquez ce qui diffère, l'écart de prix, et s'il peut être proposé seul.",
+        documents: ['Documents 3 et 4', 'Annexe 4'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Référence', 'Ce qui diffère', 'Écart de prix unitaire HT', 'Proposable seul ?'],
+          lignes: [
+            [
+              'ELO-CHV18\n63x75, 4 m, classe 2',
+              "Section identique, longueur identique. Ajout d'un traitement autoclave classe 2, non demandé au devis.",
+              '+ 5,20 € HT\n(23,60 au lieu de 18,40)',
+              "Oui, sous condition. La performance mécanique attendue est identique, puisque la section et la longueur ne changent pas. Le traitement est un supplément, pas un affaiblissement. Il reste à faire accepter le surcoût au client, ou à le prendre en charge dans la limite des 500 € HT de délégation.",
+            ],
+            [
+              'ELO-CHV12\n50x75, 4 m',
+              "Section réduite de 13 mm en épaisseur. La résistance mécanique et la portée admissible sont réduites.",
+              '- 3,30 € HT\n(15,10 au lieu de 18,40)',
+              "Non. La note de la direction interdit de proposer un produit de section différente sans accord écrit du client. La substitution engage la responsabilité de l'agence en cas de sinistre. Une charpente qui cède, c'est un accident, pas un litige commercial.",
+            ],
+            [
+              'ELO-CHV14\n63x75, 3 m',
+              "Section identique, longueur réduite d'un mètre. Trente chevrons donnent 90 mètres linéaires au lieu de 120.",
+              '- 4,60 € HT\n(13,80 au lieu de 18,40)',
+              "Non. La longueur diffère, donc accord écrit obligatoire. De plus, la quantité ne couvre pas le besoin : il faudrait 40 unités pour retrouver 120 mètres linéaires. Proposer 30 unités reviendrait à livrer un quart de bois en moins sans le dire.",
+            ],
+          ],
+        },
+        complement:
+          "L'erreur attendue : choisir le moins cher. Deux des trois produits sont moins chers que celui qui a été commandé, et les deux sont interdits. Le seul acceptable est le plus cher.\n\nFaire dire aux élèves que le prix n'est jamais le premier critère d'une substitution technique. Le premier critère est : est-ce que le produit fait le même travail ?",
+      },
+      {
+        intitule:
+          "Indiquez le seul produit proposable, sa condition, et calculez le surcoût total pour 30 unités, remise de 8 % comprise.",
+        documents: ['Documents 3 et 4', 'Annexe 5'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Question', 'Réponse attendue'],
+          lignes: [
+            ['Produit proposable', "ELO-CHV18, chevron sapin 63x75 mm, longueur 4 m, classe 2 traité. Section et longueur strictement identiques au produit commandé. La performance mécanique attendue n'est pas modifiée."],
+            [
+              'Condition impérative',
+              "L'accord écrit du client. La note de la direction dispose : « Ne jamais proposer un produit de substitution de section, de longueur ou de résistance différente sans l'accord écrit du client. » Ici, ni la section ni la longueur ne changent, mais le produit change de référence et de prix. L'accord écrit reste requis, ne serait-ce que pour le surcoût.",
+            ],
+            ['Prix unitaire du produit commandé, remise 8 % déduite', '18,40 × 0,92 = 16,928 €, soit 16,93 € HT'],
+            ['Prix unitaire du produit de substitution, remise 8 % déduite', '23,60 × 0,92 = 21,712 €, soit 21,71 € HT'],
+            ['Surcoût unitaire HT', '21,71 - 16,93 = 4,78 € HT'],
+            [
+              'Surcoût total HT pour 30 unités',
+              "4,78 × 30 = 143,40 € HT.\n\nCe montant est inférieur au seuil de 500 € HT. Le geste commercial consistant à prendre en charge ce surcoût relève donc de la délégation du commercial, sans validation du responsable commercial. Un stagiaire, en revanche, ne dispose d'aucune délégation propre : il propose, M. Ferreira ou M. Vallois décide.",
+            ],
+          ],
+        },
+        complement:
+          "Calcul de contrôle par un autre chemin : surcoût unitaire brut de 5,20 €, remise de 8 % appliquée, soit 5,20 × 0,92 = 4,784 €, arrondi à 4,78 €. Pour 30 unités, 143,52 €. L'écart de 12 centimes avec le calcul principal vient des arrondis intermédiaires. Accepter les deux résultats, entre 143,40 € et 143,52 €.\n\nLe piège du barème : un élève peut calculer un surcoût juste et conclure qu'il peut l'accorder seul. Il est stagiaire. La délégation de 500 € appartient au commercial, pas à lui. Valoriser fortement celui qui fait cette distinction.",
+      },
+      {
+        intitule:
+          "Préparez votre appel en renseignant la fiche d'appel.",
+        documents: ['Documents 4, 5 et 7', 'Annexe 6'],
+        reponse:
+          "Objectif de l'appel : obtenir l'accord de M. Kadri sur la livraison partielle du lundi 16 et sur la correction de la ligne 6, et lui annoncer la livraison des chevrons au jeudi 19 mars au matin.\n\nAccroche et vérification de disponibilité : « Bonjour monsieur Kadri, [prénom nom], je suis en stage à l'agence Chausson de Gennevilliers, je travaille avec Bruno Ferreira. Est-ce que vous pouvez me parler deux minutes ? Je vous appelle au sujet de votre commande 2026-4471 pour le chantier de Colombes. »\n\nAnnonce du problème : « Sur la ligne 5, les chevrons ELO-CHV14 de 4 mètres, nous avons 4 unités en stock sur les 30 que vous avez commandées. Il en manque 26. »\n\nCe qui rassure immédiatement : les parpaings, le ciment, le sable et le gravier sont tous en stock. Rien de ce dont il a besoin lundi matin pour le mur porteur n'est concerné.\n\nSolution proposée, datée : livraison partielle lundi 16 mars à 7 heures des lignes 1 à 4 et du treillis. Livraison des chevrons le jeudi 19 mars au matin, marchandise reçue le 18 et mise en stock le jour même.\n\nObjection anticipée : « Vous ne pouvez pas me trouver autre chose ? » Réponse préparée : trois références sont en stock, deux ont une section ou une longueur différente et je n'ai pas le droit de les proposer sans son accord écrit. La troisième est identique en section et en longueur mais coûte 5,20 € de plus l'unité. Je peux la lui soumettre, mais le surcoût doit être tranché par M. Ferreira.\n\nEngagement à obtenir avant de raccrocher : son accord écrit sur la livraison partielle, et son accord écrit sur la correction de la quantité de treillis, dix panneaux et non cent. Réponse attendue avant le lundi 16 mars à 7 heures.",
+        bareme: 4,
+        complement:
+          "La rubrique la plus discriminante est « ce qui rassure immédiatement ». Un élève qui l'oublie annonce une rupture à un artisan sans lui dire tout de suite que son chantier de lundi n'est pas menacé. C'est l'erreur qui transforme un appel maîtrisé en conflit. La méthode du document 5 le dit à l'étape 4 : arriver avec une solution construite, pas avec une question ouverte.",
+      },
+      {
+        intitule: "Rédigez les quatre répliques manquantes de la transcription.",
+        documents: ['Documents 4, 5 et 6', 'Annexe 7'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Réplique', 'Formulation attendue'],
+          lignes: [
+            [
+              'Réplique 1\nPrésentation, disponibilité, objet',
+              "« Bonjour monsieur Kadri, [prénom nom], je suis en stage à l'agence Chausson Matériaux de Gennevilliers, je travaille avec Bruno Ferreira. Est-ce que vous avez deux minutes ? Je vous appelle au sujet de votre commande 2026-4471, pour le chantier de Colombes. »",
+            ],
+            [
+              'Réplique 2\nAnnonce du problème',
+              "« Sur votre commande, la ligne 5, les chevrons sapin 63x75 en 4 mètres : nous en avons 4 en stock sur les 30 que vous avez commandés. Il en manque 26. Le fournisseur nous les livre le mercredi 18. »",
+            ],
+            [
+              'Réplique 3\nLa date, justifiée',
+              "« Le fournisseur livre le dépôt mercredi 18 dans la matinée. Il faut une journée pour la réception et la mise en stock. La marchandise est disponible jeudi 19. Nos tournées chantier partent le matin. Je vous les livre donc le jeudi 19 mars au matin. C'est une date que le dépôt m'a confirmée, pas une estimation. »",
+            ],
+            [
+              'Réplique 4\nLa substitution',
+              "« J'ai bien du chevron en stock, monsieur Kadri, mais pas le vôtre. J'ai du 50x75, et j'ai du 63x75 en 3 mètres. Dans les deux cas, ce n'est pas la même pièce que celle de votre devis, et je ne vous proposerai pas de changer une section de charpente au téléphone. J'ai une troisième référence, du 63x75 en 4 mètres, exactement votre section et votre longueur, mais avec un traitement classe 2 et 5,20 euros de plus l'unité. Si vous la voulez, je fais valider le surcoût par Bruno Ferreira et je vous rappelle avant midi. »",
+            ],
+          ],
+        },
+        complement:
+          "Grille de correction, un point par réplique.\n\nRéplique 1 : la présentation doit contenir le nom, l'agence, et la vérification de disponibilité. M. Kadri est en voiture.\n\nRéplique 2 : la quantité manquante doit être chiffrée. « Il n'y en a pas assez » ne vaut aucun point.\n\nRéplique 3 : la date doit être le jeudi 19 au matin, et elle doit être justifiée par la mise en stock et la tournée. Une date juste sans justification vaut un demi-point. Une date fausse ne vaut rien, même bien justifiée.\n\nRéplique 4 : le refus de substituer une section au téléphone doit être explicite. L'élève qui propose le 50x75 parce qu'il est moins cher a échoué à la question, quelle que soit la qualité de sa formulation. Valoriser celui qui annonce qu'il fait valider le surcoût plutôt que de l'accorder seul.",
+      },
+      {
+        intitule: "Rédigez le mail de confirmation envoyé à M. Kadri avant midi.",
+        documents: ['Documents 4, 6 et 7', 'Annexe 8'],
+        reponse:
+          "Destinataire : r.kadri@batirenov.fr\nObjet : Commande 2026-4471 - confirmation de notre échange du 13 mars et accords demandés\n\nBonjour monsieur Kadri,\n\nJe vous confirme par écrit ce que nous avons convenu ce matin par téléphone.\n\nLivraison du lundi 16 mars, 7 heures, chantier 14 rue des Vallées à Colombes : parpaings creux, ciment, sable, gravier et treillis soudé. L'ensemble est en stock.\n\nLes 30 chevrons sapin 63x75 en 4 mètres vous seront livrés le jeudi 19 mars au matin, sur le même chantier. Le fournisseur nous livre le 18, la mise en stock est faite le jour même.\n\nDeux points nécessitent votre accord écrit avant le lundi 16 mars à 7 heures. Sans cet accord, aucune livraison ne pourra partir.\n\nPremièrement, votre acceptation de la livraison partielle. La case correspondante n'a pas été cochée lors de la saisie de votre commande. Sans votre accord, nos conditions générales nous imposent d'attendre la disponibilité de la totalité des produits avant de livrer.\n\nDeuxièmement, la correction de la ligne 6. Votre devis DV-2026-1187, que vous avez signé le 11 mars, porte 10 panneaux de treillis soudé ST25C. Le bon de commande en indique 100. Nous avons détecté cette erreur de saisie avant préparation. Merci de confirmer la quantité de 10 panneaux.\n\nUn simple retour de ce message vaudra accord.\n\nJe reste à votre disposition.\n\n[Prénom Nom]\nAgence Chausson Matériaux de Gennevilliers",
+        bareme: 2,
+        complement:
+          "Barème total de la mission : 32 points.\n\nQuatre éléments sont exigibles. Le rappel de ce qui a été convenu. Les deux accords écrits demandés, distinctement. La date limite de réponse. La conséquence de l'absence de réponse.\n\nPénaliser le mail qui demande un accord sans dire ce qui se passe si le client ne répond pas. « Sans cet accord, aucune livraison ne pourra partir » n'est pas une menace, c'est une information. Le client doit pouvoir mesurer l'enjeu de sa réponse.\n\nCe qui se joue en mission 4 : la livraison partielle du lundi 16 mars, le choix du transporteur, et la palette de parpaings cassée à l'arrivée.",
+      },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 4 - Le prestataire de livraison et le
+// suivi de son execution
+// Bloc 2 - Suivre les ventes : mettre en oeuvre le ou les service(s) associe(s).
+// Suite directe de la mission 3 : l'accord ecrit de M. Kadri est obtenu, la
+// livraison partielle du lundi 16 mars doit maintenant etre organisee.
+// Source : chausson.fr (CGV, FAQ, modes de retrait et de livraison), consultes
+// le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des ressources fournies, sélectionnez le transporteur qui peut réellement livrer le chantier de Colombes, organisez la livraison, puis traitez le désordre constaté à l'arrivée en portant les réserves qui s'imposent.",
+    contexte:
+      "Vendredi 13 mars, 17 h 20. M. Kadri a répondu par mail : il accepte la livraison partielle et confirme les dix panneaux de treillis. La commande est débloquée. Il reste à la livrer lundi 16 mars à 7 heures sur le chantier de Colombes. Karim Zemmouri vous a laissé un mot : « Le camion grue de l'agence est immobilisé jusqu'à mercredi, boîte de vitesses. Tu prends un transporteur référencé. Tu regardes le chantier avant de choisir. » M. Ferreira ajoute : « Et lundi matin, tu y vas. Tu réceptionnes avec le client. »",
+    documents: [
+      // ---- Document 1 : l'accord de M. Kadri ------------------------------
+      {
+        numero: 1,
+        titre: "La réponse de M. Kadri, reçue le vendredi 13 mars à 16 h 48",
+        texte: [
+          {
+            mailLecture: {
+              de: 'r.kadri@batirenov.fr',
+              a: 'stagiaire@chausson.fr',
+              objet: 'RE : Commande 2026-4471 - confirmation de notre échange du 13 mars et accords demandés',
+              corps: [
+                "C'est noté, et merci d'avoir appelé au lieu d'attendre lundi.",
+                "J'accepte la livraison partielle du lundi 16 mars : parpaings, ciment, sable, gravier, treillis.",
+                "Je confirme dix panneaux de treillis soudé ST25C, et non cent. Je n'ai jamais commandé cent panneaux.",
+                "Les trente chevrons le jeudi 19 mars au matin, d'accord.",
+                "Un point de vigilance sur l'accès. Le chantier est au 14 rue des Vallées. C'est une rue étroite, un sens unique, et il n'y a pas de quai ni de plateforme. Le camion doit décharger depuis la rue, par-dessus le mur de clôture. Sans grue, personne ne décharge douze palettes de parpaings à la main.",
+                "Je serai sur place à 7 heures avec Youssef, mon chef de chantier. C'est lui qui signera le bon si je suis au téléphone.",
+                'Rachid Kadri',
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 2 : les contraintes du chantier -----------------------
+      {
+        numero: 2,
+        titre: "Les contraintes du chantier de Colombes, relevées par la commerciale itinérante",
+        texte: [
+          {
+            paragraphes: [
+              "Fiche établie par Marion Leclerc, commerciale itinérante, lors de sa visite du chantier le 6 mars 2026. Cette fiche est consultable dans le dossier client. Elle n'a pas été lue lors de la saisie de la commande.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Élément relevé', 'Constat', 'Conséquence pour la livraison'],
+              lignes: [
+                ['Adresse', '14 rue des Vallées, 92700 Colombes', 'Distance agence de Gennevilliers : 6 km'],
+                ['Largeur de la rue', '3,20 mètres, sens unique', 'Un semi-remorque ne passe pas. Porteur uniquement.'],
+                ['Stationnement', 'Interdit sauf livraison, 30 minutes maximum', 'Le déchargement doit être rapide'],
+                ['Quai de déchargement', 'Aucun', 'Le camion doit décharger depuis la chaussée'],
+                ['Plateforme de retournement', 'Aucune', 'Le camion repart en marche arrière sur 40 mètres'],
+                ['Obstacle', 'Mur de clôture de 1,80 mètre entre la rue et le terrain', 'Les palettes doivent être levées par-dessus le mur'],
+                ['Engin de levage sur place', 'Grue de location, en service à partir de 8 heures', 'Indisponible à 7 heures, heure de la livraison'],
+                ['Main-d\u2019œuvre disponible', 'Six compagnons, occupés au mur porteur', 'Aucun déchargement manuel possible'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Le poids et le volume à livrer le lundi 16 mars',
+          },
+          {
+            tableau: {
+              colonnes: ['Référence', 'Désignation', 'Quantité', 'Unité de manutention', 'Poids'],
+              lignes: [
+                ['OBR-PAR20', 'Parpaing creux 20x20x50', '12 palettes', '12 palettes', '12 x 1 080 kg = 12 960 kg'],
+                ['OBR-CIM35', 'Ciment CEM II, sac de 35 kg', '80 sacs', '2 palettes', '2 800 kg'],
+                ['OBR-SAB01', 'Sable à maçonner, big bag', '6 big bags', '6 big bags', '6 000 kg'],
+                ['OBR-GRA02', 'Gravier 4/20, big bag', '4 big bags', '4 big bags', '4 000 kg'],
+                ['OBR-TRE10', 'Treillis soudé ST25C, 6x2,40 m', '10 panneaux', '1 fardeau', '480 kg'],
+                ['', 'TOTAL', '', '25 unités de manutention', '26 240 kg'],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Une palette de 60 parpaings creux de 20x20x50 pèse environ 1 080 kilogrammes. Un big bag de sable ou de gravier pèse une tonne. Additionnez avant de choisir un camion : la limite de charge n'est pas une recommandation.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : les trois transporteurs referencés -----------------
+      {
+        numero: 3,
+        titre: "Les trois transporteurs référencés par l'agence",
+        texte: [
+          {
+            offresPrestation: [
+              {
+                titre: 'TRANSPORTS MERCIER',
+                prix: '210,00 € HT',
+                prixLibelle: 'forfait pour la zone 1',
+                filAriane: 'Transporteur référencé, niveau 3',
+                note: '4,1',
+                avis: '58 livraisons réalisées pour l\u2019agence en 2025',
+                details: [
+                  'Semi-remorque plateau, 30 tonnes de charge utile',
+                  'Longueur du véhicule : 16,50 mètres',
+                  'Aucun moyen de levage embarqué',
+                  'Déchargement à la charge du destinataire',
+                  'Zone 1 : jusqu\u2019à 20 km de l\u2019agence',
+                ],
+                conditions: [
+                  'Créneau de livraison garanti à une demi-journée près',
+                  'Temps d\u2019attente facturé 45 € HT par demi-heure au-delà de 30 minutes',
+                ],
+                engagements: [
+                  { titre: 'Charge utile', texte: '30 000 kg' },
+                  { titre: 'Hayon ou grue', texte: 'Non' },
+                  { titre: 'Largeur de rue minimale', texte: '4,50 mètres' },
+                ],
+              },
+              {
+                titre: 'STL LOGISTIQUE',
+                prix: '295,00 € HT',
+                prixLibelle: 'forfait pour la zone 1',
+                filAriane: 'Transporteur référencé, niveau 2',
+                note: '4,4',
+                avis: '31 livraisons réalisées pour l\u2019agence en 2025',
+                details: [
+                  'Porteur 26 tonnes avec hayon élévateur arrière',
+                  'Longueur du véhicule : 9,80 mètres',
+                  'Hayon : capacité de levage 2 000 kg, hauteur de levée 1,40 mètre',
+                  'Déchargement au sol, à l\u2019arrière du véhicule',
+                  'Zone 1 : jusqu\u2019à 20 km de l\u2019agence',
+                ],
+                conditions: [
+                  'Créneau de livraison garanti à une heure près',
+                  'Temps d\u2019attente facturé 38 € HT par demi-heure au-delà de 30 minutes',
+                ],
+                engagements: [
+                  { titre: 'Charge utile', texte: '17 500 kg' },
+                  { titre: 'Hayon ou grue', texte: 'Hayon, levée 1,40 m' },
+                  { titre: 'Largeur de rue minimale', texte: '3,00 mètres' },
+                ],
+              },
+              {
+                titre: 'GRUTAGE SEINE-NORD',
+                prix: '380,00 € HT',
+                prixLibelle: 'forfait pour la zone 1',
+                filAriane: 'Transporteur référencé, niveau 1',
+                note: '4,6',
+                avis: '17 livraisons réalisées pour l\u2019agence en 2025',
+                details: [
+                  'Porteur 26 tonnes équipé d\u2019une grue auxiliaire',
+                  'Longueur du véhicule : 10,20 mètres',
+                  'Grue : portée 8 mètres, capacité 3 000 kg à 5 mètres',
+                  'Déchargement par-dessus obstacle possible',
+                  'Zone 1 : jusqu\u2019à 20 km de l\u2019agence',
+                ],
+                conditions: [
+                  'Créneau de livraison garanti à une heure près',
+                  'Temps d\u2019attente facturé 52 € HT par demi-heure au-delà de 30 minutes',
+                  'Deux rotations nécessaires si la charge dépasse la charge utile',
+                ],
+                engagements: [
+                  { titre: 'Charge utile', texte: '15 500 kg' },
+                  { titre: 'Hayon ou grue', texte: 'Grue, portée 8 m' },
+                  { titre: 'Largeur de rue minimale', texte: '3,10 mètres' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 4 : la grille de facturation des rotations -------------
+      {
+        numero: 4,
+        titre: 'La règle de facturation des rotations et des majorations',
+        texte: [
+          {
+            paragraphes: [
+              "Le forfait annoncé par chaque transporteur couvre une rotation, c'est-à-dire un aller et un retour, dans la limite de sa charge utile. Toute rotation supplémentaire est facturée au même tarif que la première.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Élément facturé', 'Règle', 'Montant'],
+              lignes: [
+                ['Rotation supplémentaire', 'Charge à livrer supérieure à la charge utile du véhicule', 'Forfait complet, par rotation'],
+                ['Livraison avant 8 heures', 'Majoration horaire matinale', '+ 60,00 € HT par rotation'],
+                ['Attente sur site', 'Au-delà de 30 minutes', 'Selon le tarif de chaque transporteur'],
+                ['Rue de moins de 3,50 mètres', 'Manœuvre difficile', '+ 40,00 € HT par rotation'],
+                ['Annulation moins de 24 h avant', 'Créneau réservé non honoré', '50 % du forfait'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Ce que dit la note de la direction sur les frais de transport',
+          },
+          {
+            noteDirection: {
+              titre: "Frais de livraison et refacturation au client",
+              intro: "Note applicable aux agences de la région Île-de-France.",
+              paragraphe:
+                "Les frais de transport ne sont pas un poste secondaire. Sur une commande de matériaux, ils représentent souvent la différence entre une affaire rentable et une affaire à perte.",
+              puces: [
+                "Le forfait de livraison facturé au client professionnel est celui qui figure au devis. Il ne peut être modifié après la signature du client.",
+                "Tout dépassement du forfait facturé au client est supporté par l'agence, et impute sa marge.",
+                "Le choix du transporteur relève du commercial en charge de la commande. Il engage l'agence.",
+                "Un transporteur qui ne peut matériellement pas accéder au chantier ou décharger la marchandise n'est pas une option, quel que soit son prix. Un camion qui repart chargé coûte le forfait, plus la relivraison, plus le client.",
+                "Ne jamais retenir un prestataire sur le seul critère du prix. Vérifier d'abord l'accès, le déchargement et la charge utile. Comparer ensuite les prix entre les prestataires qui restent.",
+              ],
+              conclusion:
+                "Un devis de transport se lit du bas vers le haut : les contraintes d'abord, le prix ensuite.",
+              signature: 'Direction régionale Île-de-France',
+            },
+          },
+          {
+            intertitre: 'Ce qui a été facturé au client',
+          },
+          {
+            paragraphes: [
+              "Le devis DV-2026-1187, signé par M. Kadri le 11 mars, porte une ligne « Livraison sur chantier, forfait » d'un montant de 280,00 euros hors taxes. Ce montant est ferme.",
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 5 : le bon de livraison type et ses mentions -----------
+      {
+        numero: 5,
+        titre: "Le bon de livraison et la valeur des réserves",
+        texte: [
+          {
+            docRiche: {
+              site: 'www.chausson.fr/pages/faq',
+              marque: 'Chausson Matériaux',
+              couleurHeader: '#005CA9',
+              menu: ['Aide', 'Mes commandes', 'Nous contacter'],
+              sections: [
+                { type: 'titre', texte: 'À la réception de votre marchandise' },
+                {
+                  type: 'paragraphe',
+                  texte:
+                    "En présence du livreur, vérifiez bien l'état et le contenu de votre colis.",
+                },
+                {
+                  type: 'puces',
+                  items: [
+                    "N'hésitez pas à notifier précisément sur le bordereau du transporteur toute anomalie : ouvert, endommagé, mouillé, re-scotché, produit manquant.",
+                    'La mention « Sous réserve de déballage » n\u2019est pas suffisante.',
+                    "Pour toute réception de marchandise, spécifiquement si celle-ci est encombrante et coûteuse, veillez à bien vérifier l'état extérieur ET intérieur du colis avant de l'accepter.",
+                    'Si vous refusez la marchandise, notez la mention « refusé pour avarie » sur le bon du transporteur.',
+                  ],
+                },
+                { type: 'sousTitre', texte: 'Ce que disent les conditions générales de vente' },
+                {
+                  type: 'paragraphes',
+                  textes: [
+                    "Les réserves prises par le destinataire à la livraison constituent des moyens de preuve de l'existence et de l'importance du dommage.",
+                    "L'Acheteur doit veiller à identifier le produit par sa nature ou sa référence et être le plus précis possible sur les réserves émises. La simple mention « sous réserve de déballage » est considérée comme trop générale et imprécise.",
+                  ],
+                },
+                {
+                  type: 'procedureEtapes',
+                  etapes: [
+                    { titre: 'Identifier le produit', detail: "Par sa nature ou sa référence. « Une palette abîmée » ne suffit pas. « Palette n° 7, référence OBR-PAR20 » est une réserve." },
+                    { titre: 'Décrire précisément le dommage', detail: "Nombre d'unités concernées, nature du dommage, localisation. Chiffrez." },
+                    { titre: 'Faire co-signer par le transporteur', detail: "Une réserve non co-signée par le chauffeur perd sa valeur de preuve." },
+                    { titre: 'Informer le vendeur dans les délais', detail: "Dans un délai de trois jours ouvrés suivant la livraison, par courrier recommandé ou en contactant le service client, en précisant le numéro de la commande concernée." },
+                  ],
+                },
+                { type: 'sousTitre', texte: 'La réclamation du client professionnel' },
+                {
+                  type: 'paragraphe',
+                  texte:
+                    "En cas de livraison non conforme ou sujette à litige, les réclamations doivent nous être adressées par écrit dans les huit jours qui suivent la réception de la marchandise et avant toute mise en œuvre.",
+                },
+                {
+                  type: 'citation',
+                  texte:
+                    "Les risques de dégradation, destruction ou perte de marchandises, même par cas fortuit ou cas de force majeure, sont transférés au client dès la livraison des marchandises vendues sous réserve de propriété.",
+                  auteur: 'Conditions générales de vente, clause de réserve de propriété',
+                },
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 6 : la livraison du lundi matin ------------------------
+      {
+        numero: 6,
+        titre: 'Ce qui se passe le lundi 16 mars à 7 h 05 sur le chantier',
+        texte: [
+          {
+            paragraphes: [
+              "Vous êtes sur place avec Youssef Ben Amar, chef de chantier de BATIRENOV. M. Kadri est au téléphone avec un fournisseur, à vingt mètres. Le camion est arrivé à 6 h 58. Le chauffeur commence le déchargement.",
+            ],
+          },
+          {
+            dialogue: [
+              { locuteur: 'Le chauffeur', texte: "Voilà, j'ai tout posé derrière le mur. Vous me signez le bon ?" },
+              { locuteur: 'Youssef', texte: "Attendez. La septième palette, là, celle du fond. Regardez le coin." },
+              { locuteur: 'Le chauffeur', texte: "Ah oui. Le film est déchiré, ça a dû bouger au freinage." },
+              { locuteur: 'Youssef', texte: "Ça n'a pas bougé, ça s'est cassé. Il y a des parpaings fendus dessous." },
+              { locuteur: 'Vous', texte: "On compte." },
+              { locuteur: 'Youssef', texte: "Neuf. Neuf parpaings fendus sur la palette 7. Les autres palettes sont bonnes." },
+              { locuteur: 'Le chauffeur', texte: "Bon, écoutez, moi j'ai une autre livraison à 8 h. Vous notez « sous réserve de déballage » et on n'en parle plus. C'est ce qu'on fait d'habitude." },
+              { locuteur: 'Youssef', texte: "Je ne signe pas ça. Le patron va me tuer." },
+              { locuteur: 'Le chauffeur', texte: "Alors vous refusez toute la livraison ? Douze palettes ? Vous voulez que je remballe ?" },
+              { locuteur: 'Vous', texte: '[C\u2019est à vous de décider]' },
+            ],
+          },
+          {
+            intertitre: 'Les éléments à connaître avant de décider',
+          },
+          {
+            encadresListes: [
+              {
+                titre: 'La palette 7',
+                lignes: [
+                  'Palette de 60 parpaings creux, référence OBR-PAR20.',
+                  'Neuf parpaings fendus, constatés visuellement, film de protection déchiré sur un angle.',
+                  'Cinquante et un parpaings intacts sur la même palette.',
+                  'Valeur unitaire du parpaing : 148,00 € HT la palette de 60, soit 2,47 € HT par parpaing avant remise.',
+                ],
+              },
+              {
+                titre: 'Le chantier',
+                lignes: [
+                  'Six compagnons montent le mur porteur ce jour, à partir de 8 heures.',
+                  'La grue de location est facturée à la journée, présente à partir de 8 heures.',
+                  "M. Kadri a chiffré à 1 400 euros le coût d'une journée perdue.",
+                  "Le mur porteur nécessite environ 640 parpaings. Douze palettes en fournissent 720.",
+                ],
+              },
+              {
+                titre: "Le camion et l'heure",
+                lignes: [
+                  'Le stationnement est autorisé 30 minutes maximum. Il est 7 h 05.',
+                  "Le chauffeur annonce une autre livraison à 8 heures.",
+                  'Le temps d\u2019attente au-delà de 30 minutes est facturé à l\u2019agence, pas au client.',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 7 : les trois issues possibles -------------------------
+      {
+        numero: 7,
+        titre: 'Les trois décisions possibles et leurs conséquences',
+        texte: [
+          {
+            paragraphes: [
+              "Trois décisions sont matériellement possibles à 7 h 05. Une seule est professionnellement correcte. Chacune a un coût, un risque et une trace.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Décision', 'Ce qui se passe immédiatement', 'Ce qui se passe ensuite', 'Coût pour le client', "Coût pour l'agence"],
+              lignes: [
+                [
+                  'A. Signer sans réserve',
+                  'Le chauffeur repart, le chantier démarre à 8 heures.',
+                  "Aucune preuve du dommage. Les CGV transfèrent les risques au client dès la livraison. Toute réclamation ultérieure est irrecevable.",
+                  '9 parpaings perdus, non remboursés',
+                  'Aucun coût immédiat. Un client qui découvre le piège.',
+                ],
+                [
+                  'B. Refuser la totalité de la livraison',
+                  'Le camion repart chargé. Le chantier ne démarre pas.',
+                  "Relivraison à organiser, au plus tôt le mardi 17. Le forfait de la rotation reste dû.",
+                  '1 400 € de journée perdue, plus la grue',
+                  'Forfait de transport perdu, plus une relivraison',
+                ],
+                [
+                  'C. Accepter avec réserve précise sur la palette 7',
+                  "Le chauffeur repart, le chantier démarre à 8 heures avec 711 parpaings intacts.",
+                  "La réserve co-signée fait preuve. Le vendeur est informé dans les trois jours ouvrés. L'avoir ou le remplacement est traité au titre du bloc 2.",
+                  'Aucun. Le mur nécessite 640 parpaings.',
+                  '9 parpaings à créditer, recours possible contre le transporteur',
+                ],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Le chauffeur propose la mention « sous réserve de déballage ». Les conditions générales de vente et la FAQ de l'entreprise disent toutes deux, dans les mêmes termes, que cette mention est trop générale et imprécise. Elle ne vaut rien. Le chauffeur ne le sait peut-être pas. Vous, si.",
+              ],
+            },
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: 'Activité 1 - Sélectionner le transporteur',
+        contexte:
+          "Le camion grue de l'agence est immobilisé. Trois transporteurs sont référencés. Le moins cher est à 210 euros, le plus cher à 380. Karim Zemmouri vous a dit de regarder le chantier avant de choisir. La fiche de Marion Leclerc est dans le dossier client depuis le 6 mars. Personne ne l'a ouverte.",
+        questions: [
+          {
+            numero: 1,
+            consigne:
+              "Pour chaque transporteur, reportez les données, vérifiez la conformité aux trois contraintes éliminatoires du chantier, calculez le coût total de la livraison, puis désignez le transporteur retenu et justifiez.",
+            ressources: "Lire les documents 2, 3 et 4, compléter l'annexe 1.",
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Le transporteur le moins cher est éliminé par trois contraintes distinctes. Nommez-les, et indiquez pour chacune ce qui se passerait concrètement si le camion se présentait rue des Vallées le lundi 16 mars à 7 heures.",
+            ressources: "Lire les documents 1, 2 et 3, compléter l'annexe 2.",
+            annexeId: 'annexe2',
+          },
+          {
+            numero: 3,
+            consigne:
+              "Calculez la marge de l'agence sur la ligne transport, sachant que le forfait facturé au client est de 280,00 euros HT et qu'il est ferme. Puis indiquez si ce dépassement pouvait être évité, et par qui.",
+            ressources: "Lire les documents 2, 3 et 4, compléter l'annexe 3.",
+            annexeId: 'annexe3',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 2 - Réceptionner et porter les réserves',
+        contexte:
+          "Lundi 16 mars, 7 h 05, rue des Vallées. Neuf parpaings sont fendus sur la palette 7. Le chauffeur veut repartir. Youssef refuse de signer une mention qu'il ne comprend pas. M. Kadri est au téléphone à vingt mètres. Vous avez trois minutes pour décider.",
+        questions: [
+          {
+            numero: 4,
+            consigne:
+              "Le chauffeur propose la mention « sous réserve de déballage ». Expliquez pourquoi vous la refusez, en citant les deux documents de l'entreprise qui la déclarent insuffisante.",
+            ressources: "Lire les documents 5 et 6, compléter l'annexe 4.",
+            annexeId: 'annexe4',
+          },
+          {
+            numero: 5,
+            consigne:
+              "Complétez le bon de livraison : pour chaque ligne, cochez conforme, réserve ou refus, et rédigez la réserve lorsqu'elle s'impose. Renseignez la date, l'heure, le signataire et la co-signature.",
+            ressources: "Lire les documents 5 et 6, compléter l'annexe 5.",
+            annexeId: 'annexe5',
+          },
+          {
+            numero: 6,
+            consigne:
+              "Comparez les trois décisions possibles. Pour chacune, indiquez le coût pour le client, le coût pour l'agence et le risque juridique. Désignez celle que vous retenez et justifiez en trois lignes.",
+            ressources: "Lire les documents 5, 6 et 7, compléter l'annexe 6.",
+            annexeId: 'annexe6',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 3 - Rendre compte de la livraison',
+        contexte:
+          "Il est 8 h 10. Le camion est parti, le chantier a démarré, la réserve est portée et co-signée. Vous rentrez à l'agence. M. Ferreira vous attend. Les conditions générales de vente imposent d'informer le vendeur dans les trois jours ouvrés.",
+        questions: [
+          {
+            numero: 7,
+            consigne:
+              "Rédigez le compte rendu de livraison à M. Ferreira : ce qui a été livré, ce qui a été constaté, la décision prise, les suites à donner et les délais à respecter.",
+            ressources: "Lire l'ensemble des documents, compléter l'annexe 7.",
+            annexeId: 'annexe7',
+          },
+          {
+            numero: 8,
+            consigne:
+              "Indiquez les trois délais que l'agence doit respecter après cette livraison, la date limite de chacun, et ce qui se passe si le délai n'est pas tenu.",
+            ressources: "Lire le document 5, compléter l'annexe 8.",
+            annexeId: 'annexe8',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'selectionprestataire',
+        id: 'annexe1',
+        titre: 'Annexe 1 - Comparateur des transporteurs référencés',
+        entete: 'CHAUSSON ACHATS - Sélection transporteur - Commande 2026-4471',
+        criteres: [
+          {
+            cle: 'largeur',
+            libelle: 'Largeur de rue minimale',
+            aide: 'La rue des Vallées mesure 3,20 m',
+            eliminatoire: true,
+          },
+          {
+            cle: 'dechargement',
+            libelle: 'Moyen de déchargement',
+            aide: 'Mur de 1,80 m à franchir, aucune main-d\u2019œuvre, aucune grue avant 8 h',
+            eliminatoire: true,
+          },
+          {
+            cle: 'charge',
+            libelle: 'Charge utile du véhicule',
+            aide: 'Charge à livrer : 26 240 kg',
+            eliminatoire: true,
+          },
+          { cle: 'forfait', libelle: 'Forfait de base par rotation', aide: 'En euros HT' },
+          { cle: 'rotations', libelle: 'Nombre de rotations nécessaires', aide: 'Charge à livrer divisée par charge utile, arrondi au supérieur' },
+          { cle: 'matinale', libelle: 'Majoration livraison avant 8 heures', aide: '60,00 € HT par rotation' },
+          { cle: 'rueEtroite', libelle: 'Majoration rue de moins de 3,50 m', aide: '40,00 € HT par rotation' },
+        ],
+        prestataires: [
+          {
+            cle: 'mercier',
+            nom: 'TRANSPORTS MERCIER',
+            sousTitre: 'Semi-remorque plateau',
+            donnees: {
+              largeur: 'Rue de 4,50 m minimum',
+              dechargement: 'Aucun moyen de levage embarqué',
+              charge: '30 000 kg',
+              forfait: '210,00 € HT',
+            },
+          },
+          {
+            cle: 'stl',
+            nom: 'STL LOGISTIQUE',
+            sousTitre: 'Porteur 26 t avec hayon',
+            donnees: {
+              largeur: 'Rue de 3,00 m minimum',
+              dechargement: 'Hayon, levée 1,40 m, capacité 2 000 kg',
+              charge: '17 500 kg',
+              forfait: '295,00 € HT',
+            },
+          },
+          {
+            cle: 'grutage',
+            nom: 'GRUTAGE SEINE-NORD',
+            sousTitre: 'Porteur 26 t avec grue',
+            donnees: {
+              largeur: 'Rue de 3,10 m minimum',
+              dechargement: 'Grue, portée 8 m, 3 000 kg à 5 m',
+              charge: '15 500 kg',
+              forfait: '380,00 € HT',
+            },
+          },
+        ],
+        libelleTotal: 'Coût total de la livraison en euros HT',
+        libelleChoix:
+          "Quel transporteur retenez-vous ? Justifiez en citant d'abord les contraintes, ensuite le prix, conformément à la note de la direction.",
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: "Annexe 2 - Pourquoi le moins cher est éliminé",
+        colonnes: ['Contrainte du chantier', 'Ce que propose Transports Mercier', 'Ce qui se passerait le 16 mars à 7 heures'],
+        nbLignes: 3,
+        prerempli: [
+          ['Contrainte n° 1 :', '', ''],
+          ['Contrainte n° 2 :', '', ''],
+          ['Contrainte n° 3 :', '', ''],
+        ],
+        largeurs: ['26%', '30%', '44%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'grille',
+        id: 'annexe3',
+        titre: "Annexe 3 - La marge de l'agence sur la ligne transport",
+        colonnes: ['Libellé', 'Montant ou réponse'],
+        nbLignes: 6,
+        prerempli: [
+          ['Forfait de livraison facturé au client, ferme', ''],
+          ['Coût réel du transporteur retenu', ''],
+          ["Marge de l'agence sur la ligne transport", ''],
+          ['Ce résultat est-il un gain ou une perte ?', ''],
+          ['Ce dépassement pouvait-il être évité ? Comment ?', ''],
+          ["Qui aurait dû consulter la fiche de Marion Leclerc, et à quel moment ?", ''],
+        ],
+        largeurs: ['44%', '56%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'texte',
+        id: 'annexe4',
+        titre: "Annexe 4 - Le refus de la mention « sous réserve de déballage »",
+        lignes: 7,
+      },
+      {
+        type: 'bonlivraisonreserves',
+        id: 'annexe5',
+        titre: 'Annexe 5 - Le bon de livraison à compléter et à signer',
+        entete: 'BON DE LIVRAISON - À signer contradictoirement à la réception',
+        numeroBL: 'BL-2026-09934',
+        transporteur: 'GRUTAGE SEINE-NORD',
+        chantier: '14 rue des Vallées, 92700 Colombes',
+        lignes: [
+          { id: 'l1', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50, palettes 1 à 6', quantite: '6 palettes', etat: 'Films intacts, angles sains' },
+          { id: 'l2', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50, palette 7', quantite: '1 palette', etat: 'Film déchiré sur un angle. Neuf parpaings fendus constatés visuellement. Cinquante et un parpaings intacts.' },
+          { id: 'l3', reference: 'OBR-PAR20', designation: 'Parpaing creux 20x20x50, palettes 8 à 12', quantite: '5 palettes', etat: 'Films intacts, angles sains' },
+          { id: 'l4', reference: 'OBR-CIM35', designation: 'Ciment CEM II 32,5 R, sac de 35 kg', quantite: '80 sacs', etat: 'Sacs secs, aucun sac éventré' },
+          { id: 'l5', reference: 'OBR-SAB01', designation: 'Sable à maçonner 0/4, big bag 1 tonne', quantite: '6 big bags', etat: 'Big bags fermés, sangles intactes' },
+          { id: 'l6', reference: 'OBR-GRA02', designation: 'Gravier 4/20, big bag 1 tonne', quantite: '4 big bags', etat: 'Big bags fermés, sangles intactes' },
+          { id: 'l7', reference: 'OBR-TRE10', designation: 'Treillis soudé ST25C, panneau 6x2,40 m', quantite: '10 panneaux', etat: 'Fardeau cerclé, panneaux non déformés' },
+        ],
+        rappel: [
+          "Identifier le produit par sa nature ou sa référence. « Une palette abîmée » n'est pas une réserve.",
+          'Décrire précisément le dommage : nombre d\u2019unités, nature, localisation. Chiffrez.',
+          "La mention « sous réserve de déballage » est considérée comme trop générale et imprécise.",
+          'Faire co-signer les réserves par le transporteur, sans quoi elles perdent leur valeur de preuve.',
+          "Informer le vendeur dans un délai de trois jours ouvrés suivant la livraison.",
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe6',
+        titre: 'Annexe 6 - Comparaison des trois décisions',
+        colonnes: ['Décision', 'Coût pour le client', "Coût pour l'agence", 'Risque juridique'],
+        nbLignes: 4,
+        prerempli: [
+          ['A. Signer sans réserve', '', '', ''],
+          ['B. Refuser la totalité', '', '', ''],
+          ['C. Accepter avec réserve précise', '', '', ''],
+          ['Décision retenue et justification en trois lignes :', '', '', ''],
+        ],
+        largeurs: ['26%', '24%', '24%', '26%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+      {
+        type: 'compterendu',
+        id: 'annexe7',
+        titre: 'Annexe 7 - Compte rendu de livraison à M. Ferreira',
+        entete: 'Note interne - Agence de Gennevilliers',
+        champsEntete: [
+          { id: 'objet', label: 'Objet' },
+          { id: 'date', label: 'Date et heure' },
+          { id: 'redacteur', label: 'Rédacteur' },
+        ],
+        sections: [
+          { id: 'livre', titre: 'Ce qui a été livré', indice: 'Références, quantités, transporteur retenu.' },
+          { id: 'constat', titre: 'Ce qui a été constaté', indice: 'Chiffrez. Nommez la palette et la référence.' },
+          { id: 'decision', titre: 'La décision prise sur place et sa justification', indice: 'Pourquoi ni A ni B.' },
+          { id: 'suites', titre: 'Les suites à donner, par qui et avant quand', indice: 'Trois délais à respecter.' },
+        ],
+      },
+      {
+        type: 'grille',
+        id: 'annexe8',
+        titre: "Annexe 8 - Les trois délais à respecter",
+        colonnes: ['Délai', 'Ce qui doit être fait', 'Date limite', "Ce qui se passe si le délai n'est pas tenu"],
+        nbLignes: 3,
+        prerempli: [
+          ['Délai n° 1', '', '', ''],
+          ['Délai n° 2', '', '', ''],
+          ['Délai n° 3', '', '', ''],
+        ],
+        largeurs: ['12%', '30%', '22%', '36%'],
+        reponseMultiligne: true,
+        lignesReponse: 4,
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: 'Mettre en œuvre le service de livraison',
+    proposition: [
+      'Accès au chantier',
+      'Moyen de déchargement',
+      'Charge utile',
+      'Contraintes puis prix',
+      'Réserve précise',
+      'Co-signature',
+      'Trois jours ouvrés',
+      'Huit jours',
+      'Avoir ou remplacement',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Organiser et contrôler une livraison sur chantier',
+      enfants: [
+        {
+          id: 'choisir',
+          texte: 'Choisir le prestataire',
+          enfants: [
+            { id: 'ch-1', texte: null, reponse: 'Accès au chantier' },
+            { id: 'ch-2', texte: null, reponse: 'Moyen de déchargement' },
+            { id: 'ch-3', texte: null, reponse: 'Charge utile' },
+          ],
+        },
+        {
+          id: 'receptionner',
+          texte: 'Réceptionner la marchandise',
+          enfants: [
+            { id: 're-1', texte: null, reponse: 'Contraintes puis prix' },
+            { id: 're-2', texte: null, reponse: 'Réserve précise' },
+            { id: 're-3', texte: null, reponse: 'Co-signature' },
+          ],
+        },
+        {
+          id: 'suivre',
+          texte: 'Faire valoir les réserves',
+          enfants: [
+            { id: 'su-1', texte: null, reponse: 'Trois jours ouvrés' },
+            { id: 'su-2', texte: null, reponse: 'Huit jours' },
+            { id: 'su-3', texte: null, reponse: 'Avoir ou remplacement' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Sélectionner le prestataire le plus adapté',
+        indicateurs: [
+          { niveau: 'novice', description: "Je retiens le moins cher." },
+          { niveau: 'debrouille', description: "Je compare les prix et je regarde vaguement les caractéristiques." },
+          { niveau: 'averti', description: "Je vérifie d'abord les contraintes éliminatoires, je compare ensuite les prix entre les prestataires qui restent." },
+          { niveau: 'expert', description: "J'anticipe les majorations et les rotations, et je chiffre le coût réel avant de choisir." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: "Suivre l'exécution du service et en rendre compte",
+        indicateurs: [
+          { niveau: 'novice', description: "Je laisse le transporteur gérer et je signe ce qu'on me présente." },
+          { niveau: 'debrouille', description: "Je contrôle la marchandise mais je ne sais pas quoi écrire." },
+          { niveau: 'averti', description: "Je contrôle, je constate, je rédige une réserve identifiée et chiffrée." },
+          { niveau: 'expert', description: "Je fais co-signer la réserve et je déclenche l'information du vendeur dans les délais." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Rédiger une réserve opposable',
+        indicateurs: [
+          { niveau: 'novice', description: "J'écris « sous réserve de déballage »." },
+          { niveau: 'debrouille', description: "Je décris le dommage sans identifier le produit ni le chiffrer." },
+          { niveau: 'averti', description: "J'identifie le produit par sa référence, je chiffre le dommage, je localise." },
+          { niveau: 'expert', description: "Je fais co-signer par le transporteur et je sais ce que vaut une réserve non co-signée." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: 'Décider sous contrainte de temps et en rendre compte',
+        indicateurs: [
+          { niveau: 'novice', description: "Je cède à la pression du chauffeur ou je bloque tout." },
+          { niveau: 'debrouille', description: "Je prends une décision sans en mesurer le coût." },
+          { niveau: 'averti', description: "Je compare les issues, j'en chiffre le coût, je décide et je trace." },
+          { niveau: 'expert', description: "Je choisis l'issue qui protège à la fois le chantier du client et les droits de l'agence." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Charge utile', definition: "Poids maximum de marchandise qu'un véhicule peut transporter, hors poids du véhicule lui-même." },
+      { terme: 'Rotation', definition: "Un aller et un retour du véhicule entre le dépôt et le chantier. Chaque rotation est facturée." },
+      { terme: 'Hayon élévateur', definition: "Plateforme mobile à l'arrière d'un camion, qui descend la marchandise au niveau du sol." },
+      { terme: 'Grue auxiliaire', definition: "Bras de levage monté sur le camion, qui permet de déposer la charge par-dessus un obstacle." },
+      { terme: 'Réserve', definition: "Mention écrite portée sur le bon de livraison pour constater un dommage. Elle constitue un moyen de preuve." },
+      { terme: 'Co-signature', definition: "Signature du transporteur à côté de celle du client, qui donne à la réserve sa valeur de preuve." },
+      { terme: 'Jour ouvré', definition: "Jour effectivement travaillé, du lundi au vendredi. Le week-end n'est pas compté." },
+      { terme: 'Réserve de propriété', definition: "Clause selon laquelle le vendeur reste propriétaire jusqu'au paiement intégral, alors que les risques passent au client dès la livraison." },
+      { terme: 'Avoir', definition: "Document commercial par lequel le vendeur reconnaît devoir une somme au client, à déduire d'une facture." },
+      { terme: 'Contrainte éliminatoire', definition: "Critère dont le non-respect exclut d'emblée une option, quel que soit son prix." },
+    ],
+    flashcards: [
+      { recto: 'Quel est le premier critère de sélection d\u2019un transporteur ?', verso: "L'accès au chantier, le moyen de déchargement et la charge utile. Le prix vient ensuite." },
+      { recto: 'Que se passe-t-il si un camion ne peut pas décharger sur le chantier ?', verso: "Il repart chargé. Le forfait est dû, la relivraison est à organiser, le client perd sa journée." },
+      { recto: 'Combien pèse une palette de 60 parpaings creux de 20x20x50 ?', verso: 'Environ 1 080 kilogrammes.' },
+      { recto: "Que vaut la mention « sous réserve de déballage » ?", verso: "Rien. Les CGV et la FAQ la déclarent toutes deux trop générale et imprécise." },
+      { recto: 'Que doit contenir une réserve valable ?', verso: "L'identification du produit par sa référence, la description précise et chiffrée du dommage, sa localisation." },
+      { recto: 'Pourquoi faire co-signer une réserve par le transporteur ?', verso: 'Sans co-signature, la réserve perd sa valeur de preuve.' },
+      { recto: 'Dans quel délai informer le vendeur après une livraison avec réserve ?', verso: 'Trois jours ouvrés suivant la livraison.' },
+      { recto: 'Dans quel délai un client professionnel doit-il réclamer par écrit ?', verso: 'Huit jours suivant la réception, et avant toute mise en œuvre.' },
+      { recto: 'Quand les risques de dégradation passent-ils au client ?', verso: 'Dès la livraison, même sous réserve de propriété.' },
+      { recto: "Qui supporte un dépassement du forfait de transport facturé au client ?", verso: "L'agence. Le forfait au devis est ferme et impute sa marge." },
+      { recto: "Une rotation supplémentaire, c'est quoi, et combien ça coûte ?", verso: "Un second aller-retour, nécessaire si la charge dépasse la charge utile. Elle est facturée au forfait complet." },
+      { recto: "Le chauffeur dit « c'est ce qu'on fait d'habitude ». Que répondez-vous ?", verso: "L'habitude n'est pas la règle. La mention proposée ne vaut rien, je porte une réserve identifiée et chiffrée." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le premier critère de sélection d\u2019un transporteur est :', options: ["L'accès et le déchargement", 'Le prix', 'La note du transporteur'], bonne: 0 },
+      { type: 'unique', question: 'La charge à livrer est de 26 240 kg. Un porteur de 15 500 kg de charge utile nécessite :', options: ['2 rotations', '1 rotation', '3 rotations'], bonne: 0 },
+      { type: 'unique', question: "La mention « sous réserve de déballage » est :", options: ['Trop générale et imprécise, sans valeur', 'Suffisante', 'Obligatoire'], bonne: 0 },
+      { type: 'unique', question: 'Une réserve non co-signée par le transporteur :', options: ['Perd sa valeur de preuve', 'Reste opposable', "Vaut refus de la marchandise"], bonne: 0 },
+      { type: 'unique', question: 'Le vendeur doit être informé du dommage dans un délai de :', options: ['3 jours ouvrés', '3 jours calendaires', '30 jours'], bonne: 0 },
+      { type: 'unique', question: 'La réclamation écrite du client professionnel doit intervenir dans :', options: ['8 jours suivant la réception', '14 jours', '48 heures'], bonne: 0 },
+      { type: 'unique', question: 'Les risques de dégradation passent au client :', options: ['Dès la livraison', 'Au paiement intégral', "À la mise en œuvre"], bonne: 0 },
+      { type: 'qcm', question: "Quelles contraintes éliminent Transports Mercier ?", options: ['La largeur de rue', "L'absence de moyen de levage", "La longueur du semi-remorque", 'Le prix'], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Que doit contenir une réserve valable ?', options: ['La référence du produit', 'Le nombre d\u2019unités endommagées', 'La localisation du dommage', "Le nom du chauffeur"], bonnes: [0, 1, 2] },
+      { type: 'unique', question: "Un dépassement du forfait de transport facturé au client est supporté par :", options: ["L'agence", 'Le client', 'Le transporteur'], bonne: 0 },
+      { type: 'trous', texte: 'Une {0} est une mention écrite portée sur le bon de livraison. Sans {1} du transporteur, elle perd sa valeur de preuve.', reponses: ['réserve', 'co-signature'] },
+      { type: 'trous', texte: "Un devis de transport se lit du bas vers le haut : les {0} d'abord, le {1} ensuite.", reponses: ['contraintes', 'prix'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque élément selon sa nature : contrainte éliminatoire, élément de coût, ou règle de preuve.',
+      etiquettes: ['Contrainte éliminatoire', 'Élément de coût', 'Règle de preuve'],
+      zones: [
+        { libelle: 'La rue mesure 3,20 mètres de large', etiquetteIndex: 0 },
+        { libelle: 'Majoration de 60 € HT pour une livraison avant 8 heures', etiquetteIndex: 1 },
+        { libelle: 'La réserve doit être co-signée par le transporteur', etiquetteIndex: 2 },
+        { libelle: 'Le camion doit franchir un mur de 1,80 mètre', etiquetteIndex: 0 },
+        { libelle: 'Une seconde rotation est facturée au forfait complet', etiquetteIndex: 1 },
+        { libelle: 'La mention « sous réserve de déballage » est trop imprécise', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule:
+          "Pour chaque transporteur, vérifiez la conformité aux contraintes du chantier, calculez le coût total, puis désignez le transporteur retenu.",
+        documents: ['Documents 2, 3 et 4', 'Annexe 1'],
+        reponse: '',
+        bareme: 6,
+        tableau: {
+          colonnes: ['Critère', 'Mercier', 'STL Logistique', 'Grutage Seine-Nord'],
+          lignes: [
+            ['Largeur de rue exigée (rue = 3,20 m)', '4,50 m\nNON CONFORME', '3,00 m\nConforme', '3,10 m\nConforme'],
+            ['Moyen de déchargement (mur de 1,80 m)', 'Aucun\nNON CONFORME', 'Hayon, levée 1,40 m\nNON CONFORME', 'Grue, portée 8 m\nConforme'],
+            ['Charge utile (26 240 kg à livrer)', '30 000 kg\nConforme', '17 500 kg\n2 rotations', '15 500 kg\n2 rotations'],
+            ['Forfait de base par rotation', '210,00 €', '295,00 €', '380,00 €'],
+            ['Nombre de rotations', '1', '2', '2'],
+            ['Majoration avant 8 h (60 € par rotation)', '60,00 €', '120,00 €', '120,00 €'],
+            ['Majoration rue étroite (40 € par rotation)', '40,00 €', '80,00 €', '80,00 €'],
+            ['COÛT TOTAL HT', '310,00 €\nÉLIMINÉ', '870,00 €\nÉLIMINÉ', '960,00 €\nRETENU'],
+          ],
+        },
+        complement:
+          "Détail du calcul pour Grutage Seine-Nord : 26 240 kg divisés par 15 500 kg de charge utile donnent 1,69, arrondi au supérieur, soit 2 rotations. Forfait 380 × 2 = 760 €. Majoration matinale 60 × 2 = 120 €. Majoration rue étroite 40 × 2 = 80 €. Total 960,00 € HT.\n\nLe transporteur retenu est le plus cher des trois, et de loin. Il est aussi le seul qui puisse matériellement effectuer la livraison. La note de la direction est explicite : « Un transporteur qui ne peut matériellement pas accéder au chantier ou décharger la marchandise n'est pas une option, quel que soit son prix. »\n\nAccepter que l'élève n'ait pas calculé le coût total de Mercier et de STL, dès lors qu'il les a éliminés sur les contraintes. C'est même le raisonnement le plus professionnel : on ne chiffre pas ce qui est impossible.",
+      },
+      {
+        intitule:
+          "Le transporteur le moins cher est éliminé par trois contraintes distinctes. Nommez-les et décrivez ce qui se passerait le 16 mars à 7 heures.",
+        documents: ['Documents 1, 2 et 3', 'Annexe 2'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Contrainte', 'Ce que propose Mercier', 'Ce qui se passerait rue des Vallées'],
+          lignes: [
+            [
+              'n° 1\nLargeur de la rue',
+              'Exige une rue de 4,50 m minimum. La rue des Vallées mesure 3,20 m.',
+              "Le semi-remorque de 16,50 mètres ne peut pas s'engager dans la rue. Il resterait bloqué à l'entrée, en sens unique, à 7 heures du matin. Aucune plateforme de retournement : il devrait reculer sur 40 mètres avec un semi.",
+            ],
+            [
+              'n° 2\nMoyen de déchargement',
+              "Aucun moyen de levage embarqué. Déchargement à la charge du destinataire.",
+              "Un mur de clôture de 1,80 mètre sépare la rue du terrain. Les six compagnons montent le mur porteur. La grue de location n'arrive qu'à 8 heures. Personne ne décharge 12 palettes de 1 080 kg à la main. Le camion repartirait chargé.",
+            ],
+            [
+              'n° 3\nStationnement et manœuvre',
+              "Semi-remorque de 16,50 mètres, créneau garanti à une demi-journée près.",
+              "Le stationnement est limité à 30 minutes. Un créneau garanti à la demi-journée près ne permet pas d'annoncer 7 heures au client, qui a une grue facturée à la journée et six compagnons sur place.",
+            ],
+          ],
+        },
+        complement:
+          "Accepter la troisième contrainte sous plusieurs formes : la longueur du véhicule, l'absence de plateforme de retournement, ou l'imprécision du créneau. Toutes ces réponses sont fondées.\n\nCe qui doit apparaître : Mercier est le moins cher sur le papier, à 310 € contre 960 €. Le retenir coûterait le forfait de 310 €, une relivraison le lendemain, et la journée perdue du client, chiffrée par lui-même à 1 400 € plus la grue. L'économie apparente de 650 € produit une perte réelle de plus de 2 000 €.",
+      },
+      {
+        intitule:
+          "Calculez la marge de l'agence sur la ligne transport, puis indiquez si ce dépassement pouvait être évité, et par qui.",
+        documents: ['Documents 2, 3 et 4', 'Annexe 3'],
+        reponse: '',
+        bareme: 4,
+        tableau: {
+          colonnes: ['Libellé', 'Montant ou réponse'],
+          lignes: [
+            ['Forfait de livraison facturé au client, ferme', '280,00 € HT (devis DV-2026-1187)'],
+            ['Coût réel du transporteur retenu', '960,00 € HT'],
+            ["Marge de l'agence sur la ligne transport", '280,00 - 960,00 = - 680,00 € HT'],
+            ['Gain ou perte ?', "Une perte de 680,00 € HT, supportée intégralement par l'agence. Le forfait au devis est ferme et ne peut être modifié après signature du client."],
+            [
+              'Ce dépassement pouvait-il être évité ?',
+              "Oui. La fiche de Marion Leclerc, établie le 6 mars, décrit la rue étroite, l'absence de quai, le mur de 1,80 mètre et l'absence de grue avant 8 heures. Le devis a été chiffré le 11 mars sur un forfait de 280 €, sans que cette fiche soit consultée. Un devis établi après lecture de la fiche aurait porté un forfait de transport d'au moins 960 €, accepté ou refusé par le client en connaissance de cause.",
+            ],
+            [
+              'Qui aurait dû consulter la fiche, et quand ?',
+              "Bruno Ferreira, commercial sédentaire, au moment d'établir le devis, le 11 mars. La fiche était dans le dossier client depuis le 6 mars. L'information existait, elle était disponible, elle n'a pas été cherchée.",
+            ],
+          ],
+        },
+        complement:
+          "Question la plus importante de la mission sur le plan professionnel. La perte n'est pas due à un aléa : elle est due à une information disponible et non consultée.\n\nC'est le prolongement direct de la mission 1, où les élèves ont appris que la fiabilité et la disponibilité sont deux critères distincts d'une information exploitable. Ici, l'information était fiable et disponible. Elle n'a pas été mobilisée.\n\nValoriser l'élève qui remarque que l'immobilisation du camion grue de l'agence n'explique pas tout : même avec le camion grue, il aurait fallu deux rotations, et le forfait de 280 € aurait été insuffisant.",
+      },
+      {
+        intitule:
+          "Expliquez pourquoi vous refusez la mention « sous réserve de déballage », en citant les deux documents de l'entreprise.",
+        documents: ['Documents 5 et 6', 'Annexe 4'],
+        reponse:
+          "Les deux documents à citer.\n\nLa foire aux questions du site chausson.fr, rubrique réception de la marchandise : « La mention Sous réserve de déballage n'est pas suffisante. »\n\nLes conditions générales de vente : « L'Acheteur doit veiller à identifier le produit par sa nature ou sa référence et être le plus précis possible sur les réserves émises. La simple mention sous réserve de déballage est considérée comme trop générale et imprécise. »\n\nPourquoi elle ne vaut rien. Une réserve est un moyen de preuve. Elle prouve l'existence et l'importance du dommage au moment de la livraison. Une mention générale n'identifie aucun produit, ne chiffre aucun dommage, ne localise rien. Elle ne prouve donc rien. Le jour où l'agence voudra se retourner contre le transporteur, ou le client contre l'agence, il n'y aura aucune trace de ce qui a été constaté.\n\nCe que le chauffeur ne dit pas. Il propose cette mention parce qu'elle le dégage. Les conditions générales de vente transfèrent les risques au client dès la livraison. Une signature sans réserve précise vaut acceptation de la marchandise en l'état. Les neuf parpaings fendus deviennent la perte du client, et personne ne pourra plus prouver qu'ils l'étaient à l'arrivée.\n\n« C'est ce qu'on fait d'habitude » n'est pas une règle. C'est une habitude qui arrange celui qui la propose.",
+        bareme: 4,
+        complement:
+          "Exiger les deux citations. Un élève qui n'en donne qu'une n'a pas compris que l'entreprise dit la même chose à deux endroits, une fois pour ses clients, une fois dans son contrat. La concordance des deux sources est ce qui rend la règle incontestable face au chauffeur.\n\nValoriser l'élève qui identifie l'intérêt du chauffeur derrière sa proposition. Ce n'est pas de la malveillance, c'est un conflit d'intérêts ordinaire, et savoir le repérer fait partie du métier.",
+      },
+      {
+        intitule:
+          "Complétez le bon de livraison : décision par ligne, réserve rédigée, date, heure, signataire, co-signature.",
+        documents: ['Documents 5 et 6', 'Annexe 5'],
+        reponse: '',
+        bareme: 6,
+        tableau: {
+          colonnes: ['Ligne', 'Décision', 'Réserve à porter'],
+          lignes: [
+            ['OBR-PAR20, palettes 1 à 6', 'Conforme', 'Néant'],
+            [
+              'OBR-PAR20, palette 7',
+              'Réserve',
+              "« Palette n° 7, référence OBR-PAR20, parpaing creux 20x20x50 : film de protection déchiré sur l'angle. Neuf parpaings fendus constatés à l'ouverture, sur les soixante de la palette. Cinquante et un parpaings intacts et acceptés. Dommage constaté contradictoirement en présence du chauffeur, le lundi 16 mars 2026 à 7 h 15, avant tout déchargement complémentaire. »",
+            ],
+            ['OBR-PAR20, palettes 8 à 12', 'Conforme', 'Néant'],
+            ['OBR-CIM35, 80 sacs', 'Conforme', 'Néant'],
+            ['OBR-SAB01, 6 big bags', 'Conforme', 'Néant'],
+            ['OBR-GRA02, 4 big bags', 'Conforme', 'Néant'],
+            ['OBR-TRE10, 10 panneaux', 'Conforme', 'Néant'],
+          ],
+        },
+        complement:
+          "Bloc de signature attendu. Date : lundi 16 mars 2026. Heure : 7 h 15 environ, l'heure exacte du constat. Signataire pour le client : Youssef Ben Amar, chef de chantier, dûment habilité par M. Kadri qui l'a annoncé par écrit dans son mail du 13 mars. Réserves co-signées par le transporteur : oui, impérativement.\n\nGrille de correction. Deux points pour les six lignes conformes correctement cochées. Deux points pour la réserve de la palette 7, qui doit contenir la référence du produit, le numéro de la palette, le nombre exact d'unités endommagées, le nombre d'unités acceptées, et la nature du dommage. Un point pour l'horodatage et le nom du signataire. Un point pour la co-signature.\n\nRefuser toute réserve qui ne chiffre pas. « Palette abîmée » ne vaut rien. Refuser aussi la réserve portée sur la totalité des douze palettes : onze sont saines, les réserver toutes serait un abus qui affaiblirait la réserve réelle.\n\nPoint de vigilance sur le signataire. Un élève peut hésiter à faire signer Youssef plutôt que M. Kadri. Le mail du 13 mars règle la question : « C'est lui qui signera le bon si je suis au téléphone. » L'habilitation est écrite. C'est précisément pour cela qu'elle figure dans le document 1.",
+      },
+      {
+        intitule:
+          "Comparez les trois décisions possibles, désignez celle que vous retenez et justifiez.",
+        documents: ['Documents 5, 6 et 7', 'Annexe 6'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Décision', 'Coût pour le client', "Coût pour l'agence", 'Risque juridique'],
+          lignes: [
+            [
+              'A. Signer sans réserve',
+              "Neuf parpaings perdus, soit 22,23 € HT avant remise. Surtout : aucun recours.",
+              'Aucun coût immédiat.',
+              "Maximal pour le client. Les CGV transfèrent les risques dès la livraison. Une signature sans réserve vaut acceptation en l'état. Toute réclamation ultérieure est irrecevable, faute de preuve.",
+            ],
+            [
+              'B. Refuser la totalité',
+              "1 400 € de journée perdue, plus la location de la grue. Onze palettes saines refusées sans motif.",
+              "Forfait de 960 € perdu, relivraison à organiser, second forfait à payer.",
+              "Le refus de onze palettes conformes est abusif. Le transporteur et l'agence pourraient contester. Le client subit un préjudice sans faute de sa part.",
+            ],
+            [
+              'C. Accepter avec réserve précise',
+              "Aucun. Le mur porteur nécessite 640 parpaings, 711 sont intacts et livrés.",
+              "Neuf parpaings à créditer, soit environ 20,45 € HT après remise de 8 %. Recours possible contre le transporteur.",
+              "Nul. La réserve co-signée fait preuve. Le vendeur est informé dans les trois jours ouvrés. Les droits de tous sont préservés.",
+            ],
+          ],
+        },
+        complement:
+          "Décision retenue : C. Justification attendue en trois lignes.\n\nLe chantier n'est pas menacé : 711 parpaings intacts pour un besoin de 640. La réserve précise et co-signée conserve à l'agence et au client la totalité de leurs recours. Refuser onze palettes saines pour neuf parpaings fendus coûterait au client une journée entière et à l'agence un second forfait, sans rien réparer.\n\nLe calcul à faire apparaître : 12 palettes de 60 parpaings donnent 720 unités. Moins 9 fendues, il en reste 711. Le mur porteur en demande 640. La marge est de 71 parpaings. Le chantier tourne.\n\nC'est ce calcul, et lui seul, qui autorise à accepter. Un élève qui choisit C sans l'avoir fait a eu raison par hasard. Le lui dire.",
+      },
+      {
+        intitule: "Rédigez le compte rendu de livraison à M. Ferreira.",
+        documents: ['Ensemble des documents', 'Annexe 7'],
+        reponse:
+          "Objet : Livraison partielle commande 2026-4471 BATIRENOV, chantier de Colombes, lundi 16 mars.\n\nCe qui a été livré. Livraison partielle effectuée le lundi 16 mars à 7 h 05, transporteur Grutage Seine-Nord, deux rotations. Douze palettes de parpaings OBR-PAR20, quatre-vingts sacs de ciment OBR-CIM35, six big bags de sable OBR-SAB01, quatre big bags de gravier OBR-GRA02, dix panneaux de treillis OBR-TRE10. Transporteur retenu pour sa grue auxiliaire : la rue mesure 3,20 mètres, un mur de 1,80 mètre sépare la chaussée du terrain, et la grue de location du client n'arrivait qu'à 8 heures.\n\nCe qui a été constaté. Palette n° 7 sur douze, référence OBR-PAR20 : film déchiré sur un angle, neuf parpaings fendus sur soixante. Cinquante et un parpaings intacts sur cette palette. Les onze autres palettes et toutes les autres lignes sont conformes.\n\nLa décision prise sur place et sa justification. Acceptation de la livraison avec réserve précise portée sur la palette 7 et co-signée par le chauffeur. Le chauffeur proposait la mention « sous réserve de déballage », que j'ai refusée : les CGV et la FAQ la déclarent trop générale et imprécise. Je n'ai pas refusé la livraison : sept cent onze parpaings sont intacts pour un besoin de six cent quarante au mur porteur. Un refus total aurait coûté au client sa journée, chiffrée par lui à 1 400 euros, et à l'agence un second forfait de transport.\n\nLes suites à donner. Informer le service client dans les trois jours ouvrés suivant la livraison, soit avant le jeudi 19 mars, avec copie du bon co-signé. Établir un avoir ou organiser le remplacement des neuf parpaings, valeur 20,45 euros HT remise déduite. Engager le recours contre Grutage Seine-Nord sur la base de la réserve co-signée. Un point à signaler : le forfait transport facturé au client est de 280 euros au devis, le coût réel est de 960 euros. La perte de 680 euros vient de la fiche de Marion Leclerc du 6 mars, qui décrivait toutes les contraintes du chantier et qui n'a pas été consultée lors de l'établissement du devis.",
+        bareme: 2,
+        complement:
+          "Le dernier paragraphe est ce qui distingue le compte rendu du stagiaire de celui du bon stagiaire. Il ne se contente pas de relater : il signale une perte de 680 euros et il en désigne la cause, sans accuser personne nommément. Valoriser fortement.\n\nPénaliser le compte rendu qui oublie les trois délais, ou qui les mentionne sans les dater.",
+      },
+      {
+        intitule: "Indiquez les trois délais à respecter, leur date limite, et la sanction du dépassement.",
+        documents: ['Document 5', 'Annexe 8'],
+        reponse: '',
+        bareme: 1,
+        tableau: {
+          colonnes: ['Délai', 'Ce qui doit être fait', 'Date limite', "Si le délai n'est pas tenu"],
+          lignes: [
+            [
+              'n° 1\nImmédiat',
+              "Porter la réserve précise sur le bon de livraison et la faire co-signer par le transporteur, en présence de celui-ci.",
+              'Lundi 16 mars, avant le départ du chauffeur',
+              "La réserve devient impossible. Sans co-signature, elle perd sa valeur de preuve. Le dommage n'est plus opposable au transporteur.",
+            ],
+            [
+              'n° 2\nTrois jours ouvrés',
+              "Informer le vendeur du dommage, par courrier recommandé ou en contactant le service client, en précisant le numéro de la commande.",
+              'Jeudi 19 mars\n(16, 17, 18 mars sont les trois jours ouvrés)',
+              "La réserve portée sur le bon perd son effet. Le vendeur n'est pas réputé informé et peut opposer la tardiveté.",
+            ],
+            [
+              'n° 3\nHuit jours',
+              "Adresser la réclamation écrite au vendeur, avant toute mise en œuvre de la marchandise.",
+              'Lundi 23 mars\n(huit jours suivant la réception du 16)',
+              "La réclamation est irrecevable. Les CGV exigent l'écrit dans les huit jours et avant toute mise en œuvre.",
+            ],
+          ],
+        },
+        complement:
+          "Barème total de la mission : 32 points.\n\nPoint de vigilance sur le délai n° 2. Trois jours ouvrés à compter du lundi 16 mars donnent le jeudi 19 mars, puisque le 16, le 17 et le 18 sont les trois jours ouvrés. Un élève qui compte en jours calendaires annonce le jeudi 19 également, par hasard. Lui demander de justifier son calcul.\n\nPoint de vigilance sur le délai n° 3. « Avant toute mise en œuvre » est une contrainte plus forte que le délai de huit jours. Les compagnons montent le mur porteur dès le lundi 16 à 8 heures. Les parpaings fendus doivent être mis de côté et non maçonnés, sans quoi la réclamation devient irrecevable même dans le délai. Valoriser fortement l'élève qui le relève.\n\nCe qui se joue en mission 5 : la facture arrive, elle est fausse sur deux points, et le client ne paie pas.",
+      },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CONTENU : Chausson Materiaux, mission 5 - La relance et le suivi du reglement
+// Bloc 2 - Suivre les ventes : mettre en oeuvre le ou les service(s) associe(s),
+// versant reglement et relance.
+// Suite directe de la mission 4 : la livraison est faite, la facture arrive,
+// elle est fausse, et le client ne paie pas.
+// Registre volontairement simplifie : chaque terme technique est defini dans le
+// document ou il apparait, avant d'etre utilise. Sept questions.
+// Source : chausson.fr (CGV professionnels), consultees le 10 juillet 2026.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Vérifiez la facture du client, calculez ce qu'il doit vraiment, choisissez la lettre de relance qui convient pour chaque facture en retard, puis rédigez cette lettre.",
+    contexte:
+      "Nous sommes le lundi 27 avril. La livraison du chantier de Colombes a eu lieu le 16 mars. La facture a été envoyée à la SARL BATIRENOV. Elle n'est toujours pas payée. Ce matin, M. Vallois, le responsable commercial, vous appelle dans son bureau : « BATIRENOV nous doit de l'argent sur trois factures. Tu regardes, tu me dis lesquelles sont vraiment en retard, et tu prépares les courriers. Mais avant, tu vérifies la facture du 16 mars. M. Kadri m'a téléphoné, il dit qu'elle est fausse. »",
+    documents: [
+      // ---- Document 1 : le vocabulaire de la facture ----------------------
+      {
+        numero: 1,
+        titre: 'Les mots à connaître pour lire une facture',
+        texte: [
+          {
+            paragraphes: [
+              "Avant de vérifier une facture, il faut savoir ce que veulent dire les mots qui y figurent. Voici les six mots utilisés dans cette mission.",
+            ],
+          },
+          {
+            encadresListes: [
+              {
+                titre: "L'échéance (la date à laquelle le client doit avoir payé)",
+                lignes: [
+                  "Chaque facture porte une date limite de paiement. C'est l'échéance.",
+                  "Pour un client professionnel, cette date ne peut pas dépasser 45 jours après la facture.",
+                  "Exemple : une facture du 1er mars a une échéance au 15 avril au plus tard.",
+                ],
+              },
+              {
+                titre: 'Un avoir (un papier qui dit que l\u2019agence doit de l\u2019argent au client)',
+                lignes: [
+                  "Quand l'agence a facturé trop cher, elle ne réécrit pas la facture. Elle établit un avoir.",
+                  "L'avoir est un document qui reconnaît une somme due au client.",
+                  "Le client déduit le montant de l'avoir de ce qu'il doit payer.",
+                ],
+              },
+              {
+                titre: "Les pénalités de retard (la somme en plus, parce que le client paie en retard)",
+                lignes: [
+                  "Quand un client professionnel paie après l'échéance, il doit une somme en plus.",
+                  "Cette somme s'appelle les pénalités de retard. Elle est prévue par la loi et par les conditions de vente.",
+                  "Elle s'ajoute à ce que le client devait déjà.",
+                ],
+              },
+              {
+                titre: 'La relance graduée (les trois lettres, de la plus légère à la plus sévère)',
+                lignes: [
+                  "Quand un client ne paie pas, on ne lui envoie pas tout de suite une lettre sévère.",
+                  "On commence par un simple rappel. Si rien ne vient, on écrit une lettre plus ferme. En dernier, on envoie la mise en demeure.",
+                  "Envoyer la lettre la plus sévère à un client qui a trois jours de retard est une faute professionnelle.",
+                ],
+              },
+              {
+                titre: 'La mise en demeure (la dernière lettre avant le tribunal)',
+                lignes: [
+                  "C'est le troisième et dernier niveau de relance.",
+                  "Elle s'envoie en recommandé avec accusé de réception.",
+                  "Après elle, l'agence peut demander au juge de faire payer le client.",
+                ],
+              },
+              {
+                titre: 'Un litige (un désaccord entre le client et l\u2019agence)',
+                lignes: [
+                  "Un litige, c'est quand le client n'est pas d'accord avec l'agence.",
+                  "Ici, M. Kadri conteste sa facture : c'est un litige.",
+                  "Attention : un litige ne dispense pas le client de payer les autres factures.",
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      // ---- Document 2 : la facture, fausse sur deux points ----------------
+      {
+        numero: 2,
+        titre: 'La facture FA-2026-08812, envoyée à la SARL BATIRENOV le 16 mars',
+        texte: [
+          {
+            paragraphes: [
+              "Cette facture correspond à la livraison du chantier de Colombes, effectuée le lundi 16 mars. Le client conteste deux lignes. Comparez-la au devis DV-2026-1187 signé par M. Kadri, reproduit au document 3.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Ligne', 'Référence', 'Désignation', 'Quantité', 'Prix unitaire HT', 'Remise', 'Total HT'],
+              lignes: [
+                ['1', 'OBR-PAR20', 'Parpaing creux 20x20x50 (palette de 60)', '12 palettes', '148,00 €', '8 %', '1 634,88 €'],
+                ['2', 'OBR-CIM35', 'Ciment CEM II 32,5 R, sac de 35 kg', '80 sacs', '7,90 €', '8 %', '581,44 €'],
+                ['3', 'OBR-SAB01', 'Sable à maçonner 0/4, big bag 1 tonne', '6 big bags', '62,00 €', '8 %', '342,24 €'],
+                ['4', 'OBR-GRA02', 'Gravier 4/20, big bag 1 tonne', '4 big bags', '58,00 €', '0 %', '232,00 €'],
+                ['5', 'OBR-TRE10', 'Treillis soudé ST25C, panneau 6x2,40 m', '10 panneaux', '41,50 €', '8 %', '381,80 €'],
+                ['6', 'LIVRAISON', 'Livraison sur chantier, camion grue', '1 forfait', '960,00 €', '0 %', '960,00 €'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Le bas de la facture',
+          },
+          {
+            tableau: {
+              colonnes: ['Libellé', 'Montant'],
+              lignes: [
+                ['Total HT', '4 132,36 €'],
+                ['TVA 20 %', '826,47 €'],
+                ['Total TTC à payer', '4 958,83 €'],
+                ['Date de la facture', '16 mars 2026'],
+                ['Échéance (date limite de paiement)', '30 avril 2026, soit 45 jours'],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Deux lignes de cette facture ne sont pas conformes à ce qui a été convenu avec le client. Vous les connaissez déjà toutes les deux : l'une a été repérée en mission 2, l'autre est le résultat de la livraison de la mission 4.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 3 : le rappel du devis et de la livraison -------------
+      {
+        numero: 3,
+        titre: 'Ce qui avait été convenu avec M. Kadri',
+        texte: [
+          {
+            intertitre: 'Le devis DV-2026-1187, signé par M. Kadri le 11 mars',
+          },
+          {
+            tableau: {
+              colonnes: ['Élément du devis', 'Ce qui a été signé'],
+              lignes: [
+                ['Remise sur toutes les lignes', '8 %, sans exception. C\u2019est la remise du compte BATIRENOV.'],
+                ['Ligne gravier OBR-GRA02', '4 big bags, remise 8 %, total 213,44 € HT'],
+                ['Ligne treillis OBR-TRE10', '10 panneaux, total 381,80 € HT'],
+                ['Livraison sur chantier', 'Forfait de 280,00 € HT. Ce montant est ferme.'],
+              ],
+            },
+          },
+          {
+            intertitre: 'La livraison du lundi 16 mars',
+          },
+          {
+            paragraphes: [
+              "La livraison a été faite. Une réserve a été portée sur le bon de livraison BL-2026-09934 et co-signée par le chauffeur. Neuf parpaings de la palette 7 étaient fendus, sur les 60 de la palette.",
+              "Le service client a été informé le 18 mars, dans le délai de trois jours ouvrés. La réserve est donc valable. L'agence doit ces neuf parpaings au client.",
+            ],
+          },
+          {
+            intertitre: 'Le prix d\u2019un parpaing',
+          },
+          {
+            paragraphes: [
+              "Une palette de 60 parpaings coûte 148,00 € HT. Un parpaing coûte donc 148,00 divisé par 60, soit 2,4667 € HT. Après la remise de 8 %, il coûte 2,4667 x 0,92, soit 2,27 € HT.",
+            ],
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "La ligne « Livraison » de la facture porte 960,00 €. C'est ce que le transporteur a coûté à l'agence. Mais ce n'est pas ce que le client a signé. Relisez ce que dit le devis sur le forfait de livraison.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 4 : les trois factures en retard ----------------------
+      {
+        numero: 4,
+        titre: "Le compte de la SARL BATIRENOV au lundi 27 avril",
+        texte: [
+          {
+            paragraphes: [
+              "Voici les cinq dernières factures du compte BATIRENOV. Trois ne sont pas payées. La colonne « Jours de retard » se compte à partir de l'échéance, pas à partir de la date de la facture.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Facture', 'Date', 'Montant TTC', 'Échéance', 'Payée ?', 'Jours de retard au 27 avril'],
+              lignes: [
+                ['FA-2026-07104', '2 janvier', '1 284,00 €', '16 février', 'Oui, le 14 février', '-'],
+                ['FA-2026-07655', '30 janvier', '2 940,00 €', '16 mars', 'Non', '42 jours'],
+                ['FA-2026-08120', '18 février', '876,00 €', '4 avril', 'Non', '23 jours'],
+                ['FA-2026-08540', '2 mars', '3 108,00 €', '16 avril', 'Oui, le 15 avril', '-'],
+                ['FA-2026-08812', '16 mars', '4 958,83 €', '30 avril', 'Non', '0 jour'],
+              ],
+            },
+          },
+          {
+            intertitre: 'Ce que M. Kadri a dit à M. Vallois au téléphone',
+          },
+          {
+            bulle: {
+              nom: 'Rachid Kadri',
+              role: 'Gérant de la SARL BATIRENOV',
+              initiale: 'K',
+              couleurAvatar: '#B45309',
+              lignes: [
+                "« Votre facture du 16 mars est fausse. Vous m'avez compté la remise sur toutes les lignes sauf le gravier. Et vous me facturez 960 euros de livraison alors que mon devis dit 280. »",
+                "« Tant que ce n'est pas corrigé, je ne paie pas celle-là. Les autres, je vais regarder. »",
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Attention. M. Kadri parle de la facture du 16 mars. Il ne dit rien des deux autres. Ces deux autres factures ne font l'objet d'aucun désaccord. Elles doivent être payées.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 5 : les trois niveaux de relance -----------------------
+      {
+        numero: 5,
+        titre: 'Les trois lettres de relance et le moment où on les envoie',
+        texte: [
+          {
+            parcours: {
+              etapes: [
+                {
+                  numero: '1',
+                  symbole: 'ampoule',
+                  titre: 'Le rappel simple, de 1 à 15 jours de retard',
+                  contenu: [
+                    "On suppose un oubli. Le ton est neutre.",
+                    "Envoi par mail ou par courrier simple.",
+                    "On rappelle le numéro de la facture, son montant, sa date d'échéance.",
+                    "On ne parle pas encore de pénalités.",
+                  ],
+                },
+                {
+                  numero: '2',
+                  symbole: 'cible',
+                  titre: 'La lettre de relance ferme, de 16 à 30 jours de retard',
+                  contenu: [
+                    "On ne suppose plus un oubli. Le ton reste courtois, mais on fixe une date.",
+                    "Envoi par courrier simple.",
+                    "On rappelle que des pénalités de retard sont dues.",
+                    "On demande le paiement sous huit jours.",
+                  ],
+                },
+                {
+                  numero: '3',
+                  symbole: 'interdit',
+                  titre: 'La mise en demeure, au-delà de 30 jours de retard',
+                  contenu: [
+                    "C'est la dernière lettre avant le tribunal.",
+                    "Envoi obligatoire en recommandé avec accusé de réception.",
+                    "On chiffre les pénalités de retard.",
+                    "On annonce ce qui se passera sans paiement : suspension du compte, procédure judiciaire.",
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            intertitre: 'La règle à ne pas oublier',
+          },
+          {
+            noteDirection: {
+              titre: 'Relance des clients professionnels',
+              intro: "Note à l'attention des commerciaux sédentaires.",
+              paragraphe:
+                "On ne saute jamais un niveau. On envoie le rappel simple, puis la lettre ferme, puis la mise en demeure. Chaque lettre suppose que la précédente est restée sans réponse.",
+              puces: [
+                "Envoyer une mise en demeure à un client qui a huit jours de retard est une faute. Le client est un partenaire, pas un débiteur.",
+                "Une facture contestée par le client ne se relance pas. Elle se corrige d'abord.",
+                "Une facture qui n'est pas contestée se relance, même si une autre facture du même client fait l'objet d'un désaccord.",
+                "Une facture dont l'échéance n'est pas dépassée ne se relance pas. Le client n'est pas en retard.",
+              ],
+              conclusion:
+                "Avant d'écrire, posez-vous trois questions dans cet ordre. La facture est-elle contestée ? L'échéance est-elle dépassée ? De combien de jours ?",
+              signature: 'Direction régionale Île-de-France',
+            },
+          },
+        ],
+      },
+
+      // ---- Document 6 : la formule des pénalités, avec exemple résolu ------
+      {
+        numero: 6,
+        titre: 'Comment calculer les pénalités de retard',
+        texte: [
+          {
+            intertitre: 'Ce que disent les conditions générales de vente',
+          },
+          {
+            paragraphes: [
+              "Toute somme non payée à l'échéance donne lieu au paiement de pénalités de retard. Le taux appliqué est de 12 % par an. Une indemnité forfaitaire de 40 euros pour frais de recouvrement est également due, quel que soit le montant de la facture.",
+            ],
+          },
+          {
+            intertitre: 'La formule',
+          },
+          {
+            paragraphes: [
+              "Pénalités = Montant TTC de la facture x Taux annuel x (Nombre de jours de retard divisé par 365)",
+              "Puis on ajoute l'indemnité forfaitaire de 40 euros.",
+            ],
+          },
+          {
+            intertitre: 'Un exemple entièrement résolu, sur une autre facture',
+          },
+          {
+            paragraphes: [
+              "La société Charpentes Vidal doit une facture de 1 200,00 € TTC. Elle a 50 jours de retard. Calculons les pénalités.",
+            ],
+          },
+          {
+            tableau: {
+              colonnes: ['Étape', 'Calcul', 'Résultat'],
+              lignes: [
+                ['1. Le montant de la facture', 'Donné', '1 200,00 €'],
+                ['2. Le taux annuel', 'Donné par les CGV', '12 % soit 0,12'],
+                ['3. La part de l\u2019année écoulée', '50 jours divisés par 365', '0,1370'],
+                ['4. Les pénalités', '1 200,00 x 0,12 x 0,1370', '19,73 €'],
+                ['5. L\u2019indemnité forfaitaire', 'Toujours la même', '40,00 €'],
+                ['6. Le total dû en plus', '19,73 + 40,00', '59,73 €'],
+              ],
+            },
+          },
+          {
+            bulleConseil: {
+              texte: [
+                "Suivez exactement les six étapes de l'exemple. Remplacez seulement le montant de la facture et le nombre de jours de retard. Arrondissez à deux chiffres après la virgule.",
+              ],
+            },
+          },
+        ],
+      },
+
+      // ---- Document 7 : le modèle de lettre ferme ------------------------
+      {
+        numero: 7,
+        titre: 'Un modèle de lettre de relance ferme, écrite pour un autre client',
+        texte: [
+          {
+            paragraphes: [
+              "Voici une lettre de relance de niveau 2 envoyée le mois dernier à la société Menuiserie Kessler. Vous vous en inspirerez pour rédiger la vôtre.",
+            ],
+          },
+          {
+            docRiche: {
+              marque: 'Chausson Matériaux',
+              couleurHeader: '#005CA9',
+              sections: [
+                { type: 'titre', texte: 'Agence de Gennevilliers' },
+                {
+                  type: 'fiche',
+                  lignes: [
+                    { label: 'Destinataire', valeur: 'Menuiserie Kessler, 8 rue Pasteur, 92230 Gennevilliers' },
+                    { label: 'Objet', valeur: 'Relance - facture FA-2026-06902 impayée' },
+                    { label: 'Date', valeur: '23 mars 2026' },
+                  ],
+                },
+                { type: 'sousTitre', texte: 'Madame, Monsieur,' },
+                {
+                  type: 'paragraphes',
+                  textes: [
+                    "Sauf erreur de notre part, notre facture n° FA-2026-06902 du 5 janvier 2026, d'un montant de 1 460,00 euros TTC, n'a pas été réglée à ce jour. Son échéance était fixée au 19 février 2026.",
+                    "Un premier rappel vous a été adressé le 26 février 2026. Il est resté sans réponse.",
+                    "Nous vous rappelons que tout retard de paiement donne lieu, conformément à nos conditions générales de vente, au versement de pénalités de retard calculées au taux annuel de 12 %, ainsi qu'à une indemnité forfaitaire de 40 euros pour frais de recouvrement.",
+                    "Nous vous demandons de bien vouloir procéder au règlement de cette facture dans un délai de huit jours à compter de la réception de la présente lettre.",
+                    "Si le règlement nous parvenait entre-temps, nous vous prions de considérer ce courrier comme sans objet.",
+                    "Nous restons à votre disposition pour tout renseignement.",
+                    "Veuillez agréer, Madame, Monsieur, l'expression de nos salutations distinguées.",
+                  ],
+                },
+                {
+                  type: 'fiche',
+                  lignes: [
+                    { label: 'Signataire', valeur: 'Patrick Vallois, responsable commercial' },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            intertitre: 'Ce que contient toute lettre de relance',
+          },
+          {
+            puces: [
+              "Le numéro de la facture, sa date et son montant.",
+              "La date de son échéance.",
+              "Le rappel de la lettre précédente, s'il y en a eu une.",
+              "Le délai laissé au client pour payer.",
+              "La phrase qui prévoit le cas où le client a déjà payé.",
+              "Le nom et la fonction du signataire.",
+            ],
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    activites: [
+      {
+        titre: 'Activité 1 - Vérifier la facture du client',
+        contexte:
+          "M. Kadri dit que la facture du 16 mars est fausse. M. Vallois vous demande de vérifier avant de lui répondre. Comparez la facture au devis signé.",
+        questions: [
+          {
+            numero: 1,
+            consigne:
+              "Relevez les deux erreurs de la facture FA-2026-08812 et indiquez le montant correct de chaque ligne.",
+            ressources: "Lire les documents 2 et 3, compléter l'annexe 1.",
+            annexeId: 'annexe1',
+          },
+          {
+            numero: 2,
+            consigne:
+              "Calculez le montant de l'avoir que l'agence doit à M. Kadri. N'oubliez pas les neuf parpaings fendus.",
+            ressources: "Lire les documents 1, 2 et 3, compléter l'annexe 2.",
+            annexeId: 'annexe2',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 2 - Choisir la bonne lettre pour chaque facture',
+        contexte:
+          "Trois factures ne sont pas payées. Elles n'ont pas le même retard, et l'une d'elles est contestée. M. Vallois attend votre proposition avant midi.",
+        questions: [
+          {
+            numero: 3,
+            consigne:
+              "Pour chacune des trois factures impayées, choisissez le niveau de relance et justifiez votre choix en une phrase.",
+            ressources: "Lire les documents 4 et 5, compléter l'annexe 3.",
+            annexeId: 'annexe3',
+          },
+          {
+            numero: 4,
+            consigne:
+              "Expliquez pourquoi la facture du 16 mars ne doit pas être relancée aujourd'hui. Donnez les deux raisons.",
+            ressources: "Lire les documents 4 et 5, compléter l'annexe 4.",
+            annexeId: 'annexe4',
+          },
+          {
+            numero: 5,
+            consigne:
+              "Calculez les pénalités de retard dues sur la facture FA-2026-07655. Suivez les six étapes de l'exemple.",
+            ressources: "Lire les documents 4 et 6, compléter l'annexe 5.",
+            annexeId: 'annexe5',
+          },
+        ],
+      },
+      {
+        titre: 'Activité 3 - Écrire au client',
+        contexte:
+          "Vous avez vérifié la facture, vous savez quelle lettre envoyer. Il reste à écrire. M. Vallois signera.",
+        questions: [
+          {
+            numero: 6,
+            consigne:
+              "Rédigez la lettre de relance de la facture FA-2026-07655, en vous aidant du modèle.",
+            ressources: "Lire les documents 5, 6 et 7, compléter l'annexe 6.",
+            annexeId: 'annexe6',
+          },
+          {
+            numero: 7,
+            consigne:
+              "Rédigez le mail qui annonce à M. Kadri la correction de sa facture et l'avoir qui lui est accordé.",
+            ressources: "Lire les documents 2, 3 et 4, compléter l'annexe 7.",
+            annexeId: 'annexe7',
+          },
+        ],
+      },
+    ],
+
+    // -------------------------------------------------------------------
+    annexes: [
+      {
+        type: 'grille',
+        id: 'annexe1',
+        titre: 'Annexe 1 - Les deux erreurs de la facture',
+        colonnes: ['', 'Ligne concernée', 'Ce que dit la facture', 'Ce que dit le devis signé', 'Montant correct de la ligne'],
+        nbLignes: 2,
+        prerempli: [
+          ['Erreur n° 1', '', '', '', ''],
+          ['Erreur n° 2', '', '', '', ''],
+        ],
+        largeurs: ['12%', '20%', '22%', '22%', '24%'],
+        reponseMultiligne: true,
+        lignesReponse: 3,
+      },
+      {
+        type: 'grille',
+        id: 'annexe2',
+        titre: "Annexe 2 - Le montant de l'avoir",
+        colonnes: ['Ce qu\u2019il faut calculer', 'Votre calcul', 'Résultat'],
+        nbLignes: 5,
+        prerempli: [
+          ['1. Trop-perçu sur la ligne gravier (remise oubliée)', '', ''],
+          ['2. Trop-perçu sur la ligne livraison (forfait du devis)', '', ''],
+          ['3. Valeur des neuf parpaings fendus, remise déduite', '', ''],
+          ["4. Montant total de l'avoir, hors taxes", '', ''],
+          ["5. Montant total de l'avoir, TVA 20 % comprise", '', ''],
+        ],
+        largeurs: ['40%', '36%', '24%'],
+        reponseMultiligne: true,
+        lignesReponse: 2,
+      },
+      {
+        type: 'relancereglement',
+        id: 'annexe3',
+        titre: 'Annexe 3 - Le niveau de relance de chaque facture',
+        entete: 'CHAUSSON GESCOM - Suivi des règlements - Agence de Gennevilliers',
+        client: 'SARL BATIRENOV',
+        niveaux: [
+          'Aucune relance',
+          'Niveau 1 - Rappel simple',
+          'Niveau 2 - Lettre ferme',
+          'Niveau 3 - Mise en demeure',
+        ],
+        lignes: [
+          { id: 'f1', numero: 'FA-2026-07655', dateFacture: '30 janvier', montant: '2 940,00 €', dateEcheance: '16 mars', joursRetard: '42 jours' },
+          { id: 'f2', numero: 'FA-2026-08120', dateFacture: '18 février', montant: '876,00 €', dateEcheance: '4 avril', joursRetard: '23 jours' },
+          { id: 'f3', numero: 'FA-2026-08812', dateFacture: '16 mars', montant: '4 958,83 €', dateEcheance: '30 avril', joursRetard: '0 jour' },
+        ],
+        rappel: [
+          'Une facture contestée par le client ne se relance pas. Elle se corrige d\u2019abord.',
+          "Une facture dont l'échéance n'est pas dépassée ne se relance pas.",
+          'On ne saute jamais un niveau.',
+          'De 1 à 15 jours : rappel simple. De 16 à 30 jours : lettre ferme. Au-delà de 30 jours : mise en demeure.',
+        ],
+      },
+      {
+        type: 'texte',
+        id: 'annexe4',
+        titre: 'Annexe 4 - Pourquoi ne pas relancer la facture du 16 mars',
+        lignes: 6,
+      },
+      {
+        type: 'grille',
+        id: 'annexe5',
+        titre: 'Annexe 5 - Les pénalités de retard de la facture FA-2026-07655',
+        colonnes: ['Étape', 'Votre calcul', 'Résultat'],
+        nbLignes: 6,
+        prerempli: [
+          ['1. Le montant de la facture', '', ''],
+          ['2. Le taux annuel', '', ''],
+          ["3. La part de l'année écoulée (jours de retard divisés par 365)", '', ''],
+          ['4. Les pénalités', '', ''],
+          ["5. L'indemnité forfaitaire", '', ''],
+          ['6. Le total dû en plus', '', ''],
+        ],
+        largeurs: ['40%', '36%', '24%'],
+        reponseMultiligne: false,
+      },
+      {
+        type: 'courrier',
+        id: 'annexe6',
+        titre: 'Annexe 6 - La lettre de relance de la facture FA-2026-07655',
+      },
+      {
+        type: 'mail',
+        id: 'annexe7',
+        titre: 'Annexe 7 - Le mail à M. Kadri',
+        deParDefaut: 'stagiaire@chausson.fr',
+        aParDefaut: 'r.kadri@batirenov.fr',
+      },
+    ],
+  },
+
+  // =========================================================================
+  synthese: {
+    titre: 'Suivre le règlement du client professionnel',
+    proposition: [
+      'Échéance',
+      'Avoir',
+      'Pénalités de retard',
+      'Facture contestée',
+      'Rappel simple',
+      'Mise en demeure',
+      'Corriger d\u2019abord',
+      'Ne jamais sauter un niveau',
+      'Recommandé',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le suivi des règlements du compte BATIRENOV',
+      enfants: [
+        {
+          id: 'verifier',
+          texte: 'Vérifier la facture',
+          enfants: [
+            { id: 've-1', texte: null, reponse: 'Échéance' },
+            { id: 've-2', texte: null, reponse: 'Avoir' },
+            { id: 've-3', texte: null, reponse: 'Corriger d\u2019abord' },
+          ],
+        },
+        {
+          id: 'choisir',
+          texte: 'Choisir la lettre',
+          enfants: [
+            { id: 'ch-1', texte: null, reponse: 'Facture contestée' },
+            { id: 'ch-2', texte: null, reponse: 'Rappel simple' },
+            { id: 'ch-3', texte: null, reponse: 'Ne jamais sauter un niveau' },
+          ],
+        },
+        {
+          id: 'ecrire',
+          texte: 'Écrire au client',
+          enfants: [
+            { id: 'ec-1', texte: null, reponse: 'Pénalités de retard' },
+            { id: 'ec-2', texte: null, reponse: 'Mise en demeure' },
+            { id: 'ec-3', texte: null, reponse: 'Recommandé' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // =========================================================================
+  autoEval: {
+    competences: [
+      {
+        id: 'c1',
+        intitule: 'Vérifier une facture avant de la relancer',
+        indicateurs: [
+          { niveau: 'novice', description: "Je relance sans vérifier la facture." },
+          { niveau: 'debrouille', description: "Je regarde le total sans comparer au devis." },
+          { niveau: 'averti', description: "Je compare chaque ligne de la facture au devis signé et je trouve les écarts." },
+          { niveau: 'expert', description: "Je calcule l'avoir dû au client et je le lui annonce avant qu'il ne le réclame." },
+        ],
+      },
+      {
+        id: 'c2',
+        intitule: 'Choisir le bon niveau de relance',
+        indicateurs: [
+          { niveau: 'novice', description: "J'envoie la même lettre à tout le monde." },
+          { niveau: 'debrouille', description: "Je regarde le retard mais j'oublie de vérifier si la facture est contestée." },
+          { niveau: 'averti', description: "Je vérifie d'abord si la facture est contestée, ensuite le nombre de jours de retard." },
+          { niveau: 'expert', description: "Je distingue les factures contestées des autres et je relance seulement celles qui doivent l'être." },
+        ],
+      },
+      {
+        id: 'c3',
+        intitule: 'Calculer les sommes dues',
+        indicateurs: [
+          { niveau: 'novice', description: "Je ne sais pas par où commencer." },
+          { niveau: 'debrouille', description: "Je fais le calcul mais j'oublie l'indemnité forfaitaire." },
+          { niveau: 'averti', description: "Je suis la formule étape par étape et j'arrive au bon résultat." },
+          { niveau: 'expert', description: "Je vérifie mon résultat et je sais expliquer chaque étape du calcul au client." },
+        ],
+      },
+      {
+        id: 'c4',
+        intitule: 'Écrire au client professionnel',
+        indicateurs: [
+          { niveau: 'novice', description: "Ma lettre ne contient ni le numéro de facture ni le montant." },
+          { niveau: 'debrouille', description: "Ma lettre est complète mais le ton ne correspond pas au niveau de relance." },
+          { niveau: 'averti', description: "Ma lettre contient tous les éléments obligatoires et le ton est adapté." },
+          { niveau: 'expert', description: "Je pense à la phrase qui prévoit le cas où le client a déjà payé, et je propose une solution." },
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  activites: {
+    glossaire: [
+      { terme: 'Échéance', definition: "La date à laquelle le client doit avoir payé sa facture. Elle ne peut pas dépasser 45 jours pour un professionnel." },
+      { terme: 'Avoir', definition: "Un document par lequel l'agence reconnaît devoir de l'argent au client. Il se déduit de ce que le client doit payer." },
+      { terme: 'Pénalités de retard', definition: "La somme que le client doit en plus, parce qu'il a payé après l'échéance." },
+      { terme: 'Indemnité forfaitaire', definition: "Une somme fixe de 40 euros, due en plus des pénalités, quel que soit le montant de la facture." },
+      { terme: 'Relance graduée', definition: "Les trois lettres envoyées l'une après l'autre : le rappel simple, la lettre ferme, la mise en demeure." },
+      { terme: 'Mise en demeure', definition: "La dernière lettre avant le tribunal. Elle s'envoie en recommandé avec accusé de réception." },
+      { terme: 'Litige', definition: "Un désaccord entre le client et l'agence, par exemple sur le contenu d'une facture." },
+      { terme: 'Facture contestée', definition: "Une facture dont le client dit qu'elle est fausse. On la corrige avant de la relancer." },
+      { terme: 'Recommandé avec accusé de réception', definition: "Un envoi postal qui prouve que le client a bien reçu la lettre, et à quelle date." },
+      { terme: 'Trop-perçu', definition: "La somme que l'agence a facturée en trop, et qu'elle doit rendre au client." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce que l'échéance d'une facture ?", verso: "La date à laquelle le client doit avoir payé." },
+      { recto: 'Quel est le délai de paiement maximum pour un client professionnel ?', verso: '45 jours.' },
+      { recto: "Qu'est-ce qu'un avoir ?", verso: "Un document par lequel l'agence reconnaît devoir de l'argent au client." },
+      { recto: 'Que fait-on d\u2019une facture que le client conteste ?', verso: "On la corrige d'abord. On ne la relance pas." },
+      { recto: 'Un client conteste une facture. Doit-il payer les autres ?', verso: "Oui. Un désaccord sur une facture ne dispense pas de payer les autres." },
+      { recto: 'Quels sont les trois niveaux de relance, dans l\u2019ordre ?', verso: 'Le rappel simple, la lettre ferme, la mise en demeure.' },
+      { recto: 'À partir de combien de jours de retard envoie-t-on une mise en demeure ?', verso: 'Au-delà de 30 jours de retard.' },
+      { recto: 'Comment s\u2019envoie une mise en demeure ?', verso: 'En recommandé avec accusé de réception.' },
+      { recto: 'Quel est le taux annuel des pénalités de retard ?', verso: '12 % par an.' },
+      { recto: 'Combien vaut l\u2019indemnité forfaitaire de recouvrement ?', verso: '40 euros, quel que soit le montant de la facture.' },
+      { recto: 'Quelle est la formule des pénalités de retard ?', verso: "Montant TTC x taux annuel x (jours de retard divisés par 365), plus 40 euros." },
+      { recto: 'Relance-t-on une facture dont l\u2019échéance n\u2019est pas dépassée ?', verso: "Non. Le client n'est pas en retard." },
+    ],
+    quiz: [
+      { type: 'unique', question: "L'échéance d'une facture, c'est :", options: ['La date à laquelle le client doit avoir payé', 'La date de la facture', 'La date de la livraison'], bonne: 0 },
+      { type: 'unique', question: 'Le délai de paiement maximum pour un professionnel est de :', options: ['45 jours', '14 jours', '90 jours'], bonne: 0 },
+      { type: 'unique', question: 'Un avoir est un document qui :', options: ["Reconnaît que l'agence doit de l'argent au client", 'Annule la commande', 'Remplace la facture'], bonne: 0 },
+      { type: 'unique', question: 'Une facture contestée par le client doit être :', options: ['Corrigée avant toute relance', 'Relancée immédiatement', 'Oubliée'], bonne: 0 },
+      { type: 'unique', question: 'Un client conteste une facture. Les autres factures :', options: ['Doivent quand même être payées', 'Sont suspendues', 'Sont annulées'], bonne: 0 },
+      { type: 'unique', question: 'Une facture a 42 jours de retard. On envoie :', options: ['Une mise en demeure', 'Un rappel simple', 'Rien du tout'], bonne: 0 },
+      { type: 'unique', question: 'Une facture a 23 jours de retard. On envoie :', options: ['Une lettre de relance ferme', 'Une mise en demeure', 'Un rappel simple'], bonne: 0 },
+      { type: 'unique', question: 'Le taux annuel des pénalités de retard est de :', options: ['12 %', '5 %', '20 %'], bonne: 0 },
+      { type: 'qcm', question: 'Que doit contenir une lettre de relance ?', options: ['Le numéro de la facture', 'Son montant', 'La date de son échéance', "Le nom du chauffeur"], bonnes: [0, 1, 2] },
+      { type: 'qcm', question: 'Dans quels cas ne relance-t-on pas une facture ?', options: ["Quand le client la conteste", "Quand l'échéance n'est pas dépassée", "Quand elle est déjà payée", 'Quand le montant est élevé'], bonnes: [0, 1, 2] },
+      { type: 'trous', texte: "La date à laquelle le client doit avoir payé s'appelle l'{0}. Le document par lequel l'agence reconnaît lui devoir de l'argent s'appelle un {1}.", reponses: ['échéance', 'avoir'] },
+      { type: 'trous', texte: 'La dernière lettre avant le tribunal est la mise en {0}. Elle s\u2019envoie en {1} avec accusé de réception.', reponses: ['demeure', 'recommandé'] },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque situation au niveau de relance qui convient.',
+      etiquettes: ['Aucune relance', 'Rappel simple', 'Lettre ferme', 'Mise en demeure'],
+      zones: [
+        { libelle: 'Facture contestée par le client, correction en cours', etiquetteIndex: 0 },
+        { libelle: 'Facture de 42 jours de retard, deux lettres restées sans réponse', etiquetteIndex: 3 },
+        { libelle: 'Facture de 23 jours de retard, un rappel déjà envoyé', etiquetteIndex: 2 },
+        { libelle: "Facture dont l'échéance est dans trois jours", etiquetteIndex: 0 },
+        { libelle: 'Facture de 6 jours de retard, aucun courrier envoyé', etiquetteIndex: 1 },
+        { libelle: 'Facture de 12 jours de retard, aucun courrier envoyé', etiquetteIndex: 1 },
+      ],
+    },
+  },
+
+  // =========================================================================
+  corrige: {
+    questions: [
+      {
+        intitule: "Relevez les deux erreurs de la facture FA-2026-08812 et indiquez le montant correct de chaque ligne.",
+        documents: ['Documents 2 et 3', 'Annexe 1'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['', 'Ligne', 'Ce que dit la facture', 'Ce que dit le devis', 'Montant correct'],
+          lignes: [
+            [
+              'Erreur n° 1\nRemise oubliée',
+              'Ligne 4\nOBR-GRA02, gravier',
+              'Remise 0 %\nTotal 232,00 € HT',
+              'Remise 8 %, sur toutes les lignes sans exception',
+              '213,44 € HT\n(58,00 x 4 x 0,92)',
+            ],
+            [
+              'Erreur n° 2\nForfait de livraison',
+              'Ligne 6\nLIVRAISON',
+              '960,00 € HT',
+              'Forfait de 280,00 € HT, ferme',
+              '280,00 € HT',
+            ],
+          ],
+        },
+        complement:
+          "La première erreur vient de la mission 2. Elle avait été repérée par les élèves à ce moment-là, signalée au responsable logistique, et jamais corrigée. C'est le point à faire remarquer : signaler ne suffit pas, il faut vérifier que la correction a été faite.\n\nLa seconde erreur est de nature différente. Le transporteur a réellement coûté 960 euros à l'agence, comme les élèves l'ont calculé en mission 4. Mais le client a signé un devis portant 280 euros, et ce montant est ferme. L'agence supporte la différence. Facturer 960 euros au client reviendrait à lui faire payer une erreur qui n'est pas la sienne.\n\nUn élève peut être tenté de trouver la ligne 6 justifiée puisque le coût est réel. Lui rappeler la note de la direction de la mission 4 : « Le forfait de livraison facturé au client professionnel est celui qui figure au devis. Il ne peut être modifié après la signature du client. »",
+      },
+      {
+        intitule: "Calculez le montant de l'avoir que l'agence doit à M. Kadri.",
+        documents: ['Documents 1, 2 et 3', 'Annexe 2'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Ce qu\u2019il faut calculer', 'Le calcul', 'Résultat'],
+          lignes: [
+            ['1. Trop-perçu sur la ligne gravier', '232,00 - 213,44', '18,56 € HT'],
+            ['2. Trop-perçu sur la ligne livraison', '960,00 - 280,00', '680,00 € HT'],
+            ['3. Valeur des neuf parpaings fendus', '2,27 x 9', '20,42 € HT'],
+            ["4. Montant total de l'avoir, hors taxes", '18,56 + 680,00 + 20,42', '718,98 € HT'],
+            ["5. Montant total de l'avoir, TVA comprise", '718,98 x 1,20', '862,78 € TTC'],
+          ],
+        },
+        complement:
+          "Détail du prix du parpaing, donné au document 3 : 148,00 € divisés par 60 donnent 2,4667 € HT. Après la remise de 8 %, soit une multiplication par 0,92, on obtient 2,2693 € HT, arrondi à 2,27 €. Pour neuf parpaings, 20,42 €. Accepter tout résultat entre 20,40 € et 20,45 € selon les arrondis intermédiaires, et répercuter l'écart sur l'avoir.\n\nL'erreur la plus fréquente sera d'oublier les neuf parpaings. M. Kadri n'en parle pas au téléphone : il n'a réclamé que sur les deux lignes de la facture. Les parpaings, personne ne les lui doit encore, sauf que la réserve a été portée et le service client informé dans les délais. C'est à l'agence de les créditer sans qu'on le lui demande.\n\nValoriser fortement l'élève qui remarque que l'agence perd 680 euros sur cette ligne, et que cette perte était déjà connue depuis la mission 4. L'avoir ne crée pas la perte, il l'officialise.\n\nCe que M. Kadri devra finalement payer : 4 958,83 - 862,78 = 4 096,05 € TTC.",
+      },
+      {
+        intitule: "Pour chacune des trois factures impayées, choisissez le niveau de relance et justifiez.",
+        documents: ['Documents 4 et 5', 'Annexe 3'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Facture', 'Retard', 'Contestée ?', 'Niveau retenu', 'Justification'],
+          lignes: [
+            [
+              'FA-2026-07655\n2 940,00 € TTC',
+              '42 jours',
+              'Non',
+              'Niveau 3\nMise en demeure',
+              "Le retard dépasse 30 jours. Aucune contestation. La mise en demeure s'impose, en recommandé avec accusé de réception.",
+            ],
+            [
+              'FA-2026-08120\n876,00 € TTC',
+              '23 jours',
+              'Non',
+              'Niveau 2\nLettre ferme',
+              "Le retard est compris entre 16 et 30 jours. Aucune contestation. La lettre ferme s'impose, avec demande de paiement sous huit jours.",
+            ],
+            [
+              'FA-2026-08812\n4 958,83 € TTC',
+              '0 jour',
+              'Oui',
+              'Aucune relance',
+              "L'échéance du 30 avril n'est pas dépassée : le client n'est pas en retard. De plus, la facture est contestée, et à juste titre. Elle doit être corrigée.",
+            ],
+          ],
+        },
+        complement:
+          "Attention à un point que les élèves manqueront. La règle du document 5 dit qu'on ne saute jamais un niveau, et qu'une mise en demeure suppose que les deux lettres précédentes sont restées sans réponse. Or le document 4 ne dit pas si des lettres ont déjà été envoyées sur la facture FA-2026-07655.\n\nDeux réponses sont donc recevables sur cette facture. Soit l'élève retient le niveau 3, parce que le retard de 42 jours l'impose. Soit il retient le niveau 3 en précisant qu'il faut d'abord vérifier dans le dossier client que le rappel simple et la lettre ferme ont bien été envoyés, sans quoi il faudrait recommencer au niveau 1.\n\nLa seconde réponse vaut le maximum de points. Elle montre que l'élève a lu la règle et qu'il vérifie avant d'agir.\n\nL'erreur grave : relancer la facture du 16 mars. Deux raisons interdisent de le faire, et elles sont indépendantes l'une de l'autre. L'élève qui relance cette facture perd la totalité des points de la question.",
+      },
+      {
+        intitule: "Expliquez pourquoi la facture du 16 mars ne doit pas être relancée aujourd'hui.",
+        documents: ['Documents 4 et 5', 'Annexe 4'],
+        reponse:
+          "Première raison : le client n'est pas en retard.\n\nLa facture FA-2026-08812 est datée du 16 mars. Son échéance est fixée au 30 avril. Nous sommes le 27 avril. Il reste trois jours à M. Kadri pour payer. Une facture dont l'échéance n'est pas dépassée ne se relance pas, comme le rappelle la note de la direction. Relancer un client qui n'est pas en retard, c'est l'accuser à tort.\n\nSeconde raison : la facture est contestée, et elle est fausse.\n\nM. Kadri a téléphoné à M. Vallois pour dire que la facture est fausse. Il a raison sur les deux points qu'il soulève. La remise de 8 % a été oubliée sur le gravier. Le forfait de livraison a été facturé 960 euros au lieu des 280 euros du devis signé. La note de la direction est claire : une facture contestée par le client ne se relance pas, elle se corrige d'abord.\n\nCes deux raisons sont indépendantes. Chacune suffirait à interdire la relance.\n\nCe qu'il faut faire à la place : corriger la facture, établir l'avoir de 862,78 euros TTC, et l'envoyer à M. Kadri avant l'échéance du 30 avril, pour qu'il puisse payer le solde à temps.",
+        bareme: 4,
+        complement:
+          "Exiger les deux raisons. Un élève qui n'en donne qu'une n'a compris qu'une moitié de la règle.\n\nLa plus facile à trouver est la contestation, puisque M. Kadri en parle. La plus discrète est l'échéance : il faut aller chercher la date du 30 avril dans le document 4 et la comparer à la date du jour, donnée dans le contexte de la mission.\n\nValoriser l'élève qui conclut sur ce qu'il faut faire à la place. Une explication qui s'arrête au constat n'aide personne.",
+      },
+      {
+        intitule: "Calculez les pénalités de retard dues sur la facture FA-2026-07655.",
+        documents: ['Documents 4 et 6', 'Annexe 5'],
+        reponse: '',
+        bareme: 5,
+        tableau: {
+          colonnes: ['Étape', 'Le calcul', 'Résultat'],
+          lignes: [
+            ['1. Le montant de la facture', 'Donné au document 4', '2 940,00 €'],
+            ['2. Le taux annuel', 'Donné par les CGV', '12 % soit 0,12'],
+            ["3. La part de l'année écoulée", '42 jours divisés par 365', '0,1151'],
+            ['4. Les pénalités', '2 940,00 x 0,12 x 0,1151', '40,60 €'],
+            ["5. L'indemnité forfaitaire", 'Toujours la même', '40,00 €'],
+            ['6. Le total dû en plus', '40,60 + 40,00', '80,60 €'],
+          ],
+        },
+        complement:
+          "Détail de l'étape 3 : 42 divisé par 365 donne 0,115068. Arrondi à quatre chiffres, 0,1151.\n\nDétail de l'étape 4 : 2 940,00 x 0,12 = 352,80. Puis 352,80 x 0,1151 = 40,608. Arrondi à 40,60 €. Accepter tout résultat entre 40,58 € et 40,62 € selon les arrondis intermédiaires. Un élève qui calcule d'un seul coup 2 940 x 0,12 x 42 / 365 trouve 40,61 €. Accepter également.\n\nDeux erreurs classiques. Oublier l'indemnité forfaitaire de 40 euros : l'élève annonce 40,60 € au lieu de 80,60 €. Compter les jours depuis la date de la facture au lieu de l'échéance : l'élève prend 87 jours au lieu de 42 et trouve un montant plus du double.\n\nFaire remarquer que les pénalités, 40,60 €, sont d'un montant voisin de l'indemnité forfaitaire, 40,00 €. Sur les petites factures, l'indemnité forfaitaire pèse plus lourd que les pénalités elles-mêmes. C'est voulu par la loi : elle couvre le temps passé à relancer.",
+      },
+      {
+        intitule: "Rédigez la lettre de relance de la facture FA-2026-07655.",
+        documents: ['Documents 5, 6 et 7', 'Annexe 6'],
+        reponse:
+          "Chausson Matériaux, agence de Gennevilliers\n\nDestinataire : SARL BATIRENOV, à l'attention de M. Rachid Kadri\n\nObjet : Mise en demeure de payer, facture FA-2026-07655\n\nEnvoi recommandé avec accusé de réception\n\nDate : 27 avril 2026\n\nMonsieur,\n\nSauf erreur de notre part, notre facture n° FA-2026-07655 du 30 janvier 2026, d'un montant de 2 940,00 euros TTC, n'a pas été réglée à ce jour. Son échéance était fixée au 16 mars 2026. Le retard est aujourd'hui de 42 jours.\n\nNos précédents courriers de rappel sont restés sans réponse.\n\nConformément à nos conditions générales de vente, ce retard donne lieu au versement de pénalités calculées au taux annuel de 12 %, soit 40,60 euros, ainsi qu'à une indemnité forfaitaire de 40,00 euros pour frais de recouvrement. La somme totale due à ce jour s'élève donc à 3 020,60 euros.\n\nPar la présente, nous vous mettons en demeure de procéder au règlement de cette somme dans un délai de huit jours à compter de la réception de ce courrier.\n\nÀ défaut de paiement dans ce délai, nous serons contraints de suspendre votre compte client et de confier le recouvrement de cette créance à notre service contentieux.\n\nSi le règlement nous parvenait entre-temps, nous vous prions de considérer ce courrier comme sans objet.\n\nNous restons à votre disposition pour convenir, si vous le souhaitez, d'un échéancier de paiement.\n\nVeuillez agréer, Monsieur, l'expression de nos salutations distinguées.\n\nPatrick Vallois\nResponsable commercial\nAgence de Gennevilliers",
+        bareme: 5,
+        complement:
+          "Grille de correction, un point par élément.\n\nLa mention « recommandé avec accusé de réception ». Elle est obligatoire au niveau 3 et son absence est une faute.\n\nLe numéro de la facture, sa date, son montant, la date de son échéance. Les quatre doivent y être.\n\nLes pénalités chiffrées, 40,60 euros, et l'indemnité forfaitaire de 40,00 euros. Le total de 3 020,60 euros doit apparaître.\n\nLe délai de huit jours et ce qui se passera à défaut.\n\nLa phrase qui prévoit le cas où le client a déjà payé.\n\nSur le ton. C'est une mise en demeure, elle doit être ferme. Elle ne doit pas être agressive. BATIRENOV est un client depuis quatre ans, il représente 48 200 euros de chiffre d'affaires annuel, et il vient de recevoir une facture fausse de la part de l'agence. La dernière phrase, qui propose un échéancier, n'est pas une faiblesse : c'est ce qui distingue une relance commerciale d'une lettre d'huissier.\n\nValoriser l'élève qui pense à cette proposition. Pénaliser celui qui menace du tribunal dès la première ligne.",
+      },
+      {
+        intitule: "Rédigez le mail qui annonce à M. Kadri la correction de sa facture et l'avoir.",
+        documents: ['Documents 2, 3 et 4', 'Annexe 7'],
+        reponse:
+          "Destinataire : r.kadri@batirenov.fr\n\nObjet : Facture FA-2026-08812 - correction et avoir\n\nBonjour monsieur Kadri,\n\nVous avez signalé à M. Vallois deux erreurs sur notre facture du 16 mars. J'ai vérifié : vous avez raison sur les deux points.\n\nLa remise de 8 % n'a pas été appliquée sur la ligne du gravier. Le montant correct est de 213,44 euros hors taxes, et non 232,00 euros. Nous vous devons 18,56 euros.\n\nLa livraison vous a été facturée 960,00 euros hors taxes, alors que votre devis DV-2026-1187 porte un forfait ferme de 280,00 euros. Le forfait signé s'applique. Nous vous devons 680,00 euros.\n\nJ'ajoute un troisième point, que vous n'avez pas réclamé. Lors de la livraison du 16 mars, neuf parpaings de la palette 7 étaient fendus. Une réserve a été portée sur le bon de livraison et co-signée par le chauffeur. Nous vous devons ces neuf parpaings, soit 20,42 euros hors taxes.\n\nUn avoir d'un montant de 718,98 euros hors taxes, soit 862,78 euros toutes taxes comprises, vous est adressé ce jour.\n\nLe montant restant à régler sur la facture FA-2026-08812 est donc de 4 096,05 euros toutes taxes comprises. Son échéance reste fixée au 30 avril 2026.\n\nJe vous prie de nous excuser pour ces erreurs.\n\nJe reste à votre disposition.\n\n[Prénom Nom]\nAgence Chausson Matériaux de Gennevilliers",
+        bareme: 3,
+        complement:
+          "Barème total de la mission : 32 points.\n\nCe qui fait la qualité de ce mail, et qu'il faut faire chercher aux élèves : l'agence annonce au client une somme qu'il n'a pas réclamée. M. Kadri parlait de deux lignes. Les neuf parpaings, il les avait oubliés, ou il attendait de voir. L'agence les crédite d'elle-même.\n\nC'est une décision commerciale, pas seulement une régularisation comptable. Elle coûte 20,42 euros. Elle rapporte la confiance d'un client de quatre ans qui vient de recevoir une facture fausse. Aucun élève ne trouvera cela seul : le leur faire remarquer.\n\nSur les excuses. Une fois suffit, à la fin, sans emphase. Un élève qui s'excuse à chaque paragraphe donne le sentiment que l'agence est en faute grave. Elle a commis deux erreurs de facturation, elle les corrige, cela s'arrête là.\n\nCe qui se joue en mission 6 : les neuf parpaings ont été maçonnés dans le mur porteur. La réclamation change de nature.",
       },
     ],
   },
@@ -21957,6 +24759,9 @@ const CONTENUS: Record<string, ContenuMission> = {
   'mamie-and-co-m8': MAMIE_CO_M8,
   'chausson-m1': CHAUSSON_M1,
   'chausson-m2': CHAUSSON_M2,
+  'chausson-m3': CHAUSSON_M3,
+  'chausson-m4': CHAUSSON_M4,
+  'chausson-m5': CHAUSSON_M5,
   'renault-m1': RENAULT_M1,
   'renault-m2': RENAULT_M2,
   'renault-m3': RENAULT_M3,
