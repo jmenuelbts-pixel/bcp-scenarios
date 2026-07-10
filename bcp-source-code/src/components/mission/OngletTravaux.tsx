@@ -579,6 +579,43 @@ function CrmConsultable({ crm, couleur }: {
   )
 }
 
+// Bulle de temoignage : avatar + bulle de dialogue, bouton video optionnel.
+function BulleVue({ b, couleur }: { b: NonNullable<BlocDocumentTexte['bulle']>; couleur: string }) {
+  const c = b.couleurAvatar || couleur
+  return (
+    <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', margin: '10px 0 18px' }}>
+      <div style={{ flexShrink: 0 }}>
+        {b.avatar ? (
+          <img src={b.avatar} alt={b.nom || ''} style={{ width: 62, height: 62, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+        ) : (
+          <div style={{ width: 62, height: 62, borderRadius: '50%', background: c, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 800 }}>
+            {b.initiale || (b.nom ? b.nom[0] : '?')}
+          </div>
+        )}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {(b.nom || b.role) && (
+          <div style={{ fontSize: 13, marginBottom: 6 }}>
+            {b.nom && <span style={{ fontWeight: 800, color: '#1F2933' }}>{b.nom}</span>}
+            {b.role && <span style={{ color: '#6B7280' }}>{b.nom ? ' — ' : ''}{b.role}</span>}
+          </div>
+        )}
+        <div style={{ border: `2px solid ${c}`, borderRadius: 12, background: '#FFFFFF', padding: '14px 16px' }}>
+          {b.lignes.map((l, i) => (
+            <p key={i} style={{ fontSize: 14, color: '#2D3748', lineHeight: 1.7, margin: i === b.lignes.length - 1 ? 0 : '0 0 8px 0', fontStyle: 'italic' }}>{l}</p>
+          ))}
+        </div>
+        {b.videoLien && (
+          <a href={b.videoLien} target="_blank" rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 8, textDecoration: 'none', background: '#FFFFFF', color: c, border: `1px solid ${c}`, borderRadius: 16, padding: '5px 12px', fontSize: 12, fontWeight: 700 }}>
+            ▶ Regarder la vidéo
+          </a>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // Encadres type post-it : titre + liste de lignes, coin corne.
 function EncadresListesVue({ enc, couleur }: { enc: NonNullable<BlocDocumentTexte['encadresListes']>; couleur: string }) {
   return (
@@ -1021,6 +1058,7 @@ function DocumentTexteVue({ blocs, couleur, marque }: { blocs: BlocDocumentTexte
       <div style={{ padding: '16px 20px', lineHeight: 1.65, fontSize: 14, color: '#1F2933' }}>
       {contenu.map((b, bi) => (
         <div key={bi} style={{ marginBottom: bi === contenu.length - 1 ? 0 : 12 }}>
+          {b.bulle && <BulleVue b={b.bulle} couleur={couleur} />}
           {b.livreOuvert && <LivreOuvertVue livre={b.livreOuvert} couleur={couleur} />}
           {b.cvVisuel && <CvVisuelVue cv={b.cvVisuel} />}
           {b.chiffresCles && <ChiffresClesVue ch={b.chiffresCles} couleur={couleur} />}
