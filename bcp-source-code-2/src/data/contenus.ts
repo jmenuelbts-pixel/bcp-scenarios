@@ -20062,7 +20062,414 @@ const HYDRAO_M6: ContenuMission = {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 1 - Prendre en main le suivi des commandes
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Complétez la fiche d'identité de l'agence, relevez les informations du client RENOVAL, puis analysez le bon de commande 2026-4471 ligne par ligne.",
+    contexte:
+      "Vous êtes en PFMP à l'agence Chausson Matériaux de Gennevilliers, 12 rue des Bâtisseurs, 92230 Gennevilliers. L'agence vend des matériaux de construction aux professionnels du bâtiment : maçons, carreleurs, plaquistes. Votre tutrice, Sandrine Vasseur, est responsable du comptoir professionnel. Elle vous confie une première tâche : suivre la commande d'un client habituel, la SARL RENOVAL, dirigée par Julien Bertrand. Cette commande porte le numéro 2026-4471. Avant de la suivre, vous devez comprendre qui est l'agence, qui est le client, et ce que contient exactement un bon de commande.",
+    documents: [
+      { numero: 1, titre: "Site internet de Chausson Matériaux", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'www.chaussonmateriaux.fr',
+          marque: 'CHAUSSON MATÉRIAUX',
+          couleurHeader: '#0B3C7A',
+          menu: ['Le groupe', 'Nos agences', 'Nos produits', 'Nos services', 'Recrutement'],
+          sections: [
+            { type: 'titre', texte: 'Premier distributeur indépendant de matériaux de construction en France' },
+            { type: 'paragraphes', textes: [
+              "Fondée à Toulouse en 1921 par Albert Chausson, notre entreprise est aujourd'hui le premier distributeur indépendant de matériaux de construction en France.",
+              "Nous sommes une entreprise familiale. Depuis trois générations, nous avons choisi de rester indépendants : Chausson Matériaux n'appartient à aucun groupe. Notre président est Pierre-Georges Chausson.",
+              "Nous vendons uniquement aux professionnels du bâtiment. On appelle cela le négoce interentreprises : une entreprise vend à une autre entreprise, et non à un particulier.",
+            ] },
+            { type: 'chiffres', items: [
+              { valeur: '1921', libelle: 'Année de création' },
+              { valeur: '1,22 Md€', libelle: "Chiffre d'affaires 2024" },
+              { valeur: '4 980', libelle: 'Collaborateurs' },
+              { valeur: '800+', libelle: 'Agences en France' },
+            ] },
+            { type: 'sousTitre', texte: 'Nos familles de produits' },
+            { type: 'puces', items: [
+              'Gros œuvre : parpaings, ciment, sable, gravier',
+              'Isolation : laine de verre, laine de roche, polystyrène',
+              'Carrelage et revêtements de sol',
+              'Couverture et charpente',
+              'Outillage et matériel de chantier',
+            ] },
+            { type: 'sousTitre', texte: 'Nos services aux professionnels' },
+            { type: 'servicesIcones', services: [
+              { icone: '🚚', titre: 'Livraison sur chantier', detail: 'Camion-grue, livraison sous 48 heures' },
+              { icone: '💳', titre: 'Compte professionnel', detail: 'Paiement à 30 jours fin de mois' },
+              { icone: '📋', titre: 'Devis gratuit', detail: 'Chiffrage sous 24 heures' },
+            ] },
+            { type: 'sousTitre', texte: 'Mentions légales' },
+            { type: 'fiche', lignes: [
+              { label: 'Dénomination sociale', valeur: 'CHAUSSON MATÉRIAUX' },
+              { label: 'Forme juridique', valeur: 'SAS (société par actions simplifiée)' },
+              { label: 'Capital social', valeur: '279 357 886,09 €' },
+              { label: 'Siège social', valeur: '60 rue de Fenouillet, Centre commercial Hexagone, 31140 Saint-Alban' },
+              { label: 'RCS', valeur: 'Toulouse 528 648 892' },
+              { label: 'Code NAF', valeur: '4673A — Commerce de gros de bois et de matériaux de construction' },
+              { label: 'Président', valeur: 'Pierre-Georges Chausson' },
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Note de service de votre tutrice", texte: [
+        { noteDirection: {
+          titre: 'Bienvenue à l’agence',
+          signature: 'Sandrine Vasseur, responsable du comptoir professionnel',
+          intro: "Vous allez suivre la commande 2026-4471 du client RENOVAL, de son enregistrement jusqu'à son règlement.",
+          paragraphe: "Suivre une commande, ce n'est pas vendre. La vente est déjà faite : le client a signé. Votre travail commence après la signature. Il consiste à vérifier que le client reçoit bien ce qu'il a commandé, dans les délais, et qu'il paie ce qu'il doit.",
+          puces: [
+            "Le bon de commande est le document signé par le client. Il engage les deux parties.",
+            "Le bon de livraison accompagne la marchandise. Il prouve ce qui a été réellement livré.",
+            "La facture demande le paiement. Elle indique une date d'échéance.",
+            "L'avoir rembourse le client quand une erreur a été commise.",
+          ],
+          conclusion: "Ces quatre documents sont les outils du suivi des ventes. Vous allez les utiliser tout au long de votre stage.",
+        } },
+      ] },
+
+      { numero: 3, titre: "Fiche client RENOVAL (logiciel ChaussonPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / clients',
+          marque: 'ChaussonPro — Fichier clients',
+          couleurHeader: '#0B3C7A',
+          menu: ['Clients', 'Commandes', 'Livraisons', 'Factures', 'Règlements'],
+          sections: [
+            { type: 'titre', texte: 'Fiche client CL-2214' },
+            { type: 'fiche', lignes: [
+              { label: 'Raison sociale', valeur: 'SARL RENOVAL' },
+              { label: 'Numéro de compte', valeur: 'CL-2214' },
+              { label: 'Activité', valeur: 'Maçonnerie et carrelage' },
+              { label: 'Gérant', valeur: 'Julien Bertrand' },
+              { label: 'Siège social', valeur: '8 rue Victor Hugo, 92700 Colombes' },
+              { label: 'Téléphone', valeur: '01 47 82 55 30' },
+              { label: 'Client depuis', valeur: 'Mars 2021' },
+              { label: 'Conditions de règlement', valeur: '30 jours fin de mois' },
+              { label: 'Encours autorisé', valeur: '15 000 €' },
+            ] },
+            { type: 'sousTitre', texte: 'Trois dernières commandes' },
+            { type: 'tableau', entetes: ['N° commande', 'Date', 'Montant TTC', 'Statut'], lignes: [
+              ['2026-4471', '15/06/2026', '4 318,90 €', 'En cours'],
+              ['2026-3902', '04/05/2026', '2 145,60 €', 'Réglée'],
+              ['2026-3418', '17/03/2026', '6 730,20 €', 'Réglée'],
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Bon de commande n° 2026-4471", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Agence de Gennevilliers, 12 rue des Bâtisseurs, 92230 Gennevilliers' },
+        { intertitre: 'BON DE COMMANDE N° 2026-4471' },
+        { tableau: { colonnes: ['Informations générales', ''], lignes: [
+          ['Date de la commande', '15 juin 2026'],
+          ['Client', 'SARL RENOVAL — 8 rue Victor Hugo, 92700 Colombes'],
+          ['Numéro de compte client', 'CL-2214'],
+          ['Signataire', 'Julien Bertrand, gérant'],
+          ['Chantier de livraison', '24 avenue de la République, 92700 Colombes'],
+          ['Date de livraison prévue', '22 juin 2026'],
+          ['Conditions de règlement', '30 jours fin de mois'],
+        ] } },
+        { intertitre: 'Détail des articles commandés' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Quantité', 'Prix unitaire HT', 'Remise', 'Total HT'], lignes: [
+          ['PAR-20', 'Parpaing creux 20x20x50', '400 unités', '1,85 €', '5 %', '703,00 €'],
+          ['CIM-35', 'Ciment CEM II 35 kg', '60 sacs', '7,20 €', '5 %', '410,40 €'],
+          ['ISO-100', 'Laine de verre 100 mm (rouleau)', '25 rouleaux', '32,50 €', '5 %', '771,88 €'],
+          ['CAR-60', 'Carrelage grès 60x60 (m²)', '80 m²', '18,90 €', '5 %', '1 436,40 €'],
+          ['COL-25', 'Colle carrelage 25 kg', '20 sacs', '14,60 €', '5 %', '277,40 €'],
+        ] } },
+        { tableau: { colonnes: ['Récapitulatif', 'Montant'], lignes: [
+          ['Total HT', '3 599,08 €'],
+          ['TVA 20 %', '719,82 €'],
+          ['Total TTC', '4 318,90 €'],
+        ] } },
+        { paragraphes: [
+          "Bon pour accord, le 15 juin 2026. Signature du client : J. Bertrand.",
+        ] },
+      ] },
+
+      { numero: 5, titre: "Aide-mémoire : lire une ligne de commande", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Comprendre une ligne de bon de commande' },
+            { type: 'paragraphe', texte: "Chaque ligne du bon de commande contient six informations. Voici leur signification." },
+            { type: 'tableau', entetes: ['Colonne', 'Signification'], lignes: [
+              ['Réf.', "La référence : le code du produit dans le catalogue. Il est unique."],
+              ['Désignation', "Le nom complet du produit et ses dimensions."],
+              ['Quantité', "Le nombre d'unités commandées, avec son unité de mesure (sac, rouleau, m²)."],
+              ['Prix unitaire HT', "Le prix d'une seule unité, hors taxes (avant d'ajouter la TVA)."],
+              ['Remise', "La réduction accordée au client, exprimée en pourcentage."],
+              ['Total HT', "Le montant de la ligne après remise, hors taxes."],
+            ] },
+            { type: 'sousTitre', texte: 'Comment calculer le total HT d’une ligne' },
+            { type: 'paragraphe', texte: "Total HT = Quantité × Prix unitaire HT × (1 − Taux de remise)" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec la ligne CIM-35 (ciment) : 60 sacs × 7,20 € = 432,00 €. La remise est de 5 %, donc le client paie 95 % du montant : 432,00 × 0,95 = 410,40 €. Le total HT de la ligne est bien 410,40 €." },
+            { type: 'sousTitre', texte: 'Passer du HT au TTC' },
+            { type: 'paragraphe', texte: "Le HT (hors taxes) est le montant avant impôt. Le TTC (toutes taxes comprises) est le montant que le client paie réellement. Entre les deux, on ajoute la TVA (taxe sur la valeur ajoutée), qui est de 20 % sur les matériaux de construction." },
+            { type: 'paragraphe', texte: "Montant TVA = Total HT × 0,20      puis      Total TTC = Total HT + Montant TVA" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé : si le total HT est de 1 000,00 €, alors la TVA vaut 1 000,00 × 0,20 = 200,00 €, et le total TTC vaut 1 000,00 + 200,00 = 1 200,00 €." },
+            { type: 'sousTitre', texte: 'Les conditions de règlement' },
+            { type: 'paragraphe', texte: "« 30 jours fin de mois » signifie que le client paie 30 jours après la fin du mois de facturation. Une facture émise le 15 juin est donc à régler le 31 juillet : on part du 30 juin (fin du mois), puis on compte 30 jours." },
+          ],
+        } },
+      ] },
+    ],
+
+    competence: {
+      groupe: 'Bloc de compétences 2',
+      intitule: 'Suivre les ventes',
+      detail: "Identifier les documents commerciaux du suivi des ventes, en repérer les informations essentielles et en vérifier les calculs.",
+    },
+    activites: [
+      { titre: "Activité 1 — L'agence, le client et leurs documents",
+        contexte: "Avant de suivre une commande, il faut savoir chez qui vous travaillez, pour qui vous travaillez, et avec quels documents.",
+        questions: [
+          { numero: 1, consigne: "Complétez la fiche d'identité de l'agence Chausson Matériaux.", ressources: 'Document 1, annexe 1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Relevez les coordonnées du client concerné par la commande 2026-4471.", ressources: 'Documents 3 et 4, annexe 2.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez le rôle de chacun des quatre documents du suivi des ventes.", ressources: 'Document 2, annexe 3.', annexeId: 'annexe3' },
+        ] },
+      { titre: 'Activité 2 — Lire et vérifier le bon de commande',
+        contexte: "Sandrine Vasseur vous demande de contrôler le bon de commande avant de l'enregistrer. Une erreur de calcul non repérée se paie plus tard.",
+        questions: [
+          { numero: 4, consigne: "Analysez trois lignes du bon de commande et vérifiez le calcul du total HT.", ressources: 'Documents 4 et 5, annexe 4.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Calculez le montant de la TVA et le total TTC, puis vérifiez qu'ils correspondent au bon de commande.", ressources: 'Documents 4 et 5, annexe 5.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Justifiez, en deux phrases, pourquoi suivre une commande n'est pas la même chose que vendre.", ressources: 'Document 2, annexe 6.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Fiche d'identité de l'agence", colonnes: ['Élément', 'Réponse'], nbLignes: 7, largeurs: ['40%', '60%'], prerempli: [
+        ['Dénomination sociale', ''],
+        ['Forme juridique', ''],
+        ['Année de création', ''],
+        ['Nom du président', ''],
+        ['Type de clientèle (particuliers ou professionnels)', ''],
+        ['Nombre d’agences en France', ''],
+        ['Chiffre d’affaires 2024', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Fiche du client', colonnes: ['Élément', 'Réponse'], nbLignes: 6, largeurs: ['40%', '60%'], prerempli: [
+        ['Raison sociale du client', ''],
+        ['Activité', ''],
+        ['Nom du gérant', ''],
+        ['Numéro de compte client', ''],
+        ['Adresse du chantier à livrer', ''],
+        ['Date de livraison prévue', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Les quatre documents du suivi des ventes', colonnes: ['Document', 'À quoi sert-il ?'], nbLignes: 4, largeurs: ['30%', '70%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Le bon de commande', ''],
+        ['Le bon de livraison', ''],
+        ['La facture', ''],
+        ["L'avoir", ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Vérification du total HT de trois lignes', colonnes: ['Référence', 'Calcul à poser', 'Total HT'], nbLignes: 3, largeurs: ['18%', '52%', '30%'], prerempli: [
+        ['CIM-35', '60 × 7,20 × 0,95 =', '410,40 €'],
+        ['PAR-20', '', ''],
+        ['COL-25', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Du total HT au total TTC', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['25%', '45%', '30%'], prerempli: [
+        ['Total HT', '(relevé sur le bon de commande)', ''],
+        ['Montant de la TVA à 20 %', '', ''],
+        ['Total TTC', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Suivre une commande n'est pas vendre", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Identifier une entreprise, son statut juridique et sa clientèle",
+      "Repérer les informations utiles dans une fiche client",
+      "Nommer les quatre documents du suivi des ventes et leur rôle",
+      "Vérifier le calcul d'une ligne de commande, de la TVA et du TTC",
+    ],
+  },
+
+  synthese: {
+    titre: 'Les documents du suivi des ventes',
+    proposition: [
+      'Bon de commande',
+      'Bon de livraison',
+      'Facture',
+      'Avoir',
+      'Signé par le client',
+      'Accompagne la marchandise',
+      'Demande le paiement',
+      'Rembourse le client',
+      'Hors taxes',
+      'Toutes taxes comprises',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le suivi des ventes',
+      enfants: [
+        { id: 'avant', texte: 'La commande est passée', enfants: [
+          { id: 'av-1', texte: null, reponse: 'Bon de commande' },
+          { id: 'av-2', texte: null, reponse: 'Signé par le client' },
+        ] },
+        { id: 'liv', texte: 'La marchandise arrive', enfants: [
+          { id: 'li-1', texte: null, reponse: 'Bon de livraison' },
+          { id: 'li-2', texte: null, reponse: 'Accompagne la marchandise' },
+        ] },
+        { id: 'pay', texte: 'Le client doit payer', enfants: [
+          { id: 'pa-1', texte: null, reponse: 'Facture' },
+          { id: 'pa-2', texte: null, reponse: 'Demande le paiement' },
+        ] },
+        { id: 'err', texte: "En cas d'erreur", enfants: [
+          { id: 'er-1', texte: null, reponse: 'Avoir' },
+          { id: 'er-2', texte: null, reponse: 'Rembourse le client' },
+        ] },
+        { id: 'mont', texte: 'Les montants', enfants: [
+          { id: 'mo-1', texte: 'HT', reponse: undefined, enfants: [{ id: 'mo-1a', texte: null, reponse: 'Hors taxes' }] },
+          { id: 'mo-2', texte: 'TTC', reponse: undefined, enfants: [{ id: 'mo-2a', texte: null, reponse: 'Toutes taxes comprises' }] },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier une entreprise et sa clientèle", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas où chercher les informations sur l'entreprise." },
+        { niveau: 'debrouille', description: "Je retrouve le nom et l'adresse de l'entreprise." },
+        { niveau: 'averti', description: "Je relève aussi sa forme juridique, son capital et son type de clientèle." },
+        { niveau: 'expert', description: "J'explique ce que signifie le négoce interentreprises et je le distingue de la vente aux particuliers." },
+      ] },
+      { id: 'c2', intitule: "Nommer les documents du suivi des ventes", indicateurs: [
+        { niveau: 'novice', description: "Je confonds le bon de commande et le bon de livraison." },
+        { niveau: 'debrouille', description: "Je cite les quatre documents sans toujours donner leur rôle." },
+        { niveau: 'averti', description: "J'associe chaque document à son rôle précis." },
+        { niveau: 'expert', description: "Je situe chaque document dans l'ordre chronologique du suivi d'une vente." },
+      ] },
+      { id: 'c3', intitule: "Vérifier le calcul d'une ligne de commande", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas par quel calcul commencer." },
+        { niveau: 'debrouille', description: "Je multiplie la quantité par le prix unitaire." },
+        { niveau: 'averti', description: "J'applique aussi la remise et je retrouve le total HT exact." },
+        { niveau: 'expert', description: "Je calcule la TVA et le total TTC, et je vérifie la cohérence de l'ensemble du bon de commande." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Négoce interentreprises', definition: "Activité d'une entreprise qui vend à d'autres entreprises, et non à des particuliers." },
+      { terme: 'SAS', definition: "Société par actions simplifiée. Forme juridique d'entreprise dont le capital est divisé en actions." },
+      { terme: 'Bon de commande', definition: "Document signé par le client qui indique ce qu'il commande, à quel prix et à quelle date il sera livré." },
+      { terme: 'Bon de livraison', definition: "Document qui accompagne la marchandise et prouve ce qui a été réellement livré." },
+      { terme: 'Facture', definition: "Document qui demande le paiement au client et indique la date d'échéance." },
+      { terme: 'Avoir', definition: "Document qui rembourse le client lorsqu'une erreur a été commise sur la commande ou la livraison." },
+      { terme: 'HT', definition: "Hors taxes. Montant avant l'ajout de la TVA." },
+      { terme: 'TTC', definition: "Toutes taxes comprises. Montant réellement payé par le client, TVA incluse." },
+      { terme: 'TVA', definition: "Taxe sur la valeur ajoutée. Impôt de 20 % sur les matériaux de construction." },
+      { terme: 'Remise', definition: "Réduction accordée au client, exprimée en pourcentage du prix." },
+      { terme: 'Référence', definition: "Code unique qui identifie un produit dans le catalogue de l'entreprise." },
+      { terme: '30 jours fin de mois', definition: "Condition de règlement : le client paie 30 jours après la fin du mois de facturation." },
+    ],
+    flashcards: [
+      { recto: "En quelle année Chausson Matériaux a-t-elle été créée ?", verso: '1921, à Toulouse, par Albert Chausson.' },
+      { recto: "Quelle est la forme juridique de Chausson Matériaux ?", verso: 'Une SAS, société par actions simplifiée.' },
+      { recto: "À qui Chausson Matériaux vend-elle ?", verso: "Uniquement aux professionnels du bâtiment. C'est du négoce interentreprises." },
+      { recto: "Quel document est signé par le client ?", verso: 'Le bon de commande.' },
+      { recto: "Quel document accompagne la marchandise ?", verso: 'Le bon de livraison.' },
+      { recto: "Quel document rembourse le client ?", verso: "L'avoir." },
+      { recto: "Que signifie HT ?", verso: 'Hors taxes : le montant avant la TVA.' },
+      { recto: "Quel est le taux de TVA sur les matériaux de construction ?", verso: '20 %.' },
+      { recto: "Comment calcule-t-on le total HT d'une ligne ?", verso: 'Quantité × Prix unitaire HT × (1 − Taux de remise).' },
+      { recto: "Que signifie « 30 jours fin de mois » ?", verso: 'Le client paie 30 jours après la fin du mois de facturation.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Chausson Matériaux appartient-elle à un groupe ?", options: ['Non, elle est indépendante depuis trois générations', 'Oui, au groupe Herige', 'Oui, à un fonds étranger'], bonne: 0 },
+      { type: 'unique', question: "Qui est le président de Chausson Matériaux ?", options: ['Pierre-Georges Chausson', 'Albert Chausson', 'Julien Bertrand'], bonne: 0 },
+      { type: 'unique', question: "Le négoce interentreprises consiste à vendre :", options: ["à d'autres entreprises", 'à des particuliers', 'aux collectivités uniquement'], bonne: 0 },
+      { type: 'unique', question: "Quel document engage le client par sa signature ?", options: ['Le bon de commande', 'Le bon de livraison', "L'avoir"], bonne: 0 },
+      { type: 'unique', question: "Le bon de livraison sert à prouver :", options: ['ce qui a été réellement livré', 'ce que le client doit payer', 'le remboursement du client'], bonne: 0 },
+      { type: 'unique', question: "Un total HT de 500 € donne un total TTC de :", options: ['600 €', '520 €', '400 €'], bonne: 0 },
+      { type: 'unique', question: "Une remise de 5 % signifie que le client paie :", options: ['95 % du montant', '5 % du montant', '105 % du montant'], bonne: 0 },
+      { type: 'unique', question: "Le total HT de la ligne CIM-35 (60 sacs à 7,20 €, remise 5 %) est :", options: ['410,40 €', '432,00 €', '453,60 €'], bonne: 0 },
+      { type: 'unique', question: "Suivre une commande, c'est :", options: ['agir après la signature du client', 'convaincre le client d’acheter', 'rechercher de nouveaux clients'], bonne: 0 },
+      { type: 'unique', question: "Une facture émise le 15 juin, payable à 30 jours fin de mois, est à régler le :", options: ['31 juillet', '15 juillet', '30 juin'], bonne: 0 },
+    ],
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez la fiche d'identité de l'agence Chausson Matériaux.", documents: ['Document 1', 'Annexe 1'], bareme: 4,
+        reponse: "Toutes les informations figurent sur le site internet de l'entreprise, notamment dans les mentions légales.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Dénomination sociale', 'CHAUSSON MATÉRIAUX'],
+          ['Forme juridique', 'SAS (société par actions simplifiée)'],
+          ['Année de création', '1921'],
+          ['Nom du président', 'Pierre-Georges Chausson'],
+          ['Type de clientèle', 'Uniquement des professionnels du bâtiment (négoce interentreprises)'],
+          ['Nombre d’agences en France', 'Plus de 800'],
+          ['Chiffre d’affaires 2024', '1,22 milliard d’euros'],
+        ] },
+        complement: "Accepter « 1,22 Md€ ». Un demi-point par ligne exacte, arrondi au demi-point supérieur." },
+
+      { intitule: "Relevez les coordonnées du client concerné par la commande 2026-4471.", documents: ['Documents 3 et 4', 'Annexe 2'], bareme: 3,
+        reponse: "Le client est la SARL RENOVAL. Le bon de commande donne le numéro de compte, le chantier et la date de livraison ; la fiche client donne l'activité et le gérant.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Raison sociale', 'SARL RENOVAL'],
+          ['Activité', 'Maçonnerie et carrelage'],
+          ['Nom du gérant', 'Julien Bertrand'],
+          ['Numéro de compte client', 'CL-2214'],
+          ['Adresse du chantier', '24 avenue de la République, 92700 Colombes'],
+          ['Date de livraison prévue', '22 juin 2026'],
+        ] },
+        complement: "Erreur fréquente : confondre l'adresse du siège du client (8 rue Victor Hugo) et l'adresse du chantier à livrer (24 avenue de la République). Les deux figurent sur le bon de commande." },
+
+      { intitule: "Indiquez le rôle de chacun des quatre documents du suivi des ventes.", documents: ['Document 2', 'Annexe 3'], bareme: 4,
+        reponse: "Les quatre rôles sont énoncés dans la note de service de Sandrine Vasseur.",
+        tableau: { colonnes: ['Document', 'Rôle attendu'], lignes: [
+          ['Le bon de commande', "Il est signé par le client. Il engage les deux parties sur ce qui est commandé, à quel prix et pour quelle date."],
+          ['Le bon de livraison', "Il accompagne la marchandise. Il prouve ce qui a été réellement livré."],
+          ['La facture', "Elle demande le paiement au client. Elle indique une date d'échéance."],
+          ["L'avoir", "Il rembourse le client lorsqu'une erreur a été commise."],
+        ] },
+        complement: "1 point par document. Accepter toute reformulation exacte. Ne pas exiger le mot « échéance » en Première." },
+
+      { intitule: "Analysez trois lignes du bon de commande et vérifiez le calcul du total HT.", documents: ['Documents 4 et 5', 'Annexe 4'], bareme: 4,
+        reponse: "Formule : Quantité × Prix unitaire HT × 0,95 (remise de 5 %). La ligne CIM-35 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Référence', 'Calcul posé', 'Total HT'], lignes: [
+          ['CIM-35 (exemple fourni)', '60 × 7,20 × 0,95', '410,40 €'],
+          ['PAR-20', '400 × 1,85 × 0,95', '703,00 €'],
+          ['COL-25', '20 × 14,60 × 0,95', '277,40 €'],
+        ] },
+        complement: "2 points par ligne correctement posée ET correctement calculée. Le calcul doit être écrit : un résultat juste sans calcul posé ne vaut qu'1 point. Vérification : 400 × 1,85 = 740,00 puis × 0,95 = 703,00. Et 20 × 14,60 = 292,00 puis × 0,95 = 277,40." },
+
+      { intitule: "Calculez le montant de la TVA et le total TTC, puis vérifiez qu'ils correspondent au bon de commande.", documents: ['Documents 4 et 5', 'Annexe 5'], bareme: 3,
+        reponse: "Le total HT est relevé sur le bon de commande. La TVA vaut 20 % de ce montant. Le TTC est la somme des deux.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Total HT', 'Relevé sur le bon de commande', '3 599,08 €'],
+          ['Montant de la TVA à 20 %', '3 599,08 × 0,20', '719,82 €'],
+          ['Total TTC', '3 599,08 + 719,82', '4 318,90 €'],
+        ] },
+        complement: "1 point par ligne. La TVA exacte est 719,816 €, arrondie à 719,82 €. Accepter 719,81 € ou 719,82 €. Les deux montants figurent bien sur le bon de commande : l'élève doit constater qu'ils correspondent." },
+
+      { intitule: "Justifiez, en deux phrases, pourquoi suivre une commande n'est pas la même chose que vendre.", documents: ['Document 2', 'Annexe 6'], bareme: 2,
+        reponse: "Vendre, c'est amener le client à signer : cela se passe avant la signature. Suivre une commande, c'est s'assurer que le client reçoit bien ce qu'il a commandé, dans les délais, et qu'il paie ce qu'il doit : cela se passe après la signature.",
+        complement: "1 point pour la notion d'antériorité de la vente (avant la signature). 1 point pour au moins deux des trois obligations du suivi : recevoir la bonne marchandise, dans les délais, payer le montant dû. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
+  'chausson-m1': CHAUSSON_M1,
   'hydrao-m1': HYDRAO_M1,
   'hydrao-m2': HYDRAO_M2,
   'hydrao-m3': HYDRAO_M3,

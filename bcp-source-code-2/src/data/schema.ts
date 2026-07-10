@@ -229,8 +229,19 @@ const AMPARIS: Scenario = {
   ]),
 }
 
-// Liste ordonnee des 9 scenarios.
+// --- Chausson Materiaux -----------------------------------------------------
+const CHAUSSON: Scenario = {
+  id: 'chausson',
+  nom: 'Chausson Materiaux',
+  couleur: '#0B3C7A',
+  missions: construireMissions('chausson', [
+    'Prendre en main le suivi des commandes',
+  ]),
+}
+
+// Liste ordonnee des 10 scenarios.
 export const SCENARIOS: Scenario[] = [
+  CHAUSSON,
   RENAULT,
   PEUGEOT,
   ORPI,
