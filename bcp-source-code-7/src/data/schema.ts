@@ -241,6 +241,7 @@ const CHAUSSON: Scenario = {
     'Controler la livraison et constater les reserves',
     "Etablir l'avoir",
     'Repondre a la reclamation du client',
+    'Relancer le reglement',
   ]),
 }
 

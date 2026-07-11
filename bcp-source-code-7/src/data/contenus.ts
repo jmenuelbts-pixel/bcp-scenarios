@@ -22248,6 +22248,348 @@ const CHAUSSON_M6: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 7 - Relancer le reglement
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Lisez l'échéancier, calculez les pénalités de retard, choisissez le niveau de relance adapté, puis rédigez la lettre de relance au client.",
+    contexte:
+      "Nous sommes le 18 août 2026. La commande RENOVAL est loin derrière vous : les parpaings ont été relivrés, la laine de verre aussi, le client a été satisfait. Mais la facture FA-2026-07655, dont le solde s'élève à 3 148,91 €, n'a toujours pas été réglée. Son échéance était fixée au 31 juillet. Nous avons donc 18 jours de retard. Sandrine Vasseur consulte l'échéancier du logiciel et vous confie la relance. Un point important : Julien Bertrand est un bon client, régulier depuis 2021. Il ne s'agit pas de le brusquer, mais de récupérer l'argent dû. Le ton de votre lettre devra tenir compte de cette relation.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Échéancier des règlements (logiciel ChaussonPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / reglements / echeancier',
+          marque: 'ChaussonPro — Échéancier des règlements',
+          couleurHeader: '#0B3C7A',
+          menu: ['Clients', 'Commandes', 'Stocks', 'Livraisons', 'Factures', 'Règlements'],
+          sections: [
+            { type: 'titre', texte: 'Factures en attente de règlement — 18 août 2026' },
+            { type: 'paragraphe', texte: "Plusieurs factures sont affichées. Une facture est « en retard » lorsque sa date d'échéance est dépassée et qu'aucun règlement n'a été enregistré." },
+            { type: 'tableau', entetes: ['Facture', 'Client', 'Montant TTC', 'Échéance', 'Règlement reçu ?', 'État'], lignes: [
+              ['FA-2026-07640', 'SARL TOITNEUF', '2 145,60 €', '31/07/2026', 'Oui, le 28/07', 'Réglée'],
+              ['FA-2026-07655', 'SARL RENOVAL', '3 148,91 €', '31/07/2026', 'Non', 'En retard'],
+              ['FA-2026-07702', 'EURL PLATRIS', '1 830,00 €', '31/08/2026', 'Non', 'Non échue'],
+              ['FA-2026-07688', 'SAS SOLBAT', '5 210,40 €', '15/08/2026', 'Non', 'En retard'],
+            ] },
+            { type: 'sousTitre', texte: 'Détail de la facture RENOVAL' },
+            { type: 'fiche', lignes: [
+              { label: 'Numéro de facture', valeur: 'FA-2026-07655' },
+              { label: 'Solde restant dû', valeur: '3 148,91 € TTC' },
+              { label: 'Date d’échéance', valeur: '31 juillet 2026' },
+              { label: 'Date du jour', valeur: '18 août 2026' },
+              { label: 'Règlement enregistré', valeur: 'Aucun' },
+              { label: 'Première relance ?', valeur: 'Non, aucune relance envoyée à ce jour' },
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Extrait des conditions générales de vente", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Conditions générales de vente' },
+        { intertitre: 'Article 8 — Retard de paiement' },
+        { paragraphes: [
+          "En cas de retard de paiement, des pénalités de retard sont dues de plein droit, sans qu'un rappel soit nécessaire. Le taux annuel des pénalités est fixé à 12 %.",
+          "Le calcul des pénalités s'effectue sur le montant TTC de la facture, sur la base d'une année de 360 jours, au prorata du nombre de jours de retard.",
+          "S'ajoute une indemnité forfaitaire pour frais de recouvrement de 40 €, due pour chaque facture réglée en retard par un client professionnel.",
+        ] },
+        { bulleConseil: { texte: ["Ces règles sont issues du Code de commerce. Elles s'appliquent automatiquement, mais l'agence choisit d'en informer le client dès la première relance, à titre de rappel."] } },
+      ] },
+
+      { numero: 3, titre: "Procédure : calculer une pénalité et choisir le niveau de relance", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Calculer les pénalités de retard' },
+            { type: 'paragraphe', texte: "Pénalités = Montant TTC × Taux annuel ÷ 360 × Nombre de jours de retard" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : une facture de 2 000 € TTC est réglée avec 30 jours de retard, au taux annuel de 12 %. Pénalités = 2 000 × 0,12 ÷ 360 × 30 = 240 ÷ 360 × 30 = 0,6667 × 30 = 20,00 €." },
+            { type: 'paragraphe', texte: "À ces pénalités s'ajoute l'indemnité forfaitaire de 40 €. Le total réclamé au client est donc : Pénalités + 40 €." },
+            { type: 'sousTitre', texte: 'Compter les jours de retard' },
+            { type: 'paragraphe', texte: "Le nombre de jours de retard se compte à partir du lendemain de l'échéance jusqu'à la date du jour. Ici, l'échéance était le 31 juillet et nous sommes le 18 août : le retard est de 18 jours." },
+            { type: 'sousTitre', texte: 'Choisir le bon niveau de relance' },
+            { type: 'tableau', entetes: ['Niveau', 'Quand l’utiliser', 'Ton'], lignes: [
+              ['Rappel simple', "Premier retard, bon client, aucune relance précédente", 'Courtois, on suppose un oubli'],
+              ['Relance ferme', "Deuxième relance, ou client habituellement en retard", 'Plus insistant, on fixe une date limite'],
+              ['Mise en demeure', "Après plusieurs relances sans réponse", 'Formel, on menace de poursuites'],
+            ] },
+            { type: 'paragraphe', texte: "Le choix du niveau dépend de deux éléments : le nombre de relances déjà envoyées, et le comportement habituel du client. Une mise en demeure envoyée à un bon client dès le premier retard le vexerait et pourrait le faire partir à la concurrence." },
+            { type: 'citation', texte: "La relance n'est pas une punition. C'est un service qui rappelle au client une obligation, tout en préservant la relation commerciale.", auteur: 'Guide du recouvrement, Chausson Matériaux' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Aide-mémoire : structure d'une lettre de relance", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Les cinq parties d’une lettre de relance' },
+            { type: 'tableau', entetes: ['Partie', 'Contenu attendu'], lignes: [
+              ['En-tête', "Coordonnées de l'agence et du client, date, référence de la facture"],
+              ['Objet', 'Relance de la facture FA-2026-07655'],
+              ['Rappel des faits', "Le montant, la date d'échéance, le retard constaté"],
+              ['Demande', "Inviter le client à régler, en précisant le montant et un délai"],
+              ['Formule de politesse', "Adaptée au niveau de relance choisi"],
+            ] },
+            { type: 'sousTitre', texte: 'Pour un rappel simple à un bon client' },
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "Supposer un simple oubli : « il s'agit probablement d'un oubli de votre part »." },
+              { numero: '2', texte: "Rester courtois et bref. Ne pas menacer dès la première lettre." },
+              { numero: '3', texte: "Rappeler les pénalités par information, sans les exiger encore : cela invite à régler vite." },
+            ] },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Lire l'échéancier",
+        contexte: "L'échéancier affiche plusieurs factures. Votre premier travail consiste à isoler celle qui vous concerne et à mesurer le retard.",
+        questions: [
+          { numero: 1, consigne: "Repérez la facture RENOVAL dans l'échéancier et relevez les informations utiles au calcul.", ressources: "Document 1, annexe 1. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Déterminez le nombre de jours de retard, puis justifiez votre comptage.", ressources: "Documents 1 et 3, annexe 2. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Calculer les pénalités",
+        contexte: "Les conditions générales de vente fixent la règle. Appliquez-la au centime près.",
+        questions: [
+          { numero: 3, consigne: "Calculez le montant des pénalités de retard, puis le total réclamé au client.", ressources: "Documents 2 et 3, annexe 3. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Choisissez le niveau de relance adapté et justifiez votre choix par deux éléments du dossier.", ressources: 'Documents 1 et 3, annexe 4. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Rédiger la relance",
+        contexte: "Le client est fidèle. Votre lettre doit récupérer l'argent sans abîmer la relation.",
+        questions: [
+          { numero: 5, consigne: "Rédigez la lettre de relance en respectant le niveau choisi et les cinq parties attendues.", ressources: 'Documents 1, 2 et 4, annexe 5. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi une mise en demeure serait ici une erreur.", ressources: 'Documents 1 et 3, annexe 6. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Informations de la facture à relancer', colonnes: ['Élément', 'Réponse'], nbLignes: 5, largeurs: ['45%', '55%'], prerempli: [
+        ['Numéro de la facture', ''],
+        ['Montant TTC restant dû', ''],
+        ['Date d’échéance', ''],
+        ['Date du jour', ''],
+        ['Nombre de relances déjà envoyées', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le nombre de jours de retard', colonnes: ['Étape', 'Réponse'], nbLignes: 3, largeurs: ['55%', '45%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['À partir de quelle date compte-t-on le retard ?', ''],
+        ['Jusqu’à quelle date ?', ''],
+        ['Nombre de jours de retard', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul des pénalités', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 5, largeurs: ['36%', '38%', '26%'], prerempli: [
+        ['Montant TTC de la facture', '(relevé sur l’échéancier)', '3 148,91 €'],
+        ['Pénalités pour une année entière (× 12 %)', '3 148,91 × 0,12 =', ''],
+        ['Pénalités par jour (÷ 360)', '', ''],
+        ['Pénalités pour 18 jours de retard (× 18)', '', ''],
+        ['Total réclamé (pénalités + indemnité de 40 €)', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Choix du niveau de relance', colonnes: ['Élément', 'Réponse'], nbLignes: 3, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Niveau de relance retenu', ''],
+        ['Premier élément qui justifie ce choix', ''],
+        ['Second élément qui justifie ce choix', ''],
+      ] },
+
+      { type: 'courrier', id: 'annexe5', titre: 'Annexe 5 — Lettre de relance' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi pas une mise en demeure", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Repérer une facture en retard dans un échéancier",
+      "Compter des jours de retard à partir d'une date d'échéance",
+      "Calculer des pénalités de retard et une indemnité forfaitaire",
+      "Choisir et rédiger une relance adaptée à la relation client",
+    ],
+  },
+
+  synthese: {
+    titre: 'Relancer un règlement en retard',
+    proposition: [
+      'Date d’échéance',
+      'Jours de retard',
+      'Pénalités de retard',
+      'Taux annuel de 12 %',
+      'Base de 360 jours',
+      'Indemnité forfaitaire de 40 €',
+      'Rappel simple',
+      'Mise en demeure',
+      'Bon client',
+      'Préserver la relation',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La relance du règlement',
+      enfants: [
+        { id: 'ret', texte: 'Mesurer le retard', enfants: [
+          { id: 'r1', texte: null, reponse: 'Date d’échéance' },
+          { id: 'r2', texte: null, reponse: 'Jours de retard' },
+        ] },
+        { id: 'cal', texte: 'Calculer ce qui est dû', enfants: [
+          { id: 'c1', texte: null, reponse: 'Pénalités de retard' },
+          { id: 'c2', texte: null, reponse: 'Taux annuel de 12 %' },
+          { id: 'c3', texte: null, reponse: 'Base de 360 jours' },
+          { id: 'c4', texte: null, reponse: 'Indemnité forfaitaire de 40 €' },
+        ] },
+        { id: 'niv', texte: 'Choisir le niveau', enfants: [
+          { id: 'n1', texte: null, reponse: 'Rappel simple' },
+          { id: 'n2', texte: null, reponse: 'Mise en demeure' },
+        ] },
+        { id: 'rel', texte: 'Tenir compte du client', enfants: [
+          { id: 'e1', texte: null, reponse: 'Bon client' },
+          { id: 'e2', texte: null, reponse: 'Préserver la relation' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Mesurer un retard de paiement", indicateurs: [
+        { niveau: 'novice', description: "Je confonds date d'échéance et date de facture." },
+        { niveau: 'debrouille', description: "Je repère la facture en retard dans l'échéancier." },
+        { niveau: 'averti', description: "Je compte correctement le nombre de jours de retard." },
+        { niveau: 'expert', description: "Je justifie mon comptage à partir du lendemain de l'échéance." },
+      ] },
+      { id: 'c2', intitule: "Calculer des pénalités de retard", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelle formule appliquer." },
+        { niveau: 'debrouille', description: "J'applique le taux annuel au montant de la facture." },
+        { niveau: 'averti', description: "Je ramène au prorata des jours de retard sur une base de 360 jours." },
+        { niveau: 'expert', description: "J'ajoute l'indemnité forfaitaire et je donne le total exact réclamé." },
+      ] },
+      { id: 'c3', intitule: "Adapter une relance à la relation client", indicateurs: [
+        { niveau: 'novice', description: "J'envoie une mise en demeure sans réfléchir au client." },
+        { niveau: 'debrouille', description: "Je choisis un rappel simple mais sans le justifier." },
+        { niveau: 'averti', description: "Je justifie mon choix par l'absence de relance et la fidélité du client." },
+        { niveau: 'expert', description: "Ma lettre récupère l'argent tout en préservant la relation commerciale." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Échéancier', definition: "Tableau qui recense toutes les factures et leur date limite de règlement." },
+      { terme: 'Date d’échéance', definition: "Date limite à laquelle le client doit avoir réglé sa facture." },
+      { terme: 'Facture en retard', definition: "Facture dont l'échéance est dépassée sans qu'un règlement ait été enregistré." },
+      { terme: 'Jours de retard', definition: "Nombre de jours écoulés entre le lendemain de l'échéance et la date du jour." },
+      { terme: 'Pénalités de retard', definition: "Somme due par le client en cas de règlement tardif, calculée sur le montant de la facture." },
+      { terme: 'Taux annuel', definition: "Pourcentage appliqué sur une année pour calculer les pénalités. Ici, 12 %." },
+      { terme: 'Base de 360 jours', definition: "Convention de calcul qui considère l'année comme comptant 360 jours." },
+      { terme: 'Indemnité forfaitaire', definition: "Somme fixe de 40 € due pour frais de recouvrement, en plus des pénalités." },
+      { terme: 'Rappel simple', definition: "Première relance, courtoise, qui suppose un simple oubli du client." },
+      { terme: 'Mise en demeure', definition: "Relance formelle et menaçante, utilisée après plusieurs relances sans réponse." },
+      { terme: 'Recouvrement', definition: "Ensemble des actions menées pour récupérer une somme due par un client." },
+      { terme: 'Relation commerciale', definition: "Lien de confiance entre l'entreprise et son client, à préserver dans la durée." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une facture en retard ?", verso: "Une facture dont l'échéance est dépassée sans règlement enregistré." },
+      { recto: "Comment compte-t-on les jours de retard ?", verso: "Du lendemain de l'échéance jusqu'à la date du jour." },
+      { recto: 'Quelle est la formule des pénalités ?', verso: 'Montant TTC × Taux annuel ÷ 360 × Nombre de jours.' },
+      { recto: 'Quel est le taux annuel des pénalités ?', verso: '12 %, fixé par les conditions générales de vente.' },
+      { recto: "Que vaut l'indemnité forfaitaire de recouvrement ?", verso: '40 €, pour chaque facture réglée en retard par un professionnel.' },
+      { recto: 'Quel est le montant des pénalités RENOVAL ?', verso: '18,89 € pour 18 jours de retard.' },
+      { recto: 'Quel est le total réclamé au client ?', verso: '58,89 €, soit 18,89 € de pénalités plus 40 € d’indemnité.' },
+      { recto: 'Quand utilise-t-on un rappel simple ?', verso: 'Au premier retard, pour un bon client, sans relance précédente.' },
+      { recto: 'Quand utilise-t-on une mise en demeure ?', verso: 'Après plusieurs relances restées sans réponse.' },
+      { recto: 'Pourquoi préserver la relation avec un bon client ?', verso: "Pour ne pas le pousser vers la concurrence." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Une facture est en retard lorsque :', options: ["son échéance est dépassée sans règlement", 'elle vient d’être émise', 'le client conteste le montant'], bonne: 0 },
+      { type: 'unique', question: "L'échéance de la facture RENOVAL était le :", options: ['31 juillet 2026', '18 août 2026', '23 juin 2026'], bonne: 0 },
+      { type: 'unique', question: 'Le nombre de jours de retard est de :', options: ['18 jours', '31 jours', '48 jours'], bonne: 0 },
+      { type: 'unique', question: 'La formule des pénalités est :', options: ['TTC × taux ÷ 360 × jours', 'TTC × taux × jours', 'TTC ÷ taux × jours'], bonne: 0 },
+      { type: 'unique', question: 'Les pénalités de retard RENOVAL valent :', options: ['18,89 €', '20,00 €', '40,00 €'], bonne: 0 },
+      { type: 'unique', question: "L'indemnité forfaitaire de recouvrement est de :", options: ['40 €', '18,89 €', '12 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total réclamé au client est de :', options: ['58,89 €', '18,89 €', '78,89 €'], bonne: 0 },
+      { type: 'unique', question: 'Pour un bon client au premier retard, on choisit :', options: ['un rappel simple', 'une mise en demeure', 'une poursuite judiciaire'], bonne: 0 },
+      { type: 'unique', question: 'Une mise en demeure envoyée trop tôt risque de :', options: ['faire fuir le client', 'accélérer le paiement toujours', 'annuler les pénalités'], bonne: 0 },
+      { type: 'unique', question: 'La base de calcul des pénalités est une année de :', options: ['360 jours', '365 jours', '12 mois de 30 jours arrondis'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Le calcul des pénalités', 'Le niveau de relance', 'La relation client'],
+      zones: [
+        { libelle: 'Montant TTC × 0,12 ÷ 360 × jours', etiquetteIndex: 0 },
+        { libelle: 'Indemnité forfaitaire de 40 €', etiquetteIndex: 0 },
+        { libelle: 'Rappel simple pour un premier retard', etiquetteIndex: 1 },
+        { libelle: 'Base de 360 jours', etiquetteIndex: 0 },
+        { libelle: 'Mise en demeure après plusieurs relances', etiquetteIndex: 1 },
+        { libelle: 'Client fidèle depuis 2021', etiquetteIndex: 2 },
+        { libelle: 'Ton courtois qui suppose un oubli', etiquetteIndex: 1 },
+        { libelle: 'Ne pas pousser le client vers la concurrence', etiquetteIndex: 2 },
+        { libelle: 'Préserver la confiance dans la durée', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Repérez la facture RENOVAL dans l'échéancier et relevez les informations utiles au calcul.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "L'échéancier affiche quatre factures. Seule FA-2026-07655 concerne RENOVAL et se trouve en retard.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Numéro de la facture', 'FA-2026-07655'],
+          ['Montant TTC restant dû', '3 148,91 €'],
+          ['Date d’échéance', '31 juillet 2026'],
+          ['Date du jour', '18 août 2026'],
+          ['Nombre de relances déjà envoyées', 'Aucune'],
+        ] },
+        complement: "0,5 point par ligne, arrondi au demi-point supérieur. Deux autres factures sont en retard dans l'échéancier (SAS SOLBAT) : l'élève doit isoler celle de RENOVAL. Le montant est celui du solde après avoir, soit 3 148,91 €, et non le montant initial de la facture." },
+
+      { intitule: "Déterminez le nombre de jours de retard, puis justifiez votre comptage.", documents: ['Documents 1 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "Le retard se compte à partir du lendemain de l'échéance. L'échéance était le 31 juillet, donc le retard court à partir du 1er août, jusqu'au 18 août inclus.",
+        tableau: { colonnes: ['Étape', 'Réponse attendue'], lignes: [
+          ['À partir de quelle date compte-t-on le retard ?', "Le 1er août 2026, lendemain de l'échéance"],
+          ['Jusqu’à quelle date ?', 'Le 18 août 2026, date du jour'],
+          ['Nombre de jours de retard', '18 jours'],
+        ] },
+        complement: "1 point par ligne. Le document 3 fournit la réponse : le retard est de 18 jours, comme indiqué. Valoriser l'élève qui comprend que l'on part du lendemain de l'échéance et non de l'échéance elle-même. Accepter le résultat de 18 jours donné dans le dossier ; la question porte surtout sur la justification du comptage." },
+
+      { intitule: "Calculez le montant des pénalités de retard, puis le total réclamé au client.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "Pénalités = Montant TTC × 0,12 ÷ 360 × 18. On ajoute ensuite l'indemnité forfaitaire de 40 €.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Montant TTC de la facture', 'Relevé sur l’échéancier', '3 148,91 €'],
+          ['Pénalités pour une année (× 12 %)', '3 148,91 × 0,12', '377,87 €'],
+          ['Pénalités par jour (÷ 360)', '377,87 ÷ 360', '1,0496 €'],
+          ['Pénalités pour 18 jours (× 18)', '1,0496 × 18', '18,89 €'],
+          ['Total réclamé (+ 40 €)', '18,89 + 40,00', '58,89 €'],
+        ] },
+        complement: "1 point pour la pénalité annuelle, 1 point pour la pénalité journalière, 1,5 point pour la pénalité sur 18 jours, 1,5 point pour le total avec l'indemnité. La pénalité annuelle exacte est 377,8692 €, arrondie à 377,87 €. La pénalité journalière est 1,04963 €, que l'on peut garder à quatre décimales pour le calcul intermédiaire. Le résultat final, 18,89 €, est stable. Accepter un calcul en une seule ligne : 3 148,91 × 0,12 ÷ 360 × 18 = 18,89 €. Refuser l'oubli de l'indemnité de 40 € : un total de 18,89 € seul ne vaut que la moitié des points du total." },
+
+      { intitule: "Choisissez le niveau de relance adapté et justifiez votre choix par deux éléments du dossier.", documents: ['Documents 1 et 3', 'Annexe 4'], bareme: 4,
+        reponse: "Le rappel simple s'impose : c'est le premier retard de ce client, et aucune relance n'a encore été envoyée.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Niveau de relance retenu', 'Le rappel simple'],
+          ['Premier élément justificatif', "Aucune relance n'a encore été envoyée pour cette facture : c'est le tout premier rappel."],
+          ['Second élément justificatif', "Julien Bertrand est un bon client, régulier depuis 2021. Un ton courtois préserve la relation."],
+        ] },
+        complement: "2 points pour le choix du rappel simple. 1 point par élément justificatif. Refuser la relance ferme et la mise en demeure : elles ne se justifient qu'après une ou plusieurs relances sans réponse, ce qui n'est pas le cas ici. Un élève qui choisit la mise en demeure a peut-être bien calculé les pénalités mais n'a pas lu le contexte : la note doit refléter cette erreur de jugement commercial." },
+
+      { intitule: "Rédigez la lettre de relance en respectant le niveau choisi et les cinq parties attendues.", documents: ['Documents 1, 2 et 4', 'Annexe 5'], bareme: 3,
+        reponse: "Lettre de rappel simple, courtoise, qui suppose un oubli et informe des pénalités sans les exiger.",
+        complement: "Structure attendue : En-tête (agence, client, date du 18 août, référence FA-2026-07655). Objet : rappel de votre facture FA-2026-07655. Corps : « Sauf erreur de notre part, votre facture FA-2026-07655 d'un montant de 3 148,91 € TTC, arrivée à échéance le 31 juillet 2026, ne nous est pas encore parvenue. Il s'agit probablement d'un simple oubli de votre part. Nous vous serions reconnaissants de bien vouloir procéder à son règlement sous huitaine. Nous vous rappelons qu'un retard de paiement entraîne des pénalités au taux annuel de 12 %, ainsi qu'une indemnité forfaitaire de 40 €. » Politesse courtoise, signature de l'agence. Barème : 1 point pour l'objet et la référence exacte de la facture. 1 point pour le rappel du montant et de l'échéance. 1 point pour le ton de rappel simple (oubli supposé, pas de menace). Refuser toute formule comminatoire du type « faute de règlement, nous engagerons des poursuites » : elle appartient à la mise en demeure. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi une mise en demeure serait ici une erreur.", documents: ['Documents 1 et 3', 'Annexe 6'], bareme: 2,
+        reponse: "Une mise en demeure est une relance formelle et menaçante, réservée aux clients qui n'ont pas répondu à plusieurs relances. Or c'est ici le premier retard d'un client fidèle depuis 2021 : une mise en demeure le vexerait et risquerait de le faire partir à la concurrence.",
+        complement: "1 point pour rappeler que la mise en demeure intervient après plusieurs relances sans réponse. 1 point pour la conséquence commerciale : vexer un bon client et le perdre. Accepter toute formulation exacte. Cette question évalue le jugement commercial autant que la connaissance de la procédure." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'chausson-m1': CHAUSSON_M1,
   'chausson-m2': CHAUSSON_M2,
@@ -22255,6 +22597,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'chausson-m4': CHAUSSON_M4,
   'chausson-m5': CHAUSSON_M5,
   'chausson-m6': CHAUSSON_M6,
+  'chausson-m7': CHAUSSON_M7,
   'hydrao-m1': HYDRAO_M1,
   'hydrao-m2': HYDRAO_M2,
   'hydrao-m3': HYDRAO_M3,
