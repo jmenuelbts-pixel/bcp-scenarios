@@ -24631,12 +24631,916 @@ const KILOUTOU_M5: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 6 - Chiffrer la remise en etat et la franchise
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Chiffrez le coût de remise en état du vérin, déterminez ce que le client doit payer selon qu'il a souscrit ou non l'assurance, puis concluez sur le cas TERRABAT.",
+    contexte:
+      "Nous sommes le 4 juillet 2026. La responsabilité de TERRABAT dans la dégradation du vérin est établie, vous l'avez démontrée hier. L'atelier a chiffré la réparation. Fabrice Delorme vous confie maintenant le calcul de ce que le client devra payer. Un point décisif : TERRABAT n'a pas souscrit l'assurance bris de machine, vous l'aviez relevé dès la lecture du contrat en début de location. Cela change tout. Avec l'assurance, le client n'aurait payé qu'une franchise. Sans elle, il paie la totalité de la réparation. Votre travail est de chiffrer les deux cas pour bien montrer la différence, puis de conclure sur ce que doit réellement TERRABAT.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.3 — Traiter les retours et les réclamations',
+      detail: "C2.3.1 Contrôler la conformité du retour et constater les anomalies. C2.3.2 Qualifier la responsabilité et informer des suites.",
+    },
+    documents: [
+      { numero: 1, titre: "Devis de remise en état (atelier Kiloutou)", texte: [
+        { logoEntete: 'KILOUTOU — Atelier, devis de réparation MP18-042' },
+        { intertitre: 'Réparation du vérin de bras, 4 juillet 2026' },
+        { tableau: { colonnes: ['Poste', 'Détail', 'Montant HT'], lignes: [
+          ['Pièce', 'Vérin de bras neuf', '2 200,00 €'],
+          ['Main-d’œuvre', '8 heures à 65,00 € de l’heure', 'À calculer'],
+        ] } },
+        { bulleConseil: { texte: ["La main-d'œuvre se calcule : nombre d'heures × tarif horaire. Le coût total de la remise en état est la somme de la pièce et de la main-d'œuvre."] } },
+      ] },
+
+      { numero: 2, titre: "Rappel du contrat : l'assurance bris de machine", texte: [
+        { logoEntete: 'KILOUTOU — Contrat LOC-2026-8830, clause assurance' },
+        { intertitre: 'Ce qui figure au contrat' },
+        { tableau: { colonnes: ['Élément', 'Valeur'], lignes: [
+          ['Assurance bris de machine', 'NON souscrite par le client'],
+          ['Prix d’achat de la mini-pelle MP-18', '22 000,00 €'],
+        ] } },
+        { paragraphes: [
+          "Rappel : lors de la signature du contrat, le client a refusé l'assurance bris de machine, pourtant proposée. Cette décision a une conséquence directe en cas de dommage.",
+        ] },
+        { bulleConseil: { texte: ["Gardez en tête que l'assurance n'a PAS été prise. C'est le point qui va déterminer le montant à la charge du client."] } },
+      ] },
+
+      { numero: 3, titre: "Procédure : assurance, franchise et responsabilité", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: "Qui paie la réparation ?" },
+            { type: 'paragraphe', texte: "Quand un matériel est endommagé par le client, ce qu'il paie dépend d'une seule chose : a-t-il souscrit l'assurance bris de machine ?" },
+            { type: 'sousTitre', texte: 'Les deux cas' },
+            { type: 'tableau', entetes: ['Situation', 'Ce que paie le client'], lignes: [
+              ['Assurance souscrite', "Seulement la franchise (une partie plafonnée du coût)"],
+              ['Assurance non souscrite', "La totalité du coût de remise en état"],
+            ] },
+            { type: 'sousTitre', texte: 'Comment se calcule la franchise' },
+            { type: 'paragraphe', texte: "La franchise (part du dommage qui reste à la charge du client malgré l'assurance) est égale à 10 % du prix d'achat du matériel, dans la limite d'un plafond de 5 000 €." },
+            { type: 'paragraphe', texte: "Franchise = Prix d'achat × 10 %, sans dépasser 5 000 €." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : pour un engin acheté 40 000 €, la franchise serait de 40 000 × 10 % = 4 000 €, en dessous du plafond." },
+            { type: 'sousTitre', texte: 'La règle qui décide' },
+            { type: 'citation', texte: "Sans assurance, le client responsable d'un dommage paie l'intégralité de la remise en état. L'assurance, elle, ramène sa charge à la seule franchise.", auteur: 'Conditions générales de location, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Note de Fabrice Delorme", texte: [
+        { noteDirection: {
+          titre: 'Chiffrez les deux cas',
+          signature: 'Fabrice Delorme, responsable clientèle professionnelle',
+          intro: "La réparation est chiffrée par l'atelier. Il faut maintenant calculer ce que doit TERRABAT.",
+          paragraphe: "Je veux que vous chiffriez les deux situations : ce que le client paierait s'il avait l'assurance, et ce qu'il paie sans elle. Cette comparaison est importante : elle montre au client, chiffres à l'appui, ce que son refus d'assurance lui coûte. Ensuite, vous conclurez sur le montant réel dû par TERRABAT, qui n'avait pas l'assurance.",
+          puces: [
+            "Calculez d'abord le coût réel de la remise en état.",
+            "Calculez la franchise, comme si l'assurance avait été prise.",
+            "Comparez : combien le client économiserait avec l'assurance ?",
+            "Concluez : TERRABAT n'ayant pas l'assurance, il paie la totalité.",
+          ],
+          conclusion: "Ce dossier servira aussi à convaincre nos futurs clients de prendre l'assurance. Soyez précis.",
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Chiffrer la remise en état",
+        contexte: "Une pièce, de la main-d'œuvre. Le coût réel de la réparation se calcule ligne à ligne.",
+        questions: [
+          { numero: 1, consigne: "Calculez le coût de la main-d'œuvre, puis le coût total de la remise en état HT.", ressources: "Document 1, annexe 1. Compétence C2.3.1 — Constater les anomalies.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Calculez le montant TTC de la remise en état.", ressources: 'Documents 1 et 3, annexe 2. Compétence C2.3.1 — Constater les anomalies.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Calculer la franchise",
+        contexte: "Et si le client avait pris l'assurance ? On calcule la franchise pour pouvoir comparer.",
+        questions: [
+          { numero: 3, consigne: "Calculez le montant de la franchise à partir du prix d'achat de la mini-pelle.", ressources: 'Documents 2 et 3, annexe 3. Compétence C2.3.2 — Qualifier la responsabilité.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Déterminez ce que le client aurait payé avec l'assurance, puis sans l'assurance.", ressources: 'Documents 1, 2 et 3, annexe 4. Compétence C2.3.2 — Qualifier la responsabilité.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Conclure sur le cas TERRABAT",
+        contexte: "Le client n'avait pas l'assurance. Vous tranchez le montant réel, et vous en tirez la leçon.",
+        questions: [
+          { numero: 5, consigne: "Indiquez le montant que TERRABAT doit réellement payer, et de combien l'assurance l'aurait allégé.", ressources: 'Documents 2 et 3, annexe 5. Compétence C2.3.2 — Informer des suites.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, l'intérêt de souscrire l'assurance bris de machine.", ressources: 'Document 3, annexe 6. Compétence C2.3.2 — Informer des suites.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Coût de la remise en état HT', colonnes: ['Poste', 'Calcul à poser', 'Montant HT'], nbLignes: 3, largeurs: ['30%', '42%', '28%'], prerempli: [
+        ['Pièce (vérin neuf)', '(relevé sur le devis)', '2 200,00 €'],
+        ['Main-d’œuvre (8 h × 65 €)', '8 × 65 =', ''],
+        ['Coût total remise en état HT', '2 200 + main-d’œuvre', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Montant TTC de la remise en état', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['30%', '42%', '28%'], prerempli: [
+        ['Coût HT', '(reporté de l’annexe 1)', ''],
+        ['TVA 20 %', 'Coût HT × 0,20', ''],
+        ['Coût TTC', 'Coût HT + TVA', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul de la franchise', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['38%', '36%', '26%'], prerempli: [
+        ['Prix d’achat de la mini-pelle', '(relevé au contrat)', '22 000,00 €'],
+        ['Franchise (10 % du prix d’achat)', '22 000 × 0,10 =', ''],
+        ['Plafond de 5 000 € dépassé ?', 'comparer au plafond', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Avec ou sans assurance', colonnes: ['Situation', 'Ce que paie le client', 'Montant HT'], nbLignes: 2, largeurs: ['34%', '40%', '26%'], prerempli: [
+        ['Si assurance souscrite', 'La franchise seulement', ''],
+        ['Si assurance non souscrite', 'La totalité de la remise en état', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Le montant réel dû par TERRABAT', colonnes: ['Question', 'Réponse'], nbLignes: 3, largeurs: ['58%', '42%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['TERRABAT a-t-il souscrit l’assurance ?', ''],
+        ['Montant HT réellement dû par TERRABAT', ''],
+        ['Économie manquée faute d’assurance', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — L'intérêt de l'assurance bris de machine", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Chiffrer un coût de remise en état (pièce et main-d'œuvre)",
+      "Calculer une franchise plafonnée",
+      "Comparer la charge du client avec et sans assurance",
+      "Conclure sur le montant réellement dû et en tirer la leçon",
+    ],
+  },
+
+  synthese: {
+    titre: 'Chiffrer la remise en état',
+    proposition: [
+      'Coût de la pièce',
+      'Coût de la main-d’œuvre',
+      'Coût total de remise en état',
+      'Assurance souscrite',
+      'Assurance non souscrite',
+      'Franchise',
+      '10 % du prix d’achat',
+      'Plafond de 5 000 €',
+      'Le client paie tout',
+      'L’assurance allège la charge',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le coût du dommage',
+      enfants: [
+        { id: 'cout', texte: 'Le coût réel', enfants: [
+          { id: 'c1', texte: null, reponse: 'Coût de la pièce' },
+          { id: 'c2', texte: null, reponse: 'Coût de la main-d’œuvre' },
+          { id: 'c3', texte: null, reponse: 'Coût total de remise en état' },
+        ] },
+        { id: 'ass', texte: 'Le rôle de l’assurance', enfants: [
+          { id: 'a1', texte: null, reponse: 'Assurance souscrite' },
+          { id: 'a2', texte: null, reponse: 'Assurance non souscrite' },
+        ] },
+        { id: 'fra', texte: 'La franchise', enfants: [
+          { id: 'f1', texte: null, reponse: 'Franchise' },
+          { id: 'f2', texte: null, reponse: '10 % du prix d’achat' },
+          { id: 'f3', texte: null, reponse: 'Plafond de 5 000 €' },
+        ] },
+        { id: 'cas', texte: 'Le cas TERRABAT', enfants: [
+          { id: 't1', texte: null, reponse: 'Le client paie tout' },
+          { id: 't2', texte: null, reponse: 'L’assurance allège la charge' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Chiffrer une remise en état", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas calculer la main-d'œuvre." },
+        { niveau: 'debrouille', description: "Je multiplie les heures par le tarif horaire." },
+        { niveau: 'averti', description: "J'additionne pièce et main-d'œuvre pour le coût total." },
+        { niveau: 'expert', description: "Je calcule le TTC sans erreur." },
+      ] },
+      { id: 'c2', intitule: "Calculer une franchise", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est une franchise." },
+        { niveau: 'debrouille', description: "Je calcule 10 % du prix d'achat." },
+        { niveau: 'averti', description: "Je vérifie que le plafond de 5 000 € n'est pas dépassé." },
+        { niveau: 'expert', description: "Je distingue le rôle de la franchise selon que l'assurance est prise ou non." },
+      ] },
+      { id: 'c3', intitule: "Conclure sur la charge du client", indicateurs: [
+        { niveau: 'novice', description: "Je confonds les deux cas." },
+        { niveau: 'debrouille', description: "Je sais que sans assurance le client paie plus." },
+        { niveau: 'averti', description: "Je chiffre la charge réelle de TERRABAT." },
+        { niveau: 'expert', description: "Je calcule l'économie qu'aurait permise l'assurance." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Remise en état', definition: "Réparation d'un matériel endommagé pour le remettre en état de location." },
+      { terme: 'Devis', definition: "Document qui chiffre à l'avance le coût d'une réparation." },
+      { terme: 'Main-d’œuvre', definition: "Coût du travail de réparation, calculé en heures multipliées par un tarif horaire." },
+      { terme: 'Assurance bris de machine', definition: "Protection optionnelle qui couvre la casse du matériel pendant la location." },
+      { terme: 'Franchise', definition: "Part du dommage qui reste à la charge du client malgré l'assurance." },
+      { terme: 'Prix d’achat', definition: "Prix auquel le loueur a acheté le matériel, base de calcul de la franchise." },
+      { terme: 'Plafond', definition: "Montant maximum que la franchise ne peut pas dépasser, ici 5 000 €." },
+      { terme: 'Responsabilité du locataire', definition: "Obligation du client de payer un dommage causé pendant la location." },
+      { terme: 'Coût HT', definition: "Coût hors taxes de la réparation, avant la TVA." },
+      { terme: 'Coût TTC', definition: "Coût toutes taxes comprises, réellement facturé." },
+      { terme: 'Économie manquée', definition: "Somme que le client aurait économisée s'il avait pris l'assurance." },
+      { terme: 'Prime d’assurance', definition: "Somme payée par le client pour bénéficier de l'assurance." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on la main-d'œuvre ?", verso: 'Nombre d’heures × tarif horaire.' },
+      { recto: 'Quel est le coût de la main-d’œuvre ici ?', verso: '520,00 € : 8 heures × 65 €.' },
+      { recto: 'Quel est le coût total HT de la remise en état ?', verso: '2 720,00 € : 2 200 + 520.' },
+      { recto: 'Quel est le coût TTC de la remise en état ?', verso: '3 264,00 €.' },
+      { recto: "Qu'est-ce qu'une franchise ?", verso: "La part du dommage qui reste à la charge du client malgré l'assurance." },
+      { recto: 'Comment se calcule la franchise ?', verso: "10 % du prix d'achat, sans dépasser 5 000 €." },
+      { recto: 'Quel est le montant de la franchise ici ?', verso: '2 200,00 € : 22 000 × 10 %.' },
+      { recto: 'Que paie un client sans assurance ?', verso: "La totalité de la remise en état." },
+      { recto: 'Combien doit réellement TERRABAT ?', verso: '2 720,00 € HT : il n’avait pas l’assurance.' },
+      { recto: "Combien l'assurance aurait-elle fait économiser ?", verso: '520,00 € : 2 720 − 2 200 de franchise.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La main-d’œuvre (8 h × 65 €) vaut :', options: ['520,00 €', '650,00 €', '480,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le coût total HT de la remise en état est :', options: ['2 720,00 €', '2 200,00 €', '2 460,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le coût TTC de la remise en état est :', options: ['3 264,00 €', '2 720,00 €', '3 000,00 €'], bonne: 0 },
+      { type: 'unique', question: 'La franchise se calcule sur :', options: ['le prix d’achat du matériel', 'le prix de location', 'le coût de réparation'], bonne: 0 },
+      { type: 'unique', question: 'La franchise (10 % de 22 000 €) vaut :', options: ['2 200,00 €', '5 000,00 €', '3 200,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le plafond de la franchise est de :', options: ['5 000 €', '2 200 €', '10 000 €'], bonne: 0 },
+      { type: 'unique', question: 'Avec assurance, le client paie :', options: ['la franchise seulement', 'la totalité', 'rien'], bonne: 0 },
+      { type: 'unique', question: 'Sans assurance, le client paie :', options: ['la totalité de la remise en état', 'la franchise', 'la moitié'], bonne: 0 },
+      { type: 'unique', question: 'TERRABAT doit réellement payer :', options: ['2 720,00 € HT', '2 200,00 € HT', '0 €'], bonne: 0 },
+      { type: 'unique', question: 'L’assurance aurait fait économiser :', options: ['520,00 €', '2 720,00 €', '2 200,00 €'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Le coût réel', 'La franchise', 'Le cas TERRABAT'],
+      zones: [
+        { libelle: 'Vérin neuf à 2 200 €', etiquetteIndex: 0 },
+        { libelle: 'Main-d’œuvre de 520 €', etiquetteIndex: 0 },
+        { libelle: '10 % du prix d’achat', etiquetteIndex: 1 },
+        { libelle: 'Coût total de 2 720 € HT', etiquetteIndex: 0 },
+        { libelle: 'Plafonnée à 5 000 €', etiquetteIndex: 1 },
+        { libelle: 'Pas d’assurance souscrite', etiquetteIndex: 2 },
+        { libelle: 'Vaut 2 200 € ici', etiquetteIndex: 1 },
+        { libelle: 'Paie la totalité : 2 720 €', etiquetteIndex: 2 },
+        { libelle: '520 € d’économie manquée', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez le coût de la main-d'œuvre, puis le coût total de la remise en état HT.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Main-d'œuvre = 8 heures × 65 €. Coût total = pièce + main-d'œuvre.",
+        tableau: { colonnes: ['Poste', 'Calcul posé', 'Montant HT'], lignes: [
+          ['Pièce (vérin neuf)', 'Relevé sur le devis', '2 200,00 €'],
+          ['Main-d’œuvre', '8 × 65', '520,00 €'],
+          ['Coût total remise en état HT', '2 200 + 520', '2 720,00 €'],
+        ] },
+        complement: "1 point pour la main-d'œuvre (520 €), 2 points pour le coût total (2 720 €). Vérification : 8 × 65 = 520 et 2 200 + 520 = 2 720. Le calcul doit être posé. Un élève qui oublie d'ajouter la pièce et ne retient que 520 € n'a chiffré que la main-d'œuvre." },
+
+      { intitule: "Calculez le montant TTC de la remise en état.", documents: ['Documents 1 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "TVA à 20 % sur le coût HT, puis addition.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Coût HT', 'Reporté de l’annexe 1', '2 720,00 €'],
+          ['TVA 20 %', '2 720,00 × 0,20', '544,00 €'],
+          ['Coût TTC', '2 720,00 + 544,00', '3 264,00 €'],
+        ] },
+        complement: "1 point pour le HT reporté, 1 point pour la TVA, 1 point pour le TTC. Vérification : 2 720 × 0,20 = 544 et 2 720 + 544 = 3 264. Un élève qui applique la TVA sur la seule pièce ou la seule main-d'œuvre se trompe d'assiette." },
+
+      { intitule: "Calculez le montant de la franchise à partir du prix d'achat de la mini-pelle.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "Franchise = 10 % du prix d'achat, dans la limite de 5 000 €.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Prix d’achat de la mini-pelle', 'Relevé au contrat', '22 000,00 €'],
+          ['Franchise (10 %)', '22 000 × 0,10', '2 200,00 €'],
+          ['Plafond de 5 000 € dépassé ?', '2 200 < 5 000', 'Non, plafond respecté'],
+        ] },
+        complement: "1 point pour la lecture du prix d'achat, 2 points pour le calcul de la franchise (2 200 €), 1 point pour la vérification du plafond. La franchise de 2 200 € est inférieure au plafond de 5 000 € : c'est donc bien 2 200 € qui s'appliquerait. Un élève qui retient 5 000 € (le plafond) sans comparer se trompe : le plafond est un maximum, pas un montant automatique." },
+
+      { intitule: "Déterminez ce que le client aurait payé avec l'assurance, puis sans l'assurance.", documents: ['Documents 1, 2 et 3', 'Annexe 4'], bareme: 4,
+        reponse: "Avec l'assurance, le client paie la franchise (2 200 €). Sans elle, il paie la totalité (2 720 €).",
+        tableau: { colonnes: ['Situation', 'Ce que paie le client', 'Montant HT'], lignes: [
+          ['Si assurance souscrite', 'La franchise seulement', '2 200,00 €'],
+          ['Si assurance non souscrite', 'La totalité de la remise en état', '2 720,00 €'],
+        ] },
+        complement: "2 points par ligne. La distinction est le cœur de la mission : avec assurance, la charge est plafonnée à la franchise ; sans assurance, elle est totale. Un élève qui met le même montant dans les deux cases n'a pas compris le mécanisme de l'assurance décrit au document 3." },
+
+      { intitule: "Indiquez le montant que TERRABAT doit réellement payer, et de combien l'assurance l'aurait allégé.", documents: ['Documents 2 et 3', 'Annexe 5'], bareme: 4,
+        reponse: "TERRABAT n'avait pas l'assurance : il paie la totalité, 2 720 € HT. Avec l'assurance, il n'aurait payé que 2 200 € : l'assurance lui aurait fait économiser 520 €.",
+        tableau: { colonnes: ['Question', 'Réponse'], lignes: [
+          ['TERRABAT a-t-il souscrit l’assurance ?', 'Non (voir contrat)'],
+          ['Montant HT réellement dû par TERRABAT', '2 720,00 €'],
+          ['Économie manquée faute d’assurance', '2 720 − 2 200 = 520,00 €'],
+        ] },
+        complement: "1 point pour la réponse « non », 1,5 point pour le montant réel (2 720 €), 1,5 point pour l'économie manquée (520 €). Le raisonnement complet : le client n'ayant pas pris l'assurance, la franchise ne s'applique pas ; il paie tout. La comparaison avec le cas assuré donne l'économie perdue. C'est cette économie de 520 € qui illustre l'intérêt de l'assurance." },
+
+      { intitule: "Expliquez, en deux phrases, l'intérêt de souscrire l'assurance bris de machine.", documents: ['Document 3', 'Annexe 6'], bareme: 2,
+        reponse: "L'assurance bris de machine limite la charge du client à une franchise plafonnée, au lieu de le laisser payer la totalité d'une réparation. Pour le prix d'une prime modeste, elle protège le client contre un coût qui peut être très élevé en cas de gros dommage.",
+        complement: "1 point pour l'idée que l'assurance plafonne la charge à la franchise. 1 point pour la protection contre un coût potentiellement lourd. Accepter l'exemple chiffré du cas TERRABAT (520 € économisés) comme illustration. Reprendre l'esprit de la citation du document 3. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 7 - Traiter la contestation et relancer
+// Bloc 2 : suivre les ventes. Classe de Terminale. Spiralaire : CROC.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Analysez la contestation du client, préparez votre réponse avec la méthode CROC en vous appuyant sur les preuves, puis rédigez le courriel de réponse et de relance.",
+    contexte:
+      "Nous sommes le 20 juillet 2026. La facture de la location prolongée (2 178 € TTC) et celle de la remise en état du vérin (3 264 € TTC) ont été envoyées à TERRABAT. Nicolas Perrin vient de répondre par courriel, et il conteste : selon lui, le vérin était déjà faible au départ, il refuse de payer la réparation. Il ne conteste pas la location, seulement les 3 264 € de la remise en état. Fabrice Delorme vous confie le dossier : « Vous avez toutes les preuves en main. L'état des lieux de départ, celui de retour, la comparaison. Répondez-lui fermement mais correctement, et relancez le paiement. » Vous allez réutiliser la méthode CROC, déjà vue en prospection et en réclamation, cette fois pour répondre à une contestation.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.3 — Traiter les retours et les réclamations',
+      detail: "C2.3.1 Identifier l'objet de la contestation. C2.3.2 Apporter une réponse argumentée et relancer le règlement.",
+    },
+    documents: [
+      { numero: 1, titre: "Courriel de contestation de Nicolas Perrin", texte: [
+        { mailLecture: {
+          de: 'n.perrin@terrabat.fr',
+          a: 'agence.nanterre@kiloutou.fr',
+          objet: 'Facture remise en état — je conteste',
+          corps: [
+            'Reçu le 20 juillet 2026 à 09 h 40.',
+            'Bonjour,',
+            "Je viens de recevoir vos deux factures. La location, d'accord, je la paie sans problème.",
+            "Mais la réparation du vérin à plus de 3 000 €, non. Ce vérin était déjà faible quand vous me l'avez livré, il forçait un peu dès le premier jour. Ce n'est pas à moi de payer une pièce qui était déjà en bout de course.",
+            "Je refuse donc de régler la remise en état. Merci de m'envoyer une facture corrigée sans ce montant.",
+            'Cordialement,',
+            'Nicolas Perrin, gérant, SAS TERRABAT',
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Le dossier de preuves (rappel des missions précédentes)", texte: [
+        { logoEntete: 'KILOUTOU — Dossier MP18-042, éléments de preuve' },
+        { intertitre: 'Ce que disent les documents établis pendant la location' },
+        { tableau: { colonnes: ['Preuve', 'Établie en', 'Ce qu’elle démontre'], lignes: [
+          ['État des lieux de départ', 'Mission 2 (19 juin)', 'Vérin « en parfait état de fonctionnement », signé au départ'],
+          ['État des lieux de retour', 'Mission 5 (3 juillet)', 'Vérin « tordu, fuite d’huile » au retour'],
+          ['Comparaison départ / retour', 'Mission 5', 'Trois conditions de responsabilité réunies'],
+          ['Contrat signé', 'Mission 1', 'Assurance bris de machine refusée par le client'],
+        ] } },
+        { bulleConseil: { texte: ["Le client affirme que le vérin était faible au départ. Or l'état des lieux de départ, qu'il a lui-même accepté, indique « en parfait état ». C'est votre argument principal."] } },
+      ] },
+
+      { numero: 3, titre: "Rappel des montants en jeu", texte: [
+        { logoEntete: 'KILOUTOU — Récapitulatif des sommes dues par TERRABAT' },
+        { intertitre: 'Ce que doit le client' },
+        { tableau: { colonnes: ['Facture', 'Objet', 'Montant TTC', 'Contesté ?'], lignes: [
+          ['FA-2026-9120', 'Location 11 jours', '2 178,00 €', 'Non, accepté'],
+          ['FA-2026-9155', 'Remise en état du vérin', '3 264,00 €', 'Oui, contesté'],
+          ['Total dû', '', '5 442,00 €', ''],
+        ] } },
+        { paragraphes: [
+          "Le client accepte de payer la location. Seule la remise en état est contestée. C'est donc sur ce point, et seulement lui, que porte votre réponse.",
+        ] },
+      ] },
+
+      { numero: 4, titre: "Procédure : répondre à une contestation avec la méthode CROC", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: 'Répondre à une contestation par écrit' },
+            { type: 'paragraphe', texte: "Vous connaissez la méthode CROC (Contact, Raison, Objectif, Conclusion). Vous l'avez utilisée pour prospecter et pour traiter une réclamation. Ici, vous répondez à une contestation : le client refuse de payer. La trame reste la même, l'objectif change." },
+            { type: 'tableau', entetes: ['Étape', 'Ce qu’on écrit face à une contestation'], lignes: [
+              ['C — Contact', "Saluer, remercier le client de son message, rester courtois"],
+              ['R — Raison', "Reformuler sa contestation pour montrer qu'on l'a comprise"],
+              ['O — Objectif', "Répondre avec des preuves, puis relancer le paiement"],
+              ['C — Conclusion', "Rappeler le montant dû, le délai, et rester ouvert au dialogue"],
+            ] },
+            { type: 'sousTitre', texte: 'Répondre avec des faits, pas avec de l’émotion' },
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "On ne dit jamais au client qu'il ment. On oppose des documents." },
+              { numero: '2', texte: "La meilleure réponse à « le vérin était faible » est l'état des lieux de départ signé." },
+              { numero: '3', texte: "On reste ferme sur le fond, courtois sur la forme." },
+            ] },
+            { type: 'citation', texte: "Face à une contestation, un document signé vaut mieux que dix arguments. C'est pourquoi l'état des lieux de départ est si important.", auteur: 'Guide de la relation client, Kiloutou' },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Analyser la contestation",
+        contexte: "Avant de répondre, il faut bien cerner ce que le client conteste, et ce qu'il accepte.",
+        questions: [
+          { numero: 1, consigne: "Identifiez précisément ce que le client conteste et ce qu'il accepte de payer.", ressources: "Documents 1 et 3, annexe 1. Compétence C2.3.1 — Identifier l'objet de la contestation.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Retrouvez la preuve qui contredit directement l'argument du client.", ressources: 'Documents 1 et 2, annexe 2. Compétence C2.3.1 — Identifier l’objet de la contestation.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Préparer la réponse avec CROC",
+        contexte: "La méthode CROC, encore elle. Ici pour répondre fermement mais correctement à un refus de payer.",
+        questions: [
+          { numero: 3, consigne: "Complétez la fiche CROC de votre réponse à la contestation.", ressources: 'Documents 1, 2 et 4, annexe 3. Compétence C2.3.2 — Apporter une réponse argumentée.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Rédigez l'argument principal qui répond à l'objection « le vérin était faible ».", ressources: 'Documents 2 et 4, annexe 4. Compétence C2.3.2 — Apporter une réponse argumentée.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Répondre et relancer",
+        contexte: "Le courriel doit clore la contestation et rappeler ce qui reste dû, sans agressivité.",
+        questions: [
+          { numero: 5, consigne: "Rédigez le courriel de réponse et de relance au client TERRABAT.", ressources: 'Documents 2, 3 et 4, annexe 5. Compétence C2.3.2 — Relancer le règlement.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi il ne faut jamais accuser le client de mentir.", ressources: 'Document 4, annexe 6. Compétence C2.3.2 — Relancer le règlement.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Ce qui est contesté', colonnes: ['Facture', 'Montant TTC', 'Accepté ou contesté ?'], nbLignes: 3, largeurs: ['40%', '28%', '32%'], prerempli: [
+        ['Location 11 jours', '2 178,00 €', ''],
+        ['Remise en état du vérin', '3 264,00 €', ''],
+        ['Montant réellement contesté', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe2', titre: "Annexe 2 — La preuve qui contredit le client", lignes: 4 },
+
+      { type: 'croc', id: 'annexe3', titre: 'Annexe 3 — Fiche CROC de la réponse' },
+
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — L'argument principal", lignes: 4 },
+
+      { type: 'mail', id: 'annexe5', titre: 'Annexe 5 — Courriel de réponse et de relance', deParDefaut: 'agence.nanterre@kiloutou.fr', aParDefaut: 'n.perrin@terrabat.fr' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi ne jamais accuser le client", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Identifier l'objet précis d'une contestation",
+      "Opposer une preuve documentaire à un argument oral",
+      "Réinvestir la méthode CROC pour répondre à un refus de payer",
+      "Relancer un règlement avec fermeté et courtoisie",
+    ],
+  },
+
+  synthese: {
+    titre: 'Traiter une contestation',
+    proposition: [
+      'Contact',
+      'Raison',
+      'Objectif',
+      'Conclusion',
+      'Reformuler la contestation',
+      'Opposer une preuve',
+      "L'état des lieux signé",
+      'Relancer le paiement',
+      'Ferme sur le fond',
+      'Courtois sur la forme',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La réponse à la contestation',
+      enfants: [
+        { id: 'croc', texte: 'La méthode CROC', enfants: [
+          { id: 'c1', texte: null, reponse: 'Contact' },
+          { id: 'c2', texte: null, reponse: 'Raison' },
+          { id: 'c3', texte: null, reponse: 'Objectif' },
+          { id: 'c4', texte: null, reponse: 'Conclusion' },
+        ] },
+        { id: 'arg', texte: "L'argumentation", enfants: [
+          { id: 'a1', texte: null, reponse: 'Reformuler la contestation' },
+          { id: 'a2', texte: null, reponse: 'Opposer une preuve' },
+          { id: 'a3', texte: null, reponse: "L'état des lieux signé" },
+        ] },
+        { id: 'sui', texte: 'La suite', enfants: [
+          { id: 's1', texte: null, reponse: 'Relancer le paiement' },
+        ] },
+        { id: 'ton', texte: 'Le ton', enfants: [
+          { id: 't1', texte: null, reponse: 'Ferme sur le fond' },
+          { id: 't2', texte: null, reponse: 'Courtois sur la forme' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier l'objet d'une contestation", indicateurs: [
+        { niveau: 'novice', description: "Je ne distingue pas ce qui est contesté de ce qui est accepté." },
+        { niveau: 'debrouille', description: "Je vois que le client refuse une des deux factures." },
+        { niveau: 'averti', description: "Je précise le montant exact contesté." },
+        { niveau: 'expert', description: "Je relie la contestation à l'argument du client." },
+      ] },
+      { id: 'c2', intitule: "Opposer une preuve à un argument", indicateurs: [
+        { niveau: 'novice', description: "Je réponds par une affirmation sans preuve." },
+        { niveau: 'debrouille', description: "Je cite un document du dossier." },
+        { niveau: 'averti', description: "J'oppose l'état des lieux de départ à l'argument du client." },
+        { niveau: 'expert', description: "Je m'appuie sur le fait que le client a accepté ce document au départ." },
+      ] },
+      { id: 'c3', intitule: "Répondre et relancer", indicateurs: [
+        { niveau: 'novice', description: "Mon courriel est agressif ou trop mou." },
+        { niveau: 'debrouille', description: "Je réponds mais j'oublie de relancer le paiement." },
+        { niveau: 'averti', description: "Je réponds avec preuve et je rappelle le montant dû." },
+        { niveau: 'expert', description: "Je reste ferme sur le fond et courtois sur la forme." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Contestation', definition: "Refus du client de payer tout ou partie d'une facture, qu'il juge injustifiée." },
+      { terme: 'Objet de la contestation', definition: "Le point précis que le client refuse de payer." },
+      { terme: 'Preuve', definition: "Document qui établit un fait de manière incontestable." },
+      { terme: 'État des lieux de départ', definition: "Constat signé de l'état du matériel au départ, preuve principale ici." },
+      { terme: 'Argument', definition: "Raison avancée pour appuyer une position." },
+      { terme: 'Méthode CROC', definition: "Trame d'entretien : Contact, Raison, Objectif, Conclusion." },
+      { terme: 'Relance', definition: "Demande de règlement adressée à un client qui n'a pas encore payé." },
+      { terme: 'Fermeté', definition: "Maintien clair de sa position sur le fond du dossier." },
+      { terme: 'Courtoisie', definition: "Politesse maintenue dans la forme, même en cas de désaccord." },
+      { terme: 'Montant contesté', definition: "Partie de la facture que le client refuse de régler. Ici, 3 264 €." },
+      { terme: 'Montant accepté', definition: "Partie de la facture que le client accepte de payer. Ici, 2 178 €." },
+      { terme: 'Dialogue', definition: "Échange maintenu ouvert pour préserver la relation commerciale." },
+    ],
+    flashcards: [
+      { recto: "Que conteste Nicolas Perrin ?", verso: "La facture de remise en état du vérin, 3 264 € TTC." },
+      { recto: "Que accepte-t-il de payer ?", verso: 'La location, 2 178 € TTC.' },
+      { recto: "Quel est l'argument du client ?", verso: 'Le vérin aurait été « faible » dès le départ.' },
+      { recto: 'Quelle preuve contredit cet argument ?', verso: "L'état des lieux de départ, qui indique « vérin en parfait état »." },
+      { recto: 'Pourquoi cette preuve est-elle solide ?', verso: 'Parce que le client l’a acceptée au moment de la livraison.' },
+      { recto: 'Que signifie CROC ?', verso: 'Contact, Raison, Objectif, Conclusion.' },
+      { recto: 'Comment répond-on à une contestation ?', verso: 'Avec des faits et des documents, pas avec de l’émotion.' },
+      { recto: 'Faut-il dire au client qu’il ment ?', verso: 'Jamais. On oppose des documents, sans l’accuser.' },
+      { recto: 'Quel est le total dû par TERRABAT ?', verso: '5 442 € TTC : 2 178 de location plus 3 264 de réparation.' },
+      { recto: 'Quel ton adopter ?', verso: 'Ferme sur le fond, courtois sur la forme.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Nicolas Perrin conteste :', options: ['la remise en état du vérin', 'la location', 'les deux factures'], bonne: 0 },
+      { type: 'unique', question: 'Le montant contesté est de :', options: ['3 264,00 €', '2 178,00 €', '5 442,00 €'], bonne: 0 },
+      { type: 'unique', question: "L'argument du client est que le vérin :", options: ['était déjà faible au départ', 'n’a jamais été livré', 'a été volé'], bonne: 0 },
+      { type: 'unique', question: 'La preuve qui le contredit est :', options: ["l'état des lieux de départ", 'la facture', 'le contrat de location'], bonne: 0 },
+      { type: 'unique', question: "L'état de départ indique que le vérin était :", options: ['en parfait état', 'faible', 'tordu'], bonne: 0 },
+      { type: 'unique', question: 'Cette preuve est solide car le client :', options: ["l'a acceptée au départ", 'l’a rédigée', 'l’ignore'], bonne: 0 },
+      { type: 'unique', question: 'Face à une contestation, on répond :', options: ['avec des documents', 'avec de la colère', 'en cédant'], bonne: 0 },
+      { type: 'unique', question: 'Faut-il accuser le client de mentir ?', options: ['Non, jamais', 'Oui, clairement', 'Seulement par écrit'], bonne: 0 },
+      { type: 'unique', question: 'Le total dû par TERRABAT est de :', options: ['5 442,00 €', '3 264,00 €', '2 178,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le bon ton est :', options: ['ferme sur le fond, courtois sur la forme', 'agressif', 'hésitant'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Étape de CROC', "L'argumentation", 'Le bon comportement'],
+      zones: [
+        { libelle: 'Saluer et remercier du message', etiquetteIndex: 0 },
+        { libelle: 'Reformuler la contestation', etiquetteIndex: 0 },
+        { libelle: "Opposer l'état des lieux de départ", etiquetteIndex: 1 },
+        { libelle: 'Rappeler le montant dû et le délai', etiquetteIndex: 0 },
+        { libelle: 'S’appuyer sur un document signé', etiquetteIndex: 1 },
+        { libelle: 'Ne jamais dire au client qu’il ment', etiquetteIndex: 2 },
+        { libelle: 'Le vérin était en parfait état au départ', etiquetteIndex: 1 },
+        { libelle: 'Rester ferme sur le fond', etiquetteIndex: 2 },
+        { libelle: 'Rester courtois sur la forme', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Identifiez précisément ce que le client conteste et ce qu'il accepte de payer.", documents: ['Documents 1 et 3', 'Annexe 1'], bareme: 3,
+        reponse: "Le client accepte la location et conteste uniquement la remise en état.",
+        tableau: { colonnes: ['Facture', 'Montant TTC', 'Accepté ou contesté ?'], lignes: [
+          ['Location 11 jours', '2 178,00 €', 'Accepté'],
+          ['Remise en état du vérin', '3 264,00 €', 'Contesté'],
+          ['Montant réellement contesté', '3 264,00 €', 'Contesté'],
+        ] },
+        complement: "1 point par ligne. Le point à faire ressortir : la contestation ne porte que sur 3 264 €, pas sur la totalité des 5 442 €. Un élève qui écrit que le client conteste tout n'a pas lu attentivement le courriel : Nicolas Perrin dit clairement « la location, d'accord, je la paie »." },
+
+      { intitule: "Retrouvez la preuve qui contredit directement l'argument du client.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 3,
+        reponse: "Le client affirme que le vérin était « faible » dès le départ. L'état des lieux de départ, établi en mission 2 et accepté par le client, indique au contraire « vérin en parfait état de fonctionnement ». Ce document signé contredit directement son argument.",
+        complement: "1 point pour l'identification de l'état des lieux de départ comme preuve. 1 point pour la citation exacte « en parfait état ». 1 point pour l'idée que le client l'a accepté au départ, ce qui rend la preuve incontestable. Un élève qui cite l'état de retour se trompe : c'est le départ qui contredit l'argument du client. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Complétez la fiche CROC de votre réponse à la contestation.", documents: ['Documents 1, 2 et 4', 'Annexe 3'], bareme: 4,
+        reponse: "La fiche CROC structure une réponse ferme et courtoise.",
+        tableau: { colonnes: ['Étape', 'Contenu attendu'], lignes: [
+          ['C — Contact', "Bonjour Monsieur Perrin, je vous remercie de votre message et j'ai bien noté votre désaccord."],
+          ['R — Raison', "Vous contestez la facture de remise en état du vérin, estimant qu'il était déjà faible au départ."],
+          ['O — Objectif', "L'état des lieux de départ, que vous avez accepté le 22 juin, indique « vérin en parfait état ». La dégradation constatée au retour est donc survenue pendant la location. La réparation reste à votre charge, faute d'assurance."],
+          ['C — Conclusion', "Je vous confirme le montant dû de 5 442 € TTC et vous remercie de procéder au règlement sous huitaine. Je reste à votre disposition."],
+        ] },
+        complement: "1 point par étape. Le Contact doit rester courtois malgré le refus. La Raison reformule sans juger. L'Objectif est le cœur : il oppose la preuve. La Conclusion rappelle le montant et le délai. Accepter les variantes qui respectent le sens de chaque étape." },
+
+      { intitule: "Rédigez l'argument principal qui répond à l'objection « le vérin était faible ».", documents: ['Documents 2 et 4', 'Annexe 4'], bareme: 4,
+        reponse: "L'argument s'appuie sur l'état des lieux de départ signé.",
+        complement: "Réponse attendue, dans l'esprit : « Lors de la mise à disposition, le 22 juin, un état des lieux de départ a été établi et accepté. Il indique que le vérin de bras était en parfait état de fonctionnement. Si le vérin avait été faible, cela aurait été noté à ce moment-là. Or rien n'a été signalé. La dégradation constatée au retour est donc survenue pendant votre location, et la réparation vous incombe. » Barème : 1 point pour s'appuyer sur l'état des lieux de départ. 1 point pour la citation « parfait état ». 1 point pour l'argument « si le vérin avait été faible, ce serait écrit ». 1 point pour la conclusion logique : la dégradation a eu lieu pendant la location. Refuser toute réponse qui traite le client de menteur. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Rédigez le courriel de réponse et de relance au client TERRABAT.", documents: ['Documents 2, 3 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "Le courriel répond à la contestation avec la preuve, puis relance le paiement des 5 442 €.",
+        complement: "Proposition de corrigé : Objet : Réponse à votre contestation — factures FA-2026-9120 et 9155. Bonjour Monsieur Perrin, je vous remercie de votre message et j'ai bien pris connaissance de votre désaccord concernant la remise en état du vérin. Je comprends votre position, mais je dois vous apporter les éléments suivants. L'état des lieux de départ, établi et accepté le 22 juin, mentionne un vérin « en parfait état de fonctionnement ». Aucune faiblesse n'a été signalée à la mise à disposition. La dégradation ayant été constatée au retour, elle est survenue pendant votre location, et la réparation reste à votre charge, l'assurance bris de machine n'ayant pas été souscrite. Le montant total dû s'élève donc à 5 442 € TTC (2 178 € de location et 3 264 € de remise en état). Je vous remercie de bien vouloir procéder au règlement sous huitaine. Je reste naturellement disponible pour en échanger. Cordialement, [Prénom Nom], agence de Nanterre, Kiloutou. Barème : 1 point pour l'objet et la reformulation de la contestation. 1 point pour l'argument fondé sur l'état des lieux de départ. 1 point pour le rappel du montant total dû (5 442 €). 1 point pour la relance (règlement sous huitaine) et le ton courtois. Retirer 1 point si le montant total n'est pas rappelé. Refuser tout courriel agressif. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi il ne faut jamais accuser le client de mentir.", documents: ['Document 4', 'Annexe 6'], bareme: 2,
+        reponse: "Accuser le client de mentir le braquerait et pourrait rompre la relation commerciale, alors qu'on cherche à être payé tout en gardant le client. Il est bien plus efficace d'opposer calmement un document signé : les faits parlent d'eux-mêmes, sans qu'il soit besoin d'attaquer la personne.",
+        complement: "1 point pour l'idée que l'accusation braque le client et menace la relation. 1 point pour l'efficacité supérieure de la preuve documentaire. Reprendre l'esprit de la citation du document 4 : « un document signé vaut mieux que dix arguments ». Accepter toute formulation exacte." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 8 - Analyser la rentabilite du client (cloture)
+// Bloc 2 : suivre les ventes. Classe de Terminale. Spiralaire : D.A.D.O.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Établissez le bilan chiffré de l'affaire TERRABAT, calculez les indicateurs de rentabilité du client, puis rédigez une note de synthèse à la responsable d'agence avec la méthode D.A.D.O.",
+    contexte:
+      "Nous sommes le 4 août 2026. TERRABAT a finalement réglé l'intégralité de ses factures, location et remise en état comprises, après votre réponse à sa contestation. L'affaire est close. Céline Fournier, la responsable de l'agence de Nanterre, vous demande d'en faire le bilan : « Ce client nous a rapporté du chiffre d'affaires, mais il nous a aussi donné du travail. Je veux savoir si TERRABAT est un bon client, et si on doit continuer avec lui. Faites-moi une note de synthèse. » Vous allez rassembler tous les chiffres de l'affaire, calculer quelques indicateurs, et rendre compte avec la méthode D.A.D.O., déjà utilisée pour rendre compte à un responsable.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.4 — Rendre compte du suivi et analyser la performance',
+      detail: "C2.4.1 Rassembler et présenter les indicateurs de suivi. C2.4.2 Analyser la performance et rendre compte.",
+    },
+    documents: [
+      { numero: 1, titre: "Récapitulatif de l'affaire TERRABAT", texte: [
+        { logoEntete: 'KILOUTOU — Dossier TERRABAT, synthèse de l’affaire' },
+        { intertitre: 'Tout ce qui s’est passé, mission par mission' },
+        { tableau: { colonnes: ['Étape', 'Ce qui s’est passé', 'Montant HT'], lignes: [
+          ['Location initiale (7 j)', 'Mini-pelle, plaque vibrante, groupe électrogène', '1 155,00 €'],
+          ['Prolongation (4 j)', 'Chantier retardé par la pluie', '660,00 €'],
+          ['Location totale (11 j)', 'Facture FA-2026-9120', '1 815,00 €'],
+          ['Remise en état du vérin', 'Facture FA-2026-9155', '2 720,00 €'],
+          ['Total facturé au client HT', '', '4 535,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["Tous ces chiffres viennent des missions précédentes. La location a rapporté 1 815 € HT, la remise en état 2 720 € HT."] } },
+      ] },
+
+      { numero: 2, titre: "Ce que l'affaire a coûté à Kiloutou", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / rentabilite',
+          marque: 'KiloPro — Analyse de rentabilité',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: 'Distinguer le chiffre d’affaires de la marge' },
+            { type: 'paragraphe', texte: "Le chiffre d'affaires (total facturé au client) n'est pas le bénéfice. Il faut en retirer ce que l'affaire a coûté à l'entreprise." },
+            { type: 'tableau', entetes: ['Recette', 'Coût pour Kiloutou', 'Marge'], lignes: [
+              ['Location : 1 815 € HT', "Faible (le matériel est déjà amorti)", 'La location est la vraie source de marge'],
+              ['Remise en état : 2 720 € HT', 'Réparation réelle : 2 720 € HT', "Neutre : la réparation est refacturée à son coût"],
+            ] },
+            { type: 'paragraphe', texte: "La remise en état a été refacturée au client exactement à son coût : elle ne rapporte donc pas de marge à Kiloutou, elle rembourse seulement la réparation. La marge de l'affaire vient de la location." },
+            { type: 'sousTitre', texte: 'Un point important' },
+            { type: 'citation', texte: "Un incident ne rapporte pas d'argent, même quand il est refacturé. Il mobilise l'atelier, immobilise le matériel, et prend du temps commercial. Un bon client est d'abord un client sans incident.", auteur: 'Guide de la rentabilité, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: "Grille de lecture : qu'est-ce qu'un bon client ?", texte: [
+        { logoEntete: 'KILOUTOU — Critères d’appréciation d’un client professionnel' },
+        { intertitre: 'Les indicateurs à regarder' },
+        { tableau: { colonnes: ['Indicateur', 'Comment le lire'], lignes: [
+          ['Chiffre d’affaires', 'Plus il est élevé, plus le client compte pour l’agence'],
+          ['Taux d’incident', 'Part des matériels endommagés. Plus il est bas, mieux c’est'],
+          ['Règlement', 'Le client paie-t-il, et dans les délais ?'],
+          ['Relation', 'Le client est-il conciliant ou source de litiges ?'],
+        ] } },
+        { bulleConseil: { texte: ["Un bon client cumule un chiffre d'affaires correct, peu d'incidents, un règlement effectué, et une relation apaisée. Pesez le pour et le contre pour TERRABAT."] } },
+      ] },
+
+      { numero: 4, titre: "Demande de Céline Fournier", texte: [
+        { noteDirection: {
+          titre: 'Ce que je veux dans votre note',
+          signature: 'Céline Fournier, responsable de l’agence de Nanterre',
+          intro: "L'affaire TERRABAT est close, le client a tout payé. Faites-moi le bilan pour que je décide si on continue avec lui.",
+          paragraphe: "Rendez-moi une note claire, avec la méthode D.A.D.O. que vous connaissez (Date, Auteur, Destinataire, Objet, puis le corps). Donnez-moi les chiffres, un avis argumenté, et une recommandation. Je veux savoir, en une lecture, si TERRABAT est un client à conserver.",
+          puces: [
+            "Rappelez le chiffre d'affaires généré par l'affaire.",
+            "Calculez le taux d'incident sur cette location.",
+            "Pesez les points positifs et les points négatifs du client.",
+            "Terminez par une recommandation nette : garder ce client, ou non.",
+          ],
+          conclusion: "Une bonne note de synthèse tient sur une demi-page et se termine par une décision. À vous de jouer.",
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Établir le bilan chiffré",
+        contexte: "On rassemble d'abord tous les chiffres de l'affaire, éparpillés dans les missions précédentes.",
+        questions: [
+          { numero: 1, consigne: "Récapitulez le chiffre d'affaires généré par l'affaire TERRABAT.", ressources: "Document 1, annexe 1. Compétence C2.4.1 — Rassembler les indicateurs.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Expliquez pourquoi la remise en état ne rapporte pas de marge à Kiloutou.", ressources: 'Document 2, annexe 2. Compétence C2.4.1 — Rassembler les indicateurs.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Calculer les indicateurs",
+        contexte: "Un chiffre d'affaires seul ne dit pas si le client est bon. On calcule un indicateur de risque.",
+        questions: [
+          { numero: 3, consigne: "Calculez le taux d'incident de la location (matériels endommagés sur matériels loués).", ressources: 'Documents 1 et 3, annexe 3. Compétence C2.4.1 — Rassembler les indicateurs.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Dressez le bilan des points positifs et négatifs du client TERRABAT.", ressources: 'Documents 2 et 3, annexe 4. Compétence C2.4.2 — Analyser la performance.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Rendre compte avec D.A.D.O.",
+        contexte: "La note de synthèse à la responsable. Claire, chiffrée, et se terminant par une décision.",
+        questions: [
+          { numero: 5, consigne: "Rédigez la note de synthèse à Céline Fournier avec la méthode D.A.D.O.", ressources: 'Documents 1, 3 et 4, annexe 5. Compétence C2.4.2 — Rendre compte.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Formulez votre recommandation finale et justifiez-la en deux phrases.", ressources: 'Documents 2, 3 et 4, annexe 6. Compétence C2.4.2 — Rendre compte.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Chiffre d'affaires de l'affaire", colonnes: ['Poste', 'Calcul à poser', 'Montant HT'], nbLignes: 3, largeurs: ['40%', '32%', '28%'], prerempli: [
+        ['Location totale (11 jours)', '(facture FA-2026-9120)', '1 815,00 €'],
+        ['Remise en état', '(facture FA-2026-9155)', '2 720,00 €'],
+        ['Chiffre d’affaires total HT', '1 815 + 2 720 =', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe2', titre: "Annexe 2 — Pourquoi la remise en état ne rapporte pas de marge", lignes: 4 },
+
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Taux d'incident de la location", colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['40%', '34%', '26%'], prerempli: [
+        ['Matériels loués', '(mini-pelle, plaque, groupe)', '3'],
+        ['Matériels endommagés', '(le vérin de la mini-pelle)', '1'],
+        ['Taux d’incident', '1 ÷ 3 × 100 =', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Points positifs et négatifs', colonnes: ['Points positifs', 'Points négatifs'], nbLignes: 3, largeurs: ['50%', '50%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['', ''],
+        ['', ''],
+        ['', ''],
+      ] },
+
+      { type: 'courrier', id: 'annexe5', titre: 'Annexe 5 — Note de synthèse (méthode D.A.D.O.)' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Votre recommandation finale", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Rassembler les indicateurs financiers d'une affaire",
+      "Distinguer le chiffre d'affaires de la marge",
+      "Calculer un taux d'incident",
+      "Rendre compte par une note de synthèse avec la méthode D.A.D.O.",
+    ],
+  },
+
+  synthese: {
+    titre: "Analyser la rentabilité d'un client",
+    proposition: [
+      'Chiffre d’affaires',
+      'Marge',
+      'Taux d’incident',
+      'La location rapporte la marge',
+      'La réparation est neutre',
+      'Un incident coûte du temps',
+      'Note de synthèse',
+      'Méthode D.A.D.O.',
+      'Recommandation',
+      'Un bon client a peu d’incidents',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La rentabilité du client',
+      enfants: [
+        { id: 'chi', texte: 'Les chiffres', enfants: [
+          { id: 'c1', texte: null, reponse: 'Chiffre d’affaires' },
+          { id: 'c2', texte: null, reponse: 'Marge' },
+          { id: 'c3', texte: null, reponse: 'Taux d’incident' },
+        ] },
+        { id: 'ana', texte: "L'analyse", enfants: [
+          { id: 'a1', texte: null, reponse: 'La location rapporte la marge' },
+          { id: 'a2', texte: null, reponse: 'La réparation est neutre' },
+          { id: 'a3', texte: null, reponse: 'Un incident coûte du temps' },
+        ] },
+        { id: 'ren', texte: 'Rendre compte', enfants: [
+          { id: 'r1', texte: null, reponse: 'Note de synthèse' },
+          { id: 'r2', texte: null, reponse: 'Méthode D.A.D.O.' },
+          { id: 'r3', texte: null, reponse: 'Recommandation' },
+        ] },
+        { id: 'lec', texte: 'La leçon', enfants: [
+          { id: 'l1', texte: null, reponse: 'Un bon client a peu d’incidents' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Rassembler les indicateurs d'une affaire", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas où trouver les chiffres." },
+        { niveau: 'debrouille', description: "Je retrouve le chiffre d'affaires total." },
+        { niveau: 'averti', description: "Je distingue la location de la remise en état." },
+        { niveau: 'expert', description: "Je comprends que la réparation ne génère pas de marge." },
+      ] },
+      { id: 'c2', intitule: "Calculer un taux d'incident", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas ce qu'est un taux d'incident." },
+        { niveau: 'debrouille', description: "Je divise les incidents par les matériels loués." },
+        { niveau: 'averti', description: "Je convertis le résultat en pourcentage." },
+        { niveau: 'expert', description: "J'interprète ce taux pour juger le client." },
+      ] },
+      { id: 'c3', intitule: "Rendre compte par une note", indicateurs: [
+        { niveau: 'novice', description: "Ma note n'a pas de structure." },
+        { niveau: 'debrouille', description: "J'utilise l'en-tête D.A.D.O." },
+        { niveau: 'averti', description: "Je présente les chiffres et une analyse." },
+        { niveau: 'expert', description: "Je termine par une recommandation argumentée." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Chiffre d’affaires', definition: "Total des sommes facturées à un client sur une période ou une affaire." },
+      { terme: 'Marge', definition: "Ce qui reste du chiffre d'affaires une fois retirés les coûts. C'est le vrai gain." },
+      { terme: 'Rentabilité', definition: "Capacité d'une affaire ou d'un client à générer de la marge." },
+      { terme: 'Taux d’incident', definition: "Part des matériels endommagés parmi les matériels loués, en pourcentage." },
+      { terme: 'Incident', definition: "Dommage ou problème survenu pendant une location." },
+      { terme: 'Refacturation', definition: "Facturation au client d'un coût supporté par l'entreprise, sans marge." },
+      { terme: 'Note de synthèse', definition: "Document court qui résume une affaire et se termine par une recommandation." },
+      { terme: 'Méthode D.A.D.O.', definition: "En-tête d'une note : Date, Auteur, Destinataire, Objet." },
+      { terme: 'Recommandation', definition: "Avis final et argumenté proposé au décideur." },
+      { terme: 'Client conciliant', definition: "Client qui règle ses factures et cherche des solutions plutôt que le conflit." },
+      { terme: 'Matériel amorti', definition: "Matériel déjà rentabilisé par le loueur, dont la location dégage de la marge." },
+      { terme: 'Bilan', definition: "Récapitulatif chiffré des recettes et des points marquants d'une affaire." },
+    ],
+    flashcards: [
+      { recto: "Quel chiffre d'affaires l'affaire TERRABAT a-t-elle généré ?", verso: '4 535 € HT : 1 815 de location plus 2 720 de réparation.' },
+      { recto: "D'où vient la marge de l'affaire ?", verso: 'De la location. Le matériel est amorti, la location dégage de la marge.' },
+      { recto: 'Pourquoi la remise en état ne rapporte-t-elle rien ?', verso: 'Elle est refacturée exactement à son coût de réparation.' },
+      { recto: "Qu'est-ce que le taux d'incident ?", verso: 'La part des matériels endommagés parmi les matériels loués.' },
+      { recto: 'Quel est le taux d’incident de TERRABAT ?', verso: '33 % : un matériel endommagé sur trois loués.' },
+      { recto: 'Que signifie D.A.D.O. ?', verso: 'Date, Auteur, Destinataire, Objet.' },
+      { recto: "Un incident refacturé rapporte-t-il de l'argent ?", verso: "Non : il mobilise l'atelier et le temps commercial sans marge." },
+      { recto: "Qu'est-ce qu'un bon client ?", verso: 'Un client au CA correct, peu d’incidents, qui paie et reste conciliant.' },
+      { recto: 'TERRABAT a-t-il payé ses factures ?', verso: 'Oui, l’intégralité, après la réponse à sa contestation.' },
+      { recto: "Sur quoi se termine une note de synthèse ?", verso: 'Sur une recommandation claire.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Le chiffre d'affaires de l'affaire est de :", options: ['4 535 € HT', '1 815 € HT', '2 720 € HT'], bonne: 0 },
+      { type: 'unique', question: "La marge de l'affaire vient surtout :", options: ['de la location', 'de la réparation', 'de la caution'], bonne: 0 },
+      { type: 'unique', question: 'La remise en état est refacturée :', options: ['à son coût, sans marge', 'avec une grosse marge', 'gratuitement'], bonne: 0 },
+      { type: 'unique', question: "Le taux d'incident se calcule :", options: ['incidents ÷ matériels loués', 'matériels ÷ incidents', 'incidents × prix'], bonne: 0 },
+      { type: 'unique', question: 'Le taux d’incident de TERRABAT est de :', options: ['33 %', '100 %', '10 %'], bonne: 0 },
+      { type: 'unique', question: 'D.A.D.O. signifie :', options: ['Date, Auteur, Destinataire, Objet', 'Devis, Achat, Délai, Ordre', 'Dossier, Analyse, Données, Ordre'], bonne: 0 },
+      { type: 'unique', question: 'Un incident, même refacturé :', options: ['ne rapporte pas de marge', 'rapporte beaucoup', 'annule le contrat'], bonne: 0 },
+      { type: 'unique', question: 'Un bon client se juge :', options: ['sur plusieurs indicateurs', 'sur le seul CA', 'sur sa sympathie'], bonne: 0 },
+      { type: 'unique', question: 'TERRABAT a réglé :', options: ["l'intégralité de ses factures", 'seulement la location', 'rien'], bonne: 0 },
+      { type: 'unique', question: 'Une note de synthèse se termine par :', options: ['une recommandation', 'un calcul', 'une question'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Les chiffres', "L'analyse", 'Rendre compte'],
+      zones: [
+        { libelle: 'Chiffre d’affaires de 4 535 € HT', etiquetteIndex: 0 },
+        { libelle: 'Taux d’incident de 33 %', etiquetteIndex: 0 },
+        { libelle: 'Marge de 1 815 € HT', etiquetteIndex: 0 },
+        { libelle: 'La location dégage la marge', etiquetteIndex: 1 },
+        { libelle: 'La réparation est neutre', etiquetteIndex: 1 },
+        { libelle: 'Un incident coûte du temps', etiquetteIndex: 1 },
+        { libelle: 'En-tête Date, Auteur, Destinataire, Objet', etiquetteIndex: 2 },
+        { libelle: 'Une note d’une demi-page', etiquetteIndex: 2 },
+        { libelle: 'Une recommandation finale', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Récapitulez le chiffre d'affaires généré par l'affaire TERRABAT.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Chiffre d'affaires = location totale + remise en état.",
+        tableau: { colonnes: ['Poste', 'Calcul posé', 'Montant HT'], lignes: [
+          ['Location totale (11 jours)', 'Facture FA-2026-9120', '1 815,00 €'],
+          ['Remise en état', 'Facture FA-2026-9155', '2 720,00 €'],
+          ['Chiffre d’affaires total HT', '1 815 + 2 720', '4 535,00 €'],
+        ] },
+        complement: "1 point par ligne. Vérification : 1 815 + 2 720 = 4 535,00 € HT. Tous les chiffres proviennent des missions 4 et 6. Un élève qui oublie l'une des deux factures se trompe de chiffre d'affaires. C'est un simple travail de rassemblement, mais il conditionne toute l'analyse." },
+
+      { intitule: "Expliquez pourquoi la remise en état ne rapporte pas de marge à Kiloutou.", documents: ['Document 2', 'Annexe 2'], bareme: 3,
+        reponse: "La remise en état a été facturée au client exactement à son coût de réparation (2 720 € HT). Kiloutou encaisse 2 720 € mais dépense 2 720 € à l'atelier : la recette et le coût s'annulent. Elle ne rapporte donc pas de marge, elle ne fait que rembourser la réparation. La vraie marge de l'affaire vient de la location.",
+        complement: "1 point pour l'idée que la réparation est refacturée à son coût. 1 point pour la conséquence : recette et coût s'annulent, marge nulle. 1 point pour la conclusion : la marge vient de la location. Un élève qui croit que les 2 720 € sont du bénéfice n'a pas distingué chiffre d'affaires et marge. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Calculez le taux d'incident de la location.", documents: ['Documents 1 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "Taux d'incident = matériels endommagés ÷ matériels loués × 100.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Matériels loués', 'Mini-pelle, plaque, groupe', '3'],
+          ['Matériels endommagés', 'Le vérin de la mini-pelle', '1'],
+          ['Taux d’incident', '1 ÷ 3 × 100', '33 %'],
+        ] },
+        complement: "1 point par ligne (loués, endommagés), 2 points pour le calcul du taux. Vérification : 1 ÷ 3 = 0,333, soit environ 33 %. Accepter « 33 % » ou « 33,3 % ». Ce taux est élevé : un matériel sur trois a été endommagé. C'est un signal de vigilance sur ce client, même s'il a payé. Un élève qui calcule 3 ÷ 1 se trompe de sens du rapport." },
+
+      { intitule: "Dressez le bilan des points positifs et négatifs du client TERRABAT.", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 4,
+        reponse: "Le client cumule des points positifs et négatifs qu'il faut mettre en balance.",
+        tableau: { colonnes: ['Points positifs', 'Points négatifs'], lignes: [
+          ['A généré un chiffre d’affaires correct (4 535 € HT)', 'Taux d’incident élevé (33 %, un matériel endommagé)'],
+          ['A réglé l’intégralité de ses factures', 'A d’abord contesté la facture de réparation'],
+          ['A finalement accepté les preuves et payé', 'A mobilisé l’atelier et du temps commercial'],
+        ] },
+        complement: "0,5 point par élément pertinent, jusqu'à 4 points. Valoriser un bilan équilibré qui reconnaît à la fois le CA et le règlement (positifs) et l'incident, la contestation et le temps mobilisé (négatifs). Accepter d'autres formulations exactes. Un élève qui ne voit que les aspects positifs, ou que les négatifs, n'a pas dressé un vrai bilan." },
+
+      { intitule: "Rédigez la note de synthèse à Céline Fournier avec la méthode D.A.D.O.", documents: ['Documents 1, 3 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "La note reprend l'en-tête D.A.D.O., les chiffres clés, et une recommandation.",
+        complement: "Proposition de corrigé : Date : 4 août 2026. Auteur : [Prénom Nom], commercial sédentaire. Destinataire : Céline Fournier, responsable d'agence. Objet : Bilan de l'affaire TERRABAT et recommandation. Corps : L'affaire TERRABAT (contrat LOC-2026-8830) est close. Elle a généré un chiffre d'affaires de 4 535 € HT, dont 1 815 € de location et 2 720 € de remise en état, cette dernière refacturée à son coût. Le client a réglé l'intégralité de ses factures. Deux réserves : le taux d'incident est élevé (33 %, la mini-pelle est revenue avec un vérin endommagé), et le client a d'abord contesté la facture de réparation avant d'accepter nos preuves. Au bilan, TERRABAT est un client qui paie et reste dans le dialogue, mais dont la location a demandé une gestion soutenue. Barème : 1 point pour l'en-tête D.A.D.O. complet. 1 point pour le rappel du chiffre d'affaires (4 535 €). 1 point pour la mention du taux d'incident (33 %) et de la contestation. 1 point pour une note claire et concise se terminant sur une appréciation. Accepter les variantes qui respectent la structure et les chiffres. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Formulez votre recommandation finale et justifiez-la en deux phrases.", documents: ['Documents 2, 3 et 4', 'Annexe 6'], bareme: 2,
+        reponse: "Recommandation attendue, dans l'esprit : conserver le client TERRABAT, car il a réglé l'intégralité de ses factures et est resté dans le dialogue malgré la contestation. Il conviendra toutefois de lui proposer systématiquement l'assurance bris de machine lors des prochaines locations, afin d'éviter que ne se reproduise un litige sur une réparation.",
+        complement: "1 point pour une recommandation nette (garder le client, avec une réserve). 1 point pour une justification cohérente avec les chiffres du dossier (règlement effectué, mais taux d'incident et contestation à surveiller, d'où la proposition d'assurance). Accepter aussi une recommandation plus prudente si elle est bien argumentée. L'important est que la décision soit tranchée et justifiée, non laissée en suspens." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
   'kiloutou-m4': KILOUTOU_M4,
   'kiloutou-m5': KILOUTOU_M5,
+  'kiloutou-m6': KILOUTOU_M6,
+  'kiloutou-m7': KILOUTOU_M7,
+  'kiloutou-m8': KILOUTOU_M8,
   'chausson-m1': CHAUSSON_M1,
   'chausson-m2': CHAUSSON_M2,
   'chausson-m3': CHAUSSON_M3,

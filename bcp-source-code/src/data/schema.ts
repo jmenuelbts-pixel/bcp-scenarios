@@ -241,6 +241,9 @@ const KILOUTOU: Scenario = {
     'Suivre les contrats de location en cours',
     'Facturer la prolongation',
     'Controler la restitution et les degradations',
+    'Chiffrer la remise en etat et la franchise',
+    'Traiter la contestation et relancer',
+    'Analyser la rentabilite du client',
   ]),
 }
 
