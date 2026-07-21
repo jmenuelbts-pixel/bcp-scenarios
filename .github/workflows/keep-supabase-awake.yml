@@ -1,0 +1,25 @@
+name: Garder Supabase actif
+
+# Ce cron interroge la base BCP Scenarios plusieurs fois par semaine
+# pour empecher Supabase de mettre le projet en pause pour inactivite.
+# Il tourne sur les serveurs de GitHub, sans que personne ait a ouvrir l'app.
+
+on:
+  schedule:
+    # Lundi, mercredi, vendredi et dimanche a 09h00 UTC (11h00 en France l'ete)
+    - cron: '0 9 * * 1,3,5,0'
+  workflow_dispatch:   # permet aussi de lancer le ping a la main depuis GitHub
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping de la base Supabase
+        run: |
+          echo "Envoi d'une requete a Supabase pour maintenir le projet actif..."
+          curl --fail --silent --show-error \
+            "https://njkslucischlvjlflzrr.supabase.co/rest/v1/profiles?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa3NsdWNpc2NobHZqbGZsenJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODA1MTgsImV4cCI6MjA5NzM1NjUxOH0.ztfcHSBVWStF3mDB106eRbWDtecptgyFrP62oWtMybU" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa3NsdWNpc2NobHZqbGZsenJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODA1MTgsImV4cCI6MjA5NzM1NjUxOH0.ztfcHSBVWStF3mDB106eRbWDtecptgyFrP62oWtMybU"
+          echo ""
+          echo "Ping termine avec succes."
