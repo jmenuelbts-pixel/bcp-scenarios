@@ -265,17 +265,17 @@ const CHAUSSON: Scenario = {
 
 // Liste ordonnee des 10 scenarios.
 export const SCENARIOS: Scenario[] = [
-  KILOUTOU,
-  CHAUSSON,
-  RENAULT,
-  PEUGEOT,
-  ORPI,
-  MAMIE_AND_CO,
-  LEROY_MERLIN,
-  HYDRAO,
-  FREE,
-  CITROEN,
   AMPARIS,
+  CHAUSSON,
+  CITROEN,
+  FREE,
+  HYDRAO,
+  KILOUTOU,
+  LEROY_MERLIN,
+  MAMIE_AND_CO,
+  ORPI,
+  PEUGEOT,
+  RENAULT,
 ]
 
 // ---------------------------------------------------------------------------
