@@ -239,6 +239,8 @@ const KILOUTOU: Scenario = {
     'Comprendre le contrat de location',
     "Preparer la livraison et etablir l'etat des lieux",
     'Suivre les contrats de location en cours',
+    'Facturer la prolongation',
+    'Controler la restitution et les degradations',
   ]),
 }
 

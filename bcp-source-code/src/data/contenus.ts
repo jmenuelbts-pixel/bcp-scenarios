@@ -23971,10 +23971,672 @@ const KILOUTOU_M3: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 4 - Facturer la prolongation
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Calculez le montant de la prolongation, établissez la facture complète de la location, puis vérifiez votre total par une seconde méthode.",
+    contexte:
+      "Nous sommes le 3 juillet 2026. Les matériels de TERRABAT viennent d'être restitués, après les quatre jours de prolongation accordés la semaine dernière. La location est terminée : il faut maintenant la facturer. Fabrice Delorme vous confie l'établissement de la facture. Attention : elle ne porte pas seulement sur les 7 jours prévus au départ, mais sur les 11 jours réellement effectués. Chaque jour supplémentaire se facture au tarif jour habituel, comme vous l'avez annoncé au client dans votre courriel de confirmation. Un oubli des jours de prolongation, et l'agence perdrait 660 € de chiffre d'affaires.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Rappel du contrat et de la prolongation", texte: [
+        { logoEntete: 'KILOUTOU — Contrat LOC-2026-8830, récapitulatif' },
+        { intertitre: 'Ce qui a été convenu' },
+        { tableau: { colonnes: ['Élément', 'Valeur'], lignes: [
+          ['Client', 'SAS TERRABAT — Compte PRO-3387'],
+          ['Durée initiale', '7 jours (22 au 29 juin)'],
+          ['Prolongation accordée', '4 jours (30 juin au 3 juillet)'],
+          ['Durée totale réellement effectuée', '11 jours'],
+          ['Date de restitution effective', '3 juillet 2026'],
+          ['Conditions de règlement', '30 jours fin de mois'],
+        ] } },
+        { intertitre: 'Tarifs jour des matériels (rappel)' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Tarif jour HT'], lignes: [
+          ['MP-18', 'Mini-pelle 1,8 tonne', '95,00 €'],
+          ['PV-90', 'Plaque vibrante 90 kg', '28,00 €'],
+          ['GE-06', 'Groupe électrogène 6 kVA', '42,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["La location initiale de 7 jours a déjà été chiffrée à 1 155,00 € HT en mission 1. Il vous reste à chiffrer les 4 jours de prolongation, puis à additionner."] } },
+      ] },
+
+      { numero: 2, titre: "Procédure : facturer une location prolongée", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: 'Facturer une location avec prolongation' },
+            { type: 'paragraphe', texte: "Quand une location a été prolongée, la facture doit couvrir la totalité de la durée réellement effectuée : la durée initiale plus les jours supplémentaires." },
+            { type: 'sousTitre', texte: 'Méthode en deux temps' },
+            { type: 'paragraphe', texte: "1. Chiffrer la prolongation : pour chaque matériel, Tarif jour HT × Nombre de jours supplémentaires." },
+            { type: 'paragraphe', texte: "2. Établir le total : Location initiale HT + Prolongation HT." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : un matériel à 50 € par jour, prolongé de 3 jours, ajoute 50 × 3 = 150 € HT à la facture." },
+            { type: 'sousTitre', texte: 'La vérification par une seconde méthode' },
+            { type: 'paragraphe', texte: "On peut contrôler le total en calculant directement sur la durée complète : Tarif jour HT × Durée totale, pour chaque matériel. Les deux méthodes doivent donner le même résultat." },
+            { type: 'paragraphe', texte: "Du HT au TTC : Montant TVA = Total HT × 0,20, puis Total TTC = Total HT + Montant TVA." },
+            { type: 'citation', texte: "Une facture juste facture tout ce qui a été effectué, ni plus, ni moins. Oublier la prolongation, c'est offrir des jours de location.", auteur: 'Guide de la facturation, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: "Écran de facturation (logiciel KiloPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / facturation / nouvelle',
+          marque: 'KiloPro — Établir une facture',
+          couleurHeader: '#E2001A',
+          menu: ['Clients', 'Contrats', 'Parc', 'Livraisons', 'Facturation'],
+          sections: [
+            { type: 'titre', texte: 'Nouvelle facture — Numéro attribué : FA-2026-9120' },
+            { type: 'fiche', lignes: [
+              { label: 'Date de la facture', valeur: '3 juillet 2026' },
+              { label: 'Client', valeur: 'SAS TERRABAT — Compte PRO-3387' },
+              { label: 'Contrat rattaché', valeur: 'LOC-2026-8830' },
+              { label: 'Durée facturée', valeur: '11 jours (7 + 4)' },
+              { label: 'Taux de TVA', valeur: '20 %' },
+              { label: 'Échéance', valeur: '31 juillet 2026' },
+            ] },
+            { type: 'sousTitre', texte: 'Structure de la facture à compléter' },
+            { type: 'tableau', entetes: ['Ligne', 'Contenu attendu'], lignes: [
+              ['Location initiale (7 jours)', 'Montant déjà connu : 1 155,00 € HT'],
+              ['Prolongation (4 jours)', 'À calculer pour chaque matériel'],
+              ['Total HT', 'Location initiale + prolongation'],
+              ['TVA 20 %', 'Total HT × 0,20'],
+              ['Total TTC', 'Total HT + TVA'],
+            ] },
+            { type: 'paragraphe', texte: "La caution de 3 000 € ne figure jamais sur la facture : elle n'est pas encaissée et sera rendue au client si le matériel revient en bon état." },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Chiffrer la prolongation",
+        contexte: "Quatre jours de plus pour trois matériels. Chaque ligne compte : c'est du chiffre d'affaires réel.",
+        questions: [
+          { numero: 1, consigne: "Calculez le montant HT de la prolongation pour chaque matériel, puis le total.", ressources: "Documents 1 et 2, annexe 1. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Vérifiez que la durée facturée correspond bien à la durée réellement effectuée.", ressources: 'Document 1, annexe 2. Compétence C2.1.1 — Suivre l’évolution du règlement.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Établir la facture",
+        contexte: "La facture rassemble tout : les 7 jours initiaux et les 4 jours de prolongation.",
+        questions: [
+          { numero: 3, consigne: "Établissez la facture FA-2026-9120 en calculant le total HT, la TVA et le TTC.", ressources: 'Documents 1, 2 et 3, annexe 3. Compétence C2.1.1 — Suivre l’évolution du règlement.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Indiquez si la caution de 3 000 € doit figurer sur la facture, et justifiez.", ressources: 'Document 3, annexe 4. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Contrôler le total",
+        contexte: "Un bon facturier vérifie toujours son résultat par un second calcul indépendant.",
+        questions: [
+          { numero: 5, consigne: "Contrôlez le total HT en calculant directement sur les 11 jours, matériel par matériel.", ressources: 'Documents 1 et 2, annexe 5. Compétence C2.1.1 — Suivre l’évolution du règlement.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi il faut facturer les jours de prolongation.", ressources: 'Document 2, annexe 6. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Chiffrage de la prolongation (4 jours)', colonnes: ['Réf.', 'Tarif jour HT', 'Calcul (× 4 jours)', 'Montant HT'], nbLignes: 4, largeurs: ['18%', '22%', '34%', '26%'], prerempli: [
+        ['MP-18', '95,00 €', '95,00 × 4 =', '380,00 €'],
+        ['PV-90', '28,00 €', '', ''],
+        ['GE-06', '42,00 €', '', ''],
+        ['Total prolongation HT', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Contrôle de la durée facturée', colonnes: ['Élément', 'Réponse'], nbLignes: 3, largeurs: ['55%', '45%'], prerempli: [
+        ['Durée initiale', ''],
+        ['Jours de prolongation', ''],
+        ['Durée totale à facturer', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Facture FA-2026-9120', colonnes: ['Ligne', 'Calcul à poser', 'Montant'], nbLignes: 5, largeurs: ['40%', '32%', '28%'], prerempli: [
+        ['Location initiale (7 jours)', '(rappel mission 1)', '1 155,00 €'],
+        ['Prolongation (4 jours)', '(report de l’annexe 1)', ''],
+        ['Total HT', '1 155,00 + prolongation', ''],
+        ['TVA 20 %', 'Total HT × 0,20', ''],
+        ['Total TTC', 'Total HT + TVA', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — La caution figure-t-elle sur la facture ?", lignes: 4 },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Contrôle par les 11 jours', colonnes: ['Réf.', 'Calcul (tarif × 11 jours)', 'Montant HT'], nbLignes: 4, largeurs: ['18%', '52%', '30%'], prerempli: [
+        ['MP-18', '95,00 × 11 =', ''],
+        ['PV-90', '28,00 × 11 =', ''],
+        ['GE-06', '42,00 × 11 =', ''],
+        ['Total HT (contrôle)', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi facturer la prolongation", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Chiffrer le coût d'une prolongation de location",
+      "Établir une facture couvrant la durée réellement effectuée",
+      "Distinguer ce qui se facture de ce qui ne se facture pas (caution)",
+      "Contrôler un total par une seconde méthode",
+    ],
+  },
+
+  synthese: {
+    titre: 'Facturer une location prolongée',
+    proposition: [
+      'Durée initiale',
+      'Jours de prolongation',
+      'Tarif jour',
+      'Total HT',
+      'TVA à 20 %',
+      'Total TTC',
+      'La caution ne se facture pas',
+      'Vérifier par un second calcul',
+      'Sept jours plus quatre',
+      'Onze jours facturés',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La facturation de la location',
+      enfants: [
+        { id: 'dur', texte: 'La durée à facturer', enfants: [
+          { id: 'd1', texte: null, reponse: 'Durée initiale' },
+          { id: 'd2', texte: null, reponse: 'Jours de prolongation' },
+          { id: 'd3', texte: null, reponse: 'Onze jours facturés' },
+        ] },
+        { id: 'cal', texte: 'Le calcul', enfants: [
+          { id: 'c1', texte: null, reponse: 'Tarif jour' },
+          { id: 'c2', texte: null, reponse: 'Total HT' },
+          { id: 'c3', texte: null, reponse: 'TVA à 20 %' },
+          { id: 'c4', texte: null, reponse: 'Total TTC' },
+        ] },
+        { id: 'exc', texte: 'Ce qui ne se facture pas', enfants: [
+          { id: 'e1', texte: null, reponse: 'La caution ne se facture pas' },
+        ] },
+        { id: 'con', texte: 'Le contrôle', enfants: [
+          { id: 'k1', texte: null, reponse: 'Vérifier par un second calcul' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Chiffrer une prolongation", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas combien de jours facturer en plus." },
+        { niveau: 'debrouille', description: "Je multiplie le tarif jour par les jours supplémentaires." },
+        { niveau: 'averti', description: "Je chiffre la prolongation pour les trois matériels sans erreur." },
+        { niveau: 'expert', description: "J'obtiens le total exact de la prolongation." },
+      ] },
+      { id: 'c2', intitule: "Établir une facture complète", indicateurs: [
+        { niveau: 'novice', description: "J'oublie les jours de prolongation." },
+        { niveau: 'debrouille', description: "J'additionne l'initial et la prolongation." },
+        { niveau: 'averti', description: "Je calcule le total HT, la TVA et le TTC sans erreur." },
+        { niveau: 'expert', description: "Je sais que la caution ne figure pas sur la facture." },
+      ] },
+      { id: 'c3', intitule: "Contrôler un total", indicateurs: [
+        { niveau: 'novice', description: "Je ne vérifie pas mon résultat." },
+        { niveau: 'debrouille', description: "Je recompte une des lignes." },
+        { niveau: 'averti', description: "Je recalcule le total sur la durée complète." },
+        { niveau: 'expert', description: "Je constate que les deux méthodes donnent le même montant." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Prolongation', definition: "Allongement de la durée de location, facturé au tarif jour habituel." },
+      { terme: 'Tarif jour', definition: "Prix d'une journée de location d'un matériel." },
+      { terme: 'Durée facturée', definition: "Nombre total de jours réellement effectués, initial plus prolongation." },
+      { terme: 'Facture', definition: "Document qui récapitule les sommes dues par le client pour la location." },
+      { terme: 'Total HT', definition: "Montant hors taxes de la facture, avant la TVA." },
+      { terme: 'TVA', definition: "Taxe sur la valeur ajoutée, ici de 20 %." },
+      { terme: 'Total TTC', definition: "Montant toutes taxes comprises, réellement dû par le client." },
+      { terme: 'Caution', definition: "Somme de garantie non encaissée, qui ne figure jamais sur la facture." },
+      { terme: 'Contrôle par seconde méthode', definition: "Vérification d'un total par un calcul indépendant du premier." },
+      { terme: 'Chiffre d’affaires', definition: "Somme des ventes ou locations facturées par l'entreprise." },
+      { terme: 'Échéance', definition: "Date limite de règlement de la facture." },
+      { terme: 'Numéro de facture', definition: "Identifiant unique attribué à chaque facture." },
+    ],
+    flashcards: [
+      { recto: "Combien de jours ont été réellement effectués ?", verso: '11 jours : 7 initiaux plus 4 de prolongation.' },
+      { recto: "Comment chiffre-t-on la prolongation d'un matériel ?", verso: 'Tarif jour × Nombre de jours supplémentaires.' },
+      { recto: 'Quel est le total HT de la prolongation ?', verso: '660,00 € : 380 + 112 + 168.' },
+      { recto: 'Quel est le total HT de la facture complète ?', verso: '1 815,00 € : 1 155 + 660.' },
+      { recto: 'Quelle est la TVA de la facture ?', verso: '363,00 € : 1 815 × 0,20.' },
+      { recto: 'Quel est le total TTC de la facture ?', verso: '2 178,00 €.' },
+      { recto: 'La caution figure-t-elle sur la facture ?', verso: "Non, elle n'est pas encaissée." },
+      { recto: 'Comment vérifier le total HT ?', verso: 'En calculant directement le tarif jour × 11 jours.' },
+      { recto: 'Que se passe-t-il si on oublie la prolongation ?', verso: "L'agence perd 660 € de chiffre d'affaires." },
+      { recto: 'Le tarif des jours de prolongation est-il majoré ?', verso: 'Non, il reste le tarif jour habituel.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La facture doit couvrir :', options: ['les 11 jours effectués', 'les 7 jours initiaux', 'les 4 jours de prolongation'], bonne: 0 },
+      { type: 'unique', question: 'La prolongation de la mini-pelle (95 × 4) vaut :', options: ['380,00 €', '475,00 €', '285,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT de la prolongation est de :', options: ['660,00 €', '560,00 €', '760,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT de la facture complète est de :', options: ['1 815,00 €', '1 155,00 €', '660,00 €'], bonne: 0 },
+      { type: 'unique', question: 'La TVA de la facture vaut :', options: ['363,00 €', '231,00 €', '132,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total TTC de la facture est de :', options: ['2 178,00 €', '1 815,00 €', '1 386,00 €'], bonne: 0 },
+      { type: 'unique', question: 'La caution de 3 000 € :', options: ['ne figure pas sur la facture', 's’ajoute au TTC', 'remplace le paiement'], bonne: 0 },
+      { type: 'unique', question: 'Le tarif des jours de prolongation est :', options: ['le tarif jour habituel', 'majoré de 50 %', 'gratuit'], bonne: 0 },
+      { type: 'unique', question: 'Contrôler le total, c’est :', options: ['calculer sur les 11 jours', 'refaire le même calcul', 'demander au client'], bonne: 0 },
+      { type: 'unique', question: 'Oublier la prolongation ferait perdre :', options: ['660 € de chiffre d’affaires', 'la caution', 'le client'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['La prolongation', 'La facture totale', 'Ce qui ne se facture pas'],
+      zones: [
+        { libelle: '95 × 4 pour la mini-pelle', etiquetteIndex: 0 },
+        { libelle: 'Total de 660 € HT', etiquetteIndex: 0 },
+        { libelle: '1 155 + 660 = 1 815 € HT', etiquetteIndex: 1 },
+        { libelle: 'Quatre jours à ajouter', etiquetteIndex: 0 },
+        { libelle: 'TVA de 363 €', etiquetteIndex: 1 },
+        { libelle: 'La caution de 3 000 €', etiquetteIndex: 2 },
+        { libelle: 'Total TTC de 2 178 €', etiquetteIndex: 1 },
+        { libelle: 'Somme rendue si bon état', etiquetteIndex: 2 },
+        { libelle: 'Garantie non encaissée', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez le montant HT de la prolongation pour chaque matériel, puis le total.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 4,
+        reponse: "Prolongation = Tarif jour × 4 jours, pour chaque matériel. La ligne MP-18 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Tarif jour', 'Calcul', 'Montant HT'], lignes: [
+          ['MP-18 (exemple fourni)', '95,00 €', '95,00 × 4', '380,00 €'],
+          ['PV-90', '28,00 €', '28,00 × 4', '112,00 €'],
+          ['GE-06', '42,00 €', '42,00 × 4', '168,00 €'],
+          ['Total prolongation HT', '', '380 + 112 + 168', '660,00 €'],
+        ] },
+        complement: "1 point par ligne PV-90 et GE-06, 2 points pour le total. Vérification : 28 × 4 = 112 et 42 × 4 = 168, total 660,00 €. Le calcul doit être posé. Un élève qui multiplie par 11 au lieu de 4 confond la prolongation avec la facture totale : cette confusion est traitée aux questions suivantes." },
+
+      { intitule: "Vérifiez que la durée facturée correspond bien à la durée réellement effectuée.", documents: ['Document 1', 'Annexe 2'], bareme: 2,
+        reponse: "La durée facturée est la somme de la durée initiale et de la prolongation.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Durée initiale', '7 jours'],
+          ['Jours de prolongation', '4 jours'],
+          ['Durée totale à facturer', '11 jours'],
+        ] },
+        complement: "0,5 point par ligne, plus 0,5 point pour le total juste. Cette question sert de garde-fou : elle fixe les 11 jours avant le calcul de la facture. Un élève qui écrit « 7 jours » comme durée à facturer oublie la prolongation, l'erreur que toute la mission cherche à éviter." },
+
+      { intitule: "Établissez la facture FA-2026-9120 en calculant le total HT, la TVA et le TTC.", documents: ['Documents 1, 2 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "Total HT = location initiale + prolongation. Puis TVA à 20 % et TTC.",
+        tableau: { colonnes: ['Ligne', 'Calcul posé', 'Montant'], lignes: [
+          ['Location initiale (7 jours)', 'Rappel mission 1', '1 155,00 €'],
+          ['Prolongation (4 jours)', 'Report de l’annexe 1', '660,00 €'],
+          ['Total HT', '1 155,00 + 660,00', '1 815,00 €'],
+          ['TVA 20 %', '1 815,00 × 0,20', '363,00 €'],
+          ['Total TTC', '1 815,00 + 363,00', '2 178,00 €'],
+        ] },
+        complement: "1 point pour le total HT, 1,5 point pour la TVA, 1,5 point pour le TTC. Vérification : 1 815 × 0,20 = 363,00 et 1 815 + 363 = 2 178,00. Un élève qui reprend le TTC de la mission 1 (1 386 €) a oublié d'intégrer la prolongation : ne pas accorder les points du total." },
+
+      { intitule: "Indiquez si la caution de 3 000 € doit figurer sur la facture, et justifiez.", documents: ['Document 3', 'Annexe 4'], bareme: 2,
+        reponse: "Non, la caution ne figure pas sur la facture. Elle n'est pas encaissée : c'est une garantie, rendue au client si le matériel revient en bon état. La facture ne comporte que les sommes réellement dues pour la location.",
+        complement: "1 point pour la réponse « non », 1 point pour la justification (garantie non encaissée, restituable). Un élève qui ajoute la caution obtiendrait 5 178 € TTC, une erreur grave de compréhension du mécanisme de la caution, déjà vu en mission 1. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Contrôlez le total HT en calculant directement sur les 11 jours, matériel par matériel.", documents: ['Documents 1 et 2', 'Annexe 5'], bareme: 6,
+        reponse: "On calcule le tarif jour × 11 jours pour chaque matériel. La somme doit redonner 1 815,00 € HT.",
+        tableau: { colonnes: ['Réf.', 'Calcul', 'Montant HT'], lignes: [
+          ['MP-18', '95,00 × 11', '1 045,00 €'],
+          ['PV-90', '28,00 × 11', '308,00 €'],
+          ['GE-06', '42,00 × 11', '462,00 €'],
+          ['Total HT (contrôle)', '1 045 + 308 + 462', '1 815,00 €'],
+        ] },
+        complement: "1,5 point par ligne matériel (3 lignes), 1,5 point pour le total de contrôle. Vérification : 95 × 11 = 1 045, 28 × 11 = 308, 42 × 11 = 462, somme 1 815,00 €. Ce total est identique à celui de la question 3 : c'est la preuve que la facture est juste. Insister auprès des élèves : trouver deux fois le même montant par deux chemins différents est la meilleure garantie d'un calcul exact. Si les deux résultats diffèrent, il y a une erreur à chercher." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi il faut facturer les jours de prolongation.", documents: ['Document 2', 'Annexe 6'], bareme: 2,
+        reponse: "Le client a utilisé les matériels quatre jours de plus : ces jours correspondent à un service réellement rendu, qui doit être payé. Ne pas les facturer reviendrait à offrir 660 € de location à l'agence, une perte de chiffre d'affaires injustifiée.",
+        complement: "1 point pour l'idée que la prolongation est un service rendu qui se paie. 1 point pour la conséquence chiffrée : sans facturation, l'agence perd 660 €. Reprendre l'esprit de la citation du document 2. Accepter toute formulation exacte." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 5 - Controler la restitution et constater les degradations
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Établissez l'état des lieux de retour de la mini-pelle, comparez-le à l'état de départ, puis identifiez et qualifiez la dégradation constatée.",
+    contexte:
+      "Nous sommes le 3 juillet 2026, en fin d'après-midi. Le camion vient de ramener les trois matériels de TERRABAT à l'agence de Nanterre. La plaque vibrante et le groupe électrogène reviennent en bon état. Mais l'agent de parc, en contrôlant la mini-pelle MP18-042, a repéré un problème : le vérin de bras est tordu, l'engin peine à lever sa charge. Fabrice Delorme vous confie le contrôle du retour. Souvenez-vous de l'état des lieux de départ que vous avez établi il y a douze jours : c'est lui qui va servir de référence. Sans cette comparaison, impossible de savoir si la dégradation a eu lieu pendant la location ou si elle existait déjà.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.3 — Traiter les retours et les réclamations',
+      detail: "C2.3.1 Contrôler la conformité du retour et constater les anomalies. C2.3.2 Qualifier la responsabilité et informer des suites.",
+    },
+    documents: [
+      { numero: 1, titre: "État des lieux de départ (rappel de la mission 2)", texte: [
+        { logoEntete: 'KILOUTOU — Mini-pelle MP18-042, état des lieux de DÉPART' },
+        { intertitre: 'Constat établi au parc le 19 juin 2026' },
+        { tableau: { colonnes: ['Point de contrôle', 'Constat au départ'], lignes: [
+          ['État général (carrosserie)', 'Bon état, aucune rayure ni choc'],
+          ['Vérin de bras', 'En parfait état de fonctionnement'],
+          ['Niveau de carburant', 'Plein'],
+          ['Compteur horaire', '1 240 heures'],
+          ['Fonctionnement', 'Démarre et fonctionne normalement'],
+          ['Accessoires', 'Godet standard, clés, manuel présents'],
+        ] } },
+        { bulleConseil: { texte: ["Ce document est votre référence. Toute différence entre le départ et le retour devra être notée : c'est ce qui permettra d'établir la responsabilité."] } },
+      ] },
+
+      { numero: 2, titre: "Constat de l'agent de parc au retour", texte: [
+        { logoEntete: 'KILOUTOU — Mini-pelle MP18-042, contrôle de RETOUR' },
+        { intertitre: 'Observations de l’agent de parc, 3 juillet 2026' },
+        { tableau: { colonnes: ['Point de contrôle', 'Constat au retour'], lignes: [
+          ['État général (carrosserie)', 'Bon état, quelques traces de boue (normal après chantier)'],
+          ['Vérin de bras', 'TORDU. Le bras peine à lever, fuite d’huile visible'],
+          ['Niveau de carburant', 'Plein (le client a refait le plein)'],
+          ['Compteur horaire', '1 298 heures'],
+          ['Fonctionnement', 'Démarre, mais le bras fonctionne mal à cause du vérin'],
+          ['Accessoires', 'Godet, clés, manuel présents'],
+        ] } },
+        { paragraphes: [
+          "Note de l'agent : « Le vérin de bras est nettement tordu, ce n'était pas le cas au départ. Il y a une fuite d'huile hydraulique. La mini-pelle ne peut pas repartir en location en l'état, elle doit passer à l'atelier. »",
+        ] },
+        { bulleConseil: { texte: ["Comparez chaque ligne avec l'état de départ. La boue et le plein de carburant sont normaux. Cherchez la vraie différence."] } },
+      ] },
+
+      { numero: 3, titre: "Procédure : contrôler un retour et qualifier une dégradation", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: "Le contrôle de retour" },
+            { type: 'paragraphe', texte: "Au retour du matériel, on établit un état des lieux de retour que l'on compare, point par point, à l'état des lieux de départ. Toute différence est une anomalie à examiner." },
+            { type: 'sousTitre', texte: 'Distinguer l’usure normale de la dégradation' },
+            { type: 'tableau', entetes: ['Type', 'Définition', 'Qui en est responsable'], lignes: [
+              ['Usure normale', "Traces liées à un usage normal (boue, poussière, plein à refaire)", "Personne, c'est prévu"],
+              ['Dégradation', "Détérioration anormale d'une pièce, due à un mauvais usage ou un accident", 'Le client locataire'],
+            ] },
+            { type: 'paragraphe', texte: "La boue après un chantier de terrassement est une usure normale. Un vérin tordu, en revanche, est une dégradation : le matériel a été abîmé pendant la location." },
+            { type: 'sousTitre', texte: 'Les trois conditions pour engager la responsabilité du client' },
+            { type: 'procedureEtapes', etapes: [
+              { titre: 'Condition 1 — Absente au départ', detail: "La dégradation ne figurait pas sur l'état des lieux de départ." },
+              { titre: 'Condition 2 — Présente au retour', detail: "La dégradation est constatée sur l'état des lieux de retour." },
+              { titre: 'Condition 3 — Anormale', detail: "Il ne s'agit pas d'une simple usure, mais d'un dommage réel." },
+            ] },
+            { type: 'citation', texte: "Quand une dégradation est absente au départ, présente au retour, et qu'elle dépasse l'usure normale, la responsabilité du locataire est engagée.", auteur: 'Guide de la location, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Note de service de Fabrice Delorme", texte: [
+        { noteDirection: {
+          titre: 'Ce que j’attends de votre contrôle',
+          signature: 'Fabrice Delorme, responsable clientèle professionnelle',
+          intro: "La mini-pelle est revenue avec un vérin abîmé. Avant toute chose, il faut établir les faits, proprement.",
+          paragraphe: "Ne parlez pas encore d'argent ni de facture : ce sera pour plus tard. Votre travail aujourd'hui est de constater, de comparer, et de qualifier. Est-ce une usure normale ou une vraie dégradation ? La réponse repose entièrement sur la comparaison entre le départ et le retour.",
+          puces: [
+            "Reprenez l'état des lieux de départ, ligne par ligne.",
+            "Notez ce qui a changé, et seulement ce qui a changé.",
+            "Ne confondez pas la boue ou le plein avec un dommage : ce sont des usures normales.",
+            "Le vérin est le point à trancher : usure ou dégradation ?",
+          ],
+          conclusion: "Un constat clair aujourd'hui, c'est un dossier solide pour la suite. Restez factuel.",
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Établir l'état des lieux de retour",
+        contexte: "On repart de la référence de départ et on note, sans a priori, ce que l'agent a constaté au retour.",
+        questions: [
+          { numero: 1, consigne: "Complétez l'état des lieux de retour de la mini-pelle à partir du constat de l'agent.", ressources: "Document 2, annexe 1. Compétence C2.3.1 — Contrôler la conformité du retour.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Calculez le nombre d'heures d'utilisation pendant la location.", ressources: 'Documents 1 et 2, annexe 2. Compétence C2.3.1 — Contrôler la conformité du retour.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Comparer départ et retour",
+        contexte: "La comparaison point par point fait apparaître la vérité : où est la vraie différence ?",
+        questions: [
+          { numero: 3, consigne: "Comparez chaque point entre le départ et le retour et relevez les différences.", ressources: 'Documents 1 et 2, annexe 3. Compétence C2.3.1 — Contrôler la conformité du retour.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Distinguez, parmi les différences, l'usure normale de la dégradation.", ressources: 'Documents 2 et 3, annexe 4. Compétence C2.3.2 — Qualifier la responsabilité.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Qualifier la responsabilité",
+        contexte: "Trois conditions doivent être réunies pour que le client soit tenu responsable. Vous les vérifiez une à une.",
+        questions: [
+          { numero: 5, consigne: "Vérifiez les trois conditions qui engagent la responsabilité du client pour le vérin.", ressources: 'Documents 1, 2 et 3, annexe 5. Compétence C2.3.2 — Qualifier la responsabilité.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi l'état des lieux de départ est indispensable ici.", ressources: 'Documents 1 et 3, annexe 6. Compétence C2.3.2 — Qualifier la responsabilité.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — État des lieux de retour MP18-042", colonnes: ['Point de contrôle', 'Constat au retour'], nbLignes: 6, largeurs: ['45%', '55%'], prerempli: [
+        ['État général (carrosserie)', ''],
+        ['Vérin de bras', ''],
+        ['Niveau de carburant', ''],
+        ['Compteur horaire', ''],
+        ['Fonctionnement', ''],
+        ['Accessoires', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 — Heures d'utilisation pendant la location", colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['40%', '34%', '26%'], prerempli: [
+        ['Compteur au retour', '(relevé au retour)', '1 298 h'],
+        ['Compteur au départ', '(relevé au départ)', '1 240 h'],
+        ['Heures d’utilisation', '1 298 − 1 240 =', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Comparaison départ / retour', colonnes: ['Point', 'Au départ', 'Au retour', 'Différence ?'], nbLignes: 6, largeurs: ['26%', '26%', '28%', '20%'], prerempli: [
+        ['Carrosserie', 'Bon état', 'Bon état + boue', 'Boue (normale)'],
+        ['Vérin de bras', '', '', ''],
+        ['Carburant', '', '', ''],
+        ['Compteur', '', '', ''],
+        ['Fonctionnement', '', '', ''],
+        ['Accessoires', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Usure normale ou dégradation', colonnes: ['Constat', 'Usure normale ou dégradation ?', 'Justification'], nbLignes: 3, largeurs: ['24%', '28%', '48%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Traces de boue', '', ''],
+        ['Plein de carburant refait', '', ''],
+        ['Vérin de bras tordu', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Les trois conditions de responsabilité', colonnes: ['Condition', 'Vérifiée ? (oui / non)', 'Preuve'], nbLignes: 3, largeurs: ['34%', '24%', '42%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Absente au départ', '', ''],
+        ['Présente au retour', '', ''],
+        ['Anormale (au-delà de l’usure)', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi l'état des lieux de départ est indispensable", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Établir un état des lieux de retour",
+      "Calculer les heures d'utilisation d'un engin",
+      "Comparer départ et retour pour isoler les différences",
+      "Qualifier une dégradation et engager la responsabilité du client",
+    ],
+  },
+
+  synthese: {
+    titre: 'Contrôler la restitution',
+    proposition: [
+      'État des lieux de retour',
+      'Comparaison départ / retour',
+      'Usure normale',
+      'Dégradation',
+      'Vérin tordu',
+      'Absente au départ',
+      'Présente au retour',
+      'Au-delà de l’usure',
+      'Responsabilité du client',
+      'La boue est normale',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le contrôle du retour',
+      enfants: [
+        { id: 'edl', texte: 'Le constat', enfants: [
+          { id: 'e1', texte: null, reponse: 'État des lieux de retour' },
+          { id: 'e2', texte: null, reponse: 'Comparaison départ / retour' },
+        ] },
+        { id: 'typ', texte: 'Les deux types de traces', enfants: [
+          { id: 't1', texte: null, reponse: 'Usure normale' },
+          { id: 't2', texte: null, reponse: 'La boue est normale' },
+          { id: 't3', texte: null, reponse: 'Dégradation' },
+          { id: 't4', texte: null, reponse: 'Vérin tordu' },
+        ] },
+        { id: 'con', texte: 'Les trois conditions', enfants: [
+          { id: 'c1', texte: null, reponse: 'Absente au départ' },
+          { id: 'c2', texte: null, reponse: 'Présente au retour' },
+          { id: 'c3', texte: null, reponse: 'Au-delà de l’usure' },
+        ] },
+        { id: 'res', texte: 'La conséquence', enfants: [
+          { id: 'r1', texte: null, reponse: 'Responsabilité du client' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Établir un état des lieux de retour", indicateurs: [
+        { niveau: 'novice', description: "Je note l'état du retour sans le comparer au départ." },
+        { niveau: 'debrouille', description: "Je reprends les mêmes points de contrôle qu'au départ." },
+        { niveau: 'averti', description: "Je relève précisément l'état de chaque point au retour." },
+        { niveau: 'expert', description: "Je calcule les heures d'utilisation à partir des compteurs." },
+      ] },
+      { id: 'c2', intitule: "Distinguer usure et dégradation", indicateurs: [
+        { niveau: 'novice', description: "Je considère toute trace comme un dommage." },
+        { niveau: 'debrouille', description: "Je repère que la boue est normale." },
+        { niveau: 'averti', description: "Je distingue clairement l'usure normale de la dégradation." },
+        { niveau: 'expert', description: "Je justifie pourquoi le vérin tordu est une dégradation." },
+      ] },
+      { id: 'c3', intitule: "Qualifier la responsabilité du client", indicateurs: [
+        { niveau: 'novice', description: "Je conclus sans vérifier les conditions." },
+        { niveau: 'debrouille', description: "Je vérifie une des trois conditions." },
+        { niveau: 'averti', description: "Je vérifie les trois conditions à l'aide des documents." },
+        { niveau: 'expert', description: "Je comprends que l'état de départ est la preuve indispensable." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'État des lieux de retour', definition: "Constat écrit de l'état du matériel à sa restitution, comparé au départ." },
+      { terme: 'Usure normale', definition: "Traces liées à un usage normal du matériel, dont personne n'est responsable." },
+      { terme: 'Dégradation', definition: "Détérioration anormale d'une pièce, due à un mauvais usage ou un accident." },
+      { terme: 'Vérin', definition: "Pièce hydraulique qui actionne le bras de la mini-pelle." },
+      { terme: 'Compteur horaire', definition: "Compteur qui mesure les heures de fonctionnement d'un engin." },
+      { terme: 'Heures d’utilisation', definition: "Différence entre le compteur au retour et le compteur au départ." },
+      { terme: 'Responsabilité du locataire', definition: "Obligation du client de réparer un dommage causé pendant la location." },
+      { terme: 'Fuite d’huile', definition: "Écoulement anormal d'huile hydraulique, signe d'une pièce endommagée." },
+      { terme: 'Comparaison', definition: "Mise en regard du départ et du retour pour repérer les différences." },
+      { terme: 'Constat', definition: "Description écrite et datée d'un état à un moment donné." },
+      { terme: 'Terrassement', definition: "Travaux de préparation d'un terrain, générateurs de boue et de poussière." },
+      { terme: 'Atelier', definition: "Lieu où le matériel endommagé est réparé avant de repartir en location." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'un état des lieux de retour ?", verso: "Le constat de l'état du matériel à sa restitution, comparé au départ." },
+      { recto: "Qu'est-ce que l'usure normale ?", verso: "Des traces liées à un usage normal, dont personne n'est responsable." },
+      { recto: "Qu'est-ce qu'une dégradation ?", verso: "Une détérioration anormale d'une pièce, imputable au locataire." },
+      { recto: 'La boue après un chantier est-elle une dégradation ?', verso: 'Non, c’est une usure normale.' },
+      { recto: 'Le vérin tordu est-il une dégradation ?', verso: 'Oui : il était en parfait état au départ.' },
+      { recto: "Comment calcule-t-on les heures d'utilisation ?", verso: 'Compteur au retour − compteur au départ.' },
+      { recto: 'Combien d’heures la mini-pelle a-t-elle fonctionné ?', verso: '58 heures : 1 298 − 1 240.' },
+      { recto: 'Quelles sont les trois conditions de responsabilité ?', verso: 'Absente au départ, présente au retour, anormale.' },
+      { recto: 'Pourquoi l’état de départ est-il indispensable ?', verso: "Il prouve que le vérin était en bon état avant la location." },
+      { recto: 'Que devient la mini-pelle abîmée ?', verso: "Elle passe à l'atelier avant de repartir en location." },
+    ],
+    quiz: [
+      { type: 'unique', question: "L'état des lieux de retour se compare :", options: ["à l'état de départ", 'au contrat', 'à la facture'], bonne: 0 },
+      { type: 'unique', question: 'La boue après un chantier est :', options: ['une usure normale', 'une dégradation', 'un vol'], bonne: 0 },
+      { type: 'unique', question: 'Le vérin tordu est :', options: ['une dégradation', 'une usure normale', 'sans importance'], bonne: 0 },
+      { type: 'unique', question: 'Les heures d’utilisation valent :', options: ['58 heures', '1 298 heures', '1 240 heures'], bonne: 0 },
+      { type: 'unique', question: 'Le vérin au départ était :', options: ['en parfait état', 'déjà tordu', 'absent'], bonne: 0 },
+      { type: 'unique', question: 'Le plein de carburant refait est :', options: ['une usure normale', 'une dégradation', 'un problème'], bonne: 0 },
+      { type: 'unique', question: 'Combien de conditions pour engager la responsabilité ?', options: ['Trois', 'Deux', 'Une'], bonne: 0 },
+      { type: 'unique', question: 'La responsabilité du client est engagée si la dégradation est :', options: ['absente au départ et anormale', 'visible', 'ancienne'], bonne: 0 },
+      { type: 'unique', question: "Sans état des lieux de départ, on ne peut pas :", options: ['prouver la responsabilité', 'facturer la location', 'rendre la caution'], bonne: 0 },
+      { type: 'unique', question: 'La mini-pelle abîmée doit :', options: ["passer à l'atelier", 'repartir aussitôt', 'être vendue'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Usure normale', 'Dégradation', 'Condition de responsabilité'],
+      zones: [
+        { libelle: 'Les traces de boue', etiquetteIndex: 0 },
+        { libelle: 'Le plein de carburant refait', etiquetteIndex: 0 },
+        { libelle: 'Le vérin de bras tordu', etiquetteIndex: 1 },
+        { libelle: 'La fuite d’huile hydraulique', etiquetteIndex: 1 },
+        { libelle: 'Absente sur l’état de départ', etiquetteIndex: 2 },
+        { libelle: 'La poussière de chantier', etiquetteIndex: 0 },
+        { libelle: 'Présente sur l’état de retour', etiquetteIndex: 2 },
+        { libelle: 'Le bras qui peine à lever', etiquetteIndex: 1 },
+        { libelle: 'Au-delà de l’usure normale', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez l'état des lieux de retour de la mini-pelle à partir du constat de l'agent.", documents: ['Document 2', 'Annexe 1'], bareme: 3,
+        reponse: "L'état de retour reprend les observations de l'agent de parc, point par point.",
+        tableau: { colonnes: ['Point de contrôle', 'Constat au retour'], lignes: [
+          ['État général (carrosserie)', 'Bon état, quelques traces de boue'],
+          ['Vérin de bras', 'Tordu, le bras peine à lever, fuite d’huile'],
+          ['Niveau de carburant', 'Plein (le client a refait le plein)'],
+          ['Compteur horaire', '1 298 heures'],
+          ['Fonctionnement', 'Démarre, mais le bras fonctionne mal'],
+          ['Accessoires', 'Godet, clés, manuel présents'],
+        ] },
+        complement: "0,5 point par ligne. La ligne centrale est le vérin : exiger la mention « tordu » et l'idée d'un mauvais fonctionnement. Un élève qui recopie « en parfait état » n'a pas lu le constat de retour." },
+
+      { intitule: "Calculez le nombre d'heures d'utilisation pendant la location.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 3,
+        reponse: "Heures d'utilisation = Compteur au retour − Compteur au départ.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Compteur au retour', 'Relevé au retour', '1 298 h'],
+          ['Compteur au départ', 'Relevé au départ', '1 240 h'],
+          ['Heures d’utilisation', '1 298 − 1 240', '58 heures'],
+        ] },
+        complement: "1 point par ligne. Le résultat est 58 heures. Ce chiffre est cohérent avec 11 jours de chantier de terrassement. Il ne conditionne pas la responsabilité (ce n'est pas un usage anormal), mais il fait partie du contrôle complet du retour. Un élève qui soustrait dans le mauvais sens obtient un nombre négatif : lui faire remarquer l'absurdité." },
+
+      { intitule: "Comparez chaque point entre le départ et le retour et relevez les différences.", documents: ['Documents 1 et 2', 'Annexe 3'], bareme: 4,
+        reponse: "La comparaison fait apparaître trois différences, dont une seule est un vrai problème.",
+        tableau: { colonnes: ['Point', 'Au départ', 'Au retour', 'Différence ?'], lignes: [
+          ['Carrosserie (fourni)', 'Bon état', 'Bon état + boue', 'Boue (normale)'],
+          ['Vérin de bras', 'Parfait état', 'Tordu, fuite', 'OUI, dégradation'],
+          ['Carburant', 'Plein', 'Plein', 'Aucune'],
+          ['Compteur', '1 240 h', '1 298 h', '+ 58 h (usage)'],
+          ['Fonctionnement', 'Normal', 'Bras défaillant', 'OUI, lié au vérin'],
+          ['Accessoires', 'Complets', 'Complets', 'Aucune'],
+        ] },
+        complement: "1 point par ligne correctement comparée (4 lignes à traiter, carrosserie fournie, en comptant vérin, carburant, compteur, fonctionnement et accessoires pour 4 points au total). La différence majeure est le vérin, dont découle aussi la ligne « fonctionnement ». Le carburant et les accessoires sont identiques. Valoriser l'élève qui relie le mauvais fonctionnement au vérin tordu : c'est la même cause." },
+
+      { intitule: "Distinguez, parmi les différences, l'usure normale de la dégradation.", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 4,
+        reponse: "Deux différences sont des usures normales, une seule est une dégradation.",
+        tableau: { colonnes: ['Constat', 'Nature', 'Justification'], lignes: [
+          ['Traces de boue', 'Usure normale', "Inévitable après un chantier de terrassement, prévu par le document 3."],
+          ['Plein de carburant refait', 'Usure normale', "Le client rend le plein fait, c'est la règle. Aucun dommage."],
+          ['Vérin de bras tordu', 'Dégradation', "Pièce détériorée, absente de l'état de départ, due à un mauvais usage pendant la location."],
+        ] },
+        complement: "1 point pour chaque nature exacte, 0,5 point par justification pertinente (barème réparti sur 4). Le point à faire comprendre : toutes les différences ne sont pas des dommages. La boue et le plein sont normaux ; seul le vérin engage la responsabilité. Un élève qui qualifie la boue de dégradation n'a pas compris la distinction du document 3." },
+
+      { intitule: "Vérifiez les trois conditions qui engagent la responsabilité du client pour le vérin.", documents: ['Documents 1, 2 et 3', 'Annexe 5'], bareme: 4,
+        reponse: "Les trois conditions sont réunies pour le vérin : la responsabilité du client est engagée.",
+        tableau: { colonnes: ['Condition', 'Vérifiée ?', 'Preuve'], lignes: [
+          ['Absente au départ', 'Oui', "L'état de départ indique « vérin en parfait état »."],
+          ['Présente au retour', 'Oui', "L'état de retour indique « vérin tordu, fuite d'huile »."],
+          ['Anormale (au-delà de l’usure)', 'Oui', "Un vérin tordu n'est pas une usure : c'est un dommage réel qui empêche l'engin de fonctionner."],
+        ] },
+        complement: "1 point par condition vérifiée avec sa preuve, plus 1 point pour la conclusion que la responsabilité du client est engagée. Les trois conditions du document 3 doivent être explicitement reliées aux deux états des lieux. Un élève qui conclut à la responsabilité sans citer l'état de départ comme preuve de la condition 1 ne fait qu'affirmer : exiger la preuve documentaire." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi l'état des lieux de départ est indispensable ici.", documents: ['Documents 1 et 3', 'Annexe 6'], bareme: 2,
+        reponse: "L'état des lieux de départ prouve que le vérin était en parfait état avant la location. Sans ce document, le client pourrait prétendre que le vérin était déjà tordu au départ, et l'agence ne pourrait rien lui réclamer.",
+        complement: "1 point pour l'idée que l'état de départ prouve le bon état initial. 1 point pour la conséquence : sans lui, aucune responsabilité ne peut être établie. C'est le retour direct de la leçon de la mission 2 : « ce qui n'est pas écrit au départ ne pourra pas être réclamé au retour ». Accepter toute formulation exacte. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
+  'kiloutou-m4': KILOUTOU_M4,
+  'kiloutou-m5': KILOUTOU_M5,
   'chausson-m1': CHAUSSON_M1,
   'chausson-m2': CHAUSSON_M2,
   'chausson-m3': CHAUSSON_M3,
