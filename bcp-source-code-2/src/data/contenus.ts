@@ -20229,24 +20229,24 @@ const CHAUSSON_M1: ContenuMission = {
     ],
 
     competence: {
-      groupe: 'Bloc de compétences 2',
-      intitule: 'Suivre les ventes',
-      detail: "Identifier les documents commerciaux du suivi des ventes, en repérer les informations essentielles et en vérifier les calculs.",
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
     },
     activites: [
       { titre: "Activité 1 — L'agence, le client et leurs documents",
         contexte: "Avant de suivre une commande, il faut savoir chez qui vous travaillez, pour qui vous travaillez, et avec quels documents.",
         questions: [
-          { numero: 1, consigne: "Complétez la fiche d'identité de l'agence Chausson Matériaux.", ressources: 'Document 1, annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Relevez les coordonnées du client concerné par la commande 2026-4471.", ressources: 'Documents 3 et 4, annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: "Indiquez le rôle de chacun des quatre documents du suivi des ventes.", ressources: 'Document 2, annexe 3.', annexeId: 'annexe3' },
+          { numero: 1, consigne: "Complétez la fiche d'identité de l'agence Chausson Matériaux.", ressources: "Document 1, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Relevez les coordonnées du client concerné par la commande 2026-4471.", ressources: "Documents 3 et 4, annexe 2. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez le rôle de chacun des quatre documents du suivi des ventes.", ressources: "Document 2, annexe 3. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe3' },
         ] },
       { titre: 'Activité 2 — Lire et vérifier le bon de commande',
         contexte: "Sandrine Vasseur vous demande de contrôler le bon de commande avant de l'enregistrer. Une erreur de calcul non repérée se paie plus tard.",
         questions: [
-          { numero: 4, consigne: "Analysez trois lignes du bon de commande et vérifiez le calcul du total HT.", ressources: 'Documents 4 et 5, annexe 4.', annexeId: 'annexe4' },
-          { numero: 5, consigne: "Calculez le montant de la TVA et le total TTC, puis vérifiez qu'ils correspondent au bon de commande.", ressources: 'Documents 4 et 5, annexe 5.', annexeId: 'annexe5' },
-          { numero: 6, consigne: "Justifiez, en deux phrases, pourquoi suivre une commande n'est pas la même chose que vendre.", ressources: 'Document 2, annexe 6.', annexeId: 'annexe6' },
+          { numero: 4, consigne: "Analysez trois lignes du bon de commande et vérifiez le calcul du total HT.", ressources: "Documents 4 et 5, annexe 4. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Calculez le montant de la TVA et le total TTC, puis vérifiez qu'ils correspondent au bon de commande.", ressources: "Documents 4 et 5, annexe 5. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Justifiez, en deux phrases, pourquoi suivre une commande n'est pas la même chose que vendre.", ressources: "Document 2, annexe 6. Compétence C2.1.2 — Informer le client des délais et des modalités.", annexeId: 'annexe6' },
         ] },
     ],
 
@@ -20404,6 +20404,22 @@ const CHAUSSON_M1: ContenuMission = {
       { type: 'unique', question: "Suivre une commande, c'est :", options: ['agir après la signature du client', 'convaincre le client d’acheter', 'rechercher de nouveaux clients'], bonne: 0 },
       { type: 'unique', question: "Une facture émise le 15 juin, payable à 30 jours fin de mois, est à régler le :", options: ['31 juillet', '15 juillet', '30 juin'], bonne: 0 },
     ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Document du suivi', 'Notion de montant', "Information sur l'entreprise"],
+      zones: [
+        { libelle: 'Il est signé par le client', etiquetteIndex: 0 },
+        { libelle: 'Hors taxes', etiquetteIndex: 1 },
+        { libelle: 'SAS, société par actions simplifiée', etiquetteIndex: 2 },
+        { libelle: 'Il accompagne la marchandise', etiquetteIndex: 0 },
+        { libelle: 'Toutes taxes comprises', etiquetteIndex: 1 },
+        { libelle: 'Créée à Toulouse en 1921', etiquetteIndex: 2 },
+        { libelle: 'Elle demande le paiement', etiquetteIndex: 0 },
+        { libelle: 'Taxe de 20 % sur les matériaux', etiquetteIndex: 1 },
+        { libelle: 'Négoce interentreprises', etiquetteIndex: 2 },
+        { libelle: 'Il rembourse le client', etiquetteIndex: 0 },
+      ],
+    },
   },
 
   corrige: {
@@ -20468,8 +20484,3828 @@ const CHAUSSON_M1: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 2 - Verifier et enregistrer la commande
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Contrôlez la disponibilité des cinq références en stock, repérez le produit indisponible, puis informez le client par courriel de la solution retenue.",
+    contexte:
+      "La commande 2026-4471 de la SARL RENOVAL est signée. Avant de lancer la préparation, Sandrine Vasseur vous demande de vérifier que les cinq références commandées sont bien disponibles à l'agence de Gennevilliers. Nous sommes le 16 juin 2026. La livraison est prévue le 22 juin sur le chantier de Colombes. Vous ouvrez l'écran des stocks du logiciel ChaussonPro. Une référence pose problème. Julien Bertrand doit être prévenu : c'est le client qui décide, mais c'est à vous de lui présenter clairement ses options.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Écran des stocks (logiciel ChaussonPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / stocks',
+          marque: 'ChaussonPro — Gestion des stocks',
+          couleurHeader: '#0B3C7A',
+          menu: ['Clients', 'Commandes', 'Stocks', 'Livraisons', 'Factures'],
+          sections: [
+            { type: 'titre', texte: 'État des stocks — Agence de Gennevilliers' },
+            { type: 'paragraphe', texte: "Consultation du 16 juin 2026 à 09 h 12. Le stock disponible est le stock réel diminué des quantités déjà réservées pour d'autres commandes." },
+            { type: 'tableau', entetes: ['Réf.', 'Désignation', 'Stock réel', 'Réservé', 'Stock disponible', 'Quantité commandée'], lignes: [
+              ['PAR-20', 'Parpaing creux 20x20x50', '1 250 u', '300 u', '950 u', '400 u'],
+              ['CIM-35', 'Ciment CEM II 35 kg', '180 sacs', '40 sacs', '140 sacs', '60 sacs'],
+              ['ISO-100', 'Laine de verre 100 mm', '18 rouleaux', '6 rouleaux', '12 rouleaux', '25 rouleaux'],
+              ['CAR-60', 'Carrelage grès 60x60', '320 m²', '85 m²', '235 m²', '80 m²'],
+              ['COL-25', 'Colle carrelage 25 kg', '95 sacs', '15 sacs', '80 sacs', '20 sacs'],
+            ] },
+            { type: 'sousTitre', texte: 'Comment lire cet écran' },
+            { type: 'paragraphe', texte: "Stock disponible = Stock réel − Réservé. C'est ce chiffre, et lui seul, qu'il faut comparer à la quantité commandée. Un produit est indisponible lorsque le stock disponible est inférieur à la quantité commandée." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec la référence CIM-35 (ciment) : le stock réel est de 180 sacs, dont 40 réservés. Le stock disponible vaut donc 180 − 40 = 140 sacs. La commande porte sur 60 sacs. Comme 140 est supérieur à 60, la référence est disponible." },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Fiche de réapprovisionnement ISO-100", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / stocks / reappro',
+          marque: 'ChaussonPro — Réapprovisionnement',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Référence ISO-100 — Laine de verre 100 mm' },
+            { type: 'fiche', lignes: [
+              { label: 'Fournisseur', valeur: 'ISOTHERM Industrie' },
+              { label: 'Stock disponible ce jour', valeur: '12 rouleaux' },
+              { label: 'Commande fournisseur en cours', valeur: '40 rouleaux' },
+              { label: 'Date de réception prévue', valeur: '25 juin 2026' },
+              { label: 'Délai de mise en rayon après réception', valeur: '1 jour ouvré' },
+              { label: 'Produit de substitution', valeur: 'Aucun équivalent en 100 mm' },
+            ] },
+            { type: 'sousTitre', texte: 'Rappel de la procédure interne' },
+            { type: 'procedureEtapes', etapes: [
+              { titre: 'Étape 1 — Constater', detail: "Comparer le stock disponible et la quantité commandée pour chaque référence." },
+              { titre: 'Étape 2 — Chiffrer le manque', detail: "Calculer la quantité manquante : Quantité commandée − Stock disponible." },
+              { titre: 'Étape 3 — Chercher la date', detail: "Consulter la fiche de réapprovisionnement pour connaître la date de disponibilité réelle." },
+              { titre: 'Étape 4 — Prévenir le client sans attendre', detail: "Le client doit être informé le jour même. Il décide de la solution : c'est lui qui connaît son chantier." },
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: "Note de service : livraison partielle ou livraison complète", texte: [
+        { noteDirection: {
+          titre: 'Deux solutions, un seul décideur',
+          signature: 'Sandrine Vasseur, responsable du comptoir professionnel',
+          intro: "Lorsqu'une référence manque, l'agence propose toujours deux solutions au client. Elle n'en impose aucune.",
+          paragraphe: "La livraison partielle consiste à livrer immédiatement ce qui est disponible, puis à livrer le reste plus tard. On appelle « reliquat » (prononcer re-li-ka) la partie de la commande qui reste à livrer. La livraison complète consiste à tout livrer d'un seul coup, plus tard, quand le produit manquant est arrivé.",
+          puces: [
+            "Livraison partielle : le chantier démarre à la date prévue, mais l'agence livre deux fois. Le second transport est offert.",
+            "Livraison complète : une seule livraison, mais le chantier attend.",
+            "Le client seul sait dans quel ordre il utilise les matériaux. Ne décidez jamais à sa place.",
+            "Dans tous les cas, la facture ne porte que sur les marchandises réellement livrées.",
+          ],
+          conclusion: "Prévenez le client le jour même, par écrit, et conservez une trace du courriel.",
+        } },
+      ] },
+
+      { numero: 4, titre: "Extrait du bon de commande 2026-4471 et planning du chantier", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Agence de Gennevilliers, 12 rue des Bâtisseurs, 92230 Gennevilliers' },
+        { intertitre: 'Rappel des articles commandés' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Quantité commandée', 'Total HT'], lignes: [
+          ['PAR-20', 'Parpaing creux 20x20x50', '400 unités', '703,00 €'],
+          ['CIM-35', 'Ciment CEM II 35 kg', '60 sacs', '410,40 €'],
+          ['ISO-100', 'Laine de verre 100 mm', '25 rouleaux', '771,88 €'],
+          ['CAR-60', 'Carrelage grès 60x60', '80 m²', '1 436,40 €'],
+          ['COL-25', 'Colle carrelage 25 kg', '20 sacs', '277,40 €'],
+        ] } },
+        { intertitre: 'Note manuscrite de Julien Bertrand jointe à la commande' },
+        { paragraphes: [
+          "« Le chantier de Colombes démarre le lundi 22 juin. Nous commençons par les murs : parpaings, ciment et colle. L'isolation est posée en fin de chantier, à partir du 29 juin. Le carrelage est le tout dernier poste. »",
+        ] },
+        { bulleConseil: { texte: ["Lisez attentivement cette note. Elle contient l'information qui vous permettra de conseiller le client sans décider à sa place."] } },
+      ] },
+
+      { numero: 5, titre: "Aide-mémoire : rédiger un courriel professionnel", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Les cinq parties d’un courriel professionnel' },
+            { type: 'tableau', entetes: ['Partie', 'Contenu attendu', 'Exemple'], lignes: [
+              ['Objet', "Le sujet en quelques mots. Clair et précis.", "Commande 2026-4471 — disponibilité d'une référence"],
+              ['Formule d’appel', "On s'adresse au destinataire.", 'Bonjour Monsieur Bertrand,'],
+              ['Corps', "Le fait, puis la conséquence, puis la ou les solutions.", "Voir la méthode ci-dessous."],
+              ['Formule de politesse', "Une phrase courte et professionnelle.", 'Cordialement,'],
+              ['Signature', "Prénom, nom, fonction, entreprise.", 'Chausson Matériaux, agence de Gennevilliers'],
+            ] },
+            { type: 'sousTitre', texte: 'La méthode en trois temps pour le corps du message' },
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "J'annonce le fait, sans le cacher : quelle référence manque, et en quelle quantité." },
+              { numero: '2', texte: "J'indique la conséquence : à quelle date le produit sera réellement disponible." },
+              { numero: '3', texte: "Je propose les solutions et je laisse le client choisir : je ne décide pas à sa place." },
+            ] },
+            { type: 'sousTitre', texte: 'Ce qu’il ne faut pas faire' },
+            { type: 'puces', items: [
+              "Ne pas annoncer le problème dès les premières lignes.",
+              "Écrire « nous avons un souci » sans dire lequel.",
+              "Choisir la solution à la place du client.",
+              "Oublier de donner une date précise.",
+            ] },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: 'Activité 1 — Contrôler la disponibilité',
+        contexte: "Sandrine Vasseur vous laisse l'écran des stocks ouvert. Rien ne doit partir en préparation avant ce contrôle.",
+        questions: [
+          { numero: 1, consigne: "Calculez le stock disponible de chaque référence et indiquez si elle est disponible.", ressources: "Document 1, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Repérez la référence indisponible, puis calculez la quantité manquante.", ressources: 'Documents 1 et 2, annexe 2. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Déterminez la date à laquelle la référence manquante sera réellement disponible à la vente.", ressources: 'Document 2, annexe 3. Compétence C2.1.2 — Informer le client des délais.', annexeId: 'annexe3' },
+        ] },
+      { titre: 'Activité 2 — Informer le client et le conseiller',
+        contexte: "Il est 9 h 30. Julien Bertrand n'est pas encore au courant. La note qu'il a jointe à sa commande va vous servir.",
+        questions: [
+          { numero: 4, consigne: "Comparez les deux solutions possibles et complétez le tableau de leurs conséquences.", ressources: 'Document 3, annexe 4. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Rédigez le courriel qui informe Julien Bertrand et lui présente les deux solutions.", ressources: 'Documents 2, 3 et 5, annexe 5. Compétence C2.1.2 — Informer le client des délais et des modalités.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Justifiez, en deux phrases, la solution que vous recommanderiez au client sans la lui imposer.", ressources: 'Documents 3 et 4, annexe 6. Compétence C2.1.2 — Informer le client des délais.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Contrôle de la disponibilité', colonnes: ['Réf.', 'Calcul du stock disponible', 'Stock disponible', 'Quantité commandée', 'Disponible ? (oui / non)'], nbLignes: 5, largeurs: ['12%', '30%', '18%', '20%', '20%'], prerempli: [
+        ['CIM-35', '180 − 40 =', '140 sacs', '60 sacs', 'Oui'],
+        ['PAR-20', '', '', '400 unités', ''],
+        ['ISO-100', '', '', '25 rouleaux', ''],
+        ['CAR-60', '', '', '80 m²', ''],
+        ['COL-25', '', '', '20 sacs', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — La référence indisponible', colonnes: ['Élément', 'Réponse'], nbLignes: 4, largeurs: ['45%', '55%'], prerempli: [
+        ['Référence indisponible', ''],
+        ['Désignation du produit', ''],
+        ['Calcul de la quantité manquante', ''],
+        ['Quantité manquante', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — La date de disponibilité réelle', colonnes: ['Étape du raisonnement', 'Réponse'], nbLignes: 3, largeurs: ['55%', '45%'], prerempli: [
+        ['Date de réception de la commande fournisseur', ''],
+        ['Délai de mise en rayon après réception', ''],
+        ['Date de disponibilité réelle à la vente', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Comparaison des deux solutions', colonnes: ['', 'Livraison partielle', 'Livraison complète'], nbLignes: 4, largeurs: ['28%', '36%', '36%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Nombre de livraisons', '', ''],
+        ['Date de démarrage possible du chantier', '', ''],
+        ['Avantage pour le client', '', ''],
+        ['Inconvénient pour le client', '', ''],
+      ] },
+
+      { type: 'mail', id: 'annexe5', titre: 'Annexe 5 — Courriel au client', deParDefaut: 'agence.gennevilliers@chaussonmateriaux.fr', aParDefaut: 'j.bertrand@renoval.fr' },
+
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — Votre recommandation', lignes: 4 },
+    ],
+
+    objectifs: [
+      "Calculer un stock disponible et le comparer à une quantité commandée",
+      "Repérer une rupture de stock et chiffrer la quantité manquante",
+      "Déterminer une date de disponibilité réelle à partir d'une fiche de réapprovisionnement",
+      "Rédiger un courriel professionnel qui informe le client et lui laisse le choix",
+    ],
+  },
+
+  synthese: {
+    titre: 'Vérifier la disponibilité et informer le client',
+    proposition: [
+      'Stock réel',
+      'Quantités réservées',
+      'Stock disponible',
+      'Quantité manquante',
+      'Reliquat',
+      'Livraison partielle',
+      'Livraison complète',
+      'Le client décide',
+      'Le jour même',
+      'Par écrit',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Vérifier et enregistrer la commande',
+      enfants: [
+        { id: 'calc', texte: 'Le calcul du stock', enfants: [
+          { id: 'c1', texte: null, reponse: 'Stock réel' },
+          { id: 'c2', texte: null, reponse: 'Quantités réservées' },
+          { id: 'c3', texte: null, reponse: 'Stock disponible' },
+        ] },
+        { id: 'rup', texte: 'La rupture de stock', enfants: [
+          { id: 'r1', texte: null, reponse: 'Quantité manquante' },
+          { id: 'r2', texte: null, reponse: 'Reliquat' },
+        ] },
+        { id: 'sol', texte: 'Les deux solutions', enfants: [
+          { id: 's1', texte: null, reponse: 'Livraison partielle' },
+          { id: 's2', texte: null, reponse: 'Livraison complète' },
+          { id: 's3', texte: null, reponse: 'Le client décide' },
+        ] },
+        { id: 'inf', texte: "L'information du client", enfants: [
+          { id: 'i1', texte: null, reponse: 'Le jour même' },
+          { id: 'i2', texte: null, reponse: 'Par écrit' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Contrôler la disponibilité d'une commande", indicateurs: [
+        { niveau: 'novice', description: "Je confonds le stock réel et le stock disponible." },
+        { niveau: 'debrouille', description: "Je calcule le stock disponible en retirant les quantités réservées." },
+        { niveau: 'averti', description: "Je compare le stock disponible à la quantité commandée et je repère la référence indisponible." },
+        { niveau: 'expert', description: "Je chiffre la quantité manquante et je retrouve la date de disponibilité réelle." },
+      ] },
+      { id: 'c2', intitule: "Informer le client des délais et des modalités", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quoi écrire au client." },
+        { niveau: 'debrouille', description: "J'annonce le problème mais j'oublie de donner une date." },
+        { niveau: 'averti', description: "J'annonce le fait, la date précise, et je propose les deux solutions." },
+        { niveau: 'expert', description: "Je conseille le client à partir de son planning de chantier, sans décider à sa place." },
+      ] },
+      { id: 'c3', intitule: "Rédiger un courriel professionnel", indicateurs: [
+        { niveau: 'novice', description: "J'écris comme dans un message personnel." },
+        { niveau: 'debrouille', description: "Je respecte l'objet, la formule d'appel et la signature." },
+        { niveau: 'averti', description: "Mon message suit l'ordre : le fait, la conséquence, les solutions." },
+        { niveau: 'expert', description: "Mon message est clair, complet et laisse au client une décision facile à prendre." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Stock réel', definition: "Quantité de produit physiquement présente dans l'entrepôt de l'agence." },
+      { terme: 'Quantité réservée', definition: "Partie du stock déjà promise à d'autres commandes. Elle n'est plus disponible." },
+      { terme: 'Stock disponible', definition: "Stock réel moins les quantités réservées. C'est le seul chiffre à comparer à la commande." },
+      { terme: 'Rupture de stock', definition: "Situation dans laquelle le stock disponible est inférieur à la quantité commandée." },
+      { terme: 'Quantité manquante', definition: "Différence entre la quantité commandée et le stock disponible." },
+      { terme: 'Réapprovisionnement', definition: "Commande passée par l'agence à son fournisseur pour reconstituer son stock." },
+      { terme: 'Reliquat', definition: "Partie d'une commande qui n'a pas pu être livrée et qui reste à livrer plus tard." },
+      { terme: 'Livraison partielle', definition: "Livraison immédiate des produits disponibles, le reste étant livré ultérieurement." },
+      { terme: 'Livraison complète', definition: "Livraison de toute la commande en une seule fois, après réception du produit manquant." },
+      { terme: 'Produit de substitution', definition: "Produit équivalent proposé au client lorsque le produit commandé est indisponible." },
+      { terme: 'Jour ouvré', definition: "Jour effectivement travaillé par l'entreprise, du lundi au vendredi." },
+      { terme: 'Délai de mise en rayon', definition: "Temps nécessaire entre la réception d'une marchandise et sa disponibilité à la vente." },
+    ],
+    flashcards: [
+      { recto: 'Comment calcule-t-on le stock disponible ?', verso: 'Stock disponible = Stock réel − Quantités réservées.' },
+      { recto: 'Quel chiffre faut-il comparer à la quantité commandée ?', verso: "Le stock disponible, et lui seul. Jamais le stock réel." },
+      { recto: "Qu'est-ce qu'une rupture de stock ?", verso: 'Le stock disponible est inférieur à la quantité commandée.' },
+      { recto: 'Comment calcule-t-on la quantité manquante ?', verso: 'Quantité commandée − Stock disponible.' },
+      { recto: "Qu'est-ce qu'un reliquat ?", verso: "La partie de la commande qui reste à livrer plus tard." },
+      { recto: 'Quelles sont les deux solutions en cas de rupture ?', verso: 'La livraison partielle ou la livraison complète différée.' },
+      { recto: 'Qui choisit entre les deux solutions ?', verso: "Le client. Lui seul connaît l'ordre d'avancement de son chantier." },
+      { recto: 'Quand faut-il prévenir le client ?', verso: 'Le jour même, et par écrit.' },
+      { recto: 'Dans quel ordre rédige-t-on le corps du courriel ?', verso: 'Le fait, puis la conséquence, puis les solutions.' },
+      { recto: 'Sur quoi porte la facture après une livraison partielle ?', verso: 'Uniquement sur les marchandises réellement livrées.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le stock disponible se calcule ainsi :', options: ['Stock réel − Réservé', 'Stock réel + Réservé', 'Réservé − Stock réel'], bonne: 0 },
+      { type: 'unique', question: "Pour ISO-100, le stock réel est de 18 rouleaux dont 6 réservés. Le stock disponible est de :", options: ['12 rouleaux', '18 rouleaux', '24 rouleaux'], bonne: 0 },
+      { type: 'unique', question: 'La commande porte sur 25 rouleaux. La quantité manquante est de :', options: ['13 rouleaux', '7 rouleaux', '12 rouleaux'], bonne: 0 },
+      { type: 'unique', question: 'La marchandise arrive le 25 juin, avec 1 jour ouvré de mise en rayon. Elle sera disponible le :', options: ['26 juin', '25 juin', '24 juin'], bonne: 0 },
+      { type: 'unique', question: 'Un reliquat désigne :', options: ['la partie de la commande restant à livrer', 'un produit abîmé', 'une remise commerciale'], bonne: 0 },
+      { type: 'unique', question: 'En cas de rupture, qui choisit la solution ?', options: ['Le client', "Le responsable de l'agence", 'Le fournisseur'], bonne: 0 },
+      { type: 'unique', question: 'Le courriel au client doit être envoyé :', options: ['le jour même', 'sous huit jours', 'après la livraison'], bonne: 0 },
+      { type: 'unique', question: 'Dans le corps du courriel, on commence par :', options: ['annoncer le fait', 'proposer une remise', 'présenter l’entreprise'], bonne: 0 },
+      { type: 'unique', question: 'Après une livraison partielle, la facture porte sur :', options: ['les marchandises réellement livrées', 'la totalité de la commande', 'le reliquat seulement'], bonne: 0 },
+      { type: 'unique', question: 'Existe-t-il un produit de substitution pour ISO-100 ?', options: ['Non, aucun équivalent en 100 mm', 'Oui, la laine de roche', 'Oui, un rouleau de 80 mm'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Notion de stock', 'Solution de livraison', 'Règle professionnelle'],
+      zones: [
+        { libelle: 'Stock réel moins quantités réservées', etiquetteIndex: 0 },
+        { libelle: 'Livrer maintenant ce qui est disponible', etiquetteIndex: 1 },
+        { libelle: 'Prévenir le client le jour même', etiquetteIndex: 2 },
+        { libelle: 'Quantité commandée moins stock disponible', etiquetteIndex: 0 },
+        { libelle: 'Tout livrer en une seule fois, plus tard', etiquetteIndex: 1 },
+        { libelle: 'Ne jamais décider à la place du client', etiquetteIndex: 2 },
+        { libelle: 'Partie de la commande restant à livrer', etiquetteIndex: 0 },
+        { libelle: 'Conserver une trace écrite du courriel', etiquetteIndex: 2 },
+        { libelle: 'Le second transport est offert', etiquetteIndex: 1 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez le stock disponible de chaque référence et indiquez si elle est disponible.", documents: ['Document 1', 'Annexe 1'], bareme: 4,
+        reponse: "Stock disponible = Stock réel − Réservé. On compare ensuite ce résultat à la quantité commandée. La ligne CIM-35 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Calcul posé', 'Stock disponible', 'Qté commandée', 'Disponible ?'], lignes: [
+          ['CIM-35 (exemple fourni)', '180 − 40', '140 sacs', '60 sacs', 'Oui'],
+          ['PAR-20', '1 250 − 300', '950 unités', '400 unités', 'Oui'],
+          ['ISO-100', '18 − 6', '12 rouleaux', '25 rouleaux', 'Non'],
+          ['CAR-60', '320 − 85', '235 m²', '80 m²', 'Oui'],
+          ['COL-25', '95 − 15', '80 sacs', '20 sacs', 'Oui'],
+        ] },
+        complement: "1 point par ligne correctement calculée ET correctement conclue (4 lignes à traiter, la première étant fournie). L'erreur la plus fréquente consiste à comparer la quantité commandée au stock réel : PAR-20 semble alors disponible à 1 250 unités, ce qui est faux, seules 950 le sont réellement. Ici la conclusion reste la même, mais le raisonnement est erroné : ne pas accorder le point si le calcul du disponible est absent." },
+
+      { intitule: "Repérez la référence indisponible, puis calculez la quantité manquante.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 3,
+        reponse: "Seule la référence ISO-100 présente un stock disponible (12 rouleaux) inférieur à la quantité commandée (25 rouleaux).",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Référence indisponible', 'ISO-100'],
+          ['Désignation du produit', 'Laine de verre 100 mm'],
+          ['Calcul de la quantité manquante', '25 − 12'],
+          ['Quantité manquante', '13 rouleaux'],
+        ] },
+        complement: "1 point pour l'identification de la référence, 1 point pour le calcul posé, 1 point pour le résultat de 13 rouleaux. Un résultat juste sans calcul posé ne vaut que 2 points sur 3." },
+
+      { intitule: "Déterminez la date à laquelle la référence manquante sera réellement disponible à la vente.", documents: ['Document 2', 'Annexe 3'], bareme: 3,
+        reponse: "La marchandise est reçue le 25 juin. Il faut ajouter 1 jour ouvré de mise en rayon. Le 25 juin 2026 est un jeudi, donc le lendemain ouvré est le vendredi 26 juin.",
+        tableau: { colonnes: ['Étape du raisonnement', 'Réponse attendue'], lignes: [
+          ['Date de réception de la commande fournisseur', '25 juin 2026'],
+          ['Délai de mise en rayon après réception', '1 jour ouvré'],
+          ['Date de disponibilité réelle à la vente', '26 juin 2026'],
+        ] },
+        complement: "1 point par ligne. L'erreur fréquente consiste à répondre « 25 juin » en oubliant le délai de mise en rayon. Le produit est reçu le 25, il n'est vendable que le 26. Insister sur la différence entre « recevoir » et « pouvoir livrer »." },
+
+      { intitule: "Comparez les deux solutions possibles et complétez le tableau de leurs conséquences.", documents: ['Document 3', 'Annexe 4'], bareme: 4,
+        reponse: "Les deux solutions sont décrites dans la note de service. Elles se distinguent par le nombre de livraisons et par la date de démarrage du chantier.",
+        tableau: { colonnes: ['', 'Livraison partielle', 'Livraison complète'], lignes: [
+          ['Nombre de livraisons', 'Deux', 'Une seule'],
+          ['Date de démarrage possible du chantier', '22 juin, la date prévue', '26 juin au plus tôt'],
+          ['Avantage pour le client', "Le chantier démarre à la date prévue et le second transport est offert.", "Une seule livraison à réceptionner."],
+          ['Inconvénient pour le client', "Il faut réceptionner la marchandise deux fois.", "Le chantier est retardé de quatre jours."],
+        ] },
+        complement: "1 point par ligne. Accepter toute reformulation exacte. Sur la ligne « date de démarrage », accepter « le 26 juin » ou « après le 26 juin » pour la livraison complète." },
+
+      { intitule: "Rédigez le courriel qui informe Julien Bertrand et lui présente les deux solutions.", documents: ['Documents 2, 3 et 5', 'Annexe 5'], bareme: 4,
+        reponse: "Objet : Commande 2026-4471 — disponibilité de la laine de verre ISO-100. Bonjour Monsieur Bertrand, je vérifie ce jour la disponibilité des articles de votre commande 2026-4471. Quatre références sur cinq sont disponibles. En revanche, il nous manque 13 rouleaux de laine de verre 100 mm : nous n'en avons que 12 en stock sur les 25 commandés. Notre réapprovisionnement est attendu le 25 juin, et ces rouleaux seront disponibles à la vente le 26 juin. Deux solutions s'offrent à vous. Nous pouvons livrer dès le 22 juin, comme prévu, les parpaings, le ciment, la colle et le carrelage, puis vous livrer les rouleaux manquants à partir du 26 juin, sans frais de transport supplémentaires. Nous pouvons aussi attendre le 26 juin et tout vous livrer en une seule fois. Merci de me faire connaître votre choix. Cordialement, [Prénom Nom], agence de Gennevilliers, Chausson Matériaux.",
+        complement: "Barème détaillé. 1 point : objet précis mentionnant la commande. 1 point : le fait est annoncé dès le début, avec la référence et la quantité manquante (13 rouleaux). 1 point : la date précise du 26 juin figure dans le message. 1 point : les deux solutions sont présentées sans que l'élève impose son choix. Retirer 1 point si l'élève écrit « nous avons un problème » sans préciser lequel. Ne pas pénaliser l'orthographe, mais signaler les erreurs." },
+
+      { intitule: "Justifiez, en deux phrases, la solution que vous recommanderiez au client sans la lui imposer.", documents: ['Documents 3 et 4', 'Annexe 6'], bareme: 2,
+        reponse: "Je recommanderais la livraison partielle, parce que la note de Julien Bertrand indique que le chantier commence par les murs, qui nécessitent les parpaings, le ciment et la colle, tous disponibles. L'isolation n'étant posée qu'à partir du 29 juin, les rouleaux livrés le 26 juin arriveront à temps et le chantier ne prendra aucun retard.",
+        complement: "1 point pour le choix de la livraison partielle appuyé sur le planning du chantier (le document 4, et non une préférence personnelle). 1 point pour la démonstration que l'isolation, posée à partir du 29 juin, sera disponible dès le 26 juin : le reliquat arrive avant le besoin. Accepter la livraison complète si, et seulement si, l'élève l'argumente par un élément du dossier. Refuser toute réponse sans appui documentaire." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 3 - Suivre l'acheminement
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Situez chaque ligne de la commande dans le tableau de suivi, établissez le bon de préparation, puis planifiez la livraison sur le chantier de Colombes.",
+    contexte:
+      "Nous sommes le 18 juin 2026. Julien Bertrand a répondu à votre courriel : il choisit la livraison partielle. Les quatre références disponibles partiront le 22 juin comme prévu, les 13 rouleaux de laine de verre suivront après le 26 juin. Sandrine Vasseur vous confie la suite. Vous devez comprendre où en est chaque ligne de la commande dans le logiciel, préparer le document que l'équipe du dépôt utilisera pour rassembler la marchandise, et réserver un créneau de livraison compatible avec le chantier.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: 'Réponse de Julien Bertrand', texte: [
+        { mailLecture: {
+          de: 'j.bertrand@renoval.fr',
+          a: 'agence.gennevilliers@chaussonmateriaux.fr',
+          objet: 'RE : Commande 2026-4471 — disponibilité de la laine de verre ISO-100',
+          corps: [
+            'Reçu le 17 juin 2026 à 18 h 42.',
+            'Bonjour,',
+            "Merci pour votre message et pour la clarté des explications.",
+            "Je retiens la livraison partielle. Livrez-moi le 22 juin les parpaings, le ciment, la colle et le carrelage. Les rouleaux de laine de verre pourront arriver ensuite, nous ne posons l'isolation qu'à partir du 29 juin.",
+            "Attention, le chantier n'est accessible aux camions que le matin, avant 12 heures. L'après-midi, la rue est occupée par les échafaudages du bâtiment voisin.",
+            "Cordialement,",
+            'Julien Bertrand, gérant, SARL RENOVAL',
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: 'Tableau de suivi des commandes (logiciel ChaussonPro)', texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / commandes / suivi',
+          marque: 'ChaussonPro — Suivi des commandes',
+          couleurHeader: '#0B3C7A',
+          menu: ['Clients', 'Commandes', 'Stocks', 'Livraisons', 'Factures'],
+          sections: [
+            { type: 'titre', texte: 'Suivi des commandes en cours — Agence de Gennevilliers' },
+            { type: 'paragraphe', texte: "Écran du 18 juin 2026. Plusieurs commandes sont affichées. Seules les lignes de la commande 2026-4471 vous concernent." },
+            { type: 'tableau', entetes: ['Commande', 'Client', 'Réf.', 'Quantité', 'Statut', 'Date prévue'], lignes: [
+              ['2026-4468', 'SARL TOITNEUF', 'TUI-40', '600 tuiles', 'Livrée', '16/06/2026'],
+              ['2026-4471', 'SARL RENOVAL', 'PAR-20', '400 unités', 'À préparer', '22/06/2026'],
+              ['2026-4471', 'SARL RENOVAL', 'CIM-35', '60 sacs', 'À préparer', '22/06/2026'],
+              ['2026-4471', 'SARL RENOVAL', 'ISO-100', '25 rouleaux', 'En attente réappro.', '26/06/2026'],
+              ['2026-4471', 'SARL RENOVAL', 'CAR-60', '80 m²', 'À préparer', '22/06/2026'],
+              ['2026-4471', 'SARL RENOVAL', 'COL-25', '20 sacs', 'À préparer', '22/06/2026'],
+              ['2026-4474', 'EURL PLATRIS', 'PLA-13', '120 plaques', 'En préparation', '19/06/2026'],
+              ['2026-4475', 'SAS SOLBAT', 'GRA-04', '12 tonnes', 'À préparer', '23/06/2026'],
+            ] },
+            { type: 'sousTitre', texte: 'Signification des statuts' },
+            { type: 'tableau', entetes: ['Statut', 'Ce que cela veut dire'], lignes: [
+              ['À préparer', "La marchandise est en stock. Le dépôt ne l'a pas encore rassemblée."],
+              ['En préparation', "Le dépôt est en train de rassembler la marchandise sur une palette."],
+              ['En attente réappro.', "La marchandise n'est pas en stock. Elle est attendue du fournisseur."],
+              ['Chargée', "La marchandise est dans le camion. Le départ est imminent."],
+              ['Livrée', "La marchandise a été remise au client, qui a signé le bon de livraison."],
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: 'Procédure : établir un bon de préparation', texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Le bon de préparation' },
+            { type: 'paragraphe', texte: "Le bon de préparation (aussi appelé bon de sortie) est le document que l'équipe du dépôt utilise pour rassembler la marchandise. Il n'est jamais remis au client : c'est un document interne à l'entreprise." },
+            { type: 'paragraphe', texte: "Attention à ne pas le confondre avec le bon de livraison, qui accompagne la marchandise et que le client signe à réception." },
+            { type: 'sousTitre', texte: 'Ce qu’il doit contenir' },
+            { type: 'procedureEtapes', etapes: [
+              { titre: 'Étape 1 — Les références à sortir', detail: "Uniquement les lignes au statut « À préparer ». On ne prépare jamais une ligne en attente de réapprovisionnement." },
+              { titre: 'Étape 2 — Les quantités exactes', detail: "Recopier les quantités du bon de commande, sans les modifier." },
+              { titre: 'Étape 3 — Le nombre de palettes', detail: "Calculer combien de palettes seront nécessaires, en appliquant les règles de conditionnement." },
+              { titre: 'Étape 4 — La date et le lieu', detail: "Indiquer la date de départ et l'adresse exacte du chantier, jamais celle du siège du client." },
+            ] },
+            { type: 'sousTitre', texte: 'Règles de conditionnement de l’agence' },
+            { type: 'tableau', entetes: ['Référence', 'Conditionnement', 'Unités par palette'], lignes: [
+              ['PAR-20', 'Palette de parpaings', '100 unités'],
+              ['CIM-35', 'Palette de sacs de ciment', '40 sacs'],
+              ['CAR-60', 'Palette de carrelage', '40 m²'],
+              ['COL-25', 'Palette de sacs de colle', '40 sacs'],
+            ] },
+            { type: 'paragraphe', texte: "Pour trouver le nombre de palettes : Nombre de palettes = Quantité ÷ Unités par palette. Lorsque le résultat n'est pas un nombre entier, on arrondit toujours au nombre entier supérieur, car une palette entamée occupe une place entière dans le camion." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec la référence CIM-35 (ciment) : 60 sacs ÷ 40 sacs par palette = 1,5. On arrondit au nombre entier supérieur, soit 2 palettes." },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: 'Planning des livraisons de la semaine du 22 juin', texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Agence de Gennevilliers, service livraison' },
+        { intertitre: 'Créneaux disponibles — Camion-grue n° 2' },
+        { tableau: { colonnes: ['Créneau', 'Lundi 22/06', 'Mardi 23/06', 'Mercredi 24/06'], lignes: [
+          ['08 h 00 — 10 h 00', 'Libre', 'SAS SOLBAT', 'Libre'],
+          ['10 h 00 — 12 h 00', 'Libre', 'Libre', 'EURL PLATRIS'],
+          ['14 h 00 — 16 h 00', 'SARL TOITNEUF', 'Libre', 'Libre'],
+          ['16 h 00 — 18 h 00', 'Libre', 'Libre', 'Libre'],
+        ] } },
+        { intertitre: 'Contraintes à respecter' },
+        { puces: [
+          "Le camion-grue n° 2 est le seul véhicule capable de décharger des palettes de parpaings sur un chantier.",
+          "Sa capacité maximale est de 8 palettes par tournée.",
+          "Le trajet entre l'agence de Gennevilliers et le chantier de Colombes dure 25 minutes.",
+          "Un créneau ne peut accueillir qu'une seule livraison.",
+        ] },
+        { bulleConseil: { texte: ["Relisez le courriel du client au document 1. Il contient une contrainte d'accès au chantier qui élimine plusieurs créneaux."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: 'Activité 1 — Situer la commande dans le suivi',
+        contexte: "Le tableau de suivi affiche les commandes de plusieurs clients. Votre premier travail consiste à ne retenir que ce qui vous concerne.",
+        questions: [
+          { numero: 1, consigne: "Relevez les lignes de la commande 2026-4471 et indiquez le statut de chacune.", ressources: "Document 2, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Expliquez pourquoi la ligne ISO-100 porte un statut différent des quatre autres.", ressources: "Documents 1 et 2, annexe 2. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe2' },
+        ] },
+      { titre: 'Activité 2 — Établir le bon de préparation',
+        contexte: "L'équipe du dépôt attend votre document pour rassembler la marchandise. Une erreur ici, et le camion part incomplet.",
+        questions: [
+          { numero: 3, consigne: "Calculez le nombre de palettes nécessaires pour chaque référence à préparer.", ressources: "Document 3, annexe 3. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Complétez le bon de préparation destiné à l'équipe du dépôt.", ressources: 'Documents 2 et 3, annexe 4. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe4' },
+        ] },
+      { titre: 'Activité 3 — Planifier la livraison',
+        contexte: "Il reste à réserver un créneau. Le client a posé une contrainte : à vous de la retrouver et de la respecter.",
+        questions: [
+          { numero: 5, consigne: "Choisissez le créneau de livraison et justifiez votre choix par deux contraintes du dossier.", ressources: 'Documents 1 et 4, annexe 5. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Vérifiez que le chargement respecte la capacité du camion, puis concluez.", ressources: 'Documents 3 et 4, annexe 6. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les lignes de la commande 2026-4471', colonnes: ['Réf.', 'Quantité', 'Statut', 'Date prévue'], nbLignes: 5, largeurs: ['20%', '25%', '30%', '25%'], prerempli: [
+        ['PAR-20', '400 unités', 'À préparer', '22/06/2026'],
+        ['CIM-35', '', '', ''],
+        ['ISO-100', '', '', ''],
+        ['CAR-60', '', '', ''],
+        ['COL-25', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le cas de la ligne ISO-100', colonnes: ['Question', 'Réponse'], nbLignes: 3, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Quel est le statut de la ligne ISO-100 ?', ''],
+        ['Pourquoi ce statut est-il différent ?', ''],
+        ["Cette ligne doit-elle figurer sur le bon de préparation du 22 juin ? Justifiez.", ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul du nombre de palettes', colonnes: ['Réf.', 'Quantité', 'Calcul à poser', 'Résultat', 'Nombre de palettes'], nbLignes: 4, largeurs: ['14%', '18%', '28%', '18%', '22%'], prerempli: [
+        ['CIM-35', '60 sacs', '60 ÷ 40 =', '1,5', '2 palettes'],
+        ['PAR-20', '400 unités', '', '', ''],
+        ['CAR-60', '80 m²', '', '', ''],
+        ['COL-25', '20 sacs', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Bon de préparation n° BP-2026-4471', colonnes: ['Rubrique', 'À compléter'], nbLignes: 7, largeurs: ['40%', '60%'], prerempli: [
+        ['Numéro de commande', ''],
+        ['Client', ''],
+        ['Adresse de livraison', ''],
+        ['Date de départ', ''],
+        ['Références à sortir du dépôt', ''],
+        ['Références à ne PAS sortir', ''],
+        ['Nombre total de palettes', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Choix du créneau de livraison', colonnes: ['Élément', 'Réponse'], nbLignes: 4, largeurs: ['40%', '60%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Jour retenu', ''],
+        ['Créneau horaire retenu', ''],
+        ['Première contrainte justifiant ce choix', ''],
+        ['Seconde contrainte justifiant ce choix', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe6', titre: 'Annexe 6 — Vérification du chargement', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['40%', '32%', '28%'], prerempli: [
+        ['Nombre total de palettes à charger', '', ''],
+        ['Capacité maximale du camion-grue n° 2', '', ''],
+        ['Le chargement est-il possible en une seule tournée ?', '', ''],
+      ] },
+    ],
+
+    objectifs: [
+      "Lire un tableau de suivi et y repérer les lignes d'une commande précise",
+      "Interpréter le statut d'une ligne de commande",
+      "Calculer un nombre de palettes avec arrondi à l'entier supérieur",
+      "Établir un bon de préparation et planifier une livraison sous contraintes",
+    ],
+  },
+
+  synthese: {
+    titre: "Suivre l'acheminement d'une commande",
+    proposition: [
+      'À préparer',
+      'En préparation',
+      'En attente réappro.',
+      'Chargée',
+      'Livrée',
+      'Bon de préparation',
+      'Document interne',
+      'Bon de livraison',
+      'Signé par le client',
+      "Arrondi à l'entier supérieur",
+    ],
+    racine: {
+      id: 'racine',
+      texte: "L'acheminement de la commande",
+      enfants: [
+        { id: 'st', texte: 'Les statuts, dans l’ordre', enfants: [
+          { id: 'st1', texte: null, reponse: 'À préparer' },
+          { id: 'st2', texte: null, reponse: 'En préparation' },
+          { id: 'st3', texte: null, reponse: 'Chargée' },
+          { id: 'st4', texte: null, reponse: 'Livrée' },
+        ] },
+        { id: 'bl', texte: 'Le statut qui bloque', enfants: [
+          { id: 'bl1', texte: null, reponse: 'En attente réappro.' },
+        ] },
+        { id: 'dep', texte: 'Le document du dépôt', enfants: [
+          { id: 'd1', texte: null, reponse: 'Bon de préparation' },
+          { id: 'd2', texte: null, reponse: 'Document interne' },
+        ] },
+        { id: 'cli', texte: 'Le document du client', enfants: [
+          { id: 'cl1', texte: null, reponse: 'Bon de livraison' },
+          { id: 'cl2', texte: null, reponse: 'Signé par le client' },
+        ] },
+        { id: 'pal', texte: 'Le calcul des palettes', enfants: [
+          { id: 'p1', texte: null, reponse: "Arrondi à l'entier supérieur" },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Lire un tableau de suivi des commandes", indicateurs: [
+        { niveau: 'novice', description: "Je me perds entre les différentes commandes affichées." },
+        { niveau: 'debrouille', description: "Je retrouve les lignes qui concernent ma commande." },
+        { niveau: 'averti', description: "Je relève le statut de chaque ligne et j'en comprends le sens." },
+        { niveau: 'expert', description: "J'explique pourquoi une ligne porte un statut différent des autres et j'en tire les conséquences." },
+      ] },
+      { id: 'c2', intitule: "Établir un bon de préparation", indicateurs: [
+        { niveau: 'novice', description: "Je confonds le bon de préparation et le bon de livraison." },
+        { niveau: 'debrouille', description: "Je recopie les références et les quantités du bon de commande." },
+        { niveau: 'averti', description: "Je calcule le nombre de palettes et j'écarte la ligne en attente de réapprovisionnement." },
+        { niveau: 'expert', description: "J'indique l'adresse du chantier et non celle du siège, et je vérifie chaque rubrique." },
+      ] },
+      { id: 'c3', intitule: "Planifier une livraison sous contraintes", indicateurs: [
+        { niveau: 'novice', description: "Je choisis un créneau libre au hasard." },
+        { niveau: 'debrouille', description: "Je vérifie que le créneau est libre dans le planning." },
+        { niveau: 'averti', description: "Je tiens compte de la contrainte d'accès au chantier annoncée par le client." },
+        { niveau: 'expert', description: "Je vérifie aussi la capacité du camion et je justifie mon choix par plusieurs contraintes." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Tableau de suivi', definition: "Écran du logiciel qui affiche l'état d'avancement de toutes les commandes en cours." },
+      { terme: 'Statut', definition: "Étape à laquelle se trouve une ligne de commande dans le processus de livraison." },
+      { terme: 'À préparer', definition: "La marchandise est en stock mais le dépôt ne l'a pas encore rassemblée." },
+      { terme: 'En attente réapprovisionnement', definition: "La marchandise n'est pas en stock et elle est attendue du fournisseur." },
+      { terme: 'Bon de préparation', definition: "Document interne qui indique au dépôt quelle marchandise rassembler. Il n'est jamais remis au client." },
+      { terme: 'Bon de livraison', definition: "Document qui accompagne la marchandise et que le client signe à réception." },
+      { terme: 'Palette', definition: "Plateau de bois sur lequel la marchandise est empilée pour être transportée." },
+      { terme: 'Conditionnement', definition: "Nombre d'unités qu'une palette peut contenir pour une référence donnée." },
+      { terme: 'Arrondi à l’entier supérieur', definition: "Règle de calcul selon laquelle une palette entamée compte pour une palette entière." },
+      { terme: 'Camion-grue', definition: "Camion équipé d'un bras de levage, seul capable de décharger des palettes lourdes sur un chantier." },
+      { terme: 'Créneau de livraison', definition: "Plage horaire réservée dans le planning pour effectuer une livraison." },
+      { terme: 'Tournée', definition: "Trajet effectué par un camion pour livrer un ou plusieurs clients." },
+    ],
+    flashcards: [
+      { recto: 'Que signifie le statut « À préparer » ?', verso: "La marchandise est en stock mais le dépôt ne l'a pas encore rassemblée." },
+      { recto: 'Que signifie le statut « En attente réappro. » ?', verso: "La marchandise n'est pas en stock, elle est attendue du fournisseur." },
+      { recto: 'À qui est destiné le bon de préparation ?', verso: "À l'équipe du dépôt. C'est un document interne, jamais remis au client." },
+      { recto: 'À qui est destiné le bon de livraison ?', verso: 'Au client, qui le signe à réception de la marchandise.' },
+      { recto: 'Comment calcule-t-on le nombre de palettes ?', verso: "Quantité ÷ Unités par palette, arrondi à l'entier supérieur." },
+      { recto: 'Pourquoi arrondit-on à l’entier supérieur ?', verso: 'Une palette entamée occupe une place entière dans le camion.' },
+      { recto: 'Combien de sacs de ciment par palette ?', verso: '40 sacs.' },
+      { recto: 'Combien de parpaings par palette ?', verso: '100 unités.' },
+      { recto: 'Quelle est la capacité du camion-grue n° 2 ?', verso: '8 palettes par tournée.' },
+      { recto: 'Quelle adresse figure sur le bon de préparation ?', verso: "Celle du chantier, jamais celle du siège du client." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le bon de préparation est destiné :', options: ["à l'équipe du dépôt", 'au client', 'au fournisseur'], bonne: 0 },
+      { type: 'unique', question: 'Combien de lignes de la commande 2026-4471 sont au statut « À préparer » ?', options: ['Quatre', 'Cinq', 'Trois'], bonne: 0 },
+      { type: 'unique', question: 'La ligne ISO-100 porte le statut :', options: ['En attente réappro.', 'À préparer', 'Chargée'], bonne: 0 },
+      { type: 'unique', question: '400 parpaings, 100 par palette. Cela fait :', options: ['4 palettes', '5 palettes', '3 palettes'], bonne: 0 },
+      { type: 'unique', question: '80 m² de carrelage, 40 m² par palette. Cela fait :', options: ['2 palettes', '3 palettes', '1 palette'], bonne: 0 },
+      { type: 'unique', question: '20 sacs de colle, 40 sacs par palette. Cela fait :', options: ['1 palette', '0 palette', '2 palettes'], bonne: 0 },
+      { type: 'unique', question: 'Une palette à moitié remplie compte pour :', options: ['une palette entière', 'une demi-palette', 'rien du tout'], bonne: 0 },
+      { type: 'unique', question: 'Le chantier de Colombes est accessible aux camions :', options: ['le matin avant 12 heures', "l'après-midi seulement", 'à toute heure'], bonne: 0 },
+      { type: 'unique', question: 'La ligne ISO-100 doit-elle figurer sur le bon de préparation du 22 juin ?', options: ["Non, elle n'est pas en stock", 'Oui, comme les autres', 'Oui, mais en quantité réduite'], bonne: 0 },
+      { type: 'unique', question: 'Quelle adresse figure sur le bon de préparation ?', options: ['Celle du chantier', 'Celle du siège du client', "Celle de l'agence"], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Statut de commande', 'Document', 'Règle de calcul'],
+      zones: [
+        { libelle: 'À préparer', etiquetteIndex: 0 },
+        { libelle: "Rassemblé par l'équipe du dépôt", etiquetteIndex: 1 },
+        { libelle: "Arrondi à l'entier supérieur", etiquetteIndex: 2 },
+        { libelle: 'En attente réapprovisionnement', etiquetteIndex: 0 },
+        { libelle: 'Signé par le client à réception', etiquetteIndex: 1 },
+        { libelle: 'Quantité divisée par unités par palette', etiquetteIndex: 2 },
+        { libelle: 'Chargée', etiquetteIndex: 0 },
+        { libelle: 'Document interne à l’entreprise', etiquetteIndex: 1 },
+        { libelle: 'Une palette entamée compte pour une entière', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les lignes de la commande 2026-4471 et indiquez le statut de chacune.", documents: ['Document 2', 'Annexe 1'], bareme: 3,
+        reponse: "Le tableau de suivi affiche huit lignes appartenant à quatre commandes différentes. Seules cinq lignes portent le numéro 2026-4471.",
+        tableau: { colonnes: ['Réf.', 'Quantité', 'Statut', 'Date prévue'], lignes: [
+          ['PAR-20 (exemple fourni)', '400 unités', 'À préparer', '22/06/2026'],
+          ['CIM-35', '60 sacs', 'À préparer', '22/06/2026'],
+          ['ISO-100', '25 rouleaux', 'En attente réappro.', '26/06/2026'],
+          ['CAR-60', '80 m²', 'À préparer', '22/06/2026'],
+          ['COL-25', '20 sacs', 'À préparer', '22/06/2026'],
+        ] },
+        complement: "0,75 point par ligne correctement complétée (4 lignes à traiter, la première étant fournie). L'erreur à surveiller consiste à recopier des lignes appartenant à d'autres commandes, notamment 2026-4474 et 2026-4475 qui portent aussi le statut « À préparer ». Le tri par numéro de commande est la compétence évaluée ici." },
+
+      { intitule: "Expliquez pourquoi la ligne ISO-100 porte un statut différent des quatre autres.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 3,
+        reponse: "La laine de verre n'est pas en stock en quantité suffisante. Elle est attendue du fournisseur pour le 25 juin. Elle ne peut donc pas être préparée le 22 juin.",
+        tableau: { colonnes: ['Question', 'Réponse attendue'], lignes: [
+          ['Quel est le statut de la ligne ISO-100 ?', 'En attente réapprovisionnement.'],
+          ['Pourquoi ce statut est-il différent ?', "Il ne reste que 12 rouleaux disponibles sur les 25 commandés. La marchandise manquante est attendue du fournisseur pour le 25 juin."],
+          ['Doit-elle figurer sur le bon de préparation du 22 juin ?', "Non. On ne prépare jamais une ligne en attente de réapprovisionnement. Elle fera l'objet d'une seconde livraison après le 26 juin, conformément au choix du client."],
+        ] },
+        complement: "1 point par ligne. Sur la troisième, exiger à la fois le « non » et sa justification : la réponse « non » seule vaut 0,5 point. L'élève doit relier le statut du logiciel à la décision du client prise en mission 2." },
+
+      { intitule: "Calculez le nombre de palettes nécessaires pour chaque référence à préparer.", documents: ['Document 3', 'Annexe 3'], bareme: 4,
+        reponse: "Nombre de palettes = Quantité ÷ Unités par palette, arrondi à l'entier supérieur. La ligne CIM-35 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Quantité', 'Calcul posé', 'Résultat', 'Palettes'], lignes: [
+          ['CIM-35 (exemple fourni)', '60 sacs', '60 ÷ 40', '1,5', '2 palettes'],
+          ['PAR-20', '400 unités', '400 ÷ 100', '4', '4 palettes'],
+          ['CAR-60', '80 m²', '80 ÷ 40', '2', '2 palettes'],
+          ['COL-25', '20 sacs', '20 ÷ 40', '0,5', '1 palette'],
+        ] },
+        complement: "Environ 1,33 point par ligne : compter 1,5 point pour PAR-20 et CAR-60, 1 point pour COL-25. La ligne COL-25 est la seule qui teste réellement la règle d'arrondi : 0,5 palette devient 1 palette, car une palette entamée occupe une place entière. Un élève qui répond « 0 palette » ou « une demi-palette » n'a pas compris la règle." },
+
+      { intitule: "Complétez le bon de préparation destiné à l'équipe du dépôt.", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 4,
+        reponse: "Le bon de préparation ne comporte que les quatre références au statut « À préparer ». L'adresse est celle du chantier.",
+        tableau: { colonnes: ['Rubrique', 'Réponse attendue'], lignes: [
+          ['Numéro de commande', '2026-4471'],
+          ['Client', 'SARL RENOVAL'],
+          ['Adresse de livraison', '24 avenue de la République, 92700 Colombes'],
+          ['Date de départ', '22 juin 2026'],
+          ['Références à sortir du dépôt', 'PAR-20, CIM-35, CAR-60, COL-25'],
+          ['Références à ne PAS sortir', 'ISO-100'],
+          ['Nombre total de palettes', '9 palettes'],
+        ] },
+        complement: "0,5 point par rubrique, sauf « Références à sortir » et « Nombre total de palettes » qui valent 1 point chacune. Deux erreurs à traquer. Indiquer l'adresse du siège (8 rue Victor Hugo) au lieu du chantier : la rubrique est alors fausse. Inclure ISO-100 dans les références à sortir : c'est l'erreur la plus grave, elle enverrait le dépôt chercher une marchandise absente. Total des palettes : 4 + 2 + 2 + 1 = 9." },
+
+      { intitule: "Choisissez le créneau de livraison et justifiez votre choix par deux contraintes du dossier.", documents: ['Documents 1 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "La livraison doit avoir lieu le lundi 22 juin, sur un créneau du matin. Les créneaux 08 h 00 — 10 h 00 et 10 h 00 — 12 h 00 sont libres ce jour-là. L'un ou l'autre convient.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Jour retenu', 'Lundi 22 juin 2026'],
+          ['Créneau horaire retenu', '08 h 00 — 10 h 00 (ou 10 h 00 — 12 h 00)'],
+          ['Première contrainte', "Le client a fixé la livraison au 22 juin : c'est la date convenue et le chantier démarre ce jour-là."],
+          ['Seconde contrainte', "Le chantier n'est accessible aux camions que le matin, avant 12 heures. Les créneaux de l'après-midi sont donc exclus."],
+        ] },
+        complement: "1 point par ligne. Accepter indifféremment les deux créneaux du matin. Refuser le créneau 14 h 00 — 16 h 00 du lundi, occupé par TOITNEUF, mais aussi le 16 h 00 — 18 h 00, pourtant libre : c'est le piège de la question. Un élève qui ne relit pas le courriel du document 1 choisira un créneau libre l'après-midi et perdra les deux points de justification. La contrainte d'accès prime sur la disponibilité du planning." },
+
+      { intitule: "Vérifiez que le chargement respecte la capacité du camion, puis concluez.", documents: ['Documents 3 et 4', 'Annexe 6'], bareme: 2,
+        reponse: "Le total est de 9 palettes, alors que le camion-grue n° 2 n'en accepte que 8 par tournée. Le chargement ne passe pas en une seule fois.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Nombre total de palettes à charger', '4 + 2 + 2 + 1', '9 palettes'],
+          ['Capacité maximale du camion-grue n° 2', 'Donnée du document 4', '8 palettes'],
+          ['Chargement possible en une seule tournée ?', '9 > 8', 'Non, il faut deux tournées'],
+        ] },
+        complement: "1 point pour le total exact de 9 palettes, 1 point pour la conclusion négative correctement justifiée par la comparaison 9 > 8. Cette question est volontairement contre-intuitive : l'élève vient de préparer une livraison qu'il découvre irréalisable telle quelle. C'est une situation professionnelle authentique. Accepter toute conclusion qui constate l'impossibilité, qu'elle propose ou non une solution. Un élève qui répond « oui » n'a pas comparé les deux chiffres." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 4 - Controler la livraison et constater les reserves
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Comparez le bon de commande et le bon de livraison, chiffrez les écarts constatés, puis rédigez les réserves à porter sur le bon de livraison.",
+    contexte:
+      "Nous sommes le 22 juin 2026, en fin de matinée. La livraison a eu lieu sur le chantier de Colombes en deux tournées, les neuf palettes ne tenant pas dans le camion-grue. Le chauffeur, Éric Vasnier, revient à l'agence avec le bon de livraison annoté. Julien Bertrand a refusé de signer sans réserve : quatre sacs de ciment sont éventrés et une palette de parpaings n'a jamais été déchargée. Sandrine Vasseur vous demande de contrôler ce qui a été réellement livré, de chiffrer ce qui manque, et de rédiger les réserves. Rien ne pourra être facturé tant que ce travail n'est pas fait.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: 'Bon de commande n° 2026-4471 (rappel)', texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Agence de Gennevilliers, 12 rue des Bâtisseurs, 92230 Gennevilliers' },
+        { intertitre: 'Articles à livrer le 22 juin 2026' },
+        { paragraphes: [
+          "Rappel : la référence ISO-100 (laine de verre) ne fait pas partie de cette livraison. Elle sera livrée après le 26 juin, conformément au choix du client.",
+        ] },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Quantité commandée', 'Prix unitaire HT', 'Remise', 'Prix unitaire net HT'], lignes: [
+          ['PAR-20', 'Parpaing creux 20x20x50', '400 unités', '1,85 €', '5 %', '1,7575 €'],
+          ['CIM-35', 'Ciment CEM II 35 kg', '60 sacs', '7,20 €', '5 %', '6,84 €'],
+          ['CAR-60', 'Carrelage grès 60x60', '80 m²', '18,90 €', '5 %', '17,955 €'],
+          ['COL-25', 'Colle carrelage 25 kg', '20 sacs', '14,60 €', '5 %', '13,87 €'],
+        ] } },
+        { bulleConseil: { texte: ["Le prix unitaire net HT est le prix après remise. Il est déjà calculé pour vous : c'est celui qu'il faudra utiliser pour chiffrer les écarts."] } },
+      ] },
+
+      { numero: 2, titre: 'Bon de livraison n° BL-2026-3312, annoté par le chauffeur', texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Bon de livraison BL-2026-3312' },
+        { intertitre: 'Livraison du 22 juin 2026 — Chantier 24 avenue de la République, 92700 Colombes' },
+        { tableau: { colonnes: ['Informations', ''], lignes: [
+          ['Commande rattachée', '2026-4471'],
+          ['Client', 'SARL RENOVAL'],
+          ['Chauffeur', 'Éric Vasnier'],
+          ['Heure de la première tournée', '08 h 40'],
+          ['Heure de la seconde tournée', '11 h 15'],
+          ['Reçu par', 'Julien Bertrand, gérant'],
+        ] } },
+        { intertitre: 'Détail de ce qui a été déchargé' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Quantité déchargée', 'État constaté'], lignes: [
+          ['PAR-20', 'Parpaing creux 20x20x50', '300 unités', 'Conforme'],
+          ['CIM-35', 'Ciment CEM II 35 kg', '60 sacs', '4 sacs éventrés, ciment durci'],
+          ['CAR-60', 'Carrelage grès 60x60', '80 m²', 'Conforme'],
+          ['COL-25', 'Colle carrelage 25 kg', '20 sacs', 'Conforme'],
+        ] } },
+        { intertitre: 'Annotation manuscrite du chauffeur' },
+        { paragraphes: [
+          "« Seconde tournée : la quatrième palette de parpaings est restée au dépôt, le camion était plein. Non déchargée sur le chantier. »",
+          "« Quatre sacs de ciment ont pris l'eau pendant la nuit au dépôt. Le client les refuse, le ciment est durci. Sacs laissés sur place, en attente de reprise. »",
+        ] },
+        { intertitre: 'Signature du client' },
+        { paragraphes: [
+          "« Je refuse de signer sans réserve. J. Bertrand »",
+        ] },
+      ] },
+
+      { numero: 3, titre: 'Procédure : contrôler une livraison et rédiger des réserves', texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Contrôler une livraison' },
+            { type: 'paragraphe', texte: "Contrôler une livraison, c'est comparer deux documents ligne à ligne : ce qui était commandé, et ce qui a été réellement déchargé et accepté par le client." },
+            { type: 'sousTitre', texte: 'Deux anomalies différentes' },
+            { type: 'tableau', entetes: ['Anomalie', 'Ce que cela veut dire', 'Exemple'], lignes: [
+              ['Manquant', "La marchandise n'a jamais été déchargée chez le client.", 'Une palette restée au dépôt.'],
+              ['Non conforme', "La marchandise a été déchargée, mais elle est inutilisable. Le client la refuse.", 'Des sacs de ciment éventrés.'],
+            ] },
+            { type: 'paragraphe', texte: "Dans les deux cas, le client ne doit pas payer ces marchandises. La conséquence financière est la même, mais la cause est différente : il faut le préciser dans les réserves." },
+            { type: 'sousTitre', texte: 'Comment chiffrer un écart' },
+            { type: 'paragraphe', texte: "Montant de l'écart HT = Quantité en écart × Prix unitaire net HT" },
+            { type: 'paragraphe', texte: "Le prix unitaire net HT est le prix après remise. On ne réapplique jamais la remise une seconde fois : elle est déjà comprise dans ce prix." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec la référence CIM-35 (ciment) : 4 sacs sont refusés. Le prix unitaire net HT est de 6,84 €. L'écart vaut donc 4 × 6,84 = 27,36 €." },
+            { type: 'sousTitre', texte: 'Rédiger une réserve' },
+            { type: 'paragraphe', texte: "Une réserve (au sens du droit commercial : une observation écrite qui protège le client) doit être portée sur le bon de livraison au moment de la réception. Passé ce moment, le client ne peut plus rien contester." },
+            { type: 'procedureEtapes', etapes: [
+              { titre: 'Étape 1 — La date', detail: "Indiquer la date exacte de la livraison. Une réserve non datée n'a aucune valeur." },
+              { titre: 'Étape 2 — La référence et la quantité', detail: "Nommer précisément le produit et la quantité concernée. Écrire « du ciment abîmé » ne suffit pas." },
+              { titre: 'Étape 3 — La nature de l’anomalie', detail: "Préciser si le produit est manquant ou non conforme, et pourquoi." },
+              { titre: 'Étape 4 — La suite donnée', detail: "Annoncer ce que l'entreprise va faire : établir un avoir, relivrer, reprendre la marchandise." },
+            ] },
+            { type: 'citation', texte: "Une livraison acceptée sans réserve est réputée conforme. Le client qui signe sans réserve renonce à toute contestation ultérieure.", auteur: 'Conditions générales de vente, article 7' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: 'Note de Sandrine Vasseur', texte: [
+        { noteDirection: {
+          titre: 'Ce que j’attends de vous',
+          signature: 'Sandrine Vasseur, responsable du comptoir professionnel',
+          intro: "Le chauffeur est rentré, le bon de livraison est sur votre bureau. Julien Bertrand a raison de refuser de signer en l'état.",
+          paragraphe: "Ne cherchez pas à savoir qui a commis l'erreur. Ce n'est pas votre travail aujourd'hui. Votre travail est de constater exactement ce qui manque, de le chiffrer au centime près, et de l'écrire noir sur blanc. C'est ce document qui servira de base à l'avoir que vous établirez ensuite.",
+          puces: [
+            "Comparez ligne à ligne : commandé d'un côté, réellement accepté de l'autre.",
+            "Une marchandise refusée n'est pas une marchandise livrée. Elle ne se facture pas.",
+            "Le carrelage et la colle sont conformes : ne les touchez pas.",
+            "Utilisez le prix unitaire net HT, celui qui figure déjà sur le bon de commande.",
+          ],
+          conclusion: "Rédigez les réserves aujourd'hui. Demain, il sera trop tard pour le client.",
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: 'Activité 1 — Comparer et constater',
+        contexte: "Deux documents, une seule vérité : ce que le client a réellement accepté. Prenez-les côte à côte.",
+        questions: [
+          { numero: 1, consigne: "Comparez les quantités commandées et les quantités réellement acceptées, puis relevez les écarts.", ressources: "Documents 1 et 2, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Qualifiez chaque anomalie en distinguant le manquant du non conforme, puis justifiez.", ressources: "Documents 2 et 3, annexe 2. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe2' },
+        ] },
+      { titre: 'Activité 2 — Chiffrer les écarts',
+        contexte: "Sandrine Vasseur exige le centime près. Ce chiffre servira de base à l'avoir de la mission suivante.",
+        questions: [
+          { numero: 3, consigne: "Calculez le montant HT de chaque écart, puis le total HT à créditer au client.", ressources: "Documents 1 et 3, annexe 3. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Vérifiez le montant HT réellement livré et accepté, puis contrôlez la cohérence de vos calculs.", ressources: "Documents 1 et 2, annexe 4. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe4' },
+        ] },
+      { titre: 'Activité 3 — Rédiger les réserves',
+        contexte: "Le document que vous allez écrire protège le client. Sans lui, il perd tout recours.",
+        questions: [
+          { numero: 5, consigne: "Rédigez les deux réserves à porter sur le bon de livraison en respectant les quatre étapes.", ressources: 'Documents 2 et 3, annexe 5. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi une livraison signée sans réserve engage le client.", ressources: 'Document 3, annexe 6. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Relevé des écarts', colonnes: ['Réf.', 'Quantité commandée', 'Quantité acceptée', 'Écart (en quantité)'], nbLignes: 4, largeurs: ['16%', '28%', '28%', '28%'], prerempli: [
+        ['CIM-35', '60 sacs', '56 sacs', '4 sacs'],
+        ['PAR-20', '400 unités', '', ''],
+        ['CAR-60', '80 m²', '', ''],
+        ['COL-25', '20 sacs', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Nature des anomalies', colonnes: ['Réf.', 'Manquant ou non conforme ?', 'Justification'], nbLignes: 2, largeurs: ['16%', '30%', '54%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['PAR-20', '', ''],
+        ['CIM-35', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Chiffrage des écarts', colonnes: ['Réf.', 'Quantité en écart', 'Prix unitaire net HT', 'Calcul à poser', 'Montant HT'], nbLignes: 3, largeurs: ['14%', '19%', '21%', '24%', '22%'], prerempli: [
+        ['CIM-35', '4 sacs', '6,84 €', '4 × 6,84 =', '27,36 €'],
+        ['PAR-20', '', '', '', ''],
+        ['TOTAL HT à créditer', '', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Contrôle de cohérence', colonnes: ['Élément', 'Calcul à poser', 'Montant HT'], nbLignes: 4, largeurs: ['40%', '32%', '28%'], prerempli: [
+        ['Total HT des 4 références livrables (bon de commande)', '703,00 + 410,40 + 1 436,40 + 277,40 =', ''],
+        ['Total HT des écarts (annexe 3)', '', ''],
+        ['Montant HT réellement livré et accepté', '', ''],
+        ['Ce montant est-il inférieur au total commandé ? (oui / non)', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Réserves à porter sur le bon de livraison BL-2026-3312', colonnes: ['Étape', 'Réserve n° 1 (parpaings)', 'Réserve n° 2 (ciment)'], nbLignes: 4, largeurs: ['22%', '39%', '39%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Date de la livraison', '', ''],
+        ['Référence et quantité', '', ''],
+        ["Nature de l'anomalie", '', ''],
+        ['Suite donnée par l’agence', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: 'Annexe 6 — La portée de la signature', lignes: 4 },
+    ],
+
+    objectifs: [
+      "Comparer un bon de commande et un bon de livraison ligne à ligne",
+      "Distinguer une marchandise manquante d'une marchandise non conforme",
+      "Chiffrer un écart au moyen du prix unitaire net HT",
+      "Rédiger des réserves datées, précises et complètes",
+    ],
+  },
+
+  synthese: {
+    titre: 'Contrôler une livraison',
+    proposition: [
+      'Bon de commande',
+      'Bon de livraison',
+      'Manquant',
+      'Non conforme',
+      "Jamais déchargé",
+      'Déchargé puis refusé',
+      'Prix unitaire net HT',
+      'Réserve',
+      'Datée et précise',
+      'Signature sans réserve',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le contrôle de la livraison',
+      enfants: [
+        { id: 'doc', texte: 'Les deux documents à comparer', enfants: [
+          { id: 'd1', texte: null, reponse: 'Bon de commande' },
+          { id: 'd2', texte: null, reponse: 'Bon de livraison' },
+        ] },
+        { id: 'an1', texte: 'Première anomalie', enfants: [
+          { id: 'a1', texte: null, reponse: 'Manquant' },
+          { id: 'a2', texte: null, reponse: 'Jamais déchargé' },
+        ] },
+        { id: 'an2', texte: 'Seconde anomalie', enfants: [
+          { id: 'b1', texte: null, reponse: 'Non conforme' },
+          { id: 'b2', texte: null, reponse: 'Déchargé puis refusé' },
+        ] },
+        { id: 'chi', texte: 'Le chiffrage', enfants: [
+          { id: 'c1', texte: null, reponse: 'Prix unitaire net HT' },
+        ] },
+        { id: 'ecr', texte: "L'écrit qui protège le client", enfants: [
+          { id: 'e1', texte: null, reponse: 'Réserve' },
+          { id: 'e2', texte: null, reponse: 'Datée et précise' },
+        ] },
+        { id: 'dan', texte: 'Ce qui fait perdre tout recours', enfants: [
+          { id: 'f1', texte: null, reponse: 'Signature sans réserve' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Comparer un bon de commande et un bon de livraison", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelles colonnes comparer." },
+        { niveau: 'debrouille', description: "Je repère qu'une quantité livrée est inférieure à la quantité commandée." },
+        { niveau: 'averti', description: "Je relève tous les écarts, y compris ceux dus à un refus du client." },
+        { niveau: 'expert', description: "Je comprends qu'une marchandise déchargée mais refusée n'est pas une marchandise livrée." },
+      ] },
+      { id: 'c2', intitule: "Chiffrer un écart de livraison", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quel prix utiliser." },
+        { niveau: 'debrouille', description: "Je multiplie la quantité par le prix unitaire." },
+        { niveau: 'averti', description: "J'utilise le prix unitaire net HT et je ne réapplique pas la remise." },
+        { niveau: 'expert', description: "Je vérifie la cohérence de mes calculs en recomposant le montant réellement livré." },
+      ] },
+      { id: 'c3', intitule: "Rédiger une réserve", indicateurs: [
+        { niveau: 'novice', description: "J'écris que la marchandise est abîmée, sans plus de précision." },
+        { niveau: 'debrouille', description: "Je nomme le produit et la quantité concernée." },
+        { niveau: 'averti', description: "Je date ma réserve, je précise la nature de l'anomalie et la suite donnée." },
+        { niveau: 'expert', description: "J'explique pourquoi une réserve non écrite le jour même fait perdre tout recours au client." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Réserve', definition: "Observation écrite portée sur le bon de livraison au moment de la réception. Elle protège le client." },
+      { terme: 'Marchandise manquante', definition: "Marchandise qui n'a jamais été déchargée chez le client." },
+      { terme: 'Marchandise non conforme', definition: "Marchandise déchargée mais inutilisable, que le client refuse." },
+      { terme: 'Prix unitaire net HT', definition: "Prix d'une unité après application de la remise, avant la TVA." },
+      { terme: 'Écart de livraison', definition: "Différence entre la quantité commandée et la quantité réellement acceptée par le client." },
+      { terme: 'Bon de livraison', definition: "Document qui accompagne la marchandise et que le client signe à réception." },
+      { terme: 'Ciment durci', definition: "Ciment ayant pris l'humidité. Il ne peut plus être utilisé et perd toute valeur." },
+      { terme: 'Reprise', definition: "Retour de la marchandise refusée vers le dépôt de l'agence." },
+      { terme: 'Relivraison', definition: "Nouvelle livraison de la marchandise manquante, à une date ultérieure." },
+      { terme: 'Avoir', definition: "Document par lequel l'entreprise reconnaît devoir de l'argent au client." },
+      { terme: 'Conditions générales de vente', definition: "Règles contractuelles qui s'appliquent à toutes les ventes de l'entreprise." },
+      { terme: 'Livraison réputée conforme', definition: "Livraison acceptée sans réserve. Le client ne peut plus la contester ensuite." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une marchandise manquante ?", verso: "Une marchandise qui n'a jamais été déchargée chez le client." },
+      { recto: "Qu'est-ce qu'une marchandise non conforme ?", verso: 'Une marchandise déchargée mais inutilisable, que le client refuse.' },
+      { recto: "Une marchandise refusée est-elle facturée ?", verso: "Non. Une marchandise refusée n'est pas une marchandise livrée." },
+      { recto: "Comment chiffre-t-on un écart HT ?", verso: 'Quantité en écart × Prix unitaire net HT.' },
+      { recto: 'Faut-il réappliquer la remise sur le prix net ?', verso: "Non, jamais. Elle est déjà comprise dans le prix unitaire net HT." },
+      { recto: 'Quelles sont les quatre étapes d’une réserve ?', verso: "La date, la référence et la quantité, la nature de l'anomalie, la suite donnée." },
+      { recto: 'Que vaut une réserve non datée ?', verso: 'Rien. Elle est sans valeur.' },
+      { recto: 'Que se passe-t-il si le client signe sans réserve ?', verso: 'La livraison est réputée conforme et il ne peut plus rien contester.' },
+      { recto: 'Quel est le prix unitaire net HT du ciment CIM-35 ?', verso: '6,84 €, soit 7,20 € moins 5 % de remise.' },
+      { recto: "Quand une réserve doit-elle être écrite ?", verso: 'Au moment de la réception, le jour même.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Une palette restée au dépôt est une marchandise :", options: ['manquante', 'non conforme', 'conforme'], bonne: 0 },
+      { type: 'unique', question: "Quatre sacs de ciment éventrés et refusés sont une marchandise :", options: ['non conforme', 'manquante', 'livrée'], bonne: 0 },
+      { type: 'unique', question: 'Combien de parpaings ont été réellement acceptés ?', options: ['300 unités', '400 unités', '100 unités'], bonne: 0 },
+      { type: 'unique', question: 'Combien de sacs de ciment ont été réellement acceptés ?', options: ['56 sacs', '60 sacs', '4 sacs'], bonne: 0 },
+      { type: 'unique', question: "L'écart sur le ciment vaut :", options: ['27,36 €', '28,80 €', '30,24 €'], bonne: 0 },
+      { type: 'unique', question: "L'écart sur les parpaings vaut :", options: ['175,75 €', '185,00 €', '175,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT à créditer au client est de :', options: ['203,11 €', '213,80 €', '193,50 €'], bonne: 0 },
+      { type: 'unique', question: 'Une réserve doit obligatoirement comporter :', options: ['une date', 'un tampon', 'une photographie'], bonne: 0 },
+      { type: 'unique', question: 'Le carrelage et la colle sont :', options: ['conformes, rien à signaler', 'manquants', 'non conformes'], bonne: 0 },
+      { type: 'unique', question: 'Signer sans réserve signifie que :', options: ['la livraison est réputée conforme', 'le client peut contester un mois', 'la facture est annulée'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Marchandise manquante', 'Marchandise non conforme', 'Règle de la réserve'],
+      zones: [
+        { libelle: 'La palette est restée au dépôt', etiquetteIndex: 0 },
+        { libelle: 'Les sacs de ciment sont éventrés', etiquetteIndex: 1 },
+        { libelle: 'Elle doit être datée du jour de la livraison', etiquetteIndex: 2 },
+        { libelle: 'Elle n’a jamais été déchargée', etiquetteIndex: 0 },
+        { libelle: 'Le client refuse la marchandise déchargée', etiquetteIndex: 1 },
+        { libelle: 'Elle nomme la référence et la quantité', etiquetteIndex: 2 },
+        { libelle: 'Cent parpaings absents du chantier', etiquetteIndex: 0 },
+        { libelle: 'Le ciment a durci, il est inutilisable', etiquetteIndex: 1 },
+        { libelle: 'Sans elle, la livraison est réputée conforme', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Comparez les quantités commandées et les quantités réellement acceptées, puis relevez les écarts.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 3,
+        reponse: "Le point délicat porte sur le ciment. Le bon de livraison indique 60 sacs déchargés, mais 4 sont éventrés et refusés. La quantité acceptée n'est donc que de 56 sacs.",
+        tableau: { colonnes: ['Réf.', 'Qté commandée', 'Qté acceptée', 'Écart'], lignes: [
+          ['CIM-35 (exemple fourni)', '60 sacs', '56 sacs', '4 sacs'],
+          ['PAR-20', '400 unités', '300 unités', '100 unités'],
+          ['CAR-60', '80 m²', '80 m²', 'Aucun'],
+          ['COL-25', '20 sacs', '20 sacs', 'Aucun'],
+        ] },
+        complement: "1 point par ligne (3 lignes à traiter, la première étant fournie). L'erreur majeure consiste à recopier « 60 sacs » comme quantité acceptée pour le ciment, en se fiant à la colonne « Quantité déchargée » du bon de livraison. Déchargé ne veut pas dire accepté. Cette distinction est le cœur de la mission : ne pas accorder le point si l'élève l'a manquée sur l'exemple fourni." },
+
+      { intitule: "Qualifiez chaque anomalie en distinguant le manquant du non conforme, puis justifiez.", documents: ['Documents 2 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "Les deux anomalies ont la même conséquence financière mais des causes différentes.",
+        tableau: { colonnes: ['Réf.', 'Nature', 'Justification attendue'], lignes: [
+          ['PAR-20', 'Manquante', "La quatrième palette de parpaings est restée au dépôt, le camion étant plein. Ces 100 unités n'ont jamais été déchargées sur le chantier."],
+          ['CIM-35', 'Non conforme', "Les 4 sacs ont bien été déchargés, mais ils sont éventrés et le ciment a durci. Le client les refuse : ils sont inutilisables."],
+        ] },
+        complement: "0,5 point pour chaque qualification exacte, 1 point pour chaque justification. Exiger dans la justification du ciment l'idée que la marchandise a bien été déchargée : c'est ce qui la distingue du manquant. Un élève qui qualifie les deux anomalies de « manquantes » n'a pas lu le document 3." },
+
+      { intitule: "Calculez le montant HT de chaque écart, puis le total HT à créditer au client.", documents: ['Documents 1 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "Montant de l'écart HT = Quantité en écart × Prix unitaire net HT. La ligne CIM-35 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Qté en écart', 'P.U. net HT', 'Calcul posé', 'Montant HT'], lignes: [
+          ['CIM-35 (exemple fourni)', '4 sacs', '6,84 €', '4 × 6,84', '27,36 €'],
+          ['PAR-20', '100 unités', '1,7575 €', '100 × 1,7575', '175,75 €'],
+          ['TOTAL HT à créditer', '', '', '27,36 + 175,75', '203,11 €'],
+        ] },
+        complement: "3 points pour la ligne PAR-20 (1 point pour la quantité et le prix relevés, 1 point pour le calcul posé, 1 point pour le résultat). 2 points pour le total. Attention au prix unitaire net du parpaing : 1,7575 €, avec quatre décimales. Un élève qui arrondit à 1,76 € obtient 176,00 € et un total de 203,36 €, soit 25 centimes d'écart. Accepter ce résultat en retirant 1 point, en signalant que l'agence facture au centime près. Refuser en revanche le calcul 100 × 1,85 = 185,00 €, qui oublie la remise, et le calcul 100 × 1,85 × 0,95 posé sans utiliser le prix net fourni." },
+
+      { intitule: "Vérifiez le montant HT réellement livré et accepté, puis contrôlez la cohérence de vos calculs.", documents: ['Documents 1 et 2', 'Annexe 4'], bareme: 4,
+        reponse: "On retranche le total des écarts au total commandé. Le résultat doit correspondre à ce que le client a réellement reçu et accepté.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Montant HT'], lignes: [
+          ['Total HT des 4 références livrables', '703,00 + 410,40 + 1 436,40 + 277,40', '2 827,20 €'],
+          ['Total HT des écarts (annexe 3)', 'Reporté de l’annexe 3', '203,11 €'],
+          ['Montant HT réellement livré et accepté', '2 827,20 − 203,11', '2 624,09 €'],
+          ['Inférieur au total commandé ?', '2 624,09 < 2 827,20', 'Oui'],
+        ] },
+        complement: "1 point par ligne. Vérification du premier total : 703,00 + 410,40 = 1 113,40 ; + 1 436,40 = 2 549,80 ; + 277,40 = 2 827,20. Rappeler que la laine de verre ISO-100 (771,88 €) ne figure pas dans ce total, puisqu'elle ne faisait pas partie de la livraison du 22 juin. Un élève qui l'ajoute obtient 3 599,08 € : il a repris le total du bon de commande sans réfléchir à la livraison partielle décidée en mission 2." },
+
+      { intitule: "Rédigez les deux réserves à porter sur le bon de livraison en respectant les quatre étapes.", documents: ['Documents 2 et 3', 'Annexe 5'], bareme: 3,
+        reponse: "Réserve n° 1 : le 22 juin 2026, 100 parpaings creux 20x20x50 (référence PAR-20) sur les 400 commandés n'ont pas été déchargés sur le chantier. Marchandise manquante, restée au dépôt de l'agence. Un avoir sera établi et la marchandise sera relivrée. Réserve n° 2 : le 22 juin 2026, 4 sacs de ciment CEM II 35 kg (référence CIM-35) sur les 60 livrés sont éventrés et le ciment a durci. Marchandise non conforme, refusée par le client. Les sacs seront repris par l'agence et un avoir sera établi.",
+        tableau: { colonnes: ['Étape', 'Réserve n° 1 (parpaings)', 'Réserve n° 2 (ciment)'], lignes: [
+          ['Date de la livraison', '22 juin 2026', '22 juin 2026'],
+          ['Référence et quantité', '100 unités de PAR-20 sur 400 commandées', '4 sacs de CIM-35 sur 60 livrés'],
+          ["Nature de l'anomalie", 'Manquante : palette non déchargée, restée au dépôt', 'Non conforme : sacs éventrés, ciment durci, refusés par le client'],
+          ['Suite donnée', 'Avoir établi et relivraison programmée', 'Avoir établi et reprise des sacs'],
+        ] },
+        complement: "0,375 point par case correctement renseignée, soit 3 points pour les 8 cases. La date doit figurer sur les deux réserves : une réserve non datée est sans valeur, comme l'indique le document 3. Refuser les formulations vagues du type « du ciment abîmé » ou « des parpaings en moins ». La référence et la quantité chiffrée sont exigées." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi une livraison signée sans réserve engage le client.", documents: ['Document 3', 'Annexe 6'], bareme: 2,
+        reponse: "L'article 7 des conditions générales de vente prévoit qu'une livraison acceptée sans réserve est réputée conforme. En signant sans rien écrire, le client reconnaît avoir tout reçu en bon état et renonce définitivement à contester la livraison.",
+        complement: "1 point pour la notion de conformité présumée, appuyée sur le document 3. 1 point pour la conséquence : la perte du droit de contester. Accepter « il ne peut plus rien réclamer ». Valoriser sans l'exiger l'élève qui comprend que la réserve protège d'abord le client, et non l'agence. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 5 - Etablir l'avoir
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Calculez le montant HT, la TVA et le montant TTC de l'avoir, complétez le document dans le logiciel, puis vérifiez le solde restant dû par le client.",
+    contexte:
+      "Nous sommes le 23 juin 2026. Les réserves que vous avez rédigées hier sont validées par Sandrine Vasseur. Le service facturation a émis la facture FA-2026-07655 pour la totalité des quatre références livrables, sans tenir compte des anomalies : c'est la procédure, la facture suit toujours le bon de commande. C'est donc l'avoir qui vient corriger cette facture. Sandrine Vasseur vous confie son établissement. Un avoir mal calculé, et le client paie une marchandise qu'il n'a jamais reçue.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: 'Facture n° FA-2026-07655', texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Agence de Gennevilliers, 12 rue des Bâtisseurs, 92230 Gennevilliers' },
+        { intertitre: 'FACTURE N° FA-2026-07655' },
+        { tableau: { colonnes: ['Informations', ''], lignes: [
+          ['Date de la facture', '23 juin 2026'],
+          ['Client', 'SARL RENOVAL — Compte CL-2214'],
+          ['Commande rattachée', '2026-4471'],
+          ['Bon de livraison', 'BL-2026-3312 du 22 juin 2026'],
+          ['Conditions de règlement', '30 jours fin de mois'],
+          ['Date d’échéance', '31 juillet 2026'],
+        ] } },
+        { intertitre: 'Articles facturés' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Quantité facturée', 'P.U. net HT', 'Total HT'], lignes: [
+          ['PAR-20', 'Parpaing creux 20x20x50', '400 unités', '1,7575 €', '703,00 €'],
+          ['CIM-35', 'Ciment CEM II 35 kg', '60 sacs', '6,84 €', '410,40 €'],
+          ['CAR-60', 'Carrelage grès 60x60', '80 m²', '17,955 €', '1 436,40 €'],
+          ['COL-25', 'Colle carrelage 25 kg', '20 sacs', '13,87 €', '277,40 €'],
+        ] } },
+        { tableau: { colonnes: ['Récapitulatif', 'Montant'], lignes: [
+          ['Total HT', '2 827,20 €'],
+          ['TVA 20 %', '565,44 €'],
+          ['Total TTC à payer', '3 392,64 €'],
+        ] } },
+        { bulleConseil: { texte: ["Observez bien les quantités facturées. La facture a été établie à partir du bon de commande, et non du bon de livraison. C'est précisément ce que l'avoir va corriger."] } },
+      ] },
+
+      { numero: 2, titre: 'Rappel des réserves du 22 juin 2026', texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Bon de livraison BL-2026-3312, réserves' },
+        { intertitre: 'Réserves portées par le client à la réception' },
+        { tableau: { colonnes: ['Réserve', 'Réf.', 'Quantité', 'Nature', 'Montant HT'], lignes: [
+          ['N° 1', 'PAR-20', '100 unités', 'Manquante : palette non déchargée', '175,75 €'],
+          ['N° 2', 'CIM-35', '4 sacs', 'Non conforme : sacs éventrés, ciment durci', '27,36 €'],
+        ] } },
+        { paragraphes: [
+          "Total HT des marchandises non livrées ou refusées : 203,11 €.",
+          "Le carrelage (CAR-60) et la colle (COL-25) sont conformes. Ils ne figurent pas dans l'avoir.",
+        ] },
+      ] },
+
+      { numero: 3, titre: "Procédure : établir un avoir", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: "L'avoir, ou facture d'avoir" },
+            { type: 'paragraphe', texte: "Un avoir (document par lequel l'entreprise reconnaît devoir de l'argent au client) vient corriger une facture déjà émise. Il ne l'annule pas : il en retranche une partie." },
+            { type: 'paragraphe', texte: "L'avoir porte toujours un numéro propre, distinct de celui de la facture. Il mentionne obligatoirement la facture qu'il corrige." },
+            { type: 'sousTitre', texte: 'Une question que les élèves posent souvent' },
+            { type: 'paragraphe', texte: "Pourquoi établir un avoir sur les parpaings manquants, puisqu'ils seront relivrés plus tard ? Parce que la facture FA-2026-07655 les a déjà facturés. Tant que l'avoir n'est pas émis, le client doit payer 400 parpaings alors qu'il n'en a reçu que 300. Quand la relivraison aura lieu, une nouvelle facture sera établie pour les 100 parpaings manquants." },
+            { type: 'sousTitre', texte: 'Les trois calculs de l’avoir' },
+            { type: 'paragraphe', texte: "1. Montant HT de l'avoir = somme des montants HT des marchandises non livrées ou refusées." },
+            { type: 'paragraphe', texte: "2. Montant de la TVA = Montant HT × 0,20" },
+            { type: 'paragraphe', texte: "3. Montant TTC de l'avoir = Montant HT + Montant de la TVA" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : une entreprise doit créditer 500,00 € HT à un client. La TVA vaut 500,00 × 0,20 = 100,00 €. Le montant TTC de l'avoir est donc 500,00 + 100,00 = 600,00 €." },
+            { type: 'sousTitre', texte: 'Le solde restant dû' },
+            { type: 'paragraphe', texte: "Solde restant dû TTC = Total TTC de la facture − Total TTC de l'avoir" },
+            { type: 'paragraphe', texte: "Une seconde méthode permet de vérifier ce résultat : on recalcule directement le montant réellement livré. Solde HT = Total HT facturé − Total HT de l'avoir, puis on ajoute la TVA sur ce solde. Les deux méthodes doivent donner exactement le même montant TTC. Si ce n'est pas le cas, une erreur s'est glissée dans les calculs." },
+            { type: 'citation', texte: "Toute facture rectificative doit faire référence expresse à la facture initiale et en mentionner le numéro et la date.", auteur: 'Code général des impôts, article 289' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Écran de saisie de l'avoir (logiciel ChaussonPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / factures / avoir',
+          marque: 'ChaussonPro — Établir un avoir',
+          couleurHeader: '#0B3C7A',
+          menu: ['Clients', 'Commandes', 'Stocks', 'Livraisons', 'Factures'],
+          sections: [
+            { type: 'titre', texte: 'Nouvel avoir — Numéro attribué automatiquement : AV-2026-00412' },
+            { type: 'fiche', lignes: [
+              { label: 'Date de l’avoir', valeur: '23 juin 2026' },
+              { label: 'Client', valeur: 'SARL RENOVAL — Compte CL-2214' },
+              { label: 'Facture corrigée', valeur: 'À compléter' },
+              { label: 'Date de la facture corrigée', valeur: 'À compléter' },
+              { label: 'Motif', valeur: 'À compléter' },
+              { label: 'Taux de TVA applicable', valeur: '20 %' },
+            ] },
+            { type: 'sousTitre', texte: 'Champs de saisie des lignes' },
+            { type: 'tableau', entetes: ['Champ', 'Contenu attendu'], lignes: [
+              ['Référence', 'Le code du produit concerné'],
+              ['Quantité créditée', 'La quantité non livrée ou refusée'],
+              ['Prix unitaire net HT', 'Le prix après remise, repris de la facture'],
+              ['Montant HT de la ligne', 'Quantité créditée × Prix unitaire net HT'],
+            ] },
+            { type: 'sousTitre', texte: 'Contrôle automatique du logiciel' },
+            { type: 'paragraphe', texte: "Le logiciel refuse l'enregistrement si le montant HT de l'avoir est supérieur au montant HT de la facture corrigée. Il refuse également toute ligne dont la référence n'apparaît pas sur la facture." },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Comprendre pourquoi l'avoir est nécessaire",
+        contexte: "Avant de calculer, il faut comprendre. La facture est-elle fausse ? Non. Elle est incomplète.",
+        questions: [
+          { numero: 1, consigne: "Comparez les quantités facturées et les quantités réellement acceptées, puis concluez.", ressources: "Documents 1 et 2, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Expliquez pourquoi les parpaings manquants figurent dans l'avoir alors qu'ils seront relivrés.", ressources: "Document 3, annexe 2. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Calculer et établir l'avoir",
+        contexte: "Le logiciel n'accepte que des montants exacts. Posez chaque calcul.",
+        questions: [
+          { numero: 3, consigne: "Calculez le montant HT, le montant de la TVA et le montant TTC de l'avoir.", ressources: "Documents 2 et 3, annexe 3. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Complétez l'avoir AV-2026-00412 dans le logiciel ChaussonPro.", ressources: "Documents 1, 2 et 4, annexe 4. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe4' },
+        ] },
+      { titre: 'Activité 3 — Vérifier le solde',
+        contexte: "Deux méthodes, un seul résultat. Si les deux ne concordent pas, cherchez votre erreur.",
+        questions: [
+          { numero: 5, consigne: "Calculez le solde restant dû par le client selon les deux méthodes, puis comparez-les.", ressources: "Documents 1 et 3, annexe 5. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le motif de l'avoir en deux phrases, à destination du client.", ressources: 'Documents 2 et 3, annexe 6. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Facturé contre réellement accepté', colonnes: ['Réf.', 'Quantité facturée', 'Quantité acceptée', 'Écart', 'À créditer ? (oui / non)'], nbLignes: 4, largeurs: ['14%', '22%', '22%', '20%', '22%'], prerempli: [
+        ['CIM-35', '60 sacs', '56 sacs', '4 sacs', 'Oui'],
+        ['PAR-20', '400 unités', '', '', ''],
+        ['CAR-60', '80 m²', '', '', ''],
+        ['COL-25', '20 sacs', '', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe2', titre: "Annexe 2 — Pourquoi créditer une marchandise qui sera relivrée ?", lignes: 4 },
+
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Calcul de l'avoir", colonnes: ['Élément', 'Calcul à poser', 'Montant'], nbLignes: 5, largeurs: ['36%', '36%', '28%'], prerempli: [
+        ['Ligne CIM-35 (4 sacs × 6,84 €)', '4 × 6,84 =', '27,36 €'],
+        ['Ligne PAR-20 (100 unités × 1,7575 €)', '', ''],
+        ["Montant HT de l'avoir", '', ''],
+        ['Montant de la TVA à 20 %', '', ''],
+        ["Montant TTC de l'avoir", '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Avoir n° AV-2026-00412', colonnes: ['Rubrique', 'À compléter'], nbLignes: 8, largeurs: ['42%', '58%'], prerempli: [
+        ["Numéro de l'avoir", 'AV-2026-00412'],
+        ["Date de l'avoir", ''],
+        ['Client', ''],
+        ['Facture corrigée (numéro)', ''],
+        ['Date de la facture corrigée', ''],
+        ['Références créditées', ''],
+        ['Référence à ne PAS créditer', ''],
+        ["Montant TTC de l'avoir", ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Vérification du solde restant dû', colonnes: ['Méthode', 'Calcul à poser', 'Résultat'], nbLignes: 6, largeurs: ['40%', '34%', '26%'], prerempli: [
+        ['Méthode 1 : Total TTC facture', '(relevé sur la facture)', ''],
+        ["Méthode 1 : moins le TTC de l'avoir", '', ''],
+        ['Méthode 1 : solde restant dû TTC', '', ''],
+        ["Méthode 2 : Total HT facture moins HT de l'avoir", '2 827,20 − 203,11 =', ''],
+        ['Méthode 2 : TVA sur ce solde', '', ''],
+        ['Méthode 2 : solde restant dû TTC', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Motif de l'avoir", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Comprendre le rôle d'un avoir par rapport à une facture déjà émise",
+      "Calculer le montant HT, la TVA et le montant TTC d'un avoir",
+      "Établir un avoir dans un logiciel de gestion commerciale",
+      "Vérifier un solde restant dû par deux méthodes concordantes",
+    ],
+  },
+
+  synthese: {
+    titre: "L'avoir corrige la facture",
+    proposition: [
+      'Facture',
+      'Avoir',
+      'Numéro propre',
+      'Référence la facture corrigée',
+      'Montant HT',
+      'TVA à 20 %',
+      'Montant TTC',
+      'Solde restant dû',
+      'Marchandise manquante',
+      'Marchandise refusée',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "L'établissement de l'avoir",
+      enfants: [
+        { id: 'dep', texte: 'Le document de départ', enfants: [
+          { id: 'd1', texte: null, reponse: 'Facture' },
+        ] },
+        { id: 'cor', texte: 'Le document correcteur', enfants: [
+          { id: 'c1', texte: null, reponse: 'Avoir' },
+          { id: 'c2', texte: null, reponse: 'Numéro propre' },
+          { id: 'c3', texte: null, reponse: 'Référence la facture corrigée' },
+        ] },
+        { id: 'cal', texte: 'Les trois calculs', enfants: [
+          { id: 'a1', texte: null, reponse: 'Montant HT' },
+          { id: 'a2', texte: null, reponse: 'TVA à 20 %' },
+          { id: 'a3', texte: null, reponse: 'Montant TTC' },
+        ] },
+        { id: 'mot', texte: 'Ce que l’avoir crédite', enfants: [
+          { id: 'm1', texte: null, reponse: 'Marchandise manquante' },
+          { id: 'm2', texte: null, reponse: 'Marchandise refusée' },
+        ] },
+        { id: 'fin', texte: 'Ce que le client doit encore', enfants: [
+          { id: 'f1', texte: null, reponse: 'Solde restant dû' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Comprendre le rôle d'un avoir", indicateurs: [
+        { niveau: 'novice', description: "Je pense que l'avoir annule la facture." },
+        { niveau: 'debrouille', description: "Je sais que l'avoir rembourse une partie de la facture." },
+        { niveau: 'averti', description: "Je sais que l'avoir corrige une facture déjà émise, sans l'annuler." },
+        { niveau: 'expert', description: "J'explique pourquoi une marchandise manquante est créditée même si elle sera relivrée." },
+      ] },
+      { id: 'c2', intitule: "Calculer un avoir", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelles lignes inclure dans l'avoir." },
+        { niveau: 'debrouille', description: "Je retiens les lignes concernées par les réserves." },
+        { niveau: 'averti', description: "Je calcule le montant HT, la TVA et le montant TTC sans erreur." },
+        { niveau: 'expert', description: "Je vérifie mon résultat par une seconde méthode de calcul." },
+      ] },
+      { id: 'c3', intitule: "Établir un avoir dans un logiciel", indicateurs: [
+        { niveau: 'novice', description: "J'oublie de mentionner la facture corrigée." },
+        { niveau: 'debrouille', description: "Je renseigne le numéro et la date de la facture corrigée." },
+        { niveau: 'averti', description: "Je n'inscris que les références réellement concernées." },
+        { niveau: 'expert', description: "Je rédige un motif clair, compréhensible par le client." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Avoir', definition: "Document par lequel l'entreprise reconnaît devoir de l'argent au client. Il corrige une facture déjà émise." },
+      { terme: 'Facture rectificative', definition: "Autre nom de l'avoir. Elle doit faire référence à la facture initiale." },
+      { terme: 'Solde restant dû', definition: "Montant que le client doit encore payer après déduction de l'avoir." },
+      { terme: 'Date d’échéance', definition: "Date limite à laquelle le client doit avoir réglé sa facture." },
+      { terme: 'Prix unitaire net HT', definition: "Prix d'une unité après remise, avant la TVA." },
+      { terme: 'Montant HT', definition: "Montant hors taxes, avant l'ajout de la TVA." },
+      { terme: 'TVA', definition: "Taxe sur la valeur ajoutée. Elle s'élève à 20 % sur les matériaux de construction." },
+      { terme: 'Montant TTC', definition: "Montant toutes taxes comprises, réellement payé ou remboursé." },
+      { terme: 'Relivraison', definition: "Nouvelle livraison de la marchandise manquante. Elle donnera lieu à une nouvelle facture." },
+      { terme: 'Motif de l’avoir', definition: "Explication écrite des raisons pour lesquelles l'avoir est établi." },
+      { terme: 'Facture corrigée', definition: "Facture initiale sur laquelle l'avoir vient s'imputer. Son numéro doit être mentionné." },
+      { terme: '30 jours fin de mois', definition: "Condition de règlement : le client paie 30 jours après la fin du mois de facturation." },
+    ],
+    flashcards: [
+      { recto: "Un avoir annule-t-il la facture ?", verso: "Non. Il la corrige en en retranchant une partie." },
+      { recto: "Que doit obligatoirement mentionner un avoir ?", verso: 'Le numéro et la date de la facture qu’il corrige.' },
+      { recto: 'Comment calcule-t-on la TVA d’un avoir ?', verso: 'Montant HT × 0,20.' },
+      { recto: "Comment calcule-t-on le montant TTC d'un avoir ?", verso: 'Montant HT + Montant de la TVA.' },
+      { recto: 'Comment calcule-t-on le solde restant dû ?', verso: "Total TTC de la facture − Total TTC de l'avoir." },
+      { recto: 'Pourquoi créditer les parpaings manquants ?', verso: "Parce que la facture les a déjà facturés, alors que le client ne les a pas reçus." },
+      { recto: "Que se passera-t-il lors de la relivraison ?", verso: 'Une nouvelle facture sera établie pour les 100 parpaings manquants.' },
+      { recto: 'Le carrelage figure-t-il dans l’avoir ?', verso: 'Non. Il a été livré conforme et accepté par le client.' },
+      { recto: "Quel est le montant HT de l'avoir ?", verso: '203,11 €, soit 27,36 € de ciment et 175,75 € de parpaings.' },
+      { recto: "Quel est le montant TTC de l'avoir ?", verso: '243,73 €.' },
+    ],
+    quiz: [
+      { type: 'unique', question: "Un avoir sert à :", options: ['corriger une facture déjà émise', 'annuler complètement une facture', 'remplacer un bon de livraison'], bonne: 0 },
+      { type: 'unique', question: "L'avoir doit mentionner :", options: ['le numéro de la facture corrigée', 'le nom du chauffeur', 'la date du bon de commande'], bonne: 0 },
+      { type: 'unique', question: "Le montant HT de l'avoir est de :", options: ['203,11 €', '213,11 €', '193,11 €'], bonne: 0 },
+      { type: 'unique', question: 'La TVA sur cet avoir vaut :', options: ['40,62 €', '42,00 €', '38,50 €'], bonne: 0 },
+      { type: 'unique', question: "Le montant TTC de l'avoir est de :", options: ['243,73 €', '253,73 €', '233,73 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total TTC de la facture FA-2026-07655 est de :', options: ['3 392,64 €', '3 599,08 €', '2 827,20 €'], bonne: 0 },
+      { type: 'unique', question: 'Le solde restant dû par le client est de :', options: ['3 148,91 €', '3 236,55 €', '3 392,64 €'], bonne: 0 },
+      { type: 'unique', question: 'Quelles références figurent dans l’avoir ?', options: ['PAR-20 et CIM-35', 'CAR-60 et COL-25', 'Les quatre références'], bonne: 0 },
+      { type: 'unique', question: 'Les parpaings manquants sont crédités parce que :', options: ['la facture les a déjà facturés', 'ils sont abîmés', 'le client les refuse'], bonne: 0 },
+      { type: 'unique', question: "La date d'échéance de la facture est le :", options: ['31 juillet 2026', '23 juillet 2026', '30 juin 2026'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['La facture', "L'avoir", 'Le calcul'],
+      zones: [
+        { libelle: 'FA-2026-07655', etiquetteIndex: 0 },
+        { libelle: 'AV-2026-00412', etiquetteIndex: 1 },
+        { libelle: 'Montant HT × 0,20', etiquetteIndex: 2 },
+        { libelle: 'Elle demande le paiement de 3 392,64 €', etiquetteIndex: 0 },
+        { libelle: 'Il crédite 243,73 € au client', etiquetteIndex: 1 },
+        { libelle: 'Montant HT + Montant de la TVA', etiquetteIndex: 2 },
+        { libelle: 'Elle suit le bon de commande', etiquetteIndex: 0 },
+        { libelle: 'Il mentionne la facture qu’il corrige', etiquetteIndex: 1 },
+        { libelle: 'Total TTC facture moins total TTC avoir', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Comparez les quantités facturées et les quantités réellement acceptées, puis concluez.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 3,
+        reponse: "La facture reprend les quantités du bon de commande, et non celles du bon de livraison. Deux références présentent donc un écart.",
+        tableau: { colonnes: ['Réf.', 'Qté facturée', 'Qté acceptée', 'Écart', 'À créditer ?'], lignes: [
+          ['CIM-35 (exemple fourni)', '60 sacs', '56 sacs', '4 sacs', 'Oui'],
+          ['PAR-20', '400 unités', '300 unités', '100 unités', 'Oui'],
+          ['CAR-60', '80 m²', '80 m²', 'Aucun', 'Non'],
+          ['COL-25', '20 sacs', '20 sacs', 'Aucun', 'Non'],
+        ] },
+        complement: "1 point par ligne (3 lignes à traiter, la première étant fournie). Les élèves doivent réutiliser les quantités acceptées établies en mission 4. Une réponse « Oui » pour le carrelage ou la colle révèle que l'élève crédite sans avoir vérifié : ces deux références sont conformes, elles restent dues intégralement." },
+
+      { intitule: "Expliquez pourquoi les parpaings manquants figurent dans l'avoir alors qu'ils seront relivrés.", documents: ['Document 3', 'Annexe 2'], bareme: 3,
+        reponse: "La facture FA-2026-07655 a facturé 400 parpaings, alors que le client n'en a reçu que 300. Tant que l'avoir n'est pas émis, le client doit payer une marchandise qu'il n'a pas reçue. Quand la relivraison aura lieu, une nouvelle facture sera établie pour les 100 parpaings manquants.",
+        complement: "1 point pour le constat que la facture porte sur 400 unités alors que 300 seulement ont été reçues. 1 point pour la conséquence : sans avoir, le client paierait une marchandise absente. 1 point pour l'anticipation : une nouvelle facture suivra la relivraison. Cette question sépare l'élève qui applique une procédure de celui qui la comprend. Accepter toute formulation exacte." },
+
+      { intitule: "Calculez le montant HT, le montant de la TVA et le montant TTC de l'avoir.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "L'avoir ne porte que sur les deux références en écart. On additionne leurs montants HT, on applique la TVA à 20 %, puis on additionne.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Montant'], lignes: [
+          ['Ligne CIM-35 (exemple fourni)', '4 × 6,84', '27,36 €'],
+          ['Ligne PAR-20', '100 × 1,7575', '175,75 €'],
+          ["Montant HT de l'avoir", '27,36 + 175,75', '203,11 €'],
+          ['Montant de la TVA à 20 %', '203,11 × 0,20', '40,62 €'],
+          ["Montant TTC de l'avoir", '203,11 + 40,62', '243,73 €'],
+        ] },
+        complement: "1 point pour la ligne PAR-20, 1 point pour le montant HT, 1,5 point pour la TVA, 1,5 point pour le TTC. La TVA exacte vaut 40,622 € : elle est arrondie à 40,62 €. Accepter 40,62 €. Refuser 40,63 €, arrondi incorrect. Le calcul doit être posé : un résultat juste sans calcul écrit vaut la moitié des points de la ligne." },
+
+      { intitule: "Complétez l'avoir AV-2026-00412 dans le logiciel ChaussonPro.", documents: ['Documents 1, 2 et 4', 'Annexe 4'], bareme: 4,
+        reponse: "L'avoir mentionne obligatoirement la facture qu'il corrige, avec son numéro et sa date.",
+        tableau: { colonnes: ['Rubrique', 'Réponse attendue'], lignes: [
+          ["Numéro de l'avoir", 'AV-2026-00412'],
+          ["Date de l'avoir", '23 juin 2026'],
+          ['Client', 'SARL RENOVAL — Compte CL-2214'],
+          ['Facture corrigée (numéro)', 'FA-2026-07655'],
+          ['Date de la facture corrigée', '23 juin 2026'],
+          ['Références créditées', 'PAR-20 et CIM-35'],
+          ['Référence à ne PAS créditer', 'CAR-60 et COL-25'],
+          ["Montant TTC de l'avoir", '243,73 €'],
+        ] },
+        complement: "0,5 point par rubrique. La facture et l'avoir portent la même date du 23 juin : ce n'est pas une erreur, l'avoir est établi le jour même. Le document 3 rappelle que l'article 289 du Code général des impôts impose la mention du numéro et de la date de la facture initiale : un avoir qui omet ces deux mentions est irrégulier." },
+
+      { intitule: "Calculez le solde restant dû par le client selon les deux méthodes, puis comparez-les.", documents: ['Documents 1 et 3', 'Annexe 5'], bareme: 3,
+        reponse: "Les deux méthodes doivent aboutir exactement au même montant : 3 148,91 € TTC.",
+        tableau: { colonnes: ['Méthode', 'Calcul posé', 'Résultat'], lignes: [
+          ['Méthode 1 : total TTC de la facture', 'Relevé sur la facture', '3 392,64 €'],
+          ["Méthode 1 : moins le TTC de l'avoir", '3 392,64 − 243,73', '3 148,91 €'],
+          ['Méthode 1 : solde restant dû TTC', '', '3 148,91 €'],
+          ["Méthode 2 : HT facture moins HT avoir", '2 827,20 − 203,11', '2 624,09 €'],
+          ['Méthode 2 : TVA sur ce solde', '2 624,09 × 0,20', '524,82 €'],
+          ['Méthode 2 : solde restant dû TTC', '2 624,09 + 524,82', '3 148,91 €'],
+        ] },
+        complement: "0,5 point par ligne. Le résultat des deux méthodes est identique au centime près : 3 148,91 €. C'est la preuve que les calculs sont justes. Si un élève trouve deux résultats différents, il doit chercher son erreur avant de conclure. La TVA de la méthode 2 vaut exactement 524,818 €, arrondie à 524,82 €." },
+
+      { intitule: "Rédigez le motif de l'avoir en deux phrases, à destination du client.", documents: ['Documents 2 et 3', 'Annexe 6'], bareme: 2,
+        reponse: "Avoir établi à la suite des réserves portées sur le bon de livraison BL-2026-3312 du 22 juin 2026 : 100 parpaings PAR-20 non livrés et 4 sacs de ciment CIM-35 refusés pour non-conformité. Cet avoir corrige la facture FA-2026-07655 du 23 juin 2026. Les parpaings manquants feront l'objet d'une relivraison et d'une facturation ultérieure.",
+        complement: "1 point pour la mention des deux anomalies avec leur quantité et leur référence. 1 point pour la référence explicite à la facture corrigée et au bon de livraison. Valoriser sans l'exiger l'élève qui annonce la relivraison à venir : c'est une information utile au client, qui évite un second appel. Refuser un motif vague du type « erreur de livraison ». Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 6 - Repondre a la reclamation du client
+// Bloc 2 : suivre les ventes. Classe de Premiere. Spiralaire : CROC.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez l'appel du client avec la méthode CROC, traitez son objection sur le retard, puis confirmez par courriel la solution retenue.",
+    contexte:
+      "Nous sommes le 24 juin 2026, 9 heures. Le téléphone sonne à l'agence. C'est Julien Bertrand, et il n'est pas content. Son chantier de Colombes devait avancer, mais la palette de parpaings manquante bloque la construction du dernier mur, et il vient de recevoir la facture. « Vous me livrez de travers, et en plus vous me facturez le tout ? » Sandrine Vasseur vous passe l'appel : c'est à vous de le gérer. Vous connaissez déjà la méthode CROC, vue en prospection. Ici, vous ne prospectez pas : vous répondez à un client mécontent. La méthode reste la même, l'enjeu change.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.3 — Traiter les retours et les réclamations',
+      detail: "C2.3.1 Identifier l'objet de la réclamation et en accuser réception. C2.3.2 Apporter une réponse adaptée et informer le client de la suite donnée.",
+    },
+    documents: [
+      { numero: 1, titre: "Note de service : la méthode CROC au téléphone", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'La méthode CROC, appliquée à une réclamation' },
+            { type: 'paragraphe', texte: "Vous avez appris la méthode CROC en prospection, quand c'est vous qui appelez le client. Aujourd'hui, la situation est inversée : c'est le client qui appelle, et il est mécontent. La trame reste la même, mais chaque étape prend un sens nouveau." },
+            { type: 'tableau', entetes: ['Étape', 'En prospection (déjà vu)', 'En réclamation (aujourd’hui)'], lignes: [
+              ['C — Contact', 'Se présenter, vérifier l’interlocuteur', "Se présenter, saluer, laisser le client exposer son problème sans l'interrompre"],
+              ['R — Raison', "Annoncer l'objet de son appel", "Reformuler la réclamation pour montrer qu'on a compris"],
+              ['O — Objectif', 'Proposer un rendez-vous, une vente', "Apporter une solution concrète au problème"],
+              ['C — Conclusion', 'Remercier, saluer', "Récapituler la solution, rassurer, remercier et saluer"],
+            ] },
+            { type: 'sousTitre', texte: 'La règle d’or face à un client mécontent' },
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "On écoute d'abord. On ne se justifie pas, on ne coupe pas la parole." },
+              { numero: '2', texte: "On reformule pour montrer qu'on a compris. Cela apaise le client." },
+              { numero: '3', texte: "On ne promet que ce que l'on peut tenir. Une fausse promesse aggrave tout." },
+            ] },
+            { type: 'citation', texte: "Un client qui réclame est un client qui reste. Celui qui part sans rien dire ne revient jamais.", auteur: 'Guide de la relation client, Chausson Matériaux' },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Ce que dit Julien Bertrand au téléphone", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Transcription de l’appel du 24 juin 2026, 9 h 02' },
+        { intertitre: 'Propos du client (retranscrits par vos soins)' },
+        { paragraphes: [
+          "« Bonjour, Julien Bertrand, de RENOVAL. J'appelle parce que je ne comprends pas. »",
+          "« On m'a livré lundi, d'accord, mais il manque une palette entière de parpaings. Résultat : je ne peux pas monter le dernier mur, mes maçons tournent en rond depuis deux jours. »",
+          "« Et par-dessus le marché, je reçois hier une facture de plus de trois mille euros. Vous me facturez même ce que vous ne m'avez pas livré ? »",
+          "« Je veux comprendre ce qui s'est passé, et surtout quand j'aurai enfin mes parpaings pour finir ce chantier. »",
+        ] },
+        { bulleConseil: { texte: ["Le client soulève en réalité deux problèmes distincts. Repérez-les bien : votre réponse devra traiter les deux, pas seulement le plus visible."] } },
+      ] },
+
+      { numero: 3, titre: "Éléments du dossier à votre disposition", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Dossier commande 2026-4471' },
+        { intertitre: 'Ce que vous savez déjà (missions précédentes)' },
+        { tableau: { colonnes: ['Question du client', 'Réponse tirée du dossier'], lignes: [
+          ['Que s’est-il passé sur les parpaings ?', "Une palette de 100 parpaings est restée au dépôt le 22 juin, le camion-grue étant plein (9 palettes pour 8 places)."],
+          ['Quand seront-ils livrés ?', "Une relivraison est programmée. Les parpaings sont en stock à l'agence, disponibles immédiatement."],
+          ['Et la facture ?', "Un avoir (AV-2026-00412) de 243,73 € TTC a été établi le 23 juin. Le client ne paiera que le solde, soit 3 148,91 € TTC."],
+          ['La laine de verre ?', "Livrée séparément après le 26 juin, comme convenu. Ce point ne fait pas partie de la réclamation."],
+        ] } },
+        { intertitre: 'Créneaux de relivraison possibles' },
+        { paragraphes: [
+          "Le camion-grue n° 2 est disponible le jeudi 25 juin au matin (créneau 08 h 00 — 10 h 00) et le vendredi 26 juin au matin. Rappel : le chantier de Colombes n'est accessible aux camions que le matin, avant 12 heures.",
+        ] },
+      ] },
+
+      { numero: 4, titre: "Aide-mémoire : confirmer par écrit après un appel", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Pourquoi confirmer par courriel' },
+            { type: 'paragraphe', texte: "Après un appel important, on envoie toujours un courriel de confirmation. Il laisse une trace écrite de la solution annoncée, et rassure le client en lui donnant un document auquel se référer." },
+            { type: 'sousTitre', texte: 'Ce que doit contenir le courriel' },
+            { type: 'procedureEtapes', etapes: [
+              { titre: 'Étape 1 — Remercier de l’appel', detail: "Une phrase brève qui montre qu'on a pris la réclamation au sérieux." },
+              { titre: 'Étape 2 — Rappeler les deux points soulevés', detail: "Les parpaings manquants et la facture. Montrer qu'on a tout entendu." },
+              { titre: 'Étape 3 — Annoncer la solution pour chacun', detail: "La date de relivraison d'une part, le montant de l'avoir et le solde d'autre part." },
+              { titre: 'Étape 4 — Conclure et rester joignable', detail: "Proposer de recontacter l'agence en cas de question, saluer." },
+            ] },
+            { type: 'sousTitre', texte: 'Le ton juste' },
+            { type: 'puces', items: [
+              "Rester professionnel, même si le client s'est montré vif au téléphone.",
+              "Ne pas chercher un coupable ni accuser le dépôt ou le chauffeur.",
+              "Donner des dates et des montants précis, jamais de « bientôt » ni de « on verra ».",
+            ] },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Écouter et comprendre la réclamation",
+        contexte: "Avant de répondre, il faut avoir entendu. Un client mécontent qui se sent écouté est déjà à moitié apaisé.",
+        questions: [
+          { numero: 1, consigne: "Identifiez les deux problèmes distincts soulevés par le client, puis reformulez-les.", ressources: "Document 2, annexe 1. Compétence C2.3.1 — Identifier l'objet de la réclamation.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Retrouvez dans le dossier la réponse à apporter à chacun des deux problèmes.", ressources: "Document 3, annexe 2. Compétence C2.3.2 — Apporter une réponse adaptée.", annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Préparer l'appel avec la méthode CROC",
+        contexte: "Vous connaissez CROC depuis la prospection. Ici, c'est le client qui a appelé : à vous de mener malgré tout l'échange.",
+        questions: [
+          { numero: 3, consigne: "Complétez la fiche CROC de préparation de votre réponse au client.", ressources: 'Documents 1, 2 et 3, annexe 3. Compétence C2.3.2 — Apporter une réponse adaptée.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Traitez l'objection du client sur la facture en une réponse claire et rassurante.", ressources: 'Documents 1 et 3, annexe 4. Compétence C2.3.2 — Apporter une réponse adaptée.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Confirmer par écrit",
+        contexte: "L'appel est terminé, le client est rassuré. Reste à laisser une trace écrite de ce qui a été promis.",
+        questions: [
+          { numero: 5, consigne: "Rédigez le courriel de confirmation en traitant les deux points et en donnant des dates précises.", ressources: 'Documents 3 et 4, annexe 5. Compétence C2.3.2 — Informer le client de la suite donnée.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Justifiez, en deux phrases, pourquoi on reformule la réclamation avant de proposer une solution.", ressources: 'Document 1, annexe 6. Compétence C2.3.1 — Identifier l’objet de la réclamation.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les deux problèmes du client', colonnes: ['', 'Problème soulevé', 'Reformulation'], nbLignes: 2, largeurs: ['20%', '40%', '40%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Problème n° 1', '', ''],
+        ['Problème n° 2', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — La réponse tirée du dossier', colonnes: ['Problème', 'Réponse à apporter'], nbLignes: 2, largeurs: ['35%', '65%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Parpaings manquants', ''],
+        ['Facture de 3 392,64 €', ''],
+      ] },
+
+      { type: 'croc', id: 'annexe3', titre: 'Annexe 3 — Fiche CROC de préparation' },
+
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Réponse à l'objection sur la facture", lignes: 4 },
+
+      { type: 'mail', id: 'annexe5', titre: 'Annexe 5 — Courriel de confirmation', deParDefaut: 'agence.gennevilliers@chaussonmateriaux.fr', aParDefaut: 'j.bertrand@renoval.fr' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi reformuler avant de répondre", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Identifier les problèmes réels derrière une réclamation orale",
+      "Réinvestir la méthode CROC dans une situation de réclamation",
+      "Traiter une objection avec des faits, sans se justifier",
+      "Confirmer par écrit une solution avec des dates et des montants précis",
+    ],
+  },
+
+  synthese: {
+    titre: 'Traiter une réclamation client',
+    proposition: [
+      'Contact',
+      'Raison',
+      'Objectif',
+      'Conclusion',
+      'Écouter sans interrompre',
+      'Reformuler',
+      'Apporter une solution',
+      'Confirmer par écrit',
+      'Des dates précises',
+      'Ne rien promettre d’intenable',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La réclamation client',
+      enfants: [
+        { id: 'croc', texte: 'La méthode CROC', enfants: [
+          { id: 'c1', texte: null, reponse: 'Contact' },
+          { id: 'c2', texte: null, reponse: 'Raison' },
+          { id: 'c3', texte: null, reponse: 'Objectif' },
+          { id: 'c4', texte: null, reponse: 'Conclusion' },
+        ] },
+        { id: 'att', texte: 'La bonne attitude', enfants: [
+          { id: 'a1', texte: null, reponse: 'Écouter sans interrompre' },
+          { id: 'a2', texte: null, reponse: 'Reformuler' },
+          { id: 'a3', texte: null, reponse: 'Ne rien promettre d’intenable' },
+        ] },
+        { id: 'sol', texte: 'La réponse', enfants: [
+          { id: 's1', texte: null, reponse: 'Apporter une solution' },
+        ] },
+        { id: 'tra', texte: "L'après-appel", enfants: [
+          { id: 't1', texte: null, reponse: 'Confirmer par écrit' },
+          { id: 't2', texte: null, reponse: 'Des dates précises' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier l'objet d'une réclamation", indicateurs: [
+        { niveau: 'novice', description: "Je ne retiens qu'un seul problème alors que le client en soulève plusieurs." },
+        { niveau: 'debrouille', description: "Je repère les deux problèmes mais je les confonds." },
+        { niveau: 'averti', description: "Je distingue clairement les deux problèmes et je les reformule." },
+        { niveau: 'expert', description: "Je montre au client, par ma reformulation, que j'ai tout entendu." },
+      ] },
+      { id: 'c2', intitule: "Réinvestir la méthode CROC", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas adapter CROC à un appel entrant." },
+        { niveau: 'debrouille', description: "Je remplis les quatre étapes de façon générale." },
+        { niveau: 'averti', description: "Chaque étape est adaptée à la réclamation du client." },
+        { niveau: 'expert', description: "Ma conclusion récapitule la solution et rassure le client." },
+      ] },
+      { id: 'c3', intitule: "Confirmer par écrit une solution", indicateurs: [
+        { niveau: 'novice', description: "J'oublie l'un des deux points, ou je reste vague." },
+        { niveau: 'debrouille', description: "Je traite les deux points mais sans dates précises." },
+        { niveau: 'averti', description: "Je donne une date de relivraison et le montant du solde." },
+        { niveau: 'expert', description: "Mon courriel est professionnel, complet et rassurant." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Réclamation', definition: "Expression du mécontentement d'un client, à laquelle l'entreprise doit répondre." },
+      { terme: 'Méthode CROC', definition: "Trame d'entretien téléphonique : Contact, Raison, Objectif, Conclusion." },
+      { terme: 'Contact', definition: "Première étape de CROC : se présenter, saluer, laisser le client s'exprimer." },
+      { terme: 'Raison', definition: "Deuxième étape de CROC : reformuler l'objet de l'appel pour montrer qu'on a compris." },
+      { terme: 'Objectif', definition: "Troisième étape de CROC : apporter une solution concrète au problème." },
+      { terme: 'Conclusion', definition: "Quatrième étape de CROC : récapituler, rassurer, remercier et saluer." },
+      { terme: 'Reformulation', definition: "Redire avec ses propres mots ce que le client a exprimé, pour vérifier qu'on a compris." },
+      { terme: 'Objection', definition: "Désaccord ou inquiétude exprimé par le client, auquel il faut répondre par des faits." },
+      { terme: 'Appel entrant', definition: "Appel reçu par l'entreprise, à l'inverse de l'appel de prospection qui est sortant." },
+      { terme: 'Courriel de confirmation', definition: "Message écrit envoyé après un appel pour laisser une trace de la solution annoncée." },
+      { terme: 'Relivraison', definition: "Nouvelle livraison de la marchandise manquante, à une date convenue." },
+      { terme: 'Avoir', definition: "Document qui rembourse au client une partie de la facture. Ici, 243,73 € TTC." },
+    ],
+    flashcards: [
+      { recto: 'Que signifie le C de CROC ?', verso: 'Contact : se présenter, saluer, laisser le client s’exprimer.' },
+      { recto: 'Que signifie le R de CROC ?', verso: "Raison : reformuler l'objet de l'appel." },
+      { recto: 'Que signifie le O de CROC ?', verso: 'Objectif : apporter une solution concrète.' },
+      { recto: 'Que signifie le dernier C de CROC ?', verso: 'Conclusion : récapituler, rassurer, remercier et saluer.' },
+      { recto: 'Face à un client mécontent, que fait-on en premier ?', verso: "On écoute sans interrompre et sans se justifier." },
+      { recto: 'Pourquoi reformuler la réclamation ?', verso: "Pour montrer au client qu'on a compris, ce qui l'apaise." },
+      { recto: 'Combien de problèmes Julien Bertrand soulève-t-il ?', verso: 'Deux : les parpaings manquants et la facture.' },
+      { recto: 'Quand les parpaings peuvent-ils être relivrés ?', verso: 'Le jeudi 25 ou le vendredi 26 juin au matin.' },
+      { recto: 'Quel est le solde que le client devra payer ?', verso: '3 148,91 € TTC, après déduction de l’avoir.' },
+      { recto: 'Pourquoi confirmer par courriel après l’appel ?', verso: 'Pour laisser une trace écrite et rassurer le client.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La méthode CROC signifie :', options: ['Contact, Raison, Objectif, Conclusion', 'Client, Réclamation, Offre, Contrat', 'Contact, Réponse, Objection, Compte'], bonne: 0 },
+      { type: 'unique', question: "Face à un client mécontent, on commence par :", options: ['écouter sans interrompre', 'se justifier', 'raccrocher poliment'], bonne: 0 },
+      { type: 'unique', question: 'Combien de problèmes le client soulève-t-il ?', options: ['Deux', 'Un seul', 'Trois'], bonne: 0 },
+      { type: 'unique', question: 'Le premier problème concerne :', options: ['les parpaings manquants', 'la laine de verre', 'le carrelage'], bonne: 0 },
+      { type: 'unique', question: 'Le second problème concerne :', options: ['la facture', 'le prix du ciment', 'le délai de paiement'], bonne: 0 },
+      { type: 'unique', question: 'Pourquoi la palette est-elle restée au dépôt ?', options: ['le camion était plein (9 palettes pour 8)', 'elle était abîmée', "le chauffeur l'a oubliée"], bonne: 0 },
+      { type: 'unique', question: 'Reformuler la réclamation permet de :', options: ["montrer qu'on a compris", 'gagner du temps', 'éviter de répondre'], bonne: 0 },
+      { type: 'unique', question: 'Après un appel important, on envoie :', options: ['un courriel de confirmation', 'un nouveau devis', 'une relance'], bonne: 0 },
+      { type: 'unique', question: 'Dans le courriel, il faut donner :', options: ['des dates et montants précis', 'des excuses répétées', 'le nom du responsable du dépôt'], bonne: 0 },
+      { type: 'unique', question: 'Le solde que le client devra régler est de :', options: ['3 148,91 €', '3 392,64 €', '243,73 €'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Étape de CROC', 'Bonne attitude', "Contenu du courriel"],
+      zones: [
+        { libelle: 'Se présenter et saluer', etiquetteIndex: 0 },
+        { libelle: "Reformuler l'objet de l'appel", etiquetteIndex: 0 },
+        { libelle: 'Écouter sans interrompre', etiquetteIndex: 1 },
+        { libelle: 'Apporter une solution concrète', etiquetteIndex: 0 },
+        { libelle: 'Ne rien promettre d’intenable', etiquetteIndex: 1 },
+        { libelle: 'La date de relivraison', etiquetteIndex: 2 },
+        { libelle: 'Ne pas chercher un coupable', etiquetteIndex: 1 },
+        { libelle: "Le montant de l'avoir et le solde", etiquetteIndex: 2 },
+        { libelle: 'Rester joignable en cas de question', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Identifiez les deux problèmes distincts soulevés par le client, puis reformulez-les.", documents: ['Document 2', 'Annexe 1'], bareme: 4,
+        reponse: "Le client mêle deux griefs dans un même appel. Il faut les séparer pour pouvoir répondre à chacun.",
+        tableau: { colonnes: ['', 'Problème soulevé', 'Reformulation attendue'], lignes: [
+          ['Problème n° 1', 'Il manque une palette de parpaings, le chantier est bloqué depuis deux jours.', "Si je comprends bien, la palette de parpaings manquante vous empêche de monter le dernier mur."],
+          ['Problème n° 2', "La facture de plus de 3 000 € semble inclure la marchandise non livrée.", "Vous vous étonnez également d'être facturé pour des parpaings que vous n'avez pas reçus."],
+        ] },
+        complement: "1 point par problème correctement identifié, 1 point par reformulation exacte. L'erreur fréquente consiste à ne retenir que les parpaings, qui sont le grief le plus fort, et à oublier la facture. Un élève qui ne relève qu'un seul problème plafonne à 2 points. La reformulation doit reprendre l'idée du client sans la déformer." },
+
+      { intitule: "Retrouvez dans le dossier la réponse à apporter à chacun des deux problèmes.", documents: ['Document 3', 'Annexe 2'], bareme: 3,
+        reponse: "Le dossier contient toutes les réponses. Il suffit de les relier au bon problème.",
+        tableau: { colonnes: ['Problème', 'Réponse à apporter'], lignes: [
+          ['Parpaings manquants', "Les 100 parpaings sont en stock à l'agence. Une relivraison est possible dès le jeudi 25 juin au matin, sur le créneau 08 h 00 — 10 h 00."],
+          ['Facture de 3 392,64 €', "Un avoir de 243,73 € TTC a déjà été établi le 23 juin. Le client ne réglera que le solde, soit 3 148,91 € TTC. Il n'est donc pas facturé pour la marchandise non livrée."],
+        ] },
+        complement: "1,5 point par ligne. Sur les parpaings, exiger la disponibilité en stock et au moins une date de relivraison. Sur la facture, exiger la mention de l'avoir et le solde de 3 148,91 €. Un élève qui répond « on va voir » ou « le service s'en occupe » n'a pas exploité le dossier : ne rien accorder." },
+
+      { intitule: "Complétez la fiche CROC de préparation de votre réponse au client.", documents: ['Documents 1, 2 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "La fiche CROC structure la réponse. Chaque étape est adaptée à la réclamation.",
+        tableau: { colonnes: ['Étape', 'Contenu attendu'], lignes: [
+          ['C — Contact', "Bonjour Monsieur Bertrand, [Prénom Nom] de l'agence de Gennevilliers. Je vous écoute."],
+          ['R — Raison', "Vous m'appelez pour deux raisons : la palette de parpaings manquante qui bloque votre chantier, et la facture que vous venez de recevoir."],
+          ['O — Objectif', "Les parpaings sont en stock : je peux vous les faire livrer dès jeudi 25 juin au matin. Concernant la facture, un avoir de 243,73 € a été établi, vous ne réglez que 3 148,91 €."],
+          ['C — Conclusion', "Je vous confirme donc la relivraison de jeudi matin et le solde corrigé. Je vous envoie un courriel récapitulatif. Merci de votre appel, bonne journée."],
+        ] },
+        complement: "1 point par étape. Le Contact doit rester bref et poli. La Raison doit reformuler les deux problèmes, pas un seul. L'Objectif doit contenir une date et un montant. La Conclusion doit annoncer le courriel écrit. Accepter les variantes de formulation dès lors que le sens de l'étape est respecté." },
+
+      { intitule: "Traitez l'objection du client sur la facture en une réponse claire et rassurante.", documents: ['Documents 1 et 3', 'Annexe 4'], bareme: 3,
+        reponse: "L'objection porte sur le sentiment d'être facturé pour ce qui n'a pas été livré. On répond par des faits, sans se justifier ni accuser.",
+        complement: "Réponse attendue, dans l'esprit : « Je comprends votre réaction, elle est légitime. En réalité, vous ne payez pas les parpaings manquants : nous avons établi hier un avoir de 243,73 €, qui vient corriger la facture. Votre solde réel est de 3 148,91 €, et non de 3 392,64 €. » Barème : 1 point pour la prise en compte du ressenti du client sans le contredire brutalement. 1 point pour le fait précis (l'avoir de 243,73 €). 1 point pour le solde corrigé annoncé (3 148,91 €). Refuser toute réponse qui se contente de dire « c'est normal » ou qui rejette la faute sur un service. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Rédigez le courriel de confirmation en traitant les deux points et en donnant des dates précises.", documents: ['Documents 3 et 4', 'Annexe 5'], bareme: 5,
+        reponse: "Objet : Commande 2026-4471 — suite à notre échange téléphonique. Bonjour Monsieur Bertrand, je vous remercie de votre appel de ce matin et je vous confirme par écrit les solutions convenues. Concernant les parpaings manquants : les 100 unités sont en stock à notre agence. Nous vous les livrerons le jeudi 25 juin au matin, sur le créneau 08 h 00 — 10 h 00, compatible avec l'accès à votre chantier. Concernant votre facture : un avoir de 243,73 € TTC a été établi le 23 juin pour la marchandise non livrée et refusée. Votre solde réel à régler est donc de 3 148,91 € TTC, et non de 3 392,64 €. Je reste à votre disposition pour toute question. Cordialement, [Prénom Nom], agence de Gennevilliers, Chausson Matériaux.",
+        complement: "Barème détaillé. 1 point : objet clair rattaché à la commande. 1 point : remerciement de l'appel en ouverture. 1 point : les parpaings, avec une date précise de relivraison. 1 point : la facture, avec le montant de l'avoir et le solde de 3 148,91 €. 1 point : formule de disponibilité et signature complète. Retirer 1 point si un seul des deux problèmes est traité. Retirer 1 point si aucune date précise n'est donnée. Ne pas pénaliser l'orthographe, mais signaler les fautes." },
+
+      { intitule: "Justifiez, en deux phrases, pourquoi on reformule la réclamation avant de proposer une solution.", documents: ['Document 1', 'Annexe 6'], bareme: 1,
+        reponse: "On reformule pour montrer au client qu'on a réellement écouté et compris son problème, ce qui l'apaise. Une solution proposée trop vite, sans reformulation, donne au client l'impression de ne pas avoir été entendu.",
+        complement: "1 point pour l'idée que la reformulation prouve l'écoute et apaise le client. Accepter toute formulation exacte allant dans ce sens. Cette dernière question, courte, vaut 1 point et permet d'atteindre le total de 20." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 7 - Relancer le reglement
+// Bloc 2 : suivre les ventes. Classe de Premiere.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Lisez l'échéancier, calculez les pénalités de retard, choisissez le niveau de relance adapté, puis rédigez la lettre de relance au client.",
+    contexte:
+      "Nous sommes le 18 août 2026. La commande RENOVAL est loin derrière vous : les parpaings ont été relivrés, la laine de verre aussi, le client a été satisfait. Mais la facture FA-2026-07655, dont le solde s'élève à 3 148,91 €, n'a toujours pas été réglée. Son échéance était fixée au 31 juillet. Nous avons donc 18 jours de retard. Sandrine Vasseur consulte l'échéancier du logiciel et vous confie la relance. Un point important : Julien Bertrand est un bon client, régulier depuis 2021. Il ne s'agit pas de le brusquer, mais de récupérer l'argent dû. Le ton de votre lettre devra tenir compte de cette relation.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Échéancier des règlements (logiciel ChaussonPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / reglements / echeancier',
+          marque: 'ChaussonPro — Échéancier des règlements',
+          couleurHeader: '#0B3C7A',
+          menu: ['Clients', 'Commandes', 'Stocks', 'Livraisons', 'Factures', 'Règlements'],
+          sections: [
+            { type: 'titre', texte: 'Factures en attente de règlement — 18 août 2026' },
+            { type: 'paragraphe', texte: "Plusieurs factures sont affichées. Une facture est « en retard » lorsque sa date d'échéance est dépassée et qu'aucun règlement n'a été enregistré." },
+            { type: 'tableau', entetes: ['Facture', 'Client', 'Montant TTC', 'Échéance', 'Règlement reçu ?', 'État'], lignes: [
+              ['FA-2026-07640', 'SARL TOITNEUF', '2 145,60 €', '31/07/2026', 'Oui, le 28/07', 'Réglée'],
+              ['FA-2026-07655', 'SARL RENOVAL', '3 148,91 €', '31/07/2026', 'Non', 'En retard'],
+              ['FA-2026-07702', 'EURL PLATRIS', '1 830,00 €', '31/08/2026', 'Non', 'Non échue'],
+              ['FA-2026-07688', 'SAS SOLBAT', '5 210,40 €', '15/08/2026', 'Non', 'En retard'],
+            ] },
+            { type: 'sousTitre', texte: 'Détail de la facture RENOVAL' },
+            { type: 'fiche', lignes: [
+              { label: 'Numéro de facture', valeur: 'FA-2026-07655' },
+              { label: 'Solde restant dû', valeur: '3 148,91 € TTC' },
+              { label: 'Date d’échéance', valeur: '31 juillet 2026' },
+              { label: 'Date du jour', valeur: '18 août 2026' },
+              { label: 'Règlement enregistré', valeur: 'Aucun' },
+              { label: 'Première relance ?', valeur: 'Non, aucune relance envoyée à ce jour' },
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Extrait des conditions générales de vente", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Conditions générales de vente' },
+        { intertitre: 'Article 8 — Retard de paiement' },
+        { paragraphes: [
+          "En cas de retard de paiement, des pénalités de retard sont dues de plein droit, sans qu'un rappel soit nécessaire. Le taux annuel des pénalités est fixé à 12 %.",
+          "Le calcul des pénalités s'effectue sur le montant TTC de la facture, sur la base d'une année de 360 jours, au prorata du nombre de jours de retard.",
+          "S'ajoute une indemnité forfaitaire pour frais de recouvrement de 40 €, due pour chaque facture réglée en retard par un client professionnel.",
+        ] },
+        { bulleConseil: { texte: ["Ces règles sont issues du Code de commerce. Elles s'appliquent automatiquement, mais l'agence choisit d'en informer le client dès la première relance, à titre de rappel."] } },
+      ] },
+
+      { numero: 3, titre: "Procédure : calculer une pénalité et choisir le niveau de relance", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Calculer les pénalités de retard' },
+            { type: 'paragraphe', texte: "Pénalités = Montant TTC × Taux annuel ÷ 360 × Nombre de jours de retard" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : une facture de 2 000 € TTC est réglée avec 30 jours de retard, au taux annuel de 12 %. Pénalités = 2 000 × 0,12 ÷ 360 × 30 = 240 ÷ 360 × 30 = 0,6667 × 30 = 20,00 €." },
+            { type: 'paragraphe', texte: "À ces pénalités s'ajoute l'indemnité forfaitaire de 40 €. Le total réclamé au client est donc : Pénalités + 40 €." },
+            { type: 'sousTitre', texte: 'Compter les jours de retard' },
+            { type: 'paragraphe', texte: "Le nombre de jours de retard se compte à partir du lendemain de l'échéance jusqu'à la date du jour. Ici, l'échéance était le 31 juillet et nous sommes le 18 août : le retard est de 18 jours." },
+            { type: 'sousTitre', texte: 'Choisir le bon niveau de relance' },
+            { type: 'tableau', entetes: ['Niveau', 'Quand l’utiliser', 'Ton'], lignes: [
+              ['Rappel simple', "Premier retard, bon client, aucune relance précédente", 'Courtois, on suppose un oubli'],
+              ['Relance ferme', "Deuxième relance, ou client habituellement en retard", 'Plus insistant, on fixe une date limite'],
+              ['Mise en demeure', "Après plusieurs relances sans réponse", 'Formel, on menace de poursuites'],
+            ] },
+            { type: 'paragraphe', texte: "Le choix du niveau dépend de deux éléments : le nombre de relances déjà envoyées, et le comportement habituel du client. Une mise en demeure envoyée à un bon client dès le premier retard le vexerait et pourrait le faire partir à la concurrence." },
+            { type: 'citation', texte: "La relance n'est pas une punition. C'est un service qui rappelle au client une obligation, tout en préservant la relation commerciale.", auteur: 'Guide du recouvrement, Chausson Matériaux' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Aide-mémoire : structure d'une lettre de relance", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Les cinq parties d’une lettre de relance' },
+            { type: 'tableau', entetes: ['Partie', 'Contenu attendu'], lignes: [
+              ['En-tête', "Coordonnées de l'agence et du client, date, référence de la facture"],
+              ['Objet', 'Relance de la facture FA-2026-07655'],
+              ['Rappel des faits', "Le montant, la date d'échéance, le retard constaté"],
+              ['Demande', "Inviter le client à régler, en précisant le montant et un délai"],
+              ['Formule de politesse', "Adaptée au niveau de relance choisi"],
+            ] },
+            { type: 'sousTitre', texte: 'Pour un rappel simple à un bon client' },
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "Supposer un simple oubli : « il s'agit probablement d'un oubli de votre part »." },
+              { numero: '2', texte: "Rester courtois et bref. Ne pas menacer dès la première lettre." },
+              { numero: '3', texte: "Rappeler les pénalités par information, sans les exiger encore : cela invite à régler vite." },
+            ] },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Lire l'échéancier",
+        contexte: "L'échéancier affiche plusieurs factures. Votre premier travail consiste à isoler celle qui vous concerne et à mesurer le retard.",
+        questions: [
+          { numero: 1, consigne: "Repérez la facture RENOVAL dans l'échéancier et relevez les informations utiles au calcul.", ressources: "Document 1, annexe 1. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Déterminez le nombre de jours de retard, puis justifiez votre comptage.", ressources: "Documents 1 et 3, annexe 2. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Calculer les pénalités",
+        contexte: "Les conditions générales de vente fixent la règle. Appliquez-la au centime près.",
+        questions: [
+          { numero: 3, consigne: "Calculez le montant des pénalités de retard, puis le total réclamé au client.", ressources: "Documents 2 et 3, annexe 3. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Choisissez le niveau de relance adapté et justifiez votre choix par deux éléments du dossier.", ressources: 'Documents 1 et 3, annexe 4. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Rédiger la relance",
+        contexte: "Le client est fidèle. Votre lettre doit récupérer l'argent sans abîmer la relation.",
+        questions: [
+          { numero: 5, consigne: "Rédigez la lettre de relance en respectant le niveau choisi et les cinq parties attendues.", ressources: 'Documents 1, 2 et 4, annexe 5. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi une mise en demeure serait ici une erreur.", ressources: 'Documents 1 et 3, annexe 6. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Informations de la facture à relancer', colonnes: ['Élément', 'Réponse'], nbLignes: 5, largeurs: ['45%', '55%'], prerempli: [
+        ['Numéro de la facture', ''],
+        ['Montant TTC restant dû', ''],
+        ['Date d’échéance', ''],
+        ['Date du jour', ''],
+        ['Nombre de relances déjà envoyées', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le nombre de jours de retard', colonnes: ['Étape', 'Réponse'], nbLignes: 3, largeurs: ['55%', '45%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['À partir de quelle date compte-t-on le retard ?', ''],
+        ['Jusqu’à quelle date ?', ''],
+        ['Nombre de jours de retard', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Calcul des pénalités', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 5, largeurs: ['36%', '38%', '26%'], prerempli: [
+        ['Montant TTC de la facture', '(relevé sur l’échéancier)', '3 148,91 €'],
+        ['Pénalités pour une année entière (× 12 %)', '3 148,91 × 0,12 =', ''],
+        ['Pénalités par jour (÷ 360)', '', ''],
+        ['Pénalités pour 18 jours de retard (× 18)', '', ''],
+        ['Total réclamé (pénalités + indemnité de 40 €)', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Choix du niveau de relance', colonnes: ['Élément', 'Réponse'], nbLignes: 3, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Niveau de relance retenu', ''],
+        ['Premier élément qui justifie ce choix', ''],
+        ['Second élément qui justifie ce choix', ''],
+      ] },
+
+      { type: 'courrier', id: 'annexe5', titre: 'Annexe 5 — Lettre de relance' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi pas une mise en demeure", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Repérer une facture en retard dans un échéancier",
+      "Compter des jours de retard à partir d'une date d'échéance",
+      "Calculer des pénalités de retard et une indemnité forfaitaire",
+      "Choisir et rédiger une relance adaptée à la relation client",
+    ],
+  },
+
+  synthese: {
+    titre: 'Relancer un règlement en retard',
+    proposition: [
+      'Date d’échéance',
+      'Jours de retard',
+      'Pénalités de retard',
+      'Taux annuel de 12 %',
+      'Base de 360 jours',
+      'Indemnité forfaitaire de 40 €',
+      'Rappel simple',
+      'Mise en demeure',
+      'Bon client',
+      'Préserver la relation',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La relance du règlement',
+      enfants: [
+        { id: 'ret', texte: 'Mesurer le retard', enfants: [
+          { id: 'r1', texte: null, reponse: 'Date d’échéance' },
+          { id: 'r2', texte: null, reponse: 'Jours de retard' },
+        ] },
+        { id: 'cal', texte: 'Calculer ce qui est dû', enfants: [
+          { id: 'c1', texte: null, reponse: 'Pénalités de retard' },
+          { id: 'c2', texte: null, reponse: 'Taux annuel de 12 %' },
+          { id: 'c3', texte: null, reponse: 'Base de 360 jours' },
+          { id: 'c4', texte: null, reponse: 'Indemnité forfaitaire de 40 €' },
+        ] },
+        { id: 'niv', texte: 'Choisir le niveau', enfants: [
+          { id: 'n1', texte: null, reponse: 'Rappel simple' },
+          { id: 'n2', texte: null, reponse: 'Mise en demeure' },
+        ] },
+        { id: 'rel', texte: 'Tenir compte du client', enfants: [
+          { id: 'e1', texte: null, reponse: 'Bon client' },
+          { id: 'e2', texte: null, reponse: 'Préserver la relation' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Mesurer un retard de paiement", indicateurs: [
+        { niveau: 'novice', description: "Je confonds date d'échéance et date de facture." },
+        { niveau: 'debrouille', description: "Je repère la facture en retard dans l'échéancier." },
+        { niveau: 'averti', description: "Je compte correctement le nombre de jours de retard." },
+        { niveau: 'expert', description: "Je justifie mon comptage à partir du lendemain de l'échéance." },
+      ] },
+      { id: 'c2', intitule: "Calculer des pénalités de retard", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelle formule appliquer." },
+        { niveau: 'debrouille', description: "J'applique le taux annuel au montant de la facture." },
+        { niveau: 'averti', description: "Je ramène au prorata des jours de retard sur une base de 360 jours." },
+        { niveau: 'expert', description: "J'ajoute l'indemnité forfaitaire et je donne le total exact réclamé." },
+      ] },
+      { id: 'c3', intitule: "Adapter une relance à la relation client", indicateurs: [
+        { niveau: 'novice', description: "J'envoie une mise en demeure sans réfléchir au client." },
+        { niveau: 'debrouille', description: "Je choisis un rappel simple mais sans le justifier." },
+        { niveau: 'averti', description: "Je justifie mon choix par l'absence de relance et la fidélité du client." },
+        { niveau: 'expert', description: "Ma lettre récupère l'argent tout en préservant la relation commerciale." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Échéancier', definition: "Tableau qui recense toutes les factures et leur date limite de règlement." },
+      { terme: 'Date d’échéance', definition: "Date limite à laquelle le client doit avoir réglé sa facture." },
+      { terme: 'Facture en retard', definition: "Facture dont l'échéance est dépassée sans qu'un règlement ait été enregistré." },
+      { terme: 'Jours de retard', definition: "Nombre de jours écoulés entre le lendemain de l'échéance et la date du jour." },
+      { terme: 'Pénalités de retard', definition: "Somme due par le client en cas de règlement tardif, calculée sur le montant de la facture." },
+      { terme: 'Taux annuel', definition: "Pourcentage appliqué sur une année pour calculer les pénalités. Ici, 12 %." },
+      { terme: 'Base de 360 jours', definition: "Convention de calcul qui considère l'année comme comptant 360 jours." },
+      { terme: 'Indemnité forfaitaire', definition: "Somme fixe de 40 € due pour frais de recouvrement, en plus des pénalités." },
+      { terme: 'Rappel simple', definition: "Première relance, courtoise, qui suppose un simple oubli du client." },
+      { terme: 'Mise en demeure', definition: "Relance formelle et menaçante, utilisée après plusieurs relances sans réponse." },
+      { terme: 'Recouvrement', definition: "Ensemble des actions menées pour récupérer une somme due par un client." },
+      { terme: 'Relation commerciale', definition: "Lien de confiance entre l'entreprise et son client, à préserver dans la durée." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'une facture en retard ?", verso: "Une facture dont l'échéance est dépassée sans règlement enregistré." },
+      { recto: "Comment compte-t-on les jours de retard ?", verso: "Du lendemain de l'échéance jusqu'à la date du jour." },
+      { recto: 'Quelle est la formule des pénalités ?', verso: 'Montant TTC × Taux annuel ÷ 360 × Nombre de jours.' },
+      { recto: 'Quel est le taux annuel des pénalités ?', verso: '12 %, fixé par les conditions générales de vente.' },
+      { recto: "Que vaut l'indemnité forfaitaire de recouvrement ?", verso: '40 €, pour chaque facture réglée en retard par un professionnel.' },
+      { recto: 'Quel est le montant des pénalités RENOVAL ?', verso: '18,89 € pour 18 jours de retard.' },
+      { recto: 'Quel est le total réclamé au client ?', verso: '58,89 €, soit 18,89 € de pénalités plus 40 € d’indemnité.' },
+      { recto: 'Quand utilise-t-on un rappel simple ?', verso: 'Au premier retard, pour un bon client, sans relance précédente.' },
+      { recto: 'Quand utilise-t-on une mise en demeure ?', verso: 'Après plusieurs relances restées sans réponse.' },
+      { recto: 'Pourquoi préserver la relation avec un bon client ?', verso: "Pour ne pas le pousser vers la concurrence." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Une facture est en retard lorsque :', options: ["son échéance est dépassée sans règlement", 'elle vient d’être émise', 'le client conteste le montant'], bonne: 0 },
+      { type: 'unique', question: "L'échéance de la facture RENOVAL était le :", options: ['31 juillet 2026', '18 août 2026', '23 juin 2026'], bonne: 0 },
+      { type: 'unique', question: 'Le nombre de jours de retard est de :', options: ['18 jours', '31 jours', '48 jours'], bonne: 0 },
+      { type: 'unique', question: 'La formule des pénalités est :', options: ['TTC × taux ÷ 360 × jours', 'TTC × taux × jours', 'TTC ÷ taux × jours'], bonne: 0 },
+      { type: 'unique', question: 'Les pénalités de retard RENOVAL valent :', options: ['18,89 €', '20,00 €', '40,00 €'], bonne: 0 },
+      { type: 'unique', question: "L'indemnité forfaitaire de recouvrement est de :", options: ['40 €', '18,89 €', '12 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total réclamé au client est de :', options: ['58,89 €', '18,89 €', '78,89 €'], bonne: 0 },
+      { type: 'unique', question: 'Pour un bon client au premier retard, on choisit :', options: ['un rappel simple', 'une mise en demeure', 'une poursuite judiciaire'], bonne: 0 },
+      { type: 'unique', question: 'Une mise en demeure envoyée trop tôt risque de :', options: ['faire fuir le client', 'accélérer le paiement toujours', 'annuler les pénalités'], bonne: 0 },
+      { type: 'unique', question: 'La base de calcul des pénalités est une année de :', options: ['360 jours', '365 jours', '12 mois de 30 jours arrondis'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Le calcul des pénalités', 'Le niveau de relance', 'La relation client'],
+      zones: [
+        { libelle: 'Montant TTC × 0,12 ÷ 360 × jours', etiquetteIndex: 0 },
+        { libelle: 'Indemnité forfaitaire de 40 €', etiquetteIndex: 0 },
+        { libelle: 'Rappel simple pour un premier retard', etiquetteIndex: 1 },
+        { libelle: 'Base de 360 jours', etiquetteIndex: 0 },
+        { libelle: 'Mise en demeure après plusieurs relances', etiquetteIndex: 1 },
+        { libelle: 'Client fidèle depuis 2021', etiquetteIndex: 2 },
+        { libelle: 'Ton courtois qui suppose un oubli', etiquetteIndex: 1 },
+        { libelle: 'Ne pas pousser le client vers la concurrence', etiquetteIndex: 2 },
+        { libelle: 'Préserver la confiance dans la durée', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Repérez la facture RENOVAL dans l'échéancier et relevez les informations utiles au calcul.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "L'échéancier affiche quatre factures. Seule FA-2026-07655 concerne RENOVAL et se trouve en retard.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Numéro de la facture', 'FA-2026-07655'],
+          ['Montant TTC restant dû', '3 148,91 €'],
+          ['Date d’échéance', '31 juillet 2026'],
+          ['Date du jour', '18 août 2026'],
+          ['Nombre de relances déjà envoyées', 'Aucune'],
+        ] },
+        complement: "0,5 point par ligne, arrondi au demi-point supérieur. Deux autres factures sont en retard dans l'échéancier (SAS SOLBAT) : l'élève doit isoler celle de RENOVAL. Le montant est celui du solde après avoir, soit 3 148,91 €, et non le montant initial de la facture." },
+
+      { intitule: "Déterminez le nombre de jours de retard, puis justifiez votre comptage.", documents: ['Documents 1 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "Le retard se compte à partir du lendemain de l'échéance. L'échéance était le 31 juillet, donc le retard court à partir du 1er août, jusqu'au 18 août inclus.",
+        tableau: { colonnes: ['Étape', 'Réponse attendue'], lignes: [
+          ['À partir de quelle date compte-t-on le retard ?', "Le 1er août 2026, lendemain de l'échéance"],
+          ['Jusqu’à quelle date ?', 'Le 18 août 2026, date du jour'],
+          ['Nombre de jours de retard', '18 jours'],
+        ] },
+        complement: "1 point par ligne. Le document 3 fournit la réponse : le retard est de 18 jours, comme indiqué. Valoriser l'élève qui comprend que l'on part du lendemain de l'échéance et non de l'échéance elle-même. Accepter le résultat de 18 jours donné dans le dossier ; la question porte surtout sur la justification du comptage." },
+
+      { intitule: "Calculez le montant des pénalités de retard, puis le total réclamé au client.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "Pénalités = Montant TTC × 0,12 ÷ 360 × 18. On ajoute ensuite l'indemnité forfaitaire de 40 €.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Montant TTC de la facture', 'Relevé sur l’échéancier', '3 148,91 €'],
+          ['Pénalités pour une année (× 12 %)', '3 148,91 × 0,12', '377,87 €'],
+          ['Pénalités par jour (÷ 360)', '377,87 ÷ 360', '1,0496 €'],
+          ['Pénalités pour 18 jours (× 18)', '1,0496 × 18', '18,89 €'],
+          ['Total réclamé (+ 40 €)', '18,89 + 40,00', '58,89 €'],
+        ] },
+        complement: "1 point pour la pénalité annuelle, 1 point pour la pénalité journalière, 1,5 point pour la pénalité sur 18 jours, 1,5 point pour le total avec l'indemnité. La pénalité annuelle exacte est 377,8692 €, arrondie à 377,87 €. La pénalité journalière est 1,04963 €, que l'on peut garder à quatre décimales pour le calcul intermédiaire. Le résultat final, 18,89 €, est stable. Accepter un calcul en une seule ligne : 3 148,91 × 0,12 ÷ 360 × 18 = 18,89 €. Refuser l'oubli de l'indemnité de 40 € : un total de 18,89 € seul ne vaut que la moitié des points du total." },
+
+      { intitule: "Choisissez le niveau de relance adapté et justifiez votre choix par deux éléments du dossier.", documents: ['Documents 1 et 3', 'Annexe 4'], bareme: 4,
+        reponse: "Le rappel simple s'impose : c'est le premier retard de ce client, et aucune relance n'a encore été envoyée.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Niveau de relance retenu', 'Le rappel simple'],
+          ['Premier élément justificatif', "Aucune relance n'a encore été envoyée pour cette facture : c'est le tout premier rappel."],
+          ['Second élément justificatif', "Julien Bertrand est un bon client, régulier depuis 2021. Un ton courtois préserve la relation."],
+        ] },
+        complement: "2 points pour le choix du rappel simple. 1 point par élément justificatif. Refuser la relance ferme et la mise en demeure : elles ne se justifient qu'après une ou plusieurs relances sans réponse, ce qui n'est pas le cas ici. Un élève qui choisit la mise en demeure a peut-être bien calculé les pénalités mais n'a pas lu le contexte : la note doit refléter cette erreur de jugement commercial." },
+
+      { intitule: "Rédigez la lettre de relance en respectant le niveau choisi et les cinq parties attendues.", documents: ['Documents 1, 2 et 4', 'Annexe 5'], bareme: 3,
+        reponse: "Lettre de rappel simple, courtoise, qui suppose un oubli et informe des pénalités sans les exiger.",
+        complement: "Structure attendue : En-tête (agence, client, date du 18 août, référence FA-2026-07655). Objet : rappel de votre facture FA-2026-07655. Corps : « Sauf erreur de notre part, votre facture FA-2026-07655 d'un montant de 3 148,91 € TTC, arrivée à échéance le 31 juillet 2026, ne nous est pas encore parvenue. Il s'agit probablement d'un simple oubli de votre part. Nous vous serions reconnaissants de bien vouloir procéder à son règlement sous huitaine. Nous vous rappelons qu'un retard de paiement entraîne des pénalités au taux annuel de 12 %, ainsi qu'une indemnité forfaitaire de 40 €. » Politesse courtoise, signature de l'agence. Barème : 1 point pour l'objet et la référence exacte de la facture. 1 point pour le rappel du montant et de l'échéance. 1 point pour le ton de rappel simple (oubli supposé, pas de menace). Refuser toute formule comminatoire du type « faute de règlement, nous engagerons des poursuites » : elle appartient à la mise en demeure. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi une mise en demeure serait ici une erreur.", documents: ['Documents 1 et 3', 'Annexe 6'], bareme: 2,
+        reponse: "Une mise en demeure est une relance formelle et menaçante, réservée aux clients qui n'ont pas répondu à plusieurs relances. Or c'est ici le premier retard d'un client fidèle depuis 2021 : une mise en demeure le vexerait et risquerait de le faire partir à la concurrence.",
+        complement: "1 point pour rappeler que la mise en demeure intervient après plusieurs relances sans réponse. 1 point pour la conséquence commerciale : vexer un bon client et le perdre. Accepter toute formulation exacte. Cette question évalue le jugement commercial autant que la connaissance de la procédure." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// CHAUSSON MATERIAUX, mission 8 - Rendre compte de l'affaire
+// Bloc 2 : suivre les ventes. Classe de Premiere. Spiralaire : D.A.D.O.
+// Mission de cloture : reprend tous les chiffres de l'affaire RENOVAL.
+// ---------------------------------------------------------------------------
+const CHAUSSON_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Complétez le tableau de bord de l'affaire RENOVAL, calculez le taux de service, puis rédigez une note à votre chef d'agence avec la méthode D.A.D.O.",
+    contexte:
+      "Nous sommes le 25 août 2026. Julien Bertrand a réglé sa facture hier, pénalités comprises. L'affaire RENOVAL est close. Thierry Marchand, le chef d'agence, vous demande d'en faire le bilan : cette commande a connu des incidents, un manquant, un refus, un retard de paiement, et il veut comprendre ce qui s'est bien passé et ce qui a coûté à l'agence. Vous allez rassembler tous les chiffres accumulés depuis le début, mesurer la qualité du service rendu, et rédiger une note claire. C'est ce document qui restera dans le dossier client.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.4 — Rendre compte de son activité',
+      detail: "C2.4.1 Renseigner les indicateurs de suivi de l'activité. C2.4.2 Rédiger un compte rendu à destination de la hiérarchie.",
+    },
+    documents: [
+      { numero: 1, titre: "Récapitulatif de l'affaire RENOVAL (dossier complet)", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Dossier commande 2026-4471, clôture' },
+        { intertitre: 'Ce qui a été commandé, livré, et facturé (montants HT)' },
+        { tableau: { colonnes: ['Réf.', 'Commandé', 'Livré et accepté', 'Statut final'], lignes: [
+          ['PAR-20', '400 unités', '400 unités', 'Livré complet (300 le 22/06, 100 relivrés)'],
+          ['CIM-35', '60 sacs', '56 sacs', 'Incomplet : 4 sacs refusés, avoir établi'],
+          ['ISO-100', '25 rouleaux', '25 rouleaux', 'Livré complet après le 26/06'],
+          ['CAR-60', '80 m²', '80 m²', 'Livré complet le 22/06'],
+          ['COL-25', '20 sacs', '20 sacs', 'Livré complet le 22/06'],
+        ] } },
+        { intertitre: 'Les événements de l’affaire' },
+        { paragraphes: [
+          "22 juin : livraison partielle en deux tournées. Une palette de parpaings reste au dépôt, 4 sacs de ciment sont refusés.",
+          "23 juin : facture FA-2026-07655 émise, avoir AV-2026-00412 de 243,73 € TTC établi.",
+          "24 juin : réclamation du client traitée par téléphone.",
+          "25 et 26 juin : relivraison des 100 parpaings et de la laine de verre.",
+          "18 août : relance du règlement, 18 jours de retard.",
+          "24 août : règlement reçu, pénalités comprises.",
+        ] },
+      ] },
+
+      { numero: 2, titre: "Les chiffres clés déjà calculés", texte: [
+        { logoEntete: 'CHAUSSON MATÉRIAUX — Synthèse chiffrée de l’affaire' },
+        { intertitre: 'Montants à reporter dans votre tableau de bord' },
+        { tableau: { colonnes: ['Indicateur', 'Valeur', 'Établi en'], lignes: [
+          ['Total commandé HT (5 références)', '3 599,08 €', 'Mission 1'],
+          ['Montant HT finalement livré et accepté', '3 571,72 €', 'Missions 4 et 5'],
+          ['Montant HT jamais livré (ciment refusé)', '27,36 €', 'Mission 4'],
+          ['Avoir accordé au client (TTC)', '243,73 €', 'Mission 5'],
+          ['Solde facturé au client (TTC)', '3 148,91 €', 'Mission 5'],
+          ['Pénalités de retard + indemnité (TTC)', '58,89 €', 'Mission 7'],
+        ] } },
+        { bulleConseil: { texte: ["Tous ces chiffres ont déjà été calculés dans les missions précédentes. Votre travail n'est pas de les recalculer, mais de les rassembler et de les interpréter."] } },
+      ] },
+
+      { numero: 3, titre: "Procédure : le taux de service", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'Mesurer la qualité d’une livraison : le taux de service' },
+            { type: 'paragraphe', texte: "Le taux de service (indicateur qui mesure la qualité du service rendu au client) exprime la part des lignes de commande livrées complètes et conformes." },
+            { type: 'paragraphe', texte: "Une ligne n'est comptée comme « servie » que si elle a été livrée en totalité et acceptée par le client. Une ligne incomplète, même à 90 %, n'est pas servie." },
+            { type: 'paragraphe', texte: "Taux de service = Nombre de lignes servies ÷ Nombre total de lignes commandées × 100" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : une commande de 10 lignes dont 9 sont livrées complètes donne un taux de service de 9 ÷ 10 × 100 = 90 %." },
+            { type: 'sousTitre', texte: 'Comment lire le résultat' },
+            { type: 'tableau', entetes: ['Taux de service', 'Interprétation'], lignes: [
+              ['100 %', 'Toutes les lignes ont été servies. Service parfait.'],
+              ['80 % à 99 %', 'Bon service, mais une ou plusieurs lignes ont posé problème.'],
+              ['Moins de 80 %', 'Service dégradé. Il faut en chercher la cause.'],
+            ] },
+            { type: 'paragraphe', texte: "Le taux de service ne juge pas les montants, mais le respect de la commande ligne à ligne. Une seule ligne incomplète suffit à le faire baisser." },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Méthodologie : rédiger une note avec la méthode D.A.D.O.", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'chaussonpro.interne / aide',
+          marque: 'ChaussonPro — Aide',
+          couleurHeader: '#0B3C7A',
+          sections: [
+            { type: 'titre', texte: 'La note interne et la méthode D.A.D.O.' },
+            { type: 'paragraphe', texte: "Une note est un document interne court, adressé à un collègue ou à la hiérarchie. Vous avez déjà utilisé la méthode D.A.D.O. pour recommander une action. Ici, vous l'utilisez pour rendre compte : le but n'est pas de proposer, mais d'informer clairement votre chef d'agence." },
+            { type: 'sousTitre', texte: 'L’en-tête D.A.D.O.' },
+            { type: 'tableau', entetes: ['Lettre', 'Signification', 'Exemple'], lignes: [
+              ['D — De', "Le nom de celui qui rédige", '[Votre prénom et nom], comptoir professionnel'],
+              ['A — À', "Le destinataire", 'Thierry Marchand, chef d’agence'],
+              ['D — Date', "La date de rédaction", '25 août 2026'],
+              ['O — Objet', "Le thème de la note", "Bilan de l'affaire RENOVAL, commande 2026-4471"],
+            ] },
+            { type: 'sousTitre', texte: 'Le corps de la note, pour rendre compte' },
+            { type: 'bulles', bulles: [
+              { numero: '1', texte: "Ce qui s'est bien passé : le taux de service, la satisfaction finale du client." },
+              { numero: '2', texte: "Ce qui a posé problème : le manquant, le refus, le retard de paiement." },
+              { numero: '3', texte: "Ce que l'affaire a coûté à l'agence : l'avoir accordé, sans oublier ce qu'ont rapporté les pénalités." },
+            ] },
+            { type: 'paragraphe', texte: "Une note qui rend compte reste factuelle. On ne cherche pas de coupable, on expose les faits et les chiffres." },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Renseigner le tableau de bord",
+        contexte: "Tout est déjà calculé. Il s'agit de rassembler les chiffres au bon endroit et de les faire parler.",
+        questions: [
+          { numero: 1, consigne: "Complétez le tableau de bord financier de l'affaire à partir des chiffres du dossier.", ressources: "Documents 1 et 2, annexe 1. Compétence C2.4.1 — Renseigner les indicateurs de suivi.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Calculez le montant total réellement encaissé par l'agence, pénalités comprises.", ressources: "Document 2, annexe 2. Compétence C2.4.1 — Renseigner les indicateurs de suivi.", annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Mesurer la qualité du service",
+        contexte: "Un client peut payer et rester mécontent du service. Le taux de service met un chiffre sur cette qualité.",
+        questions: [
+          { numero: 3, consigne: "Déterminez, pour chaque référence, si la ligne a été servie ou non, puis justifiez.", ressources: "Documents 1 et 3, annexe 3. Compétence C2.4.1 — Renseigner les indicateurs de suivi.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez le taux de service de l'affaire, puis interprétez le résultat.", ressources: 'Documents 1 et 3, annexe 4. Compétence C2.4.1 — Renseigner les indicateurs de suivi.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Rendre compte au chef d'agence",
+        contexte: "La dernière étape du suivi : informer sa hiérarchie, clairement et sans détour.",
+        questions: [
+          { numero: 5, consigne: "Rédigez la note à Thierry Marchand avec la méthode D.A.D.O. en trois points de bilan.", ressources: 'Documents 1, 2 et 4, annexe 5. Compétence C2.4.2 — Rédiger un compte rendu.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi une affaire rentable peut afficher un taux de service imparfait.", ressources: 'Documents 1 et 3, annexe 6. Compétence C2.4.2 — Rédiger un compte rendu.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Tableau de bord financier de l'affaire", colonnes: ['Indicateur', 'Montant'], nbLignes: 6, largeurs: ['62%', '38%'], prerempli: [
+        ['Total commandé HT', '3 599,08 €'],
+        ['Montant HT finalement livré et accepté', ''],
+        ['Montant HT jamais livré (ciment refusé)', ''],
+        ['Avoir accordé au client (TTC)', ''],
+        ['Solde facturé au client (TTC)', ''],
+        ['Pénalités de retard + indemnité (TTC)', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 — Montant total encaissé", colonnes: ['Élément', 'Calcul à poser', 'Montant'], nbLignes: 3, largeurs: ['40%', '34%', '26%'], prerempli: [
+        ['Solde facturé (TTC)', '(relevé au tableau de bord)', ''],
+        ['Pénalités + indemnité (TTC)', '', ''],
+        ['Total encaissé par l’agence (TTC)', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Ligne servie ou non', colonnes: ['Réf.', 'Servie ? (oui / non)', 'Justification'], nbLignes: 5, largeurs: ['16%', '24%', '60%'], prerempli: [
+        ['PAR-20', 'Oui', 'Livré complet : 300 le 22 juin, 100 relivrés ensuite.'],
+        ['CIM-35', '', ''],
+        ['ISO-100', '', ''],
+        ['CAR-60', '', ''],
+        ['COL-25', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Calcul du taux de service', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 4, largeurs: ['40%', '34%', '26%'], prerempli: [
+        ['Nombre de lignes servies', '', ''],
+        ['Nombre total de lignes commandées', '', ''],
+        ['Taux de service', '... ÷ ... × 100 =', ''],
+        ['Interprétation (bon, dégradé...)', '', ''],
+      ] },
+
+      { type: 'note', id: 'annexe5', titre: 'Annexe 5 — Note à Thierry Marchand', de: '', a: '', date: '', objet: '' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Rentabilité et taux de service", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Rassembler les indicateurs d'une affaire dans un tableau de bord",
+      "Calculer un montant total encaissé",
+      "Calculer et interpréter un taux de service",
+      "Rédiger une note de compte rendu à la hiérarchie avec la méthode D.A.D.O.",
+    ],
+  },
+
+  synthese: {
+    titre: "Rendre compte d'une affaire",
+    proposition: [
+      'Tableau de bord',
+      'Indicateur',
+      'Taux de service',
+      'Lignes servies',
+      'Note interne',
+      'Méthode D.A.D.O.',
+      'De, À, Date, Objet',
+      'Rester factuel',
+      "Ce qui a bien marché",
+      'Ce qui a coûté',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "Le compte rendu de l'affaire",
+      enfants: [
+        { id: 'tab', texte: 'Le tableau de bord', enfants: [
+          { id: 't1', texte: null, reponse: 'Tableau de bord' },
+          { id: 't2', texte: null, reponse: 'Indicateur' },
+        ] },
+        { id: 'qua', texte: 'La qualité du service', enfants: [
+          { id: 'q1', texte: null, reponse: 'Taux de service' },
+          { id: 'q2', texte: null, reponse: 'Lignes servies' },
+        ] },
+        { id: 'not', texte: "L'outil pour rendre compte", enfants: [
+          { id: 'n1', texte: null, reponse: 'Note interne' },
+          { id: 'n2', texte: null, reponse: 'Méthode D.A.D.O.' },
+          { id: 'n3', texte: null, reponse: 'De, À, Date, Objet' },
+        ] },
+        { id: 'con', texte: 'Le contenu du bilan', enfants: [
+          { id: 'c1', texte: null, reponse: 'Rester factuel' },
+          { id: 'c2', texte: null, reponse: "Ce qui a bien marché" },
+          { id: 'c3', texte: null, reponse: 'Ce qui a coûté' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Renseigner un tableau de bord", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas où reporter chaque chiffre." },
+        { niveau: 'debrouille', description: "Je reporte les montants du dossier sans les vérifier." },
+        { niveau: 'averti', description: "Je rassemble tous les indicateurs au bon endroit et sans erreur." },
+        { niveau: 'expert', description: "Je calcule le montant total encaissé, pénalités comprises." },
+      ] },
+      { id: 'c2', intitule: "Calculer et interpréter un taux de service", indicateurs: [
+        { niveau: 'novice', description: "Je confonds taux de service et montant livré." },
+        { niveau: 'debrouille', description: "Je compte les lignes livrées mais j'oublie la condition « complète »." },
+        { niveau: 'averti', description: "Je ne compte comme servie qu'une ligne livrée complète et conforme." },
+        { niveau: 'expert', description: "J'interprète le résultat et j'en explique la cause." },
+      ] },
+      { id: 'c3', intitule: "Rédiger une note de compte rendu", indicateurs: [
+        { niveau: 'novice', description: "J'oublie l'en-tête D.A.D.O." },
+        { niveau: 'debrouille', description: "Je remplis l'en-tête mais mon bilan est incomplet." },
+        { niveau: 'averti', description: "Ma note expose ce qui a bien marché et ce qui a posé problème." },
+        { niveau: 'expert', description: "Ma note est factuelle, chiffrée et directement exploitable par le chef d'agence." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Tableau de bord', definition: "Document qui rassemble les indicateurs chiffrés d'une activité pour la piloter." },
+      { terme: 'Indicateur', definition: "Chiffre qui mesure un aspect de l'activité, comme un montant ou un taux." },
+      { terme: 'Taux de service', definition: "Part des lignes de commande livrées complètes et conformes, exprimée en pourcentage." },
+      { terme: 'Ligne servie', definition: "Ligne de commande livrée en totalité et acceptée par le client." },
+      { terme: 'Note interne', definition: "Document court adressé à un collègue ou à la hiérarchie au sein de l'entreprise." },
+      { terme: 'Méthode D.A.D.O.', definition: "Structure de l'en-tête d'une note : De, À, Date, Objet." },
+      { terme: 'Rendre compte', definition: "Informer sa hiérarchie de ce qui a été fait, avec des faits et des chiffres." },
+      { terme: 'Avoir', definition: "Somme créditée au client. Ici, 243,73 € TTC pour la marchandise non livrée ou refusée." },
+      { terme: 'Pénalités de retard', definition: "Somme due par le client pour un règlement tardif. Ici, avec l'indemnité, 58,89 € TTC." },
+      { terme: 'Montant encaissé', definition: "Somme réellement reçue par l'agence, solde et pénalités compris." },
+      { terme: 'Affaire rentable', definition: "Affaire qui a rapporté de l'argent à l'entreprise, malgré d'éventuels incidents." },
+      { terme: 'Compte rendu', definition: "Écrit qui expose ce qui s'est passé, sans chercher à convaincre ni à recommander." },
+    ],
+    flashcards: [
+      { recto: "Qu'est-ce qu'un taux de service ?", verso: "La part des lignes livrées complètes et conformes, en pourcentage." },
+      { recto: 'Comment calcule-t-on le taux de service ?', verso: 'Lignes servies ÷ Lignes commandées × 100.' },
+      { recto: "Une ligne livrée à 90 % est-elle servie ?", verso: "Non. Une ligne n'est servie que si elle est complète." },
+      { recto: 'Que signifie D.A.D.O. ?', verso: 'De, À, Date, Objet : l’en-tête d’une note.' },
+      { recto: 'À qui adresse-t-on cette note ?', verso: "À Thierry Marchand, le chef d'agence." },
+      { recto: 'Combien de lignes ont été servies dans l’affaire ?', verso: 'Quatre sur cinq : seul le ciment est incomplet.' },
+      { recto: "Quel est le taux de service de l'affaire ?", verso: '80 %, soit 4 lignes servies sur 5.' },
+      { recto: "Quel montant l'agence a-t-elle encaissé ?", verso: '3 207,80 € TTC, soit 3 148,91 € plus 58,89 € de pénalités.' },
+      { recto: "Pourquoi le ciment n'est-il pas servi ?", verso: '4 sacs sur 60 ont été refusés : la ligne est incomplète.' },
+      { recto: 'Une note de compte rendu cherche-t-elle un coupable ?', verso: 'Non. Elle reste factuelle et expose les chiffres.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le taux de service mesure :', options: ['la part des lignes livrées complètes', 'le montant total encaissé', 'le nombre de clients'], bonne: 0 },
+      { type: 'unique', question: 'La formule du taux de service est :', options: ['lignes servies ÷ lignes commandées × 100', 'montant livré ÷ montant commandé', 'lignes commandées ÷ lignes servies'], bonne: 0 },
+      { type: 'unique', question: 'Combien de lignes ont été servies ?', options: ['Quatre', 'Cinq', 'Trois'], bonne: 0 },
+      { type: 'unique', question: "Pourquoi le ciment n'est-il pas servi ?", options: ['4 sacs refusés, ligne incomplète', 'il a été livré en retard', 'le prix a changé'], bonne: 0 },
+      { type: 'unique', question: "Le taux de service de l'affaire est de :", options: ['80 %', '99 %', '100 %'], bonne: 0 },
+      { type: 'unique', question: 'Que signifie le premier D de D.A.D.O. ?', options: ['De (qui rédige)', 'Date', 'Destinataire'], bonne: 0 },
+      { type: 'unique', question: 'La note est adressée à :', options: ["Thierry Marchand, chef d'agence", 'Julien Bertrand', 'Sandrine Vasseur'], bonne: 0 },
+      { type: 'unique', question: "Le montant total encaissé est de :", options: ['3 207,80 €', '3 148,91 €', '3 599,08 €'], bonne: 0 },
+      { type: 'unique', question: 'Une note de compte rendu doit être :', options: ['factuelle et chiffrée', 'persuasive', 'anonyme'], bonne: 0 },
+      { type: 'unique', question: "Une affaire rentable peut avoir un taux de service :", options: ['imparfait', 'toujours de 100 %', 'négatif'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Le tableau de bord', 'Le taux de service', "L'en-tête D.A.D.O."],
+      zones: [
+        { libelle: 'Total commandé HT : 3 599,08 €', etiquetteIndex: 0 },
+        { libelle: 'Lignes servies ÷ lignes commandées × 100', etiquetteIndex: 1 },
+        { libelle: 'De : celui qui rédige', etiquetteIndex: 2 },
+        { libelle: 'Montant encaissé : 3 207,80 €', etiquetteIndex: 0 },
+        { libelle: 'Une ligne incomplète n’est pas servie', etiquetteIndex: 1 },
+        { libelle: 'À : le destinataire', etiquetteIndex: 2 },
+        { libelle: 'Avoir accordé : 243,73 €', etiquetteIndex: 0 },
+        { libelle: 'Résultat de 80 % pour l’affaire', etiquetteIndex: 1 },
+        { libelle: 'Objet : le thème de la note', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez le tableau de bord financier de l'affaire à partir des chiffres du dossier.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 3,
+        reponse: "Tous les montants figurent dans le document 2. Il s'agit de les reporter au bon endroit, sans les recalculer.",
+        tableau: { colonnes: ['Indicateur', 'Montant attendu'], lignes: [
+          ['Total commandé HT (fourni)', '3 599,08 €'],
+          ['Montant HT finalement livré et accepté', '3 571,72 €'],
+          ['Montant HT jamais livré (ciment refusé)', '27,36 €'],
+          ['Avoir accordé au client (TTC)', '243,73 €'],
+          ['Solde facturé au client (TTC)', '3 148,91 €'],
+          ['Pénalités de retard + indemnité (TTC)', '58,89 €'],
+        ] },
+        complement: "0,5 point par ligne (5 lignes à reporter, la première étant fournie), arrondi au demi-point supérieur. Vérification interne du dossier : 3 571,72 € livré + 27,36 € jamais livré = 3 599,08 € commandé. Cette égalité peut être signalée aux élèves rapides comme preuve de cohérence." },
+
+      { intitule: "Calculez le montant total réellement encaissé par l'agence, pénalités comprises.", documents: ['Document 2', 'Annexe 2'], bareme: 3,
+        reponse: "Le client a payé le solde de la facture, puis les pénalités de retard. Le total encaissé est la somme des deux.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Montant'], lignes: [
+          ['Solde facturé (TTC)', 'Relevé au tableau de bord', '3 148,91 €'],
+          ['Pénalités + indemnité (TTC)', 'Relevé au tableau de bord', '58,89 €'],
+          ['Total encaissé (TTC)', '3 148,91 + 58,89', '3 207,80 €'],
+        ] },
+        complement: "1 point par ligne. Le résultat est 3 207,80 €. Erreur possible : ajouter aussi l'avoir de 243,73 €, ce qui n'a pas de sens puisque l'avoir a été retranché du solde, pas encaissé. Refuser tout total supérieur à 3 207,80 €." },
+
+      { intitule: "Déterminez, pour chaque référence, si la ligne a été servie ou non, puis justifiez.", documents: ['Documents 1 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "Une ligne n'est servie que si elle a été livrée complète et acceptée. Seul le ciment échoue à ce test.",
+        tableau: { colonnes: ['Réf.', 'Servie ?', 'Justification'], lignes: [
+          ['PAR-20 (fourni)', 'Oui', 'Livré complet : 300 le 22 juin, 100 relivrés ensuite.'],
+          ['CIM-35', 'Non', '56 sacs acceptés sur 60 : 4 refusés, la ligne est incomplète.'],
+          ['ISO-100', 'Oui', 'Les 25 rouleaux ont été livrés complets après le 26 juin.'],
+          ['CAR-60', 'Oui', 'Les 80 m² ont été livrés complets et conformes le 22 juin.'],
+          ['COL-25', 'Oui', 'Les 20 sacs ont été livrés complets et conformes le 22 juin.'],
+        ] },
+        complement: "1 point par ligne (4 lignes à traiter, la première étant fournie). Le point clé est le ciment : bien que 56 sacs sur 60 aient été acceptés, la ligne n'est PAS servie, car elle est incomplète. Un élève qui la compte comme servie parce que « presque tout » a été livré n'a pas compris la règle du taux de service. Les parpaings, eux, sont servis : bien que livrés en deux fois, ils ont finalement été livrés complets." },
+
+      { intitule: "Calculez le taux de service de l'affaire, puis interprétez le résultat.", documents: ['Documents 1 et 3', 'Annexe 4'], bareme: 5,
+        reponse: "Quatre lignes sur cinq ont été servies. Le taux de service est de 80 %.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Nombre de lignes servies', 'PAR-20, ISO-100, CAR-60, COL-25', '4 lignes'],
+          ['Nombre total de lignes commandées', '5 références', '5 lignes'],
+          ['Taux de service', '4 ÷ 5 × 100', '80 %'],
+          ['Interprétation', 'Grille du document 3', "Bon service, mais une ligne a posé problème"],
+        ] },
+        complement: "1 point pour le nombre de lignes servies, 1 point pour le total, 2 points pour le calcul et le résultat de 80 %, 1 point pour l'interprétation. Selon la grille du document 3, 80 % relève de la fourchette « bon service, mais une ou plusieurs lignes ont posé problème ». Refuser un taux calculé sur les montants (99,24 %) : la consigne et la procédure imposent le calcul par lignes. Cette distinction est le cœur pédagogique de la question." },
+
+      { intitule: "Rédigez la note à Thierry Marchand avec la méthode D.A.D.O. en trois points de bilan.", documents: ['Documents 1, 2 et 4', 'Annexe 5'], bareme: 3,
+        reponse: "En-tête D.A.D.O. complet, puis trois points : ce qui a bien marché, ce qui a posé problème, ce que l'affaire a coûté et rapporté.",
+        complement: "Structure attendue. En-tête : De [élève], comptoir professionnel ; À Thierry Marchand, chef d'agence ; Date 25 août 2026 ; Objet : bilan de l'affaire RENOVAL, commande 2026-4471. Corps : « Ce qui a bien marché : le client a finalement été livré de l'ensemble des références sauf 4 sacs de ciment, et il a réglé sa facture. Ce qui a posé problème : une palette de parpaings oubliée au dépôt et 4 sacs de ciment refusés le 22 juin, puis un retard de paiement de 18 jours. Le taux de service s'établit à 80 %. Ce que l'affaire a coûté et rapporté : un avoir de 243,73 € a été accordé, mais le retard de paiement a généré 58,89 € de pénalités encaissées. » Barème : 1 point pour l'en-tête D.A.D.O. complet et exact. 1 point pour les trois points de bilan présents. 1 point pour l'emploi d'au moins trois chiffres justes du dossier (taux de service, avoir, pénalités ou montant encaissé). Refuser une note sans en-tête ou qui recommande une action au lieu de rendre compte. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi une affaire rentable peut afficher un taux de service imparfait.", documents: ['Documents 1 et 3', 'Annexe 6'], bareme: 2,
+        reponse: "Le taux de service mesure le respect de la commande ligne à ligne, pas l'argent gagné. L'affaire RENOVAL a rapporté à l'agence, puisque le client a tout payé et même des pénalités, mais une ligne incomplète, le ciment, suffit à faire tomber le taux de service à 80 %.",
+        complement: "1 point pour la distinction entre rentabilité (l'argent) et taux de service (le respect de la commande). 1 point pour l'application à l'affaire : rentable malgré le ciment incomplet. Cette question de clôture fait comprendre à l'élève que deux indicateurs différents mesurent deux choses différentes, et qu'une affaire peut être bonne financièrement et imparfaite en qualité. Accepter toute formulation exacte." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU Pro P?, mission 1 - Comprendre le contrat de location
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "Identifiez les éléments du contrat de location LOC-2026-8830, distinguez la location de la vente, puis vérifiez le calcul du montant hors taxes.",
+    contexte:
+      "Vous êtes en PFMP à l'agence Kiloutou de Nanterre, 45 avenue des Bâtisseurs, 92000 Nanterre, au poste de commercial sédentaire. Kiloutou ne vend pas de matériel : elle le loue à des professionnels du bâtiment. Votre tuteur, Fabrice Delorme, est responsable de la clientèle professionnelle. Il vous confie le suivi d'un client, la SAS TERRABAT, dirigée par Nicolas Perrin, qui loue trois matériels pour un chantier de terrassement à Rueil-Malmaison. Le contrat porte le numéro LOC-2026-8830. Avant d'en suivre l'exécution, vous devez comprendre ce qu'est un contrat de location et ce qui le distingue d'une vente.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Site internet de Kiloutou", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'www.kiloutou.fr',
+          marque: 'KILOUTOU',
+          couleurHeader: '#E2001A',
+          menu: ['Nos matériels', 'Nos agences', 'Nos services', 'Le groupe', 'Recrutement'],
+          sections: [
+            { type: 'titre', texte: 'Louer plutôt qu’acheter : la solution des professionnels' },
+            { type: 'paragraphes', textes: [
+              "Créée en 1980 dans le Nord de la France, Kiloutou est aujourd'hui le troisième loueur de matériel en Europe et le deuxième en France.",
+              "Notre métier n'est pas de vendre du matériel, mais de le louer. Un professionnel qui a besoin d'une mini-pelle pour trois jours n'a aucun intérêt à l'acheter : il la loue, s'en sert, puis la rend.",
+              "Louer, c'est mettre un matériel à disposition du client pour une durée déterminée, contre un loyer. À la fin de la location, le matériel revient chez le loueur. C'est toute la différence avec la vente, où le bien devient définitivement la propriété du client.",
+            ] },
+            { type: 'chiffres', items: [
+              { valeur: '1980', libelle: 'Année de création' },
+              { valeur: '1 289 M€', libelle: "Chiffre d'affaires groupe 2025" },
+              { valeur: '444', libelle: 'Agences en France' },
+              { valeur: '350 000', libelle: 'Matériels en parc' },
+            ] },
+            { type: 'sousTitre', texte: 'Nos familles de matériels' },
+            { type: 'puces', items: [
+              'Terrassement : mini-pelles, chargeuses, compacteurs',
+              'Élévation : nacelles, échafaudages, monte-charges',
+              'Énergie : groupes électrogènes, compresseurs',
+              'Outillage : plaques vibrantes, marteaux-piqueurs',
+            ] },
+            { type: 'servicesIcones', services: [
+              { icone: '🚚', titre: 'Livraison sur chantier', detail: 'Matériel déposé et repris sur site' },
+              { icone: '🛡️', titre: 'Assurance bris de machine', detail: 'Protection optionnelle en cas de casse' },
+              { icone: '📞', titre: 'Assistance 7j/7', detail: 'Dépannage en cas de panne' },
+            ] },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Contrat de location n° LOC-2026-8830", texte: [
+        { logoEntete: 'KILOUTOU — Agence de Nanterre, 45 avenue des Bâtisseurs, 92000 Nanterre' },
+        { intertitre: 'CONTRAT DE LOCATION N° LOC-2026-8830' },
+        { tableau: { colonnes: ['Informations générales', ''], lignes: [
+          ['Date du contrat', '15 juin 2026'],
+          ['Client', 'SAS TERRABAT — 12 rue de l’Industrie, 92500 Rueil-Malmaison'],
+          ['Numéro de compte client', 'PRO-3387'],
+          ['Signataire', 'Nicolas Perrin, gérant'],
+          ['Chantier', '8 allée des Chênes, 92500 Rueil-Malmaison'],
+          ['Début de location', 'Lundi 22 juin 2026'],
+          ['Durée prévue', '7 jours'],
+          ['Restitution prévue', 'Lundi 29 juin 2026'],
+          ['Conditions de règlement', '30 jours fin de mois'],
+        ] } },
+        { intertitre: 'Matériels loués' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Durée', 'Tarif jour HT', 'Total HT'], lignes: [
+          ['MP-18', 'Mini-pelle 1,8 tonne', '7 jours', '95,00 €', '665,00 €'],
+          ['PV-90', 'Plaque vibrante 90 kg', '7 jours', '28,00 €', '196,00 €'],
+          ['GE-06', 'Groupe électrogène 6 kVA', '7 jours', '42,00 €', '294,00 €'],
+        ] } },
+        { tableau: { colonnes: ['Récapitulatif', 'Montant'], lignes: [
+          ['Total HT', '1 155,00 €'],
+          ['TVA 20 %', '231,00 €'],
+          ['Total TTC', '1 386,00 €'],
+          ['Caution (non encaissée)', '3 000,00 €'],
+        ] } },
+        { paragraphes: [
+          "Assurance bris de machine : NON souscrite par le client.",
+          "Bon pour accord, le 15 juin 2026. Signature : N. Perrin.",
+        ] },
+      ] },
+
+      { numero: 3, titre: "Aide-mémoire : le vocabulaire du contrat de location", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kiloutou.interne / aide',
+          marque: 'Kiloutou Pro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: 'Comprendre un contrat de location' },
+            { type: 'tableau', entetes: ['Terme', 'Signification'], lignes: [
+              ['Loyer (ou tarif jour)', "Le prix payé pour un jour de location d'un matériel."],
+              ['Durée de location', "Le nombre de jours pendant lesquels le client garde le matériel."],
+              ['Restitution', "Le retour du matériel à l'agence ou sa reprise sur le chantier."],
+              ['Caution', "Somme bloquée en garantie, rendue au client si le matériel revient en bon état. Elle n'est pas encaissée."],
+              ['Assurance bris de machine', "Protection optionnelle qui couvre la casse du matériel pendant la location."],
+              ['État des lieux', "Constat de l'état du matériel au départ et au retour."],
+            ] },
+            { type: 'sousTitre', texte: 'Comment calculer le total HT d’une ligne' },
+            { type: 'paragraphe', texte: "Total HT = Tarif jour HT × Durée de location" },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec la référence PV-90 (plaque vibrante) : 28,00 € par jour × 7 jours = 196,00 €." },
+            { type: 'sousTitre', texte: 'Du HT au TTC' },
+            { type: 'paragraphe', texte: "Comme pour une vente, on ajoute la TVA de 20 %. Montant TVA = Total HT × 0,20, puis Total TTC = Total HT + Montant TVA." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé : pour un total HT de 1 000,00 €, la TVA vaut 1 000,00 × 0,20 = 200,00 €, et le total TTC vaut 1 200,00 €." },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Note de service : louer n'est pas vendre", texte: [
+        { noteDirection: {
+          titre: 'Bienvenue à l’agence',
+          signature: 'Fabrice Delorme, responsable clientèle professionnelle',
+          intro: "Vous allez suivre le contrat LOC-2026-8830 du client TERRABAT, de sa mise à disposition jusqu'à la restitution du matériel.",
+          paragraphe: "Notre métier est différent de celui d'un magasin. Nous ne vendons pas : nous louons. Cela change tout dans le suivi. Une vente se termine quand le client repart avec le produit. Une location, elle, ne fait que commencer à ce moment-là : il y a une durée à respecter, un matériel à récupérer, un état à vérifier au retour.",
+          puces: [
+            "Le contrat fixe une durée et une date de restitution. Elles doivent être respectées.",
+            "Le matériel reste notre propriété. Le client ne fait que l'utiliser.",
+            "La caution garantit le bon état du matériel. Elle n'est pas un paiement.",
+            "Tout jour de location supplémentaire se facture. Nous y reviendrons.",
+          ],
+          conclusion: "Retenez cette idée : avec une location, le travail de suivi commence à la livraison, il ne s'y arrête pas.",
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — L'agence, le client et le contrat",
+        contexte: "Avant de suivre une location, il faut savoir chez qui vous travaillez, pour qui, et ce que dit le contrat.",
+        questions: [
+          { numero: 1, consigne: "Complétez la fiche d'identité de l'agence et du client à partir des documents.", ressources: "Documents 1 et 2, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Relevez les informations clés du contrat de location LOC-2026-8830.", ressources: 'Document 2, annexe 2. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe2' },
+        ] },
+      { titre: 'Activité 2 — Location ou vente',
+        contexte: "Comprendre ce qui distingue une location d'une vente, c'est comprendre tout le métier de Kiloutou.",
+        questions: [
+          { numero: 3, consigne: "Distinguez la location de la vente en complétant le tableau des différences.", ressources: 'Documents 1, 3 et 4, annexe 3. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Expliquez, en deux phrases, pourquoi la caution n'est pas un paiement.", ressources: 'Documents 3 et 4, annexe 4. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe4' },
+        ] },
+      { titre: 'Activité 3 — Vérifier le contrat',
+        contexte: "Un contrat signé doit être exact au centime près. Vous contrôlez les calculs avant d'aller plus loin.",
+        questions: [
+          { numero: 5, consigne: "Vérifiez le calcul du total HT de chaque matériel loué.", ressources: 'Documents 2 et 3, annexe 5. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Calculez la TVA et le total TTC, puis vérifiez qu'ils correspondent au contrat.", ressources: 'Documents 2 et 3, annexe 6. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Fiche d'identité de l'agence et du client", colonnes: ['Élément', 'Réponse'], nbLignes: 6, largeurs: ['45%', '55%'], prerempli: [
+        ['Enseigne', ''],
+        ['Métier (louer ou vendre)', ''],
+        ['Année de création', ''],
+        ['Raison sociale du client', ''],
+        ['Nom du gérant du client', ''],
+        ['Activité du client', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Informations clés du contrat', colonnes: ['Élément', 'Réponse'], nbLignes: 6, largeurs: ['45%', '55%'], prerempli: [
+        ['Numéro du contrat', ''],
+        ['Adresse du chantier', ''],
+        ['Date de début de location', ''],
+        ['Durée prévue', ''],
+        ['Date de restitution prévue', ''],
+        ['Montant de la caution', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Location ou vente', colonnes: ['Question', 'Location', 'Vente'], nbLignes: 3, largeurs: ['40%', '30%', '30%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['À qui appartient le bien à la fin ?', '', ''],
+        ['Le client paie-t-il une durée ou un prix unique ?', '', ''],
+        ['Le bien revient-il au professionnel ?', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Pourquoi la caution n'est pas un paiement", lignes: 4 },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Vérification du total HT', colonnes: ['Réf.', 'Calcul à poser', 'Total HT'], nbLignes: 3, largeurs: ['18%', '52%', '30%'], prerempli: [
+        ['PV-90', '28,00 × 7 =', '196,00 €'],
+        ['MP-18', '', ''],
+        ['GE-06', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe6', titre: 'Annexe 6 — Du total HT au total TTC', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['25%', '45%', '30%'], prerempli: [
+        ['Total HT', '(relevé sur le contrat)', ''],
+        ['Montant de la TVA à 20 %', '', ''],
+        ['Total TTC', '', ''],
+      ] },
+    ],
+
+    objectifs: [
+      "Identifier une entreprise de location et son client",
+      "Repérer les éléments essentiels d'un contrat de location",
+      "Distinguer une location d'une vente",
+      "Vérifier le calcul d'un total HT, de la TVA et du TTC",
+    ],
+  },
+
+  synthese: {
+    titre: 'Le contrat de location',
+    proposition: [
+      'Loyer',
+      'Durée de location',
+      'Restitution',
+      'Caution',
+      'Assurance bris de machine',
+      'Le bien revient au loueur',
+      'Le bien devient la propriété du client',
+      'Hors taxes',
+      'Toutes taxes comprises',
+      'État des lieux',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le contrat de location',
+      enfants: [
+        { id: 'loc', texte: 'Ce que paie le client', enfants: [
+          { id: 'l1', texte: null, reponse: 'Loyer' },
+          { id: 'l2', texte: null, reponse: 'Durée de location' },
+        ] },
+        { id: 'gar', texte: 'Les garanties', enfants: [
+          { id: 'g1', texte: null, reponse: 'Caution' },
+          { id: 'g2', texte: null, reponse: 'Assurance bris de machine' },
+          { id: 'g3', texte: null, reponse: 'État des lieux' },
+        ] },
+        { id: 'fin', texte: 'La fin de la location', enfants: [
+          { id: 'f1', texte: null, reponse: 'Restitution' },
+          { id: 'f2', texte: null, reponse: 'Le bien revient au loueur' },
+        ] },
+        { id: 'dif', texte: 'La différence avec la vente', enfants: [
+          { id: 'd1', texte: null, reponse: 'Le bien devient la propriété du client' },
+        ] },
+        { id: 'mon', texte: 'Les montants', enfants: [
+          { id: 'm1', texte: 'HT', reponse: undefined, enfants: [{ id: 'm1a', texte: null, reponse: 'Hors taxes' }] },
+          { id: 'm2', texte: 'TTC', reponse: undefined, enfants: [{ id: 'm2a', texte: null, reponse: 'Toutes taxes comprises' }] },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier les éléments d'un contrat de location", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas où trouver les informations dans le contrat." },
+        { niveau: 'debrouille', description: "Je relève le client, la durée et le montant." },
+        { niveau: 'averti', description: "Je repère aussi la caution, la date de restitution et le chantier." },
+        { niveau: 'expert', description: "Je comprends le rôle de chaque élément dans le suivi de la location." },
+      ] },
+      { id: 'c2', intitule: "Distinguer une location d'une vente", indicateurs: [
+        { niveau: 'novice', description: "Je confonds louer et vendre." },
+        { niveau: 'debrouille', description: "Je sais que la location est temporaire." },
+        { niveau: 'averti', description: "J'explique que le bien revient au loueur à la fin." },
+        { niveau: 'expert', description: "Je comprends que le suivi commence à la livraison, et non l'inverse." },
+      ] },
+      { id: 'c3', intitule: "Vérifier les calculs d'un contrat", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas par quel calcul commencer." },
+        { niveau: 'debrouille', description: "Je multiplie le tarif jour par la durée." },
+        { niveau: 'averti', description: "Je retrouve le total HT exact de chaque matériel." },
+        { niveau: 'expert', description: "Je calcule la TVA et le TTC et je vérifie la cohérence du contrat." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Location', definition: "Mise à disposition d'un matériel pour une durée déterminée, contre un loyer. Le bien revient ensuite au loueur." },
+      { terme: 'Loyer', definition: "Prix payé pour un jour de location d'un matériel. On parle aussi de tarif jour." },
+      { terme: 'Durée de location', definition: "Nombre de jours pendant lesquels le client garde le matériel." },
+      { terme: 'Restitution', definition: "Retour du matériel à l'agence ou sa reprise sur le chantier à la fin de la location." },
+      { terme: 'Caution', definition: "Somme bloquée en garantie, rendue au client si le matériel revient en bon état. Elle n'est pas encaissée." },
+      { terme: 'Assurance bris de machine', definition: "Protection optionnelle qui couvre la casse du matériel pendant la location." },
+      { terme: 'État des lieux', definition: "Constat de l'état du matériel au départ et au retour de la location." },
+      { terme: 'Parc matériel', definition: "Ensemble des matériels que le loueur possède et met en location." },
+      { terme: 'HT', definition: "Hors taxes. Montant avant l'ajout de la TVA." },
+      { terme: 'TTC', definition: "Toutes taxes comprises. Montant réellement payé, TVA incluse." },
+      { terme: 'Loueur', definition: "Entreprise qui met du matériel en location. Ici, Kiloutou." },
+      { terme: 'Locataire', definition: "Client qui loue le matériel. Ici, la SAS TERRABAT." },
+    ],
+    flashcards: [
+      { recto: "Quel est le métier de Kiloutou ?", verso: "Louer du matériel aux professionnels, et non le vendre." },
+      { recto: "En quelle année Kiloutou a-t-elle été créée ?", verso: '1980, dans le Nord de la France.' },
+      { recto: "Qu'est-ce qu'une location ?", verso: "La mise à disposition d'un matériel pour une durée, contre un loyer. Le bien revient au loueur." },
+      { recto: 'Quelle est la différence avec une vente ?', verso: "Dans une vente, le bien devient la propriété définitive du client." },
+      { recto: "Qu'est-ce qu'une caution ?", verso: "Une somme bloquée en garantie, rendue si le matériel revient en bon état. Elle n'est pas encaissée." },
+      { recto: "Comment calcule-t-on le total HT d'une location ?", verso: 'Tarif jour HT × Durée de location.' },
+      { recto: 'Quelle est la durée prévue du contrat TERRABAT ?', verso: '7 jours, du 22 au 29 juin 2026.' },
+      { recto: "Le client a-t-il pris l'assurance bris de machine ?", verso: 'Non, elle n’a pas été souscrite.' },
+      { recto: 'Quel est le total HT du contrat ?', verso: '1 155,00 €.' },
+      { recto: 'À qui appartient le matériel pendant la location ?', verso: 'Au loueur, Kiloutou. Le client ne fait que l’utiliser.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le métier de Kiloutou est de :', options: ['louer du matériel', 'vendre du matériel', 'réparer du matériel'], bonne: 0 },
+      { type: 'unique', question: 'Dans une location, à la fin, le matériel :', options: ['revient au loueur', 'reste au client', 'est détruit'], bonne: 0 },
+      { type: 'unique', question: 'Dans une vente, le bien :', options: ['devient la propriété du client', 'revient au vendeur', 'est prêté'], bonne: 0 },
+      { type: 'unique', question: 'La caution est :', options: ['une garantie non encaissée', 'un paiement définitif', 'une remise'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT de la mini-pelle (95 € × 7 jours) est :', options: ['665,00 €', '760,00 €', '570,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT du contrat est de :', options: ['1 155,00 €', '1 386,00 €', '1 000,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total TTC du contrat est de :', options: ['1 386,00 €', '1 155,00 €', '1 617,00 €'], bonne: 0 },
+      { type: 'unique', question: "L'assurance bris de machine est :", options: ['optionnelle', 'obligatoire', 'gratuite'], bonne: 0 },
+      { type: 'unique', question: 'La durée prévue de la location est de :', options: ['7 jours', '30 jours', '4 jours'], bonne: 0 },
+      { type: 'unique', question: "Pendant la location, le matériel appartient :", options: ['au loueur', 'au client', 'à personne'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['La location', 'La vente', 'Une garantie'],
+      zones: [
+        { libelle: 'Le bien revient au professionnel à la fin', etiquetteIndex: 0 },
+        { libelle: 'Le bien devient la propriété du client', etiquetteIndex: 1 },
+        { libelle: 'La caution bloquée pendant la durée', etiquetteIndex: 2 },
+        { libelle: 'Le client paie une durée', etiquetteIndex: 0 },
+        { libelle: 'Le client paie un prix unique et définitif', etiquetteIndex: 1 },
+        { libelle: "L'assurance bris de machine", etiquetteIndex: 2 },
+        { libelle: 'Un loyer par jour', etiquetteIndex: 0 },
+        { libelle: 'Un transfert de propriété', etiquetteIndex: 1 },
+        { libelle: "L'état des lieux au départ et au retour", etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez la fiche d'identité de l'agence et du client à partir des documents.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 3,
+        reponse: "Les informations sur Kiloutou figurent sur le site internet, celles sur le client dans le contrat.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Enseigne', 'KILOUTOU'],
+          ['Métier (louer ou vendre)', 'Louer du matériel aux professionnels'],
+          ['Année de création', '1980'],
+          ['Raison sociale du client', 'SAS TERRABAT'],
+          ['Nom du gérant du client', 'Nicolas Perrin'],
+          ['Activité du client', 'Terrassement'],
+        ] },
+        complement: "0,5 point par ligne. Le métier de Kiloutou (louer, et non vendre) est la réponse centrale : elle conditionne toute la compréhension du scénario. Ne pas accorder le demi-point à un élève qui écrit « vendre »." },
+
+      { intitule: "Relevez les informations clés du contrat de location LOC-2026-8830.", documents: ['Document 2', 'Annexe 2'], bareme: 3,
+        reponse: "Toutes ces informations figurent dans l'en-tête du contrat.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Numéro du contrat', 'LOC-2026-8830'],
+          ['Adresse du chantier', '8 allée des Chênes, 92500 Rueil-Malmaison'],
+          ['Date de début de location', 'Lundi 22 juin 2026'],
+          ['Durée prévue', '7 jours'],
+          ['Date de restitution prévue', 'Lundi 29 juin 2026'],
+          ['Montant de la caution', '3 000,00 €'],
+        ] },
+        complement: "0,5 point par ligne. Erreur possible : confondre l'adresse du siège du client (12 rue de l'Industrie) et l'adresse du chantier (8 allée des Chênes). Les deux figurent dans le contrat, mais c'est le chantier qui compte pour la livraison." },
+
+      { intitule: "Distinguez la location de la vente en complétant le tableau des différences.", documents: ['Documents 1, 3 et 4', 'Annexe 3'], bareme: 4,
+        reponse: "La différence fondamentale porte sur la propriété du bien à la fin de l'opération.",
+        tableau: { colonnes: ['Question', 'Location', 'Vente'], lignes: [
+          ['À qui appartient le bien à la fin ?', 'Au loueur (Kiloutou)', 'Au client'],
+          ['Le client paie-t-il une durée ou un prix unique ?', 'Une durée (un loyer par jour)', 'Un prix unique et définitif'],
+          ['Le bien revient-il au professionnel ?', 'Oui, à la restitution', 'Non, il reste au client'],
+        ] },
+        complement: "Environ 0,67 point par case, soit 4 points pour les 6 cases. La ligne centrale, la propriété du bien, est la plus importante : l'exiger juste. Un élève qui inverse location et vente sur cette ligne montre qu'il n'a pas compris le métier : la note doit le refléter." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi la caution n'est pas un paiement.", documents: ['Documents 3 et 4', 'Annexe 4'], bareme: 2,
+        reponse: "La caution est une somme bloquée en garantie, qui n'est pas encaissée par l'agence. Elle est rendue au client à la fin de la location si le matériel revient en bon état, alors qu'un paiement, lui, reste définitivement acquis à l'entreprise.",
+        complement: "1 point pour l'idée que la caution n'est pas encaissée et sert de garantie. 1 point pour la conséquence : elle est restituable, contrairement à un paiement. Accepter toute formulation exacte. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Vérifiez le calcul du total HT de chaque matériel loué.", documents: ['Documents 2 et 3', 'Annexe 5'], bareme: 4,
+        reponse: "Total HT = Tarif jour HT × Durée. La ligne PV-90 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Calcul posé', 'Total HT'], lignes: [
+          ['PV-90 (exemple fourni)', '28,00 × 7', '196,00 €'],
+          ['MP-18', '95,00 × 7', '665,00 €'],
+          ['GE-06', '42,00 × 7', '294,00 €'],
+        ] },
+        complement: "2 points par ligne correctement posée ET calculée (2 lignes à traiter). Le calcul doit être écrit : un résultat juste sans calcul posé ne vaut qu'1 point. Vérification : 95,00 × 7 = 665,00 et 42,00 × 7 = 294,00. La somme des trois totaux (196 + 665 + 294) donne bien 1 155,00 € HT." },
+
+      { intitule: "Calculez la TVA et le total TTC, puis vérifiez qu'ils correspondent au contrat.", documents: ['Documents 2 et 3', 'Annexe 6'], bareme: 4,
+        reponse: "Le total HT est relevé sur le contrat. La TVA vaut 20 % de ce montant, le TTC est la somme des deux.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Total HT', 'Relevé sur le contrat', '1 155,00 €'],
+          ['Montant de la TVA à 20 %', '1 155,00 × 0,20', '231,00 €'],
+          ['Total TTC', '1 155,00 + 231,00', '1 386,00 €'],
+        ] },
+        complement: "1 point pour le HT relevé, 1,5 point pour la TVA, 1,5 point pour le TTC. Les deux montants figurent sur le contrat : l'élève doit constater qu'ils correspondent. La caution de 3 000 € ne s'ajoute jamais au TTC : elle n'est pas encaissée. Un élève qui la comptabilise obtient 4 386 € et se trompe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 2 - Preparer la livraison et etablir l'etat des lieux
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "Vérifiez la disponibilité des trois matériels, planifiez la livraison sur le chantier, puis établissez l'état des lieux de départ de la mini-pelle.",
+    contexte:
+      "Nous sommes le 19 juin 2026. Le contrat LOC-2026-8830 est signé. La location commence lundi 22 juin sur le chantier de Rueil-Malmaison. Fabrice Delorme vous confie la préparation : il faut s'assurer que les trois matériels sont disponibles au parc, réserver un camion pour les livrer, et surtout établir l'état des lieux de départ. Ce dernier point est capital. L'état des lieux est le document qui décrit précisément l'état de chaque matériel au moment où il quitte l'agence. Sans lui, impossible de prouver au retour qu'une dégradation a eu lieu pendant la location. Fabrice insiste : « Un état des lieux bâclé au départ, c'est de l'argent perdu au retour. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "État du parc matériel (logiciel KiloPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / parc',
+          marque: 'KiloPro — Gestion du parc',
+          couleurHeader: '#E2001A',
+          menu: ['Clients', 'Contrats', 'Parc', 'Livraisons', 'Facturation'],
+          sections: [
+            { type: 'titre', texte: 'Disponibilité du parc — Agence de Nanterre, 19 juin 2026' },
+            { type: 'paragraphe', texte: "Un matériel est disponible pour un contrat si aucune autre location ne le mobilise sur la période demandée (du 22 au 29 juin)." },
+            { type: 'tableau', entetes: ['Réf.', 'Désignation', 'Unités au parc', 'Déjà louées 22-29/06', 'Disponibles'], lignes: [
+              ['MP-18', 'Mini-pelle 1,8 tonne', '4', '3', '1'],
+              ['PV-90', 'Plaque vibrante 90 kg', '6', '2', '4'],
+              ['GE-06', 'Groupe électrogène 6 kVA', '5', '1', '4'],
+              ['NA-12', 'Nacelle 12 mètres', '3', '3', '0'],
+            ] },
+            { type: 'sousTitre', texte: 'Comment lire la disponibilité' },
+            { type: 'paragraphe', texte: "Disponibles = Unités au parc − Déjà louées sur la période. Un matériel est réservable pour le contrat si le nombre de disponibles est d'au moins 1." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec la référence PV-90 (plaque vibrante) : 6 unités au parc, 2 déjà louées du 22 au 29 juin. Disponibles = 6 − 2 = 4. La plaque vibrante peut donc être réservée." },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Planning des livraisons (semaine du 22 juin)", texte: [
+        { logoEntete: 'KILOUTOU — Agence de Nanterre, service livraison' },
+        { intertitre: 'Créneaux du camion plateau n° 3' },
+        { tableau: { colonnes: ['Créneau', 'Lundi 22/06', 'Mardi 23/06'], lignes: [
+          ['07 h 30 — 09 h 30', 'Libre', 'SAS BTP NORD'],
+          ['09 h 30 — 11 h 30', 'SARL VOIRIE 92', 'Libre'],
+          ['13 h 30 — 15 h 30', 'Libre', 'Libre'],
+          ['15 h 30 — 17 h 30', 'EURL TP SUD', 'Libre'],
+        ] } },
+        { intertitre: 'Contraintes' },
+        { puces: [
+          "Le camion plateau n° 3 est le seul capable de transporter la mini-pelle.",
+          "La location commence le lundi 22 juin : le matériel doit être sur le chantier ce jour-là, au plus tard à 12 heures, pour que le client puisse démarrer le matin.",
+          "Le trajet Nanterre — Rueil-Malmaison dure 20 minutes.",
+          "Un créneau ne peut accueillir qu'une seule livraison.",
+        ] },
+        { bulleConseil: { texte: ["Le matériel doit être livré le matin du 22 juin. Regardez bien quels créneaux du lundi matin sont encore libres."] } },
+      ] },
+
+      { numero: 3, titre: "Procédure : établir l'état des lieux de départ", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: "L'état des lieux de départ" },
+            { type: 'paragraphe', texte: "L'état des lieux de départ (constat écrit de l'état du matériel au moment où il quitte l'agence) est un document essentiel de la location. Il sera comparé à l'état des lieux de retour pour déterminer si le matériel a été dégradé pendant la location." },
+            { type: 'paragraphe', texte: "Sans état des lieux de départ, l'agence ne peut rien réclamer au client en cas de dégradation : elle ne pourrait pas prouver que le matériel était en bon état au départ." },
+            { type: 'sousTitre', texte: 'Ce que l’on vérifie sur un matériel' },
+            { type: 'tableau', entetes: ['Point de contrôle', 'Ce qu’on note'], lignes: [
+              ['État général (carrosserie)', 'Rayures, chocs, éléments cassés'],
+              ['Niveau de carburant', 'Plein, moitié, réserve'],
+              ['Nombre d’heures au compteur', 'Le relevé exact du compteur horaire'],
+              ['Fonctionnement', 'Le matériel démarre et fonctionne normalement'],
+              ['Accessoires', 'Godet, clés, documents présents'],
+            ] },
+            { type: 'sousTitre', texte: 'La règle d’or' },
+            { type: 'citation', texte: "Ce qui n'est pas écrit au départ ne pourra pas être réclamé au retour. Un état des lieux vague protège le client, un état des lieux précis protège le loueur.", auteur: 'Guide de la location, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Fiche technique et relevé de la mini-pelle MP-18", texte: [
+        { logoEntete: 'KILOUTOU — Mini-pelle MP-18, unité n° MP18-042' },
+        { intertitre: 'Relevés effectués au parc le 19 juin 2026' },
+        { tableau: { colonnes: ['Point de contrôle', 'Constat au départ'], lignes: [
+          ['État général (carrosserie)', 'Bon état, aucune rayure ni choc'],
+          ['Vérin de bras', 'En parfait état de fonctionnement'],
+          ['Niveau de carburant', 'Plein'],
+          ['Compteur horaire', '1 240 heures'],
+          ['Fonctionnement', 'Démarre et fonctionne normalement'],
+          ['Accessoires', 'Godet standard, clés, manuel présents'],
+        ] } },
+        { bulleConseil: { texte: ["Notez bien l'état du vérin de bras et le compteur horaire. Ces deux points seront vérifiés au retour du matériel."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Vérifier la disponibilité",
+        contexte: "Rien ne part sans un contrôle du parc. Un matériel promis mais indisponible, et c'est le chantier du client qui s'arrête.",
+        questions: [
+          { numero: 1, consigne: "Calculez la disponibilité de chaque matériel et indiquez s'il peut être réservé.", ressources: "Document 1, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Confirmez que les trois matériels du contrat TERRABAT sont réservables.", ressources: 'Documents 1 et 2 du contrat, annexe 2. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Planifier la livraison",
+        contexte: "Le matériel doit être sur le chantier lundi matin. Vous réservez le bon créneau.",
+        questions: [
+          { numero: 3, consigne: "Choisissez le créneau de livraison et justifiez votre choix par deux contraintes.", ressources: 'Document 2, annexe 3. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe3' },
+        ] },
+      { titre: "Activité 3 — Établir l'état des lieux de départ",
+        contexte: "Le document le plus important de la mission. Il devra être irréprochable au retour du matériel.",
+        questions: [
+          { numero: 4, consigne: "Complétez l'état des lieux de départ de la mini-pelle MP-18.", ressources: "Documents 3 et 4, annexe 4. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Relevez les deux points qui devront être vérifiés en priorité au retour, et justifiez.", ressources: 'Documents 3 et 4, annexe 5. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi un état des lieux précis protège le loueur.", ressources: 'Document 3, annexe 6. Compétence C2.1.2 — Informer le client des modalités de mise à disposition.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Disponibilité du parc', colonnes: ['Réf.', 'Calcul (parc − louées)', 'Disponibles', 'Réservable ? (oui / non)'], nbLignes: 4, largeurs: ['16%', '34%', '24%', '26%'], prerempli: [
+        ['PV-90', '6 − 2 =', '4', 'Oui'],
+        ['MP-18', '', '', ''],
+        ['GE-06', '', '', ''],
+        ['NA-12', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Les matériels du contrat TERRABAT', colonnes: ['Réf. du contrat', 'Disponible ?', 'Conclusion'], nbLignes: 3, largeurs: ['24%', '26%', '50%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['MP-18', '', ''],
+        ['PV-90', '', ''],
+        ['GE-06', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Choix du créneau de livraison', colonnes: ['Élément', 'Réponse'], nbLignes: 4, largeurs: ['45%', '55%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Jour retenu', ''],
+        ['Créneau horaire retenu', ''],
+        ['Première contrainte justifiant ce choix', ''],
+        ['Seconde contrainte justifiant ce choix', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: "Annexe 4 — État des lieux de départ MP-18 (unité MP18-042)", colonnes: ['Point de contrôle', 'Constat au départ'], nbLignes: 6, largeurs: ['45%', '55%'], prerempli: [
+        ['État général (carrosserie)', ''],
+        ['Vérin de bras', ''],
+        ['Niveau de carburant', ''],
+        ['Compteur horaire', ''],
+        ['Fonctionnement', ''],
+        ['Accessoires', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Les points à vérifier au retour', colonnes: ['Point', 'Valeur au départ', 'Pourquoi le vérifier au retour'], nbLignes: 2, largeurs: ['28%', '24%', '48%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Point n° 1', '', ''],
+        ['Point n° 2', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi un état des lieux précis protège le loueur", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Calculer la disponibilité d'un matériel au parc",
+      "Planifier une livraison sous contraintes de créneau",
+      "Établir un état des lieux de départ précis",
+      "Comprendre le rôle protecteur de l'état des lieux pour le loueur",
+    ],
+  },
+
+  synthese: {
+    titre: 'Préparer et livrer une location',
+    proposition: [
+      'Unités au parc',
+      'Déjà louées',
+      'Disponibles',
+      'Créneau de livraison',
+      'Livraison le matin',
+      'État des lieux de départ',
+      'Compteur horaire',
+      'État du vérin',
+      'Comparé au retour',
+      'Protège le loueur',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La préparation de la location',
+      enfants: [
+        { id: 'disp', texte: 'La disponibilité', enfants: [
+          { id: 'd1', texte: null, reponse: 'Unités au parc' },
+          { id: 'd2', texte: null, reponse: 'Déjà louées' },
+          { id: 'd3', texte: null, reponse: 'Disponibles' },
+        ] },
+        { id: 'liv', texte: 'La livraison', enfants: [
+          { id: 'l1', texte: null, reponse: 'Créneau de livraison' },
+          { id: 'l2', texte: null, reponse: 'Livraison le matin' },
+        ] },
+        { id: 'edl', texte: "L'état des lieux", enfants: [
+          { id: 'e1', texte: null, reponse: 'État des lieux de départ' },
+          { id: 'e2', texte: null, reponse: 'Compteur horaire' },
+          { id: 'e3', texte: null, reponse: 'État du vérin' },
+        ] },
+        { id: 'rol', texte: 'Son rôle', enfants: [
+          { id: 'r1', texte: null, reponse: 'Comparé au retour' },
+          { id: 'r2', texte: null, reponse: 'Protège le loueur' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Vérifier la disponibilité d'un matériel", indicateurs: [
+        { niveau: 'novice', description: "Je confonds unités au parc et unités disponibles." },
+        { niveau: 'debrouille', description: "Je soustrais les unités déjà louées." },
+        { niveau: 'averti', description: "Je conclus correctement si le matériel est réservable." },
+        { niveau: 'expert', description: "Je vérifie les trois matériels du contrat sans erreur." },
+      ] },
+      { id: 'c2', intitule: "Planifier une livraison", indicateurs: [
+        { niveau: 'novice', description: "Je choisis un créneau au hasard." },
+        { niveau: 'debrouille', description: "Je vérifie que le créneau est libre." },
+        { niveau: 'averti', description: "Je tiens compte de l'obligation de livrer le matin." },
+        { niveau: 'expert', description: "Je justifie mon choix par plusieurs contraintes du dossier." },
+      ] },
+      { id: 'c3', intitule: "Établir un état des lieux de départ", indicateurs: [
+        { niveau: 'novice', description: "Je remplis l'état des lieux de façon vague." },
+        { niveau: 'debrouille', description: "Je note l'état général du matériel." },
+        { niveau: 'averti', description: "Je relève le compteur horaire et l'état de chaque point." },
+        { niveau: 'expert', description: "Je comprends que la précision de ce document protège le loueur au retour." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Parc matériel', definition: "Ensemble des matériels que le loueur possède et met en location." },
+      { terme: 'Disponibilité', definition: "Nombre de matériels d'une référence libres pour une période donnée." },
+      { terme: 'Unité', definition: "Un exemplaire précis d'un matériel, identifié par un numéro." },
+      { terme: 'État des lieux de départ', definition: "Constat écrit de l'état du matériel au moment où il quitte l'agence." },
+      { terme: 'État des lieux de retour', definition: "Constat écrit de l'état du matériel à sa restitution, comparé au départ." },
+      { terme: 'Compteur horaire', definition: "Compteur qui mesure le nombre d'heures de fonctionnement d'un engin." },
+      { terme: 'Vérin', definition: "Pièce hydraulique qui actionne le bras de la mini-pelle." },
+      { terme: 'Carrosserie', definition: "Enveloppe extérieure d'un engin, dont on vérifie l'état." },
+      { terme: 'Créneau de livraison', definition: "Plage horaire réservée pour transporter le matériel sur le chantier." },
+      { terme: 'Camion plateau', definition: "Camion à plateau plat capable de transporter un engin lourd comme une mini-pelle." },
+      { terme: 'Constat', definition: "Description écrite et datée d'un état à un moment donné." },
+      { terme: 'Restitution', definition: "Retour du matériel à la fin de la location." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on la disponibilité ?", verso: 'Unités au parc − Unités déjà louées sur la période.' },
+      { recto: "Combien de mini-pelles sont disponibles du 22 au 29 juin ?", verso: 'Une seule : 4 au parc, 3 déjà louées.' },
+      { recto: "Qu'est-ce qu'un état des lieux de départ ?", verso: "Le constat écrit de l'état du matériel quand il quitte l'agence." },
+      { recto: 'À quoi sert l’état des lieux de départ ?', verso: "À être comparé au retour, pour prouver une éventuelle dégradation." },
+      { recto: 'Que se passe-t-il sans état des lieux de départ ?', verso: "L'agence ne peut rien réclamer : elle ne peut pas prouver l'état initial." },
+      { recto: 'Que note-t-on sur le compteur horaire ?', verso: 'Le relevé exact des heures de fonctionnement au départ.' },
+      { recto: "Quel était l'état du vérin au départ ?", verso: 'En parfait état de fonctionnement.' },
+      { recto: 'Quand le matériel doit-il être livré ?', verso: 'Le lundi 22 juin au matin, avant 12 heures.' },
+      { recto: 'Un état des lieux vague protège qui ?', verso: 'Le client. Un état des lieux précis protège le loueur.' },
+      { recto: 'Quel camion transporte la mini-pelle ?', verso: 'Le camion plateau n° 3, le seul adapté.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La disponibilité se calcule ainsi :', options: ['parc − déjà louées', 'parc + déjà louées', 'déjà louées − parc'], bonne: 0 },
+      { type: 'unique', question: 'Combien de mini-pelles disponibles du 22 au 29 juin ?', options: ['1', '4', '3'], bonne: 0 },
+      { type: 'unique', question: 'La nacelle NA-12 est-elle disponible ?', options: ['Non, 0 disponible', 'Oui, 3 disponibles', 'Oui, 1 disponible'], bonne: 0 },
+      { type: 'unique', question: "L'état des lieux de départ sert à :", options: ['être comparé au retour', 'fixer le prix', 'choisir le camion'], bonne: 0 },
+      { type: 'unique', question: 'Sans état des lieux de départ, le loueur :', options: ['ne peut rien réclamer', 'facture plus cher', 'annule le contrat'], bonne: 0 },
+      { type: 'unique', question: 'Le compteur horaire de la MP-18 au départ affiche :', options: ['1 240 heures', '1 420 heures', '240 heures'], bonne: 0 },
+      { type: 'unique', question: 'Le vérin de bras au départ est :', options: ['en parfait état', 'légèrement usé', 'déjà endommagé'], bonne: 0 },
+      { type: 'unique', question: 'Le matériel doit être livré :', options: ['lundi 22 juin au matin', 'mardi 23 juin', "n'importe quand"], bonne: 0 },
+      { type: 'unique', question: 'Un état des lieux précis protège :', options: ['le loueur', 'le client', 'le chauffeur'], bonne: 0 },
+      { type: 'unique', question: 'Quel camion transporte la mini-pelle ?', options: ['le plateau n° 3', 'un utilitaire léger', 'aucun, elle roule seule'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['La disponibilité', "L'état des lieux", 'La livraison'],
+      zones: [
+        { libelle: 'Unités au parc moins déjà louées', etiquetteIndex: 0 },
+        { libelle: 'Relevé du compteur horaire', etiquetteIndex: 1 },
+        { libelle: 'Créneau du lundi matin', etiquetteIndex: 2 },
+        { libelle: 'Une seule mini-pelle libre', etiquetteIndex: 0 },
+        { libelle: "Constat de l'état du vérin", etiquetteIndex: 1 },
+        { libelle: 'Camion plateau n° 3', etiquetteIndex: 2 },
+        { libelle: 'La nacelle a zéro disponible', etiquetteIndex: 0 },
+        { libelle: 'Document comparé au retour', etiquetteIndex: 1 },
+        { libelle: 'Livraison avant 12 heures', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez la disponibilité de chaque matériel et indiquez s'il peut être réservé.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Disponibles = Unités au parc − Unités déjà louées. La ligne PV-90 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Calcul posé', 'Disponibles', 'Réservable ?'], lignes: [
+          ['PV-90 (exemple fourni)', '6 − 2', '4', 'Oui'],
+          ['MP-18', '4 − 3', '1', 'Oui'],
+          ['GE-06', '5 − 1', '4', 'Oui'],
+          ['NA-12', '3 − 3', '0', 'Non'],
+        ] },
+        complement: "1 point par ligne (3 lignes à traiter, la première étant fournie). La mini-pelle MP-18 n'a qu'une seule unité disponible : elle reste réservable, mais de justesse. La nacelle NA-12 n'est pas dans le contrat TERRABAT ; elle sert de contre-exemple avec 0 disponible. Un élève qui la déclare réservable n'a pas compris la règle." },
+
+      { intitule: "Confirmez que les trois matériels du contrat TERRABAT sont réservables.", documents: ['Documents 1 et 2 du contrat', 'Annexe 2'], bareme: 3,
+        reponse: "Le contrat porte sur MP-18, PV-90 et GE-06. Les trois ont au moins une unité disponible.",
+        tableau: { colonnes: ['Réf. du contrat', 'Disponible ?', 'Conclusion'], lignes: [
+          ['MP-18', 'Oui, 1 disponible', 'Réservable, mais dernière unité disponible'],
+          ['PV-90', 'Oui, 4 disponibles', 'Réservable sans difficulté'],
+          ['GE-06', 'Oui, 4 disponibles', 'Réservable sans difficulté'],
+        ] },
+        complement: "1 point par ligne. Valoriser l'élève qui remarque que la mini-pelle est la dernière disponible : c'est un point de vigilance pour l'agence. La nacelle NA-12 ne figure pas dans le contrat : un élève qui l'ajoute se trompe de périmètre." },
+
+      { intitule: "Choisissez le créneau de livraison et justifiez votre choix par deux contraintes.", documents: ['Document 2', 'Annexe 3'], bareme: 4,
+        reponse: "La livraison doit avoir lieu le lundi 22 juin au matin. Le seul créneau du matin encore libre ce jour-là est 07 h 30 — 09 h 30.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Jour retenu', 'Lundi 22 juin 2026'],
+          ['Créneau horaire retenu', '07 h 30 — 09 h 30'],
+          ['Première contrainte', "La location commence le 22 juin : le matériel doit être livré ce jour-là, avant 12 heures, pour que le client démarre le matin."],
+          ['Seconde contrainte', "Le créneau 09 h 30 — 11 h 30 du lundi est déjà pris par SARL VOIRIE 92. Le 07 h 30 — 09 h 30 est le seul créneau du matin encore libre."],
+        ] },
+        complement: "1 point par ligne. Le créneau 07 h 30 — 09 h 30 est le seul possible : les créneaux de l'après-midi (13 h 30 et 15 h 30) sont exclus par l'obligation de livrer avant 12 heures, et le 09 h 30 — 11 h 30 est déjà occupé. Un élève qui choisit un créneau d'après-midi, même libre, n'a pas lu la contrainte du matin." },
+
+      { intitule: "Complétez l'état des lieux de départ de la mini-pelle MP-18.", documents: ['Documents 3 et 4', 'Annexe 4'], bareme: 4,
+        reponse: "L'état des lieux reprend les relevés effectués au parc le 19 juin. Chaque point doit être renseigné précisément.",
+        tableau: { colonnes: ['Point de contrôle', 'Constat au départ'], lignes: [
+          ['État général (carrosserie)', 'Bon état, aucune rayure ni choc'],
+          ['Vérin de bras', 'En parfait état de fonctionnement'],
+          ['Niveau de carburant', 'Plein'],
+          ['Compteur horaire', '1 240 heures'],
+          ['Fonctionnement', 'Démarre et fonctionne normalement'],
+          ['Accessoires', 'Godet standard, clés, manuel présents'],
+        ] },
+        complement: "0,5 point par ligne, arrondi au demi-point supérieur, sur 6 lignes. Les deux points essentiels sont le vérin de bras et le compteur horaire : ils seront comparés au retour. Un élève qui écrit « bon état » partout sans relever le compteur (1 240 h) perd le point de cette ligne. La précision est ici l'objet même de l'évaluation." },
+
+      { intitule: "Relevez les deux points qui devront être vérifiés en priorité au retour, et justifiez.", documents: ['Documents 3 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "Le vérin de bras et le compteur horaire sont les deux points les plus sensibles.",
+        tableau: { colonnes: ['Point', 'Valeur au départ', 'Pourquoi le vérifier au retour'], lignes: [
+          ['Vérin de bras', 'En parfait état', "C'est une pièce fragile et coûteuse. Si elle est endommagée au retour, la comparaison prouvera que la casse a eu lieu pendant la location."],
+          ['Compteur horaire', '1 240 heures', "Un écart anormalement élevé au retour peut révéler un usage intensif ou non conforme du matériel."],
+        ] },
+        complement: "1 point par point relevé (vérin, compteur), 1 point par justification. Accepter aussi « niveau de carburant » comme point secondaire, mais le vérin et le compteur sont les deux réponses attendues, car ce sont eux qui joueront dans les missions suivantes. Cette question prépare directement le contrôle de retour de la mission 5." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi un état des lieux précis protège le loueur.", documents: ['Document 3', 'Annexe 6'], bareme: 2,
+        reponse: "Un état des lieux précis décrit l'état exact du matériel au départ. Au retour, toute dégradation absente du constat de départ pourra être prouvée et facturée au client, alors qu'un état des lieux vague ne permettrait rien de réclamer.",
+        complement: "1 point pour l'idée que la précision au départ permet la comparaison au retour. 1 point pour la conséquence : sans précision, aucune dégradation ne peut être réclamée. Reprendre l'esprit de la citation du document 3 : « ce qui n'est pas écrit au départ ne pourra pas être réclamé au retour ». Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 3 - Suivre les contrats de location en cours
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Repérez les contrats qui arrivent à échéance, traitez la demande de prolongation du client TERRABAT, puis confirmez la nouvelle date de restitution par écrit.",
+    contexte:
+      "Nous sommes le 26 juin 2026, vendredi matin. La mini-pelle, la plaque vibrante et le groupe électrogène de TERRABAT sont sur le chantier depuis lundi. Le contrat prévoit une restitution ce lundi 29 juin. Fabrice Delorme vous confie le suivi des contrats en cours : chaque matin, il faut repérer ceux qui arrivent à échéance pour anticiper les retours et libérer le parc. Justement, un courriel de Nicolas Perrin vient d'arriver : son chantier a pris du retard à cause de la pluie, et il a besoin des matériels quatre jours de plus. C'est une demande de prolongation. Vous devez la traiter et confirmer la nouvelle date de restitution.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Tableau de suivi des contrats en cours (KiloPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / contrats / suivi',
+          marque: 'KiloPro — Suivi des contrats',
+          couleurHeader: '#E2001A',
+          menu: ['Clients', 'Contrats', 'Parc', 'Livraisons', 'Facturation'],
+          sections: [
+            { type: 'titre', texte: 'Contrats de location en cours — 26 juin 2026' },
+            { type: 'paragraphe', texte: "Un contrat « arrive à échéance » lorsque sa date de restitution est dans les 3 jours ou moins. Ces contrats sont à surveiller en priorité pour préparer le retour du matériel." },
+            { type: 'tableau', entetes: ['Contrat', 'Client', 'Matériel', 'Restitution prévue', 'Jours restants'], lignes: [
+              ['LOC-2026-8815', 'SARL VOIRIE 92', 'Compacteur', '27/06/2026', '1 jour'],
+              ['LOC-2026-8830', 'SAS TERRABAT', 'Mini-pelle + 2 matériels', '29/06/2026', '3 jours'],
+              ['LOC-2026-8842', 'EURL TP SUD', 'Nacelle', '10/07/2026', '14 jours'],
+              ['LOC-2026-8850', 'SAS BTP NORD', 'Chargeuse', '28/06/2026', '2 jours'],
+            ] },
+            { type: 'sousTitre', texte: 'Comment calculer les jours restants' },
+            { type: 'paragraphe', texte: "Jours restants = Date de restitution − Date du jour. Aujourd'hui, nous sommes le 26 juin." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé avec le contrat de SARL VOIRIE 92 : restitution le 27 juin, nous sommes le 26 juin. Il reste 27 − 26 = 1 jour. Ce contrat arrive à échéance : il est à surveiller." },
+          ],
+        } },
+      ] },
+
+      { numero: 2, titre: "Courriel de Nicolas Perrin (TERRABAT)", texte: [
+        { mailLecture: {
+          de: 'n.perrin@terrabat.fr',
+          a: 'agence.nanterre@kiloutou.fr',
+          objet: 'Contrat LOC-2026-8830 — besoin de prolonger la location',
+          corps: [
+            'Reçu le 26 juin 2026 à 08 h 15.',
+            'Bonjour,',
+            "Notre chantier de Rueil-Malmaison a pris du retard : il a plu toute la semaine et le terrassement n'a pas pu avancer comme prévu.",
+            "Je ne pourrai pas vous rendre les matériels lundi 29 juin comme convenu. J'ai besoin de les garder quatre jours de plus, soit jusqu'au vendredi 3 juillet.",
+            "Pouvez-vous me confirmer que c'est possible, et me dire ce que cela change pour la facture ?",
+            'Cordialement,',
+            'Nicolas Perrin, gérant, SAS TERRABAT',
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: "Procédure : traiter une demande de prolongation", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: 'La prolongation de location' },
+            { type: 'paragraphe', texte: "Une prolongation (allongement de la durée de location au-delà de la date prévue) est possible si le matériel n'est pas déjà réservé pour un autre client sur la nouvelle période." },
+            { type: 'sousTitre', texte: 'Les trois vérifications avant d’accepter' },
+            { type: 'procedureEtapes', etapes: [
+              { titre: 'Étape 1 — Calculer la nouvelle durée', detail: "Additionner les jours initiaux et les jours supplémentaires demandés." },
+              { titre: 'Étape 2 — Vérifier la disponibilité', detail: "S'assurer que le matériel n'est pas réservé pour un autre client sur les jours supplémentaires." },
+              { titre: 'Étape 3 — Informer le client du coût', detail: "Chaque jour supplémentaire se facture au tarif jour habituel. La prolongation n'est pas gratuite." },
+            ] },
+            { type: 'sousTitre', texte: 'Calculer la nouvelle date de restitution' },
+            { type: 'paragraphe', texte: "Nouvelle date de restitution = Date de restitution prévue + Jours supplémentaires." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : un matériel à rendre le 10 juin, prolongé de 5 jours, sera à rendre le 15 juin." },
+            { type: 'sousTitre', texte: 'Une règle importante' },
+            { type: 'citation', texte: "La prolongation doit toujours être confirmée par écrit au client, avec la nouvelle date de restitution et le nouveau montant. Un accord seulement oral est source de litige.", auteur: 'Guide de la location, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 4, titre: "Réservations du parc sur début juillet (KiloPro)", texte: [
+        { logoEntete: 'KILOUTOU — Réservations à venir, agence de Nanterre' },
+        { intertitre: 'Matériels du contrat TERRABAT : sont-ils réservés après le 29 juin ?' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Prochaine réservation', 'Libre jusqu’au'], lignes: [
+          ['MP-18', 'Mini-pelle 1,8 tonne', '15 juillet 2026', 'Largement disponible'],
+          ['PV-90', 'Plaque vibrante 90 kg', 'Aucune réservation', 'Largement disponible'],
+          ['GE-06', 'Groupe électrogène 6 kVA', '20 juillet 2026', 'Largement disponible'],
+        ] } },
+        { bulleConseil: { texte: ["Aucun des trois matériels n'est réservé avant la mi-juillet. La prolongation de quatre jours jusqu'au 3 juillet ne pose donc aucun problème de disponibilité."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Surveiller les échéances",
+        contexte: "Chaque matin, le suivi commence par un balayage des contrats : lesquels arrivent à leur terme ?",
+        questions: [
+          { numero: 1, consigne: "Calculez les jours restants de chaque contrat et repérez ceux qui arrivent à échéance.", ressources: "Document 1, annexe 1. Compétence C2.1.1 — Suivre l'évolution de la commande.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez dans combien de jours le contrat TERRABAT devait initialement se terminer.", ressources: 'Documents 1 et 2, annexe 2. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Traiter la demande de prolongation",
+        contexte: "Le client a écrit. Vous devez vérifier que sa demande est réalisable avant de lui répondre.",
+        questions: [
+          { numero: 3, consigne: "Calculez la nouvelle durée de location et la nouvelle date de restitution.", ressources: 'Documents 2 et 3, annexe 3. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Vérifiez que les trois matériels sont disponibles pour la prolongation demandée.", ressources: 'Documents 3 et 4, annexe 4. Compétence C2.1.1 — Suivre l’évolution de la commande.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Confirmer par écrit",
+        contexte: "Un accord oral ne suffit pas. Vous confirmez la prolongation par courriel, avec la nouvelle date.",
+        questions: [
+          { numero: 5, consigne: "Rédigez le courriel qui confirme la prolongation au client TERRABAT.", ressources: 'Documents 2, 3 et 4, annexe 5. Compétence C2.1.2 — Informer le client des délais.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi une prolongation doit être confirmée par écrit.", ressources: 'Document 3, annexe 6. Compétence C2.1.2 — Informer le client des délais.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Jours restants et échéances', colonnes: ['Contrat', 'Restitution', 'Calcul (restitution − 26/06)', 'Jours restants', 'À échéance ? (≤ 3 j)'], nbLignes: 4, largeurs: ['22%', '16%', '26%', '16%', '20%'], prerempli: [
+        ['LOC-2026-8815', '27/06', '27 − 26 =', '1 jour', 'Oui'],
+        ['LOC-2026-8830', '29/06', '', '', ''],
+        ['LOC-2026-8842', '10/07', '', '', ''],
+        ['LOC-2026-8850', '28/06', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Le contrat TERRABAT', colonnes: ['Question', 'Réponse'], nbLignes: 3, largeurs: ['60%', '40%'], prerempli: [
+        ['Date de restitution initialement prévue', ''],
+        ['Nombre de jours restants au 26 juin', ''],
+        ['Ce contrat arrive-t-il à échéance ?', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Nouvelle durée et nouvelle date', colonnes: ['Élément', 'Calcul à poser', 'Résultat'], nbLignes: 3, largeurs: ['40%', '34%', '26%'], prerempli: [
+        ['Nouvelle durée de location', '7 jours + 4 jours =', ''],
+        ['Date de restitution prévue', '(rappel du contrat)', '29 juin 2026'],
+        ['Nouvelle date de restitution', '29 juin + 4 jours =', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Disponibilité pour la prolongation', colonnes: ['Réf.', 'Prochaine réservation', 'Disponible jusqu’au 3 juillet ?'], nbLignes: 3, largeurs: ['20%', '40%', '40%'], prerempli: [
+        ['MP-18', '', ''],
+        ['PV-90', '', ''],
+        ['GE-06', '', ''],
+      ] },
+
+      { type: 'mail', id: 'annexe5', titre: 'Annexe 5 — Courriel de confirmation', deParDefaut: 'agence.nanterre@kiloutou.fr', aParDefaut: 'n.perrin@terrabat.fr' },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi confirmer par écrit", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Calculer les jours restants d'un contrat de location",
+      "Repérer les contrats arrivant à échéance",
+      "Traiter une demande de prolongation en vérifiant la disponibilité",
+      "Confirmer une prolongation par écrit avec la nouvelle date",
+    ],
+  },
+
+  synthese: {
+    titre: 'Suivre les contrats en cours',
+    proposition: [
+      'Jours restants',
+      'Contrat à échéance',
+      'Prolongation',
+      'Nouvelle durée',
+      'Nouvelle date de restitution',
+      'Vérifier la disponibilité',
+      'Chaque jour se facture',
+      'Confirmer par écrit',
+      'La pluie a retardé le chantier',
+      'Quatre jours de plus',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'Le suivi des contrats',
+      enfants: [
+        { id: 'ech', texte: 'Surveiller les échéances', enfants: [
+          { id: 'e1', texte: null, reponse: 'Jours restants' },
+          { id: 'e2', texte: null, reponse: 'Contrat à échéance' },
+        ] },
+        { id: 'dem', texte: 'La demande du client', enfants: [
+          { id: 'd1', texte: null, reponse: 'La pluie a retardé le chantier' },
+          { id: 'd2', texte: null, reponse: 'Quatre jours de plus' },
+          { id: 'd3', texte: null, reponse: 'Prolongation' },
+        ] },
+        { id: 'ver', texte: 'Les vérifications', enfants: [
+          { id: 'v1', texte: null, reponse: 'Nouvelle durée' },
+          { id: 'v2', texte: null, reponse: 'Nouvelle date de restitution' },
+          { id: 'v3', texte: null, reponse: 'Vérifier la disponibilité' },
+        ] },
+        { id: 'sui', texte: 'Les suites', enfants: [
+          { id: 's1', texte: null, reponse: 'Chaque jour se facture' },
+          { id: 's2', texte: null, reponse: 'Confirmer par écrit' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Surveiller les échéances des contrats", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas calculer les jours restants." },
+        { niveau: 'debrouille', description: "Je soustrais la date du jour à la date de restitution." },
+        { niveau: 'averti', description: "Je repère les contrats arrivant à échéance dans les 3 jours." },
+        { niveau: 'expert', description: "Je hiérarchise les contrats à surveiller en priorité." },
+      ] },
+      { id: 'c2', intitule: "Traiter une demande de prolongation", indicateurs: [
+        { niveau: 'novice', description: "J'accepte la prolongation sans rien vérifier." },
+        { niveau: 'debrouille', description: "Je calcule la nouvelle date de restitution." },
+        { niveau: 'averti', description: "Je vérifie que le matériel est disponible sur la nouvelle période." },
+        { niveau: 'expert', description: "J'informe le client que chaque jour supplémentaire sera facturé." },
+      ] },
+      { id: 'c3', intitule: "Confirmer une prolongation par écrit", indicateurs: [
+        { niveau: 'novice', description: "Je me contente d'un accord oral." },
+        { niveau: 'debrouille', description: "J'écris au client sans donner la nouvelle date." },
+        { niveau: 'averti', description: "Je confirme la nouvelle date de restitution par écrit." },
+        { niveau: 'expert', description: "Je précise aussi que la prolongation sera facturée." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Contrat en cours', definition: "Location active, dont le matériel est chez le client et n'a pas encore été restitué." },
+      { terme: 'Échéance', definition: "Date à laquelle le contrat de location doit se terminer." },
+      { terme: 'Jours restants', definition: "Nombre de jours entre la date du jour et la date de restitution prévue." },
+      { terme: 'Prolongation', definition: "Allongement de la durée de location au-delà de la date initialement prévue." },
+      { terme: 'Nouvelle date de restitution', definition: "Date de retour du matériel après ajout des jours supplémentaires." },
+      { terme: 'Disponibilité', definition: "Fait qu'un matériel ne soit pas réservé pour un autre client sur une période." },
+      { terme: 'Tarif jour', definition: "Prix d'une journée de location, appliqué aussi aux jours supplémentaires." },
+      { terme: 'Confirmation écrite', definition: "Document ou courriel qui acte formellement un accord entre l'agence et le client." },
+      { terme: 'Litige', definition: "Désaccord entre le client et l'agence, souvent né d'un accord seulement oral." },
+      { terme: 'Réservation', definition: "Engagement d'un matériel pour un client sur une période donnée." },
+      { terme: 'Terrassement', definition: "Travaux de préparation d'un terrain, sensibles aux intempéries." },
+      { terme: 'Restitution', definition: "Retour du matériel à l'agence à la fin de la location." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on les jours restants ?", verso: 'Date de restitution − Date du jour.' },
+      { recto: "Quand un contrat arrive-t-il à échéance ?", verso: "Quand sa restitution est dans les 3 jours ou moins." },
+      { recto: "Qu'est-ce qu'une prolongation ?", verso: "L'allongement de la durée de location au-delà de la date prévue." },
+      { recto: 'Pourquoi TERRABAT veut-il prolonger ?', verso: "La pluie a retardé le terrassement du chantier." },
+      { recto: 'Combien de jours supplémentaires demande le client ?', verso: 'Quatre jours, jusqu’au vendredi 3 juillet.' },
+      { recto: 'Quelle est la nouvelle durée de location ?', verso: '11 jours : 7 jours initiaux plus 4 jours.' },
+      { recto: 'Que vérifie-t-on avant d’accepter une prolongation ?', verso: 'Que le matériel n’est pas réservé pour un autre client.' },
+      { recto: 'La prolongation est-elle gratuite ?', verso: 'Non. Chaque jour supplémentaire se facture au tarif jour.' },
+      { recto: 'Comment doit-on confirmer une prolongation ?', verso: 'Par écrit, avec la nouvelle date de restitution.' },
+      { recto: 'Que risque-t-on avec un accord seulement oral ?', verso: 'Un litige avec le client.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Les jours restants se calculent ainsi :', options: ['restitution − date du jour', 'date du jour − restitution', 'restitution + date du jour'], bonne: 0 },
+      { type: 'unique', question: 'Un contrat arrive à échéance quand la restitution est dans :', options: ['3 jours ou moins', '10 jours', 'un mois'], bonne: 0 },
+      { type: 'unique', question: 'Combien de jours reste-t-il au contrat TERRABAT le 26 juin ?', options: ['3 jours', '4 jours', '1 jour'], bonne: 0 },
+      { type: 'unique', question: 'Pourquoi TERRABAT prolonge-t-il ?', options: ['la pluie a retardé le chantier', 'le matériel est en panne', 'il a changé de chantier'], bonne: 0 },
+      { type: 'unique', question: 'Combien de jours supplémentaires demande-t-il ?', options: ['4 jours', '7 jours', '2 jours'], bonne: 0 },
+      { type: 'unique', question: 'La nouvelle durée totale de location est de :', options: ['11 jours', '7 jours', '4 jours'], bonne: 0 },
+      { type: 'unique', question: 'La nouvelle date de restitution est le :', options: ['3 juillet 2026', '29 juin 2026', '1er juillet 2026'], bonne: 0 },
+      { type: 'unique', question: 'La prolongation est-elle possible pour les 3 matériels ?', options: ['Oui, aucun n’est réservé avant mi-juillet', 'Non, la mini-pelle est réservée', 'Seulement pour deux matériels'], bonne: 0 },
+      { type: 'unique', question: 'Chaque jour supplémentaire est :', options: ['facturé au tarif jour', 'offert', 'facturé au double'], bonne: 0 },
+      { type: 'unique', question: 'Une prolongation doit être confirmée :', options: ['par écrit', 'oralement', 'après le retour'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Le suivi des échéances', 'La prolongation', 'La bonne pratique'],
+      zones: [
+        { libelle: 'Restitution moins date du jour', etiquetteIndex: 0 },
+        { libelle: 'Contrat à rendre dans 3 jours ou moins', etiquetteIndex: 0 },
+        { libelle: 'Quatre jours supplémentaires', etiquetteIndex: 1 },
+        { libelle: 'Nouvelle date : 3 juillet', etiquetteIndex: 1 },
+        { libelle: 'Confirmer par écrit', etiquetteIndex: 2 },
+        { libelle: 'Vérifier la disponibilité avant d’accepter', etiquetteIndex: 1 },
+        { libelle: 'Ne jamais s’en tenir à un accord oral', etiquetteIndex: 2 },
+        { libelle: 'Balayer les contrats chaque matin', etiquetteIndex: 0 },
+        { libelle: 'Donner la nouvelle date au client', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez les jours restants de chaque contrat et repérez ceux qui arrivent à échéance.", documents: ['Document 1', 'Annexe 1'], bareme: 4,
+        reponse: "Jours restants = Date de restitution − 26 juin. Un contrat est à échéance si ce nombre est de 3 jours ou moins. La ligne SARL VOIRIE 92 est donnée comme exemple.",
+        tableau: { colonnes: ['Contrat', 'Restitution', 'Calcul', 'Jours restants', 'À échéance ?'], lignes: [
+          ['LOC-2026-8815 (fourni)', '27/06', '27 − 26', '1 jour', 'Oui'],
+          ['LOC-2026-8830', '29/06', '29 − 26', '3 jours', 'Oui'],
+          ['LOC-2026-8842', '10/07', '10/07 − 26/06', '14 jours', 'Non'],
+          ['LOC-2026-8850', '28/06', '28 − 26', '2 jours', 'Oui'],
+        ] },
+        complement: "1 point par ligne (3 lignes à traiter, la première étant fournie). Trois contrats sur quatre arrivent à échéance : seul LOC-2026-8842 (14 jours) n'est pas à surveiller. Le calcul pour ce dernier passe d'un mois à l'autre : accepter « 14 jours » sans exiger le détail. Le contrat TERRABAT (3 jours) est bien à échéance, ce qui explique l'urgence de traiter sa demande." },
+
+      { intitule: "Indiquez dans combien de jours le contrat TERRABAT devait initialement se terminer.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 2,
+        reponse: "Le contrat TERRABAT devait se terminer le 29 juin, soit dans 3 jours à compter du 26 juin.",
+        tableau: { colonnes: ['Question', 'Réponse attendue'], lignes: [
+          ['Date de restitution initialement prévue', '29 juin 2026 (lundi)'],
+          ['Nombre de jours restants au 26 juin', '3 jours'],
+          ['Ce contrat arrive-t-il à échéance ?', 'Oui, restitution dans 3 jours'],
+        ] },
+        complement: "0,5 point pour la date, 1 point pour les jours restants, 0,5 point pour la conclusion. Cette question isole le contrat qui va faire l'objet de la prolongation. Un élève qui répond « 4 jours » a peut-être compté le 29 juin en plus : le calcul est 29 − 26 = 3." },
+
+      { intitule: "Calculez la nouvelle durée de location et la nouvelle date de restitution.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "Le client demande 4 jours de plus. La durée passe de 7 à 11 jours, et la restitution du 29 juin au 3 juillet.",
+        tableau: { colonnes: ['Élément', 'Calcul posé', 'Résultat'], lignes: [
+          ['Nouvelle durée de location', '7 + 4', '11 jours'],
+          ['Date de restitution prévue', 'Rappel du contrat', '29 juin 2026'],
+          ['Nouvelle date de restitution', '29 juin + 4 jours', '3 juillet 2026'],
+        ] },
+        complement: "1 point pour la nouvelle durée (11 jours), 3 points pour la nouvelle date. Vérification du calendrier : le 29 juin est un lundi ; en ajoutant 4 jours, on arrive au vendredi 3 juillet, qui correspond bien à la date annoncée par le client dans son courriel. Un élève qui répond « 2 juillet » a mal compté : du 29 juin, +1 = 30 juin, +2 = 1er juillet, +3 = 2 juillet, +4 = 3 juillet." },
+
+      { intitule: "Vérifiez que les trois matériels sont disponibles pour la prolongation demandée.", documents: ['Documents 3 et 4', 'Annexe 4'], bareme: 4,
+        reponse: "La prolongation va jusqu'au 3 juillet. Aucun des trois matériels n'est réservé avant la mi-juillet : la prolongation est possible.",
+        tableau: { colonnes: ['Réf.', 'Prochaine réservation', 'Disponible jusqu’au 3 juillet ?'], lignes: [
+          ['MP-18', '15 juillet 2026', 'Oui, largement'],
+          ['PV-90', 'Aucune réservation', 'Oui, largement'],
+          ['GE-06', '20 juillet 2026', 'Oui, largement'],
+        ] },
+        complement: "1 point par ligne pour la disponibilité correctement conclue (3 lignes), plus 1 point pour la conclusion générale que la prolongation est réalisable. La logique : la nouvelle restitution (3 juillet) est bien antérieure à la première réservation suivante (15 juillet au plus tôt). Un élève doit comprendre que c'est cette comparaison de dates qui autorise la prolongation." },
+
+      { intitule: "Rédigez le courriel qui confirme la prolongation au client TERRABAT.", documents: ['Documents 2, 3 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "Le courriel confirme l'accord, donne la nouvelle date de restitution, et rappelle que les jours supplémentaires seront facturés.",
+        complement: "Proposition de corrigé : Objet : Contrat LOC-2026-8830 — confirmation de la prolongation. Bonjour Monsieur Perrin, je fais suite à votre demande de ce matin. Je vous confirme que nous pouvons prolonger votre location de quatre jours. Les trois matériels (mini-pelle, plaque vibrante et groupe électrogène) restent à votre disposition. La nouvelle date de restitution est fixée au vendredi 3 juillet 2026. Ces quatre jours supplémentaires seront facturés au tarif jour habituel de chaque matériel, comme le prévoit le contrat. Je vous en préciserai le montant exact sur votre facture. Cordialement, [Prénom Nom], agence de Nanterre, Kiloutou. Barème : 1 point pour l'objet rattaché au contrat. 1 point pour la confirmation de l'accord. 1 point pour la nouvelle date de restitution (3 juillet). 1 point pour l'information que les jours supplémentaires seront facturés. Retirer 1 point si la nouvelle date est absente. Refuser un courriel qui laisse croire que la prolongation est gratuite. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi une prolongation doit être confirmée par écrit.", documents: ['Document 3', 'Annexe 6'], bareme: 2,
+        reponse: "Une confirmation écrite acte la nouvelle date de restitution et le fait que les jours supplémentaires seront facturés. Un accord seulement oral peut être contesté par le client, ce qui crée un litige : par écrit, chacun sait à quoi s'en tenir.",
+        complement: "1 point pour l'idée que l'écrit fixe la nouvelle date et le principe de facturation. 1 point pour la conséquence : l'écrit évite le litige, contrairement à l'oral. Reprendre l'esprit de la citation du document 3. Accepter toute formulation exacte. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// KILOUTOU, mission 4 - Facturer la prolongation
+// Bloc 2 : suivre les ventes. Classe de Terminale.
+// ---------------------------------------------------------------------------
+const KILOUTOU_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Calculez le montant de la prolongation, établissez la facture complète de la location, puis vérifiez votre total par une seconde méthode.",
+    contexte:
+      "Nous sommes le 3 juillet 2026. Les matériels de TERRABAT viennent d'être restitués, après les quatre jours de prolongation accordés la semaine dernière. La location est terminée : il faut maintenant la facturer. Fabrice Delorme vous confie l'établissement de la facture. Attention : elle ne porte pas seulement sur les 7 jours prévus au départ, mais sur les 11 jours réellement effectués. Chaque jour supplémentaire se facture au tarif jour habituel, comme vous l'avez annoncé au client dans votre courriel de confirmation. Un oubli des jours de prolongation, et l'agence perdrait 660 € de chiffre d'affaires.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: 'C2.1 — Assurer le suivi de la commande du produit et/ou du service',
+      detail: "C2.1.1 Suivre l'évolution de la commande et éventuellement du règlement. C2.1.2 Informer le client des délais et des modalités de mise à disposition.",
+    },
+    documents: [
+      { numero: 1, titre: "Rappel du contrat et de la prolongation", texte: [
+        { logoEntete: 'KILOUTOU — Contrat LOC-2026-8830, récapitulatif' },
+        { intertitre: 'Ce qui a été convenu' },
+        { tableau: { colonnes: ['Élément', 'Valeur'], lignes: [
+          ['Client', 'SAS TERRABAT — Compte PRO-3387'],
+          ['Durée initiale', '7 jours (22 au 29 juin)'],
+          ['Prolongation accordée', '4 jours (30 juin au 3 juillet)'],
+          ['Durée totale réellement effectuée', '11 jours'],
+          ['Date de restitution effective', '3 juillet 2026'],
+          ['Conditions de règlement', '30 jours fin de mois'],
+        ] } },
+        { intertitre: 'Tarifs jour des matériels (rappel)' },
+        { tableau: { colonnes: ['Réf.', 'Désignation', 'Tarif jour HT'], lignes: [
+          ['MP-18', 'Mini-pelle 1,8 tonne', '95,00 €'],
+          ['PV-90', 'Plaque vibrante 90 kg', '28,00 €'],
+          ['GE-06', 'Groupe électrogène 6 kVA', '42,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["La location initiale de 7 jours a déjà été chiffrée à 1 155,00 € HT en mission 1. Il vous reste à chiffrer les 4 jours de prolongation, puis à additionner."] } },
+      ] },
+
+      { numero: 2, titre: "Procédure : facturer une location prolongée", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / aide',
+          marque: 'KiloPro — Aide',
+          couleurHeader: '#E2001A',
+          sections: [
+            { type: 'titre', texte: 'Facturer une location avec prolongation' },
+            { type: 'paragraphe', texte: "Quand une location a été prolongée, la facture doit couvrir la totalité de la durée réellement effectuée : la durée initiale plus les jours supplémentaires." },
+            { type: 'sousTitre', texte: 'Méthode en deux temps' },
+            { type: 'paragraphe', texte: "1. Chiffrer la prolongation : pour chaque matériel, Tarif jour HT × Nombre de jours supplémentaires." },
+            { type: 'paragraphe', texte: "2. Établir le total : Location initiale HT + Prolongation HT." },
+            { type: 'paragraphe', texte: "Exemple entièrement calculé, avec des chiffres différents de ceux de votre mission : un matériel à 50 € par jour, prolongé de 3 jours, ajoute 50 × 3 = 150 € HT à la facture." },
+            { type: 'sousTitre', texte: 'La vérification par une seconde méthode' },
+            { type: 'paragraphe', texte: "On peut contrôler le total en calculant directement sur la durée complète : Tarif jour HT × Durée totale, pour chaque matériel. Les deux méthodes doivent donner le même résultat." },
+            { type: 'paragraphe', texte: "Du HT au TTC : Montant TVA = Total HT × 0,20, puis Total TTC = Total HT + Montant TVA." },
+            { type: 'citation', texte: "Une facture juste facture tout ce qui a été effectué, ni plus, ni moins. Oublier la prolongation, c'est offrir des jours de location.", auteur: 'Guide de la facturation, Kiloutou' },
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: "Écran de facturation (logiciel KiloPro)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'kilopro.interne / facturation / nouvelle',
+          marque: 'KiloPro — Établir une facture',
+          couleurHeader: '#E2001A',
+          menu: ['Clients', 'Contrats', 'Parc', 'Livraisons', 'Facturation'],
+          sections: [
+            { type: 'titre', texte: 'Nouvelle facture — Numéro attribué : FA-2026-9120' },
+            { type: 'fiche', lignes: [
+              { label: 'Date de la facture', valeur: '3 juillet 2026' },
+              { label: 'Client', valeur: 'SAS TERRABAT — Compte PRO-3387' },
+              { label: 'Contrat rattaché', valeur: 'LOC-2026-8830' },
+              { label: 'Durée facturée', valeur: '11 jours (7 + 4)' },
+              { label: 'Taux de TVA', valeur: '20 %' },
+              { label: 'Échéance', valeur: '31 juillet 2026' },
+            ] },
+            { type: 'sousTitre', texte: 'Structure de la facture à compléter' },
+            { type: 'tableau', entetes: ['Ligne', 'Contenu attendu'], lignes: [
+              ['Location initiale (7 jours)', 'Montant déjà connu : 1 155,00 € HT'],
+              ['Prolongation (4 jours)', 'À calculer pour chaque matériel'],
+              ['Total HT', 'Location initiale + prolongation'],
+              ['TVA 20 %', 'Total HT × 0,20'],
+              ['Total TTC', 'Total HT + TVA'],
+            ] },
+            { type: 'paragraphe', texte: "La caution de 3 000 € ne figure jamais sur la facture : elle n'est pas encaissée et sera rendue au client si le matériel revient en bon état." },
+          ],
+        } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Chiffrer la prolongation",
+        contexte: "Quatre jours de plus pour trois matériels. Chaque ligne compte : c'est du chiffre d'affaires réel.",
+        questions: [
+          { numero: 1, consigne: "Calculez le montant HT de la prolongation pour chaque matériel, puis le total.", ressources: "Documents 1 et 2, annexe 1. Compétence C2.1.1 — Suivre l'évolution du règlement.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Vérifiez que la durée facturée correspond bien à la durée réellement effectuée.", ressources: 'Document 1, annexe 2. Compétence C2.1.1 — Suivre l’évolution du règlement.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Établir la facture",
+        contexte: "La facture rassemble tout : les 7 jours initiaux et les 4 jours de prolongation.",
+        questions: [
+          { numero: 3, consigne: "Établissez la facture FA-2026-9120 en calculant le total HT, la TVA et le TTC.", ressources: 'Documents 1, 2 et 3, annexe 3. Compétence C2.1.1 — Suivre l’évolution du règlement.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Indiquez si la caution de 3 000 € doit figurer sur la facture, et justifiez.", ressources: 'Document 3, annexe 4. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Contrôler le total",
+        contexte: "Un bon facturier vérifie toujours son résultat par un second calcul indépendant.",
+        questions: [
+          { numero: 5, consigne: "Contrôlez le total HT en calculant directement sur les 11 jours, matériel par matériel.", ressources: 'Documents 1 et 2, annexe 5. Compétence C2.1.1 — Suivre l’évolution du règlement.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Expliquez, en deux phrases, pourquoi il faut facturer les jours de prolongation.", ressources: 'Document 2, annexe 6. Compétence C2.1.2 — Informer le client.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Chiffrage de la prolongation (4 jours)', colonnes: ['Réf.', 'Tarif jour HT', 'Calcul (× 4 jours)', 'Montant HT'], nbLignes: 4, largeurs: ['18%', '22%', '34%', '26%'], prerempli: [
+        ['MP-18', '95,00 €', '95,00 × 4 =', '380,00 €'],
+        ['PV-90', '28,00 €', '', ''],
+        ['GE-06', '42,00 €', '', ''],
+        ['Total prolongation HT', '', '', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Contrôle de la durée facturée', colonnes: ['Élément', 'Réponse'], nbLignes: 3, largeurs: ['55%', '45%'], prerempli: [
+        ['Durée initiale', ''],
+        ['Jours de prolongation', ''],
+        ['Durée totale à facturer', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Facture FA-2026-9120', colonnes: ['Ligne', 'Calcul à poser', 'Montant'], nbLignes: 5, largeurs: ['40%', '32%', '28%'], prerempli: [
+        ['Location initiale (7 jours)', '(rappel mission 1)', '1 155,00 €'],
+        ['Prolongation (4 jours)', '(report de l’annexe 1)', ''],
+        ['Total HT', '1 155,00 + prolongation', ''],
+        ['TVA 20 %', 'Total HT × 0,20', ''],
+        ['Total TTC', 'Total HT + TVA', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — La caution figure-t-elle sur la facture ?", lignes: 4 },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Contrôle par les 11 jours', colonnes: ['Réf.', 'Calcul (tarif × 11 jours)', 'Montant HT'], nbLignes: 4, largeurs: ['18%', '52%', '30%'], prerempli: [
+        ['MP-18', '95,00 × 11 =', ''],
+        ['PV-90', '28,00 × 11 =', ''],
+        ['GE-06', '42,00 × 11 =', ''],
+        ['Total HT (contrôle)', '', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Pourquoi facturer la prolongation", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Chiffrer le coût d'une prolongation de location",
+      "Établir une facture couvrant la durée réellement effectuée",
+      "Distinguer ce qui se facture de ce qui ne se facture pas (caution)",
+      "Contrôler un total par une seconde méthode",
+    ],
+  },
+
+  synthese: {
+    titre: 'Facturer une location prolongée',
+    proposition: [
+      'Durée initiale',
+      'Jours de prolongation',
+      'Tarif jour',
+      'Total HT',
+      'TVA à 20 %',
+      'Total TTC',
+      'La caution ne se facture pas',
+      'Vérifier par un second calcul',
+      'Sept jours plus quatre',
+      'Onze jours facturés',
+    ],
+    racine: {
+      id: 'racine',
+      texte: 'La facturation de la location',
+      enfants: [
+        { id: 'dur', texte: 'La durée à facturer', enfants: [
+          { id: 'd1', texte: null, reponse: 'Durée initiale' },
+          { id: 'd2', texte: null, reponse: 'Jours de prolongation' },
+          { id: 'd3', texte: null, reponse: 'Onze jours facturés' },
+        ] },
+        { id: 'cal', texte: 'Le calcul', enfants: [
+          { id: 'c1', texte: null, reponse: 'Tarif jour' },
+          { id: 'c2', texte: null, reponse: 'Total HT' },
+          { id: 'c3', texte: null, reponse: 'TVA à 20 %' },
+          { id: 'c4', texte: null, reponse: 'Total TTC' },
+        ] },
+        { id: 'exc', texte: 'Ce qui ne se facture pas', enfants: [
+          { id: 'e1', texte: null, reponse: 'La caution ne se facture pas' },
+        ] },
+        { id: 'con', texte: 'Le contrôle', enfants: [
+          { id: 'k1', texte: null, reponse: 'Vérifier par un second calcul' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Chiffrer une prolongation", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas combien de jours facturer en plus." },
+        { niveau: 'debrouille', description: "Je multiplie le tarif jour par les jours supplémentaires." },
+        { niveau: 'averti', description: "Je chiffre la prolongation pour les trois matériels sans erreur." },
+        { niveau: 'expert', description: "J'obtiens le total exact de la prolongation." },
+      ] },
+      { id: 'c2', intitule: "Établir une facture complète", indicateurs: [
+        { niveau: 'novice', description: "J'oublie les jours de prolongation." },
+        { niveau: 'debrouille', description: "J'additionne l'initial et la prolongation." },
+        { niveau: 'averti', description: "Je calcule le total HT, la TVA et le TTC sans erreur." },
+        { niveau: 'expert', description: "Je sais que la caution ne figure pas sur la facture." },
+      ] },
+      { id: 'c3', intitule: "Contrôler un total", indicateurs: [
+        { niveau: 'novice', description: "Je ne vérifie pas mon résultat." },
+        { niveau: 'debrouille', description: "Je recompte une des lignes." },
+        { niveau: 'averti', description: "Je recalcule le total sur la durée complète." },
+        { niveau: 'expert', description: "Je constate que les deux méthodes donnent le même montant." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Prolongation', definition: "Allongement de la durée de location, facturé au tarif jour habituel." },
+      { terme: 'Tarif jour', definition: "Prix d'une journée de location d'un matériel." },
+      { terme: 'Durée facturée', definition: "Nombre total de jours réellement effectués, initial plus prolongation." },
+      { terme: 'Facture', definition: "Document qui récapitule les sommes dues par le client pour la location." },
+      { terme: 'Total HT', definition: "Montant hors taxes de la facture, avant la TVA." },
+      { terme: 'TVA', definition: "Taxe sur la valeur ajoutée, ici de 20 %." },
+      { terme: 'Total TTC', definition: "Montant toutes taxes comprises, réellement dû par le client." },
+      { terme: 'Caution', definition: "Somme de garantie non encaissée, qui ne figure jamais sur la facture." },
+      { terme: 'Contrôle par seconde méthode', definition: "Vérification d'un total par un calcul indépendant du premier." },
+      { terme: 'Chiffre d’affaires', definition: "Somme des ventes ou locations facturées par l'entreprise." },
+      { terme: 'Échéance', definition: "Date limite de règlement de la facture." },
+      { terme: 'Numéro de facture', definition: "Identifiant unique attribué à chaque facture." },
+    ],
+    flashcards: [
+      { recto: "Combien de jours ont été réellement effectués ?", verso: '11 jours : 7 initiaux plus 4 de prolongation.' },
+      { recto: "Comment chiffre-t-on la prolongation d'un matériel ?", verso: 'Tarif jour × Nombre de jours supplémentaires.' },
+      { recto: 'Quel est le total HT de la prolongation ?', verso: '660,00 € : 380 + 112 + 168.' },
+      { recto: 'Quel est le total HT de la facture complète ?', verso: '1 815,00 € : 1 155 + 660.' },
+      { recto: 'Quelle est la TVA de la facture ?', verso: '363,00 € : 1 815 × 0,20.' },
+      { recto: 'Quel est le total TTC de la facture ?', verso: '2 178,00 €.' },
+      { recto: 'La caution figure-t-elle sur la facture ?', verso: "Non, elle n'est pas encaissée." },
+      { recto: 'Comment vérifier le total HT ?', verso: 'En calculant directement le tarif jour × 11 jours.' },
+      { recto: 'Que se passe-t-il si on oublie la prolongation ?', verso: "L'agence perd 660 € de chiffre d'affaires." },
+      { recto: 'Le tarif des jours de prolongation est-il majoré ?', verso: 'Non, il reste le tarif jour habituel.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La facture doit couvrir :', options: ['les 11 jours effectués', 'les 7 jours initiaux', 'les 4 jours de prolongation'], bonne: 0 },
+      { type: 'unique', question: 'La prolongation de la mini-pelle (95 × 4) vaut :', options: ['380,00 €', '475,00 €', '285,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT de la prolongation est de :', options: ['660,00 €', '560,00 €', '760,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total HT de la facture complète est de :', options: ['1 815,00 €', '1 155,00 €', '660,00 €'], bonne: 0 },
+      { type: 'unique', question: 'La TVA de la facture vaut :', options: ['363,00 €', '231,00 €', '132,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le total TTC de la facture est de :', options: ['2 178,00 €', '1 815,00 €', '1 386,00 €'], bonne: 0 },
+      { type: 'unique', question: 'La caution de 3 000 € :', options: ['ne figure pas sur la facture', 's’ajoute au TTC', 'remplace le paiement'], bonne: 0 },
+      { type: 'unique', question: 'Le tarif des jours de prolongation est :', options: ['le tarif jour habituel', 'majoré de 50 %', 'gratuit'], bonne: 0 },
+      { type: 'unique', question: 'Contrôler le total, c’est :', options: ['calculer sur les 11 jours', 'refaire le même calcul', 'demander au client'], bonne: 0 },
+      { type: 'unique', question: 'Oublier la prolongation ferait perdre :', options: ['660 € de chiffre d’affaires', 'la caution', 'le client'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['La prolongation', 'La facture totale', 'Ce qui ne se facture pas'],
+      zones: [
+        { libelle: '95 × 4 pour la mini-pelle', etiquetteIndex: 0 },
+        { libelle: 'Total de 660 € HT', etiquetteIndex: 0 },
+        { libelle: '1 155 + 660 = 1 815 € HT', etiquetteIndex: 1 },
+        { libelle: 'Quatre jours à ajouter', etiquetteIndex: 0 },
+        { libelle: 'TVA de 363 €', etiquetteIndex: 1 },
+        { libelle: 'La caution de 3 000 €', etiquetteIndex: 2 },
+        { libelle: 'Total TTC de 2 178 €', etiquetteIndex: 1 },
+        { libelle: 'Somme rendue si bon état', etiquetteIndex: 2 },
+        { libelle: 'Garantie non encaissée', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez le montant HT de la prolongation pour chaque matériel, puis le total.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 4,
+        reponse: "Prolongation = Tarif jour × 4 jours, pour chaque matériel. La ligne MP-18 est donnée comme exemple travaillé.",
+        tableau: { colonnes: ['Réf.', 'Tarif jour', 'Calcul', 'Montant HT'], lignes: [
+          ['MP-18 (exemple fourni)', '95,00 €', '95,00 × 4', '380,00 €'],
+          ['PV-90', '28,00 €', '28,00 × 4', '112,00 €'],
+          ['GE-06', '42,00 €', '42,00 × 4', '168,00 €'],
+          ['Total prolongation HT', '', '380 + 112 + 168', '660,00 €'],
+        ] },
+        complement: "1 point par ligne PV-90 et GE-06, 2 points pour le total. Vérification : 28 × 4 = 112 et 42 × 4 = 168, total 660,00 €. Le calcul doit être posé. Un élève qui multiplie par 11 au lieu de 4 confond la prolongation avec la facture totale : cette confusion est traitée aux questions suivantes." },
+
+      { intitule: "Vérifiez que la durée facturée correspond bien à la durée réellement effectuée.", documents: ['Document 1', 'Annexe 2'], bareme: 2,
+        reponse: "La durée facturée est la somme de la durée initiale et de la prolongation.",
+        tableau: { colonnes: ['Élément', 'Réponse attendue'], lignes: [
+          ['Durée initiale', '7 jours'],
+          ['Jours de prolongation', '4 jours'],
+          ['Durée totale à facturer', '11 jours'],
+        ] },
+        complement: "0,5 point par ligne, plus 0,5 point pour le total juste. Cette question sert de garde-fou : elle fixe les 11 jours avant le calcul de la facture. Un élève qui écrit « 7 jours » comme durée à facturer oublie la prolongation, l'erreur que toute la mission cherche à éviter." },
+
+      { intitule: "Établissez la facture FA-2026-9120 en calculant le total HT, la TVA et le TTC.", documents: ['Documents 1, 2 et 3', 'Annexe 3'], bareme: 4,
+        reponse: "Total HT = location initiale + prolongation. Puis TVA à 20 % et TTC.",
+        tableau: { colonnes: ['Ligne', 'Calcul posé', 'Montant'], lignes: [
+          ['Location initiale (7 jours)', 'Rappel mission 1', '1 155,00 €'],
+          ['Prolongation (4 jours)', 'Report de l’annexe 1', '660,00 €'],
+          ['Total HT', '1 155,00 + 660,00', '1 815,00 €'],
+          ['TVA 20 %', '1 815,00 × 0,20', '363,00 €'],
+          ['Total TTC', '1 815,00 + 363,00', '2 178,00 €'],
+        ] },
+        complement: "1 point pour le total HT, 1,5 point pour la TVA, 1,5 point pour le TTC. Vérification : 1 815 × 0,20 = 363,00 et 1 815 + 363 = 2 178,00. Un élève qui reprend le TTC de la mission 1 (1 386 €) a oublié d'intégrer la prolongation : ne pas accorder les points du total." },
+
+      { intitule: "Indiquez si la caution de 3 000 € doit figurer sur la facture, et justifiez.", documents: ['Document 3', 'Annexe 4'], bareme: 2,
+        reponse: "Non, la caution ne figure pas sur la facture. Elle n'est pas encaissée : c'est une garantie, rendue au client si le matériel revient en bon état. La facture ne comporte que les sommes réellement dues pour la location.",
+        complement: "1 point pour la réponse « non », 1 point pour la justification (garantie non encaissée, restituable). Un élève qui ajoute la caution obtiendrait 5 178 € TTC, une erreur grave de compréhension du mécanisme de la caution, déjà vu en mission 1. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Contrôlez le total HT en calculant directement sur les 11 jours, matériel par matériel.", documents: ['Documents 1 et 2', 'Annexe 5'], bareme: 6,
+        reponse: "On calcule le tarif jour × 11 jours pour chaque matériel. La somme doit redonner 1 815,00 € HT.",
+        tableau: { colonnes: ['Réf.', 'Calcul', 'Montant HT'], lignes: [
+          ['MP-18', '95,00 × 11', '1 045,00 €'],
+          ['PV-90', '28,00 × 11', '308,00 €'],
+          ['GE-06', '42,00 × 11', '462,00 €'],
+          ['Total HT (contrôle)', '1 045 + 308 + 462', '1 815,00 €'],
+        ] },
+        complement: "1,5 point par ligne matériel (3 lignes), 1,5 point pour le total de contrôle. Vérification : 95 × 11 = 1 045, 28 × 11 = 308, 42 × 11 = 462, somme 1 815,00 €. Ce total est identique à celui de la question 3 : c'est la preuve que la facture est juste. Insister auprès des élèves : trouver deux fois le même montant par deux chemins différents est la meilleure garantie d'un calcul exact. Si les deux résultats diffèrent, il y a une erreur à chercher." },
+
+      { intitule: "Expliquez, en deux phrases, pourquoi il faut facturer les jours de prolongation.", documents: ['Document 2', 'Annexe 6'], bareme: 2,
+        reponse: "Le client a utilisé les matériels quatre jours de plus : ces jours correspondent à un service réellement rendu, qui doit être payé. Ne pas les facturer reviendrait à offrir 660 € de location à l'agence, une perte de chiffre d'affaires injustifiée.",
+        complement: "1 point pour l'idée que la prolongation est un service rendu qui se paie. 1 point pour la conséquence chiffrée : sans facturation, l'agence perd 660 €. Reprendre l'esprit de la citation du document 2. Accepter toute formulation exacte." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
+  'kiloutou-m1': KILOUTOU_M1,
+  'kiloutou-m2': KILOUTOU_M2,
+  'kiloutou-m3': KILOUTOU_M3,
+  'kiloutou-m4': KILOUTOU_M4,
   'chausson-m1': CHAUSSON_M1,
+  'chausson-m2': CHAUSSON_M2,
+  'chausson-m3': CHAUSSON_M3,
+  'chausson-m4': CHAUSSON_M4,
+  'chausson-m5': CHAUSSON_M5,
+  'chausson-m6': CHAUSSON_M6,
+  'chausson-m7': CHAUSSON_M7,
+  'chausson-m8': CHAUSSON_M8,
   'hydrao-m1': HYDRAO_M1,
   'hydrao-m2': HYDRAO_M2,
   'hydrao-m3': HYDRAO_M3,

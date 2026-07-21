@@ -230,17 +230,38 @@ const AMPARIS: Scenario = {
 }
 
 // --- Chausson Materiaux -----------------------------------------------------
+// --- Kiloutou ---------------------------------------------------------------
+const KILOUTOU: Scenario = {
+  id: 'kiloutou',
+  nom: 'Kiloutou',
+  couleur: '#E2001A',
+  missions: construireMissions('kiloutou', [
+    'Comprendre le contrat de location',
+    "Preparer la livraison et etablir l'etat des lieux",
+    'Suivre les contrats de location en cours',
+    'Facturer la prolongation',
+  ]),
+}
+
 const CHAUSSON: Scenario = {
   id: 'chausson',
   nom: 'Chausson Materiaux',
   couleur: '#0B3C7A',
   missions: construireMissions('chausson', [
     'Prendre en main le suivi des commandes',
+    'Verifier et enregistrer la commande',
+    "Suivre l'acheminement",
+    'Controler la livraison et constater les reserves',
+    "Etablir l'avoir",
+    'Repondre a la reclamation du client',
+    'Relancer le reglement',
+    "Rendre compte de l'affaire",
   ]),
 }
 
 // Liste ordonnee des 10 scenarios.
 export const SCENARIOS: Scenario[] = [
+  KILOUTOU,
   CHAUSSON,
   RENAULT,
   PEUGEOT,
