@@ -240,6 +240,10 @@ const KILOUTOU: Scenario = {
     "Preparer la livraison et etablir l'etat des lieux",
     'Suivre les contrats de location en cours',
     'Facturer la prolongation',
+    'Controler la restitution et les degradations',
+    'Chiffrer la remise en etat et la franchise',
+    'Traiter la contestation et relancer',
+    'Analyser la rentabilite du client',
   ]),
 }
 
@@ -261,17 +265,17 @@ const CHAUSSON: Scenario = {
 
 // Liste ordonnee des 10 scenarios.
 export const SCENARIOS: Scenario[] = [
-  KILOUTOU,
-  CHAUSSON,
-  RENAULT,
-  PEUGEOT,
-  ORPI,
-  MAMIE_AND_CO,
-  LEROY_MERLIN,
-  HYDRAO,
-  FREE,
-  CITROEN,
   AMPARIS,
+  CHAUSSON,
+  CITROEN,
+  FREE,
+  HYDRAO,
+  KILOUTOU,
+  LEROY_MERLIN,
+  MAMIE_AND_CO,
+  ORPI,
+  PEUGEOT,
+  RENAULT,
 ]
 
 // ---------------------------------------------------------------------------
