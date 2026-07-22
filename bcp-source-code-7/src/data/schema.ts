@@ -92,6 +92,24 @@ function construireMissions(scenarioId: string, titres: string[]): Mission[] {
 }
 
 // --- Renault : scenario modele de reference, entierement renseigne ---------
+const ENCHANTED: Scenario = {
+  id: 'enchanted',
+  nom: 'Enchanted Tools',
+  couleur: '#F28C1E',
+  missions: construireMissions('enchanted', [
+    "Decouvrir l'entreprise et le robot Mirokai",
+    "Preparer la vente et l'argumentaire CAP",
+    'Accueillir le client et decouvrir ses besoins',
+    'Argumenter et traiter les objections',
+    'Etablir le devis et conclure la vente',
+    'Suivre la commande et preparer la livraison',
+    'Facturer et gerer le paiement',
+    'Controler la livraison et traiter une reclamation',
+    'Assurer le service apres-vente',
+    'Fideliser le client et analyser la vente',
+  ]),
+}
+
 const RENAULT: Scenario = {
   id: 'renault',
   nom: 'Renault',
@@ -230,6 +248,23 @@ const AMPARIS: Scenario = {
 }
 
 // --- Chausson Materiaux -----------------------------------------------------
+// --- Kiloutou ---------------------------------------------------------------
+const KILOUTOU: Scenario = {
+  id: 'kiloutou',
+  nom: 'Kiloutou',
+  couleur: '#E2001A',
+  missions: construireMissions('kiloutou', [
+    'Comprendre le contrat de location',
+    "Preparer la livraison et etablir l'etat des lieux",
+    'Suivre les contrats de location en cours',
+    'Facturer la prolongation',
+    'Controler la restitution et les degradations',
+    'Chiffrer la remise en etat et la franchise',
+    'Traiter la contestation et relancer',
+    'Analyser la rentabilite du client',
+  ]),
+}
+
 const CHAUSSON: Scenario = {
   id: 'chausson',
   nom: 'Chausson Materiaux',
@@ -242,21 +277,24 @@ const CHAUSSON: Scenario = {
     "Etablir l'avoir",
     'Repondre a la reclamation du client',
     'Relancer le reglement',
+    "Rendre compte de l'affaire",
   ]),
 }
 
 // Liste ordonnee des 10 scenarios.
 export const SCENARIOS: Scenario[] = [
-  CHAUSSON,
-  RENAULT,
-  PEUGEOT,
-  ORPI,
-  MAMIE_AND_CO,
-  LEROY_MERLIN,
-  HYDRAO,
-  FREE,
-  CITROEN,
   AMPARIS,
+  CHAUSSON,
+  CITROEN,
+  ENCHANTED,
+  FREE,
+  HYDRAO,
+  KILOUTOU,
+  LEROY_MERLIN,
+  MAMIE_AND_CO,
+  ORPI,
+  PEUGEOT,
+  RENAULT,
 ]
 
 // ---------------------------------------------------------------------------
