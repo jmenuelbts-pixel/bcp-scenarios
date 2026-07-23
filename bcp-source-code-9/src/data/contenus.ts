@@ -26850,11 +26850,337 @@ const ENCHANTED_M4: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 5 - Etablir le devis et conclure la vente
+// Bloc 1 : conseiller et vendre. Classe de Premiere. VERSION RICHE + CALCULS.
+// Les formules figurent dans les documents, avec un exemple guide chiffre
+// DIFFERENT de l'exercice. L'eleve calcule lui-meme.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Établissez le devis de l'hôtel Le Grand Siècle à partir de la grille tarifaire et des conditions commerciales, calculez le montant à payer, puis préparez la conclusion de la vente.",
+    contexte:
+      "Bonne nouvelle : après avoir traité ses objections, la directrice de l'hôtel Le Grand Siècle est convaincue. Elle souhaite un devis officiel pour 4 robots Mirokaï destinés à son hall d'accueil, avec la formation de son personnel et un contrat de maintenance. Votre tuteur, Karim Haddad, vous confie l'établissement du devis : « Tu as tout ce qu'il faut : la grille tarifaire, nos conditions commerciales et la méthode de calcul. Applique les formules pas à pas, ne te trompe pas dans les totaux : un devis, c'est un document officiel qui engage l'entreprise. Ensuite, on préparera la phrase de conclusion pour décrocher la signature. »",
+    competence: {
+      groupe: 'Bloc de compétences 1 — Conseiller et vendre',
+      intitule: "C1.5 — Établir un devis et conclure la vente",
+      detail: "C1.5.1 Exploiter une grille tarifaire et des conditions commerciales. C1.5.2 Calculer un devis (remise, HT, TVA, TTC, acompte). C1.5.3 Conclure la vente.",
+    },
+    documents: [
+      // DOC 1 : grille tarifaire (page web riche)
+      { numero: 1, titre: "La grille tarifaire d'Enchanted Tools", texte: [
+        { pageWeb: true },
+        { intertitre: 'Tarifs professionnels — en vigueur cette année' },
+        { paragraphes: [
+          "Voici nos tarifs. Attention : tous ces produits et services ne figureront pas forcément sur le devis de l'hôtel. Vous devrez choisir ceux qui correspondent à sa commande.",
+        ] },
+        { tableau: { colonnes: ['Référence', 'Produit ou service', 'Prix unitaire HT'], lignes: [
+          ['MIR-01', 'Robot Mirokaï (modèle accueil)', '30 000,00 €'],
+          ['MIR-02', 'Robot Mirokaï (modèle logistique)', '34 000,00 €'],
+          ['FORM-01', 'Formation du personnel (forfait, tout le personnel)', '1 500,00 €'],
+          ['MAINT-01', 'Contrat de maintenance annuel (par robot)', '2 400,00 €'],
+          ['ACC-01', 'Station de recharge supplémentaire', '450,00 €'],
+          ['ACC-02', 'Habillage personnalisé aux couleurs de l’hôtel (par robot)', '600,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["L'hôtel commande le modèle accueil (MIR-01), la formation (FORM-01) et la maintenance (MAINT-01). Il ne prend ni le modèle logistique, ni les accessoires. À vous de ne retenir que les bonnes lignes."] } },
+      ] },
+
+      // DOC 2 : conditions commerciales (remise, acompte, reglement)
+      { numero: 2, titre: "Nos conditions commerciales", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Conditions commerciales' },
+        { intertitre: 'Remise, acompte et règlement' },
+        { paragraphes: [
+          "Remise quantité : pour toute commande d'au moins 3 robots, une remise commerciale de 5 % est accordée sur le montant total des robots (la remise ne s'applique PAS à la formation ni à la maintenance).",
+          "TVA : le taux de TVA applicable est de 20 %.",
+          "Acompte : à la signature du devis, le client verse un acompte de 30 % du montant TTC. Le solde (70 %) est réglé à la livraison.",
+          "Validité : le devis est valable 30 jours à compter de sa date d'émission.",
+        ] },
+        { bulleConseil: { texte: ["L'hôtel commande 4 robots : la remise de 5 % s'applique donc. Souvenez-vous qu'elle porte uniquement sur les robots."] } },
+      ] },
+
+      // DOC 3 : methode de calcul (LES FORMULES) + exemple guide DIFFERENT
+      { numero: 3, titre: "Méthode — Comment calculer un devis", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 11. Calculer un devis étape par étape' },
+        { paragraphes: [
+          "Un devis se calcule toujours dans le même ordre. Voici les formules à appliquer.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Formule'], lignes: [
+          ['1. Total par ligne', 'Prix unitaire HT × quantité'],
+          ['2. Sous-total HT (robots)', 'Somme des lignes de robots'],
+          ['3. Remise', 'Sous-total robots × taux de remise (5 % = × 0,05)'],
+          ['4. Total HT', '(Sous-total robots − remise) + formation + maintenance'],
+          ['5. TVA', 'Total HT × 0,20'],
+          ['6. Total TTC', 'Total HT + TVA'],
+          ['7. Acompte', 'Total TTC × 0,30'],
+          ['8. Solde', 'Total TTC − acompte'],
+        ] } },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres)' },
+        { paragraphes: [
+          "Un client commande 3 robots à 20 000 € HT, plus une formation à 1 000 €, sans maintenance. Remise quantité de 5 %.",
+          "1) Robots : 20 000 × 3 = 60 000 €. 2) Sous-total robots = 60 000 €. 3) Remise = 60 000 × 0,05 = 3 000 €. 4) Total HT = (60 000 − 3 000) + 1 000 = 58 000 €. 5) TVA = 58 000 × 0,20 = 11 600 €. 6) TTC = 58 000 + 11 600 = 69 600 €. 7) Acompte = 69 600 × 0,30 = 20 880 €. 8) Solde = 69 600 − 20 880 = 48 720 €.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise des chiffres DIFFÉRENTS de la commande de l'hôtel. Il vous montre la méthode : à vous de refaire les mêmes étapes avec les vrais chiffres de l'hôtel."] } },
+      ] },
+
+      // DOC 4 : bon de commande signe par le client (les quantites)
+      { numero: 4, titre: "La demande de l'hôtel (bon pour commande)", texte: [
+        { logoEntete: 'HÔTEL LE GRAND SIÈCLE — Demande de devis' },
+        { paragraphes: [
+          "Document transmis par la cliente. Il précise ce qu'elle veut commander. C'est à partir de là que vous établissez le devis.",
+        ] },
+        { tableau: { colonnes: ['Ce que commande l’hôtel', 'Quantité'], lignes: [
+          ['Robots Mirokaï modèle accueil (MIR-01)', '4'],
+          ['Formation du personnel (FORM-01)', '1 forfait'],
+          ['Contrat de maintenance annuel (MAINT-01)', '4 (un par robot)'],
+        ] } },
+        { paragraphes: [
+          "Signé : Camille Rousseau, directrice de l'accueil.",
+        ] },
+      ] },
+
+      // DOC 5 : techniques de conclusion
+      { numero: 5, titre: "Fiche méthode — Conclure la vente", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Une fois le devis présenté, il faut conclure, c'est-à-dire amener le client à signer. On ne laisse jamais l'entretien se terminer sans tenter une conclusion.",
+        ] },
+        { tableau: { colonnes: ['Technique de conclusion', 'Exemple de phrase'], lignes: [
+          ['La conclusion directe', '« Souhaitez-vous que nous établissions le bon de commande dès aujourd’hui ? »'],
+          ['L’alternative', '« Préférez-vous une livraison en juin ou en septembre ? »'],
+          ['Le dernier avantage (joker)', '« Si vous signez cette semaine, j’inclus l’habillage aux couleurs de l’hôtel. »'],
+          ['La conclusion par l’acompte', '« Pour lancer la commande, il suffit de verser l’acompte de 30 %. »'],
+        ] } },
+        { bulleConseil: { texte: ["Choisissez une technique adaptée à votre cliente, qui aime se sentir privilégiée et moderne (rappelez-vous ses motivations SONCAS)."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Préparer le devis",
+        contexte: "Avant de calculer, on identifie les bonnes lignes et les bons prix.",
+        questions: [
+          { numero: 1, consigne: "À partir de la grille tarifaire (doc 1) et de la demande de l'hôtel (doc 4), relevez les références, désignations, prix unitaires HT et quantités à faire figurer sur le devis.", ressources: 'Documents 1 et 4, annexe 1. Compétence C1.5.1. Ne retenez que ce que l’hôtel commande.', annexeId: 'annexe1' },
+        ] },
+      { titre: "Activité 2 — Calculer le devis",
+        contexte: "On applique les formules du document 3, pas à pas, avec les vrais chiffres de l'hôtel.",
+        questions: [
+          { numero: 2, consigne: "Calculez le total HT de chaque ligne, puis le sous-total des robots. Montrez vos calculs.", ressources: 'Documents 1, 3 et 4, annexe 2. Compétence C1.5.2. Formule : prix unitaire × quantité.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Calculez la remise commerciale, puis le total HT du devis (robots remisés + formation + maintenance). Montrez vos calculs.", ressources: 'Documents 2 et 3, annexe 3. Compétence C1.5.2. La remise ne porte que sur les robots.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez la TVA, le total TTC, l'acompte de 30 % et le solde. Montrez vos calculs.", ressources: 'Documents 2 et 3, annexe 4. Compétence C1.5.2.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Reportez tous vos résultats sur le devis officiel pour le présenter à la cliente.", ressources: 'Annexe 5 (devis à compléter). Compétence C1.5.2. Vérifiez la cohérence de l’ensemble.', annexeId: 'annexe5' },
+        ] },
+      { titre: "Activité 3 — Conclure la vente",
+        contexte: "Le devis est prêt. Il reste à décrocher la signature.",
+        questions: [
+          { numero: 6, consigne: "Choisissez une technique de conclusion adaptée à la directrice (rappelez-vous ses motivations) et rédigez la phrase que vous lui direz pour l'amener à signer.", ressources: 'Document 5, annexe 6. Compétence C1.5.3. Justifiez brièvement votre choix de technique.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les lignes du devis', colonnes: ['Référence', 'Désignation', 'Prix unitaire HT', 'Quantité'], nbLignes: 3, largeurs: ['18%', '42%', '22%', '18%'], reponseMultiligne: false },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Totaux par ligne et sous-total robots', colonnes: ['Calcul', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['30%', '46%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Robots : 30 000 × 4', '', ''],
+        ['Formation : 1 500 × 1', '', ''],
+        ['Maintenance : 2 400 × 4', '', ''],
+        ['Sous-total robots', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Remise et total HT', colonnes: ['Calcul', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 3, largeurs: ['30%', '46%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Remise 5 % (robots × 0,05)', '', ''],
+        ['Robots après remise', '', ''],
+        ['Total HT (robots remisés + formation + maintenance)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — TVA, TTC, acompte et solde', colonnes: ['Calcul', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['30%', '46%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['TVA (total HT × 0,20)', '', ''],
+        ['Total TTC (HT + TVA)', '', ''],
+        ['Acompte 30 % (TTC × 0,30)', '', ''],
+        ['Solde (TTC − acompte)', '', ''],
+      ] },
+      { type: 'boncommandecalcule', id: 'annexe5', titre: 'Annexe 5 — Devis officiel à compléter', client: 'Hôtel Le Grand Siècle — Camille Rousseau',
+        lignes: [
+          { ref: 'MIR-01', designation: 'Robot Mirokaï modèle accueil', prixHT: '30000', quantite: '4' },
+          { ref: 'FORM-01', designation: 'Formation du personnel (forfait)', prixHT: '1500', quantite: '1' },
+          { ref: 'MAINT-01', designation: 'Contrat de maintenance annuel', prixHT: '2400', quantite: '4' },
+        ],
+        reduction: true, paiement2fois: true },
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Ma phrase de conclusion (+ technique choisie)", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Exploiter une grille tarifaire et des conditions commerciales",
+      "Calculer les totaux d'un devis (ligne, sous-total, remise)",
+      "Calculer HT, TVA, TTC, acompte et solde",
+      "Établir un devis officiel",
+      "Choisir une technique de conclusion adaptée au client",
+    ],
+  },
+
+  synthese: {
+    titre: "Le devis et la conclusion",
+    proposition: [
+      'Prix unitaire × quantité', 'Remise 5 % sur les robots', 'Total HT', 'TVA × 0,20',
+      'Total TTC', 'Acompte 30 %', 'Le solde à la livraison', 'Conclure la vente',
+      'La conclusion directe', 'Le joker',
+    ],
+    racine: {
+      id: 'racine', texte: 'Établir et conclure',
+      enfants: [
+        { id: 'cal', texte: 'Les calculs', enfants: [
+          { id: 'c1', texte: null, reponse: 'Prix unitaire × quantité' },
+          { id: 'c2', texte: null, reponse: 'Remise 5 % sur les robots' },
+          { id: 'c3', texte: null, reponse: 'Total HT' },
+          { id: 'c4', texte: null, reponse: 'TVA × 0,20' },
+          { id: 'c5', texte: null, reponse: 'Total TTC' },
+        ] },
+        { id: 'reg', texte: 'Le règlement', enfants: [
+          { id: 'r1', texte: null, reponse: 'Acompte 30 %' },
+          { id: 'r2', texte: null, reponse: 'Le solde à la livraison' },
+        ] },
+        { id: 'con', texte: 'La conclusion', enfants: [
+          { id: 'x1', texte: null, reponse: 'Conclure la vente' },
+          { id: 'x2', texte: null, reponse: 'La conclusion directe' },
+          { id: 'x3', texte: null, reponse: 'Le joker' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Exploiter les tarifs", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelles lignes retenir." },
+        { niveau: 'debrouille', description: "Je repère les produits commandés." },
+        { niveau: 'averti', description: "Je relève les bons prix et quantités." },
+        { niveau: 'expert', description: "Je ne garde que ce que l'hôtel commande vraiment." },
+      ] },
+      { id: 'c2', intitule: "Calculer le devis", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelle formule appliquer." },
+        { niveau: 'debrouille', description: "Je calcule les totaux par ligne." },
+        { niveau: 'averti', description: "Je calcule remise, HT, TVA et TTC." },
+        { niveau: 'expert', description: "Je calcule tout, y compris acompte et solde, sans erreur." },
+      ] },
+      { id: 'c3', intitule: "Conclure la vente", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas comment amener à la signature." },
+        { niveau: 'debrouille', description: "Je connais une technique de conclusion." },
+        { niveau: 'averti', description: "Je rédige une phrase de conclusion correcte." },
+        { niveau: 'expert', description: "J'adapte ma conclusion aux motivations du client." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Devis', definition: "Document officiel qui détaille les produits, services et prix proposés à un client avant l'achat." },
+      { terme: 'Grille tarifaire', definition: "Document qui liste les prix des produits et services d'une entreprise." },
+      { terme: 'Prix unitaire HT', definition: "Prix d'un seul article, hors taxes." },
+      { terme: 'Total HT', definition: "Montant hors taxes de la commande (avant TVA)." },
+      { terme: 'Remise', definition: "Réduction accordée au client, souvent en pourcentage." },
+      { terme: 'TVA', definition: "Taxe sur la valeur ajoutée, ici 20 %, ajoutée au montant HT." },
+      { terme: 'Total TTC', definition: "Montant toutes taxes comprises : total HT + TVA." },
+      { terme: 'Acompte', definition: "Somme versée à la commande (ici 30 % du TTC) ; le reste est le solde." },
+      { terme: 'Solde', definition: "Montant restant à payer après l'acompte (ici 70 %), réglé à la livraison." },
+      { terme: 'Conclure la vente', definition: "Amener le client à prendre sa décision d'achat et à signer." },
+      { terme: 'Conclusion alternative', definition: "Proposer un choix entre deux options qui mènent toutes deux à l'achat." },
+      { terme: 'Validité du devis', definition: "Durée pendant laquelle le devis et ses prix restent garantis (ici 30 jours)." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on le total d'une ligne ?", verso: 'Prix unitaire HT × quantité.' },
+      { recto: "Sur quoi porte la remise de 5 % ?", verso: 'Uniquement sur le montant des robots (pas la formation ni la maintenance).' },
+      { recto: "Comment obtient-on le total HT ?", verso: '(Robots − remise) + formation + maintenance.' },
+      { recto: "Comment calcule-t-on la TVA à 20 % ?", verso: 'Total HT × 0,20.' },
+      { recto: "Comment obtient-on le total TTC ?", verso: 'Total HT + TVA.' },
+      { recto: "Comment calcule-t-on l'acompte de 30 % ?", verso: 'Total TTC × 0,30.' },
+      { recto: "Comment obtient-on le solde ?", verso: 'Total TTC − acompte.' },
+      { recto: "Combien de temps le devis est-il valable ?", verso: '30 jours à compter de son émission.' },
+      { recto: "Qu'est-ce que conclure la vente ?", verso: 'Amener le client à décider et à signer.' },
+      { recto: "Cite une technique de conclusion.", verso: 'Directe, alternative, dernier avantage (joker), par l’acompte.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le total d’une ligne se calcule par :', options: ['prix unitaire × quantité', 'prix unitaire + quantité', 'prix unitaire − remise'], bonne: 0 },
+      { type: 'unique', question: 'La remise de 5 % porte sur :', options: ['les robots seulement', 'toute la commande', 'la formation'], bonne: 0 },
+      { type: 'unique', question: 'La TVA applicable est de :', options: ['20 %', '5 %', '10 %'], bonne: 0 },
+      { type: 'unique', question: 'Le total TTC est égal à :', options: ['total HT + TVA', 'total HT − TVA', 'total HT × 2'], bonne: 0 },
+      { type: 'unique', question: 'L’acompte demandé est de :', options: ['30 % du TTC', '50 % du HT', '10 % du TTC'], bonne: 0 },
+      { type: 'unique', question: 'Le solde correspond à :', options: ['TTC − acompte', 'TTC + acompte', 'HT − TVA'], bonne: 0 },
+      { type: 'unique', question: 'Le devis est valable :', options: ['30 jours', '1 an', '3 jours'], bonne: 0 },
+      { type: 'unique', question: 'La remise s’applique car l’hôtel commande :', options: ['au moins 3 robots', 'un seul robot', 'de la formation'], bonne: 0 },
+      { type: 'unique', question: 'Conclure la vente, c’est :', options: ['amener le client à signer', 'baisser le prix', 'refaire le devis'], bonne: 0 },
+      { type: 'unique', question: 'La conclusion « alternative » propose :', options: ['un choix entre deux options', 'un refus', 'une seule solution'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque calcul à sa formule.',
+      etiquettes: ['Total ligne', 'Remise', 'Total HT', 'TVA', 'TTC', 'Acompte'],
+      zones: [
+        { libelle: 'Prix unitaire × quantité', etiquetteIndex: 0 },
+        { libelle: 'Robots × 0,05', etiquetteIndex: 1 },
+        { libelle: '(Robots − remise) + formation + maintenance', etiquetteIndex: 2 },
+        { libelle: 'Total HT × 0,20', etiquetteIndex: 3 },
+        { libelle: 'Total HT + TVA', etiquetteIndex: 4 },
+        { libelle: 'Total TTC × 0,30', etiquetteIndex: 5 },
+        { libelle: '30 000 × 4 = 120 000', etiquetteIndex: 0 },
+        { libelle: '120 000 × 0,05 = 6 000', etiquetteIndex: 1 },
+        { libelle: '125 100 × 0,20 = 25 020', etiquetteIndex: 3 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les lignes du devis (références, désignations, prix, quantités).", documents: ['Documents 1 et 4', 'Annexe 1'], bareme: 3,
+        reponse: "On ne retient que les trois lignes commandées par l'hôtel.",
+        tableau: { colonnes: ['Réf.', 'Désignation', 'Prix unitaire HT', 'Quantité'], lignes: [
+          ['MIR-01', 'Robot Mirokaï modèle accueil', '30 000 €', '4'],
+          ['FORM-01', 'Formation du personnel (forfait)', '1 500 €', '1'],
+          ['MAINT-01', 'Contrat de maintenance annuel', '2 400 €', '4'],
+        ] },
+        complement: "1 point par ligne correcte. Piège volontaire : la grille contient aussi le modèle logistique (MIR-02) et des accessoires (ACC-01, ACC-02) que l'hôtel NE commande PAS. Pénaliser l'élève qui les ajoute. Il faut croiser la grille (doc 1) et la demande (doc 4)." },
+
+      { intitule: "Calculez les totaux par ligne et le sous-total des robots.", documents: ['Documents 1, 3 et 4', 'Annexe 2'], bareme: 3,
+        reponse: "On applique : prix unitaire × quantité.",
+        tableau: { colonnes: ['Calcul', 'Opération', 'Résultat'], lignes: [
+          ['Robots', '30 000 × 4', '120 000 €'],
+          ['Formation', '1 500 × 1', '1 500 €'],
+          ['Maintenance', '2 400 × 4', '9 600 €'],
+          ['Sous-total robots', '—', '120 000 €'],
+        ] },
+        complement: "0,75 point par calcul juste (robots, formation, maintenance, sous-total). Exiger que l'opération soit montrée, pas seulement le résultat. Erreur fréquente : oublier de multiplier la maintenance par 4." },
+
+      { intitule: "Calculez la remise et le total HT.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "La remise de 5 % ne porte que sur les robots.",
+        tableau: { colonnes: ['Calcul', 'Opération', 'Résultat'], lignes: [
+          ['Remise 5 %', '120 000 × 0,05', '6 000 €'],
+          ['Robots après remise', '120 000 − 6 000', '114 000 €'],
+          ['Total HT', '114 000 + 1 500 + 9 600', '125 100 €'],
+        ] },
+        complement: "2 points pour la remise (calcul et résultat 6 000 €), 1 point pour les robots remisés (114 000 €), 2 points pour le total HT (125 100 €). ERREUR CLASSIQUE à sanctionner : appliquer la remise sur toute la commande (formation et maintenance comprises). La remise ne concerne QUE les robots (condition du doc 2)." },
+
+      { intitule: "Calculez TVA, TTC, acompte et solde.", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 5,
+        reponse: "On enchaîne les formules à partir du total HT (125 100 €).",
+        tableau: { colonnes: ['Calcul', 'Opération', 'Résultat'], lignes: [
+          ['TVA 20 %', '125 100 × 0,20', '25 020 €'],
+          ['Total TTC', '125 100 + 25 020', '150 120 €'],
+          ['Acompte 30 %', '150 120 × 0,30', '45 036 €'],
+          ['Solde 70 %', '150 120 − 45 036', '105 084 €'],
+        ] },
+        complement: "1,25 point par calcul juste. Vérifier l'enchaînement : une erreur au total HT (question 3) se répercute ici — dans ce cas, évaluer la cohérence de la démarche plutôt que le seul résultat. Résultats attendus exacts : TVA 25 020 €, TTC 150 120 €, acompte 45 036 €, solde 105 084 €." },
+
+      { intitule: "Reportez les résultats sur le devis officiel.", documents: ['Annexe 5'], bareme: 2,
+        reponse: "Le devis reprend toutes les valeurs calculées, cohérentes entre elles.",
+        complement: "Devis attendu : 3 lignes (robots 120 000, formation 1 500, maintenance 9 600), remise 6 000, total HT 125 100, TVA 25 020, TTC 150 120, acompte 45 036, solde 105 084. Barème : 1 point pour un devis complet et lisible, 1 point pour la cohérence de tous les montants. Valoriser la présentation soignée d'un document officiel." },
+
+      { intitule: "Choisissez une technique de conclusion et rédigez votre phrase.", documents: ['Document 5', 'Annexe 6'], bareme: 2,
+        reponse: "La phrase doit être adaptée aux motivations de la directrice (Nouveauté, Orgueil, Confort).",
+        complement: "Exemples valables. Joker (adapté à son goût du privilège) : « Si vous signez cette semaine, j'inclus l'habillage aux couleurs de l'hôtel, pour un accueil vraiment unique. » Alternative : « Préférez-vous une mise en service en juin ou en septembre ? » Par l'acompte : « Pour lancer votre commande dès aujourd'hui, il suffit de verser l'acompte de 30 %, soit 45 036 €. » Barème : 1 point pour une technique clairement identifiée et justifiée (lien avec les motivations SONCAS de la cliente), 1 point pour une phrase de conclusion naturelle et efficace. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'enchanted-m1': ENCHANTED_M1,
   'enchanted-m2': ENCHANTED_M2,
   'enchanted-m3': ENCHANTED_M3,
   'enchanted-m4': ENCHANTED_M4,
+  'enchanted-m5': ENCHANTED_M5,
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
