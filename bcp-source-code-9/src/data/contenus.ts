@@ -27856,6 +27856,876 @@ const ENCHANTED_M7: ContenuMission = {
   },
 }
 
+const ENCHANTED_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Contrôlez la conformité de la livraison des 4 robots, chiffrez les écarts constatés, qualifiez la réclamation de la cliente et rédigez la réponse commerciale.",
+    contexte:
+      "Mardi 15 juin 202N, 7 h 40. Le camion se gare devant l'hôtel Le Grand Siècle. Vous êtes sur place avec Marc Lefèvre, le technicien, pour réceptionner les 4 robots Mirokaï et signer le procès-verbal de réception. Karim Haddad vous a briefé la veille : « La réception, c'est le moment le plus risqué de toute la vente. Une fois que tu as signé sans réserve, l'entreprise est engagée : si tu découvres un problème après, c'est trop tard, tu ne peux plus rien réclamer au transporteur. Tu contrôles TOUT, tu comptes, tu ouvres, tu vérifies les numéros de série. Et si quelque chose cloche, tu écris la réserve noir sur blanc, précise, chiffrée. Ensuite seulement on traite. » À 9 h 15, un courriel de Camille Rousseau arrive. Elle n'est pas contente.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.3 — Contrôler la livraison et traiter une réclamation",
+      detail: "C2.3.1 Contrôler la conformité d'une livraison au bon de livraison et à la commande. C2.3.2 Formuler des réserves écrites et chiffrer un écart. C2.3.3 Qualifier une réclamation et déterminer la responsabilité. C2.3.4 Traiter la réclamation et rédiger la réponse au client.",
+    },
+    documents: [
+      // DOC 1 : le bon de livraison du transporteur
+      { numero: 1, titre: "Le bon de livraison n° BL-2041 (document du transporteur)", texte: [
+        { logoEntete: 'TRANSPORTS BERNAUD — BON DE LIVRAISON' },
+        { paragraphes: [
+          "Transports Bernaud SAS — 42 avenue de la Logistique, 94500 Champigny-sur-Marne — Téléphone 01 48 82 17 40 — Chauffeur : M. Aziz Benali, tournée PAR-14.",
+        ] },
+        { tableau: { colonnes: ['Rubrique', 'Information'], lignes: [
+          ['Numéro de bon de livraison', 'BL-2041'],
+          ['Date de livraison', 'mardi 15 juin 202N — arrivée 7 h 40'],
+          ['Expéditeur', 'Enchanted Tools SAS, 14 rue du Faubourg Saint-Antoine, 75012 Paris'],
+          ['Destinataire', 'Hôtel Le Grand Siècle, 8 rue de la Paix, 75002 Paris'],
+          ['Référence commande', 'CD-2041 du 14 avril 202N'],
+          ['Nombre de colis annoncés', '6 colis'],
+          ['Poids total annoncé', '132 kg'],
+          ['Température de transport', 'non applicable'],
+        ] } },
+        { intertitre: 'Détail des colis annoncés sur le bon' },
+        { tableau: { colonnes: ['Colis', 'Contenu annoncé', 'Qté', 'N° de série'], lignes: [
+          ['Colis 1', 'Robot Mirokaï MIR-01', '1', 'MK-2041-A'],
+          ['Colis 2', 'Robot Mirokaï MIR-01', '1', 'MK-2041-B'],
+          ['Colis 3', 'Robot Mirokaï MIR-01', '1', 'MK-2041-C'],
+          ['Colis 4', 'Robot Mirokaï MIR-01', '1', 'MK-2041-D'],
+          ['Colis 5', 'Stations de recharge MIR-DOCK', '4', '—'],
+          ['Colis 6', 'Kits d’accessoires (housse, plateau, notice)', '4', '—'],
+        ] } },
+        { bulleConseil: { texte: ["Ce document est celui du transporteur. Il annonce ce qui est censé être dans le camion. Votre travail est de vérifier si la réalité correspond."] } },
+      ] },
+
+      // DOC 2 : le proces-verbal de reception rempli sur place (les constats bruts)
+      { numero: 2, titre: "Le procès-verbal de réception rempli sur le quai", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Procès-verbal de réception' },
+        { paragraphes: [
+          "Document rempli à la main par Marc Lefèvre, technicien, le 15 juin 202N entre 7 h 40 et 9 h 05, en présence du chauffeur et de M. Diallo, contact technique de l'hôtel.",
+        ] },
+        { intertitre: 'Contrôle quantitatif — ce qui a été réellement compté' },
+        { tableau: { colonnes: ['Élément', 'Annoncé', 'Reçu', 'Observation du technicien'], lignes: [
+          ['Colis au total', '6', '6', 'Comptage fait deux fois, OK'],
+          ['Robots Mirokaï', '4', '4', 'Les 4 caisses sont bien là'],
+          ['Stations de recharge MIR-DOCK', '4', '3', 'Une seule station dans le colis 5 au lieu de deux paires'],
+          ['Kits d’accessoires', '4', '4', 'Complets, notices en français'],
+        ] } },
+        { intertitre: 'Contrôle qualitatif — état à l’ouverture des caisses' },
+        { tableau: { colonnes: ['N° de série', 'État de la caisse', 'État du robot', 'Mise sous tension'], lignes: [
+          ['MK-2041-A', 'Intacte', 'Aucun défaut visible', 'Démarre, oreilles mobiles, OK'],
+          ['MK-2041-B', 'Intacte', 'Aucun défaut visible', 'Démarre, OK'],
+          ['MK-2041-C', 'Angle inférieur droit enfoncé, film plastique déchiré', 'Coque du globe roulant rayée sur 12 cm, éclat de peinture', 'Démarre mais roulement bruyant, déplacement dévié'],
+          ['MK-2041-D', 'Intacte', 'Aucun défaut visible', 'Démarre, OK'],
+        ] } },
+        { intertitre: 'Autres observations portées au procès-verbal' },
+        { paragraphes: [
+          "Le chauffeur signale que le camion a freiné brutalement porte de Bercy à cause d'un scooter. Il ne sait pas si un colis a bougé.",
+          "Le hall de l'hôtel était en cours de nettoyage, la livraison a dû se faire par l'entrée de service, rue Danielle-Casanova.",
+          "M. Diallo a demandé si les robots pouvaient parler japonais. Réponse donnée : oui, plus de 50 langues.",
+          "Le procès-verbal a été signé par Marc Lefèvre à 9 h 05. Mention portée dans la case « réserves » : à compléter.",
+        ] },
+        { bulleConseil: { texte: ["Toutes les observations de ce document ne concernent pas la conformité de la livraison. Triez : certaines relèvent d'un écart réel, d'autres sont du bavardage de quai."] } },
+      ] },
+
+      // DOC 3 : la commande de reference (pour recouper)
+      { numero: 3, titre: "Rappel de la commande CD-2041 et du prix des éléments", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Extrait du dossier client' },
+        { paragraphes: [
+          "Rappel de ce que l'hôtel a commandé et signé le 14 avril 202N. C'est ce document qui fait foi : la livraison doit être conforme à la commande, pas seulement au bon de livraison.",
+        ] },
+        { tableau: { colonnes: ['Désignation', 'Qté commandée', 'PU HT', 'Total HT'], lignes: [
+          ['Robot Mirokaï MIR-01', '4', '30 000,00 €', '120 000,00 €'],
+          ['Remise commerciale 5 % sur robots', '—', '—', '− 6 000,00 €'],
+          ['Formation du personnel (forfait)', '1', '1 500,00 €', '1 500,00 €'],
+          ['Contrat de maintenance annuel', '4', '2 400,00 €', '9 600,00 €'],
+          ['TOTAL HT de la commande', '', '', '125 100,00 €'],
+        ] } },
+        { intertitre: 'Les éléments fournis avec chaque robot (compris dans le prix)' },
+        { tableau: { colonnes: ['Élément livré avec le robot', 'Qté par robot', 'Valeur HT unitaire si vendu seul'], lignes: [
+          ['Station de recharge MIR-DOCK', '1', '850,00 €'],
+          ['Kit d’accessoires (housse, plateau, notice)', '1', '180,00 €'],
+          ['Batterie Saft de rechange', '0 (option non commandée)', '1 200,00 €'],
+        ] } },
+        { paragraphes: [
+          "L'hôtel n'a pas commandé de batterie de rechange. Cette ligne figure au catalogue mais ne fait pas partie du contrat.",
+        ] },
+      ] },
+
+      // DOC 4 : le courriel de reclamation de la cliente
+      { numero: 4, titre: "Le courriel de réclamation de Camille Rousseau", texte: [
+        { mailLecture: {
+          de: 'accueil@legrandsiecle-paris.fr',
+          a: 'k.haddad@enchanted.tools',
+          objet: 'Livraison de ce matin — je ne suis pas satisfaite',
+          corps: [
+            "Bonjour Monsieur Haddad,",
+            "Je viens de faire le tour du local technique avec M. Diallo et je dois vous dire ma déception.",
+            "Premièrement, il manque des stations de recharge. Nous en avons trois pour quatre robots. Concrètement, cela veut dire qu'un robot ne pourra pas être chargé la nuit et sera donc inutilisable une journée sur deux. Nous ouvrons notre saison le 25 juin, avec un séminaire de 180 personnes. Je ne peux pas me permettre d'avoir un robot à l'arrêt.",
+            "Deuxièmement, l'un des robots est abîmé. La coque est rayée sur une bonne longueur et il fait un bruit inquiétant quand il roule. Pour un investissement de cette importance, recevoir du matériel dans cet état est difficilement acceptable. Mes équipes l'ont vu, cela ne donne pas une bonne image.",
+            "Je précise que la formation des 16 et 17 juin est maintenue, mes six réceptionnistes sont bloqués sur ces créneaux.",
+            "Je souhaite une réponse aujourd'hui avec des engagements précis et des dates. Je vous rappelle que nous devons encore régler le solde de la facture.",
+            "Cordialement,",
+            "Camille Rousseau, directrice de l'accueil — Hôtel Le Grand Siècle",
+          ],
+        } },
+        { bulleConseil: { texte: ["Une réclamation contient toujours des faits, des conséquences et des émotions. Séparez les trois : on traite les faits, on tient compte des conséquences, on ne discute pas les émotions."] } },
+      ] },
+
+      // DOC 5 : la procedure interne de traitement des reclamations
+      { numero: 5, titre: "Le livret du stagiaire — 14. Traiter une réclamation", texte: [
+        { pageWeb: true },
+        { intertitre: 'Étape 1 — Qualifier la réclamation' },
+        { paragraphes: [
+          "Qualifier, c'est répondre à trois questions avant d'agir : de quel type d'écart s'agit-il, qui en est responsable, et quelle est sa gravité pour le client.",
+        ] },
+        { tableau: { colonnes: ['Type d’écart', 'Définition', 'Exemple'], lignes: [
+          ['Écart de quantité', 'Le nombre reçu est différent du nombre commandé', 'Il manque un article'],
+          ['Écart de qualité', 'Le produit est là mais abîmé ou défectueux', 'Une coque rayée'],
+          ['Écart de référence', 'Ce n’est pas le bon produit', 'Un modèle différent livré'],
+          ['Écart de délai', 'La livraison arrive après la date prévue', 'Livré avec deux semaines de retard'],
+        ] } },
+        { intertitre: 'Étape 2 — Déterminer la responsabilité' },
+        { tableau: { colonnes: ['Indice', 'Responsable probable', 'Conséquence'], lignes: [
+          ['Emballage intact, contenu manquant', 'Enchanted Tools (erreur de préparation)', 'On complète à nos frais'],
+          ['Emballage endommagé, produit abîmé', 'Le transporteur', 'On indemnise le client puis on se retourne contre le transporteur'],
+          ['Produit conforme mais mal utilisé', 'Le client', 'Intervention facturée'],
+        ] } },
+        { intertitre: 'Étape 3 — Les quatre solutions possibles' },
+        { tableau: { colonnes: ['Solution', 'Quand l’utiliser'], lignes: [
+          ['Livraison complémentaire', 'Il manque un article, on l’envoie'],
+          ['Échange standard', 'Le produit est abîmé, on le remplace'],
+          ['Avoir commercial', 'On accorde une réduction sur la facture'],
+          ['Geste commercial', 'On offre un service ou un produit pour compenser la gêne'],
+        ] } },
+        { intertitre: 'Étape 4 — Le délai de réponse' },
+        { paragraphes: [
+          "Une réclamation écrite doit recevoir une réponse écrite dans les 24 heures, même si la solution définitive demande plus de temps.",
+        ] },
+        { bulleConseil: { texte: ["Une réserve non écrite sur le procès-verbal le jour de la livraison ne peut plus être opposée au transporteur ensuite. L'écrit du jour J est ce qui protège l'entreprise."] } },
+      ] },
+
+      // DOC 6 : fiche methode avec les formules et l'exemple chiffre different
+      { numero: 6, titre: "Fiche méthode — Chiffrer un écart de livraison", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Une réclamation n'est crédible que si elle est chiffrée. Dire « il manque du matériel » ne sert à rien. Dire « il manque 1 station à 850 € HT, soit 1 020 € TTC » permet de traiter le dossier.",
+        ] },
+        { intertitre: 'Les formules' },
+        { paragraphes: [
+          "Quantité manquante = quantité commandée − quantité réellement reçue.",
+          "Valeur HT de l'écart = quantité manquante × prix unitaire HT de l'élément.",
+          "Valeur TTC de l'écart = valeur HT × 1,20 (TVA à 20 %).",
+          "Avoir pour préjudice = valeur HT de l'écart + geste commercial éventuel.",
+          "Taux de conformité de la livraison = (nombre d'éléments conformes ÷ nombre d'éléments attendus) × 100.",
+        ] },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres que notre dossier)' },
+        { paragraphes: [
+          "Un client a commandé 10 bornes tactiles à 640 € HT l'unité. À la réception, il en reçoit 7 en bon état, 1 rayée et 2 manquantes.",
+          "Quantité manquante = 10 − 8 = 2. Valeur HT de l'écart = 2 × 640 = 1 280 €. Valeur TTC = 1 280 × 1,20 = 1 536 €.",
+          "Éléments conformes = 7 (la borne rayée n'est pas conforme). Taux de conformité = (7 ÷ 10) × 100 = 70 %.",
+          "Avec un geste commercial de 200 € HT, l'avoir total serait de 1 280 + 200 = 1 480 € HT.",
+        ] },
+        { bulleConseil: { texte: ["Attention : un article livré mais abîmé compte comme non conforme dans le taux de conformité, alors qu'il ne compte pas dans la quantité manquante. Ce sont deux calculs différents."] } },
+      ] },
+
+      // DOC 7 : note de direction (le cadrage de la reponse, avec contraintes a trier)
+      { numero: 7, titre: "Note de la direction commerciale (15 juin, 10 h 20)", texte: [
+        { noteDirection: {
+          titre: 'Note interne — dossier Le Grand Siècle',
+          signature: 'Karim Haddad, responsable commercial',
+          intro: "De : Karim Haddad, responsable commercial. À : le stagiaire. Copie : Nadia Cherif, Sofia Marchetti.",
+          paragraphe: "J'ai lu le courriel de Mme Rousseau. On répond aujourd'hui, c'est non négociable.",
+          puces: [
+            "Vérification faite auprès de Sofia à la production : la station manquante est bien une erreur de notre part, le colis 5 a été préparé avec trois stations au lieu de quatre. L'emballage était intact à l'arrivée, donc le transporteur n'y est pour rien sur ce point.",
+            "Pour le robot MK-2041-C, la caisse était enfoncée et le film déchiré : c'est du dommage de transport. Marc a bien noté l'état de la caisse sur le procès-verbal, donc nous sommes couverts vis-à-vis de Bernaud. Nous ferons jouer leur assurance de notre côté, mais cela ne regarde pas la cliente : pour elle, c'est nous qui réglons.",
+            "Nous avons un robot de démonstration disponible immédiatement à Paris, numéro de série MK-DEMO-07, identique au modèle vendu, 40 heures d'utilisation. Il peut être mis à disposition dès le 17 juin en attendant l'échange définitif.",
+            "Une station de recharge neuve peut partir de l'atelier le 16 juin pour une livraison le 17 juin au matin.",
+            "L'échange définitif du robot abîmé demande 3 semaines de fabrication : disponible le 6 juillet.",
+            "Sur le geste commercial, je vous laisse proposer : la marge nous permet d'aller jusqu'à 2 000 € HT sans validation de la direction générale. Au-delà, il faut mon accord écrit.",
+            "Ne promettez jamais une date que la production ne peut pas tenir. Une deuxième promesse non tenue sur ce dossier et nous perdons le client, et l'hôtel de Lyon avec.",
+            "Rappel : la formation des 16 et 17 juin est maintenue, les 6 réceptionnistes sont bloqués.",
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette note contient les moyens dont vous disposez réellement. Vous ne pouvez rien promettre qui n'y figure pas."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Contrôler la conformité de la livraison",
+        contexte: "Avant de répondre à la cliente, il faut savoir exactement ce qui a été livré et ce qui manque. On recoupe trois documents : la commande, le bon de livraison et le procès-verbal.",
+        questions: [
+          { numero: 1, consigne: "Complétez le tableau de contrôle de conformité en comparant la commande CD-2041, le bon de livraison BL-2041 et les constats du procès-verbal. Indiquez pour chaque ligne s'il y a conformité ou écart.", ressources: 'Documents 1, 2 et 3, annexe 1. Compétence C2.3.1. Attention : le bon de livraison annonce des quantités, le procès-verbal indique ce qui a été réellement compté. Les deux ne disent pas la même chose.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Identifiez les deux anomalies réelles de cette livraison. Pour chacune, nommez le type d'écart et désignez le responsable en justifiant par un indice précis relevé dans les documents.", ressources: 'Documents 2, 5 et 7, annexe 2. Compétence C2.3.3. Le document 5 donne la grille des types d’écarts et la règle de responsabilité. Le document 2 contient aussi des observations qui ne sont pas des anomalies : ne les retenez pas.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Chiffrer les écarts et rédiger les réserves",
+        contexte: "Un écart non chiffré et non écrit n'existe pas juridiquement. On calcule, puis on rédige la réserve qui aurait dû figurer sur le procès-verbal.",
+        questions: [
+          { numero: 3, consigne: "Calculez la valeur HT puis TTC de la station de recharge manquante, et calculez le taux de conformité de la livraison des robots. Montrez toutes vos opérations.", ressources: 'Documents 3 et 6, annexe 3. Compétence C2.3.2. Les formules et un exemple entièrement calculé figurent au document 6. Pour le taux de conformité, souvenez-vous qu’un robot abîmé n’est pas conforme.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Rédigez la réserve écrite qui doit être portée sur le procès-verbal de réception à la case « réserves ». Elle doit être précise, datée, chiffrée et mentionner les numéros de série concernés.", ressources: 'Documents 1, 2 et 5, annexe 4. Compétence C2.3.2. Une réserve utile décrit le fait constaté, pas l’opinion du réceptionnaire.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Construire et rédiger la réponse à la cliente",
+        contexte: "La cliente attend une réponse aujourd'hui, avec des engagements et des dates. On choisit les solutions, on prépare l'entretien téléphonique, puis on écrit.",
+        questions: [
+          { numero: 5, consigne: "Pour chacune des deux anomalies, choisissez la solution de traitement adaptée parmi les quatre du livret et fixez la date d'engagement correspondante. Justifiez chaque choix.", ressources: 'Documents 5 et 7, annexe 5. Compétence C2.3.4. Toutes les dates possibles figurent dans la note de direction. Ne proposez aucune date qui n’y est pas.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Préparez votre appel téléphonique à Mme Rousseau en complétant la fiche CROC. Vous devez annoncer les solutions retenues avant l'envoi du courrier écrit.", ressources: 'Documents 4, 5 et 7, annexe 6. Compétence C2.3.4. Le C est le contact, le R la raison de l’appel, le O l’objectif visé, le C la conclusion et la prise de congé.', annexeId: 'annexe6' },
+          { numero: 7, consigne: "Rédigez le courriel de réponse à Mme Rousseau : reconnaissance des faits, solutions avec dates, geste commercial chiffré et respectant la limite fixée par la direction, formule de conclusion.", ressources: 'Documents 4, 5, 6 et 7, annexe 7. Compétence C2.3.4. Le geste commercial doit être un montant précis, justifié, et ne pas dépasser le plafond de la note de direction.', annexeId: 'annexe7' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Tableau de contrôle de conformité de la livraison', colonnes: ['Élément', 'Qté commandée', 'Qté annoncée au BL', 'Qté réellement reçue', 'Conforme ? (oui / non)'], nbLignes: 4, largeurs: ['32%', '17%', '17%', '17%', '17%'], prerempli: [
+        ['Robots Mirokaï MIR-01', '', '', '', ''],
+        ['Stations de recharge MIR-DOCK', '', '', '', ''],
+        ['Kits d’accessoires', '', '', '', ''],
+        ['Robots en parfait état de fonctionnement', '', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Qualification des anomalies', colonnes: ['Anomalie constatée', 'Type d’écart', 'Responsable', 'Indice qui le prouve'], nbLignes: 2, largeurs: ['26%', '20%', '20%', '34%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Anomalie n° 1', '', '', ''],
+        ['Anomalie n° 2', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Chiffrage des écarts', colonnes: ['Élément à calculer', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 5, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Quantité de stations manquantes', '', ''],
+        ['Valeur HT de l’écart', '', ''],
+        ['Valeur TTC de l’écart', '', ''],
+        ['Nombre de robots conformes', '', ''],
+        ['Taux de conformité des robots', '', ''],
+      ] },
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Réserve à porter sur le procès-verbal de réception", lignes: 6 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Solutions de traitement retenues', colonnes: ['Anomalie', 'Solution retenue', 'Date d’engagement', 'Justification du choix'], nbLignes: 3, largeurs: ['22%', '22%', '18%', '38%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Station manquante', '', '', ''],
+        ['Robot MK-2041-C abîmé (solution immédiate)', '', '', ''],
+        ['Robot MK-2041-C abîmé (solution définitive)', '', '', ''],
+      ] },
+      { type: 'croc', id: 'annexe6', titre: "Annexe 6 — Fiche CROC de préparation de l’appel à Mme Rousseau" },
+      { type: 'mail', id: 'annexe7', titre: "Annexe 7 — Courriel de réponse à la réclamation", deParDefaut: 'stagiaire@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Contrôler une livraison en recoupant commande, bon de livraison et procès-verbal",
+      "Distinguer un écart de quantité d'un écart de qualité",
+      "Déterminer la responsabilité d'une anomalie à partir d'indices matériels",
+      "Chiffrer un écart en valeur HT, TTC et en taux de conformité",
+      "Rédiger une réserve écrite recevable",
+      "Choisir la solution de traitement adaptée et l'engager sur une date tenable",
+      "Répondre par écrit à une réclamation en préservant la relation commerciale",
+    ],
+  },
+
+  synthese: {
+    titre: "Le contrôle de la livraison et le traitement de la réclamation",
+    proposition: [
+      'Le bon de livraison', 'Le procès-verbal de réception', 'La réserve écrite',
+      "L'écart de quantité", "L'écart de qualité", 'La responsabilité du fournisseur',
+      'La responsabilité du transporteur', 'La livraison complémentaire',
+      "L'échange standard", 'Le geste commercial',
+    ],
+    racine: {
+      id: 'racine', texte: 'Contrôler et réclamer',
+      enfants: [
+        { id: 'ctr', texte: 'Les documents du contrôle', enfants: [
+          { id: 'c1', texte: null, reponse: 'Le bon de livraison' },
+          { id: 'c2', texte: null, reponse: 'Le procès-verbal de réception' },
+          { id: 'c3', texte: null, reponse: 'La réserve écrite' },
+        ] },
+        { id: 'eca', texte: 'Les types d’écarts', enfants: [
+          { id: 'e1', texte: null, reponse: "L'écart de quantité" },
+          { id: 'e2', texte: null, reponse: "L'écart de qualité" },
+        ] },
+        { id: 'res', texte: 'Qui est responsable', enfants: [
+          { id: 'r1', texte: null, reponse: 'La responsabilité du fournisseur' },
+          { id: 'r2', texte: null, reponse: 'La responsabilité du transporteur' },
+        ] },
+        { id: 'sol', texte: 'Les solutions', enfants: [
+          { id: 's1', texte: null, reponse: 'La livraison complémentaire' },
+          { id: 's2', texte: null, reponse: "L'échange standard" },
+          { id: 's3', texte: null, reponse: 'Le geste commercial' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Contrôler une livraison", indicateurs: [
+        { niveau: 'novice', description: "Je signe le bon de livraison sans rien vérifier." },
+        { niveau: 'debrouille', description: "Je compte les colis." },
+        { niveau: 'averti', description: "Je compare la livraison à la commande et j'ouvre les caisses." },
+        { niveau: 'expert', description: "Je recoupe les trois documents et je repère les écarts cachés." },
+      ] },
+      { id: 'c2', intitule: "Qualifier et chiffrer un écart", indicateurs: [
+        { niveau: 'novice', description: "Je dis qu'il y a un problème sans le préciser." },
+        { niveau: 'debrouille', description: "Je nomme le type d'écart." },
+        { niveau: 'averti', description: "Je chiffre l'écart en valeur HT et TTC." },
+        { niveau: 'expert', description: "Je détermine aussi la responsabilité en m'appuyant sur des indices." },
+      ] },
+      { id: 'c3', intitule: "Rédiger une réserve", indicateurs: [
+        { niveau: 'novice', description: "Je n'écris rien sur le procès-verbal." },
+        { niveau: 'debrouille', description: "J'écris une remarque générale." },
+        { niveau: 'averti', description: "Je décris le fait constaté avec précision." },
+        { niveau: 'expert', description: "Ma réserve est datée, chiffrée et cite les numéros de série." },
+      ] },
+      { id: 'c4', intitule: "Traiter une réclamation", indicateurs: [
+        { niveau: 'novice', description: "Je me justifie ou j'accuse le transporteur devant le client." },
+        { niveau: 'debrouille', description: "Je reconnais le problème." },
+        { niveau: 'averti', description: "Je propose une solution avec une date." },
+        { niveau: 'expert', description: "Je propose une solution immédiate et une solution définitive, avec un geste commercial justifié." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Bon de livraison', definition: "Document du transporteur qui accompagne la marchandise et annonce ce qu'elle contient." },
+      { terme: 'Procès-verbal de réception', definition: "Document signé à la réception qui constate l'état réel de la marchandise livrée." },
+      { terme: 'Réserve', definition: "Mention écrite portée sur le procès-verbal pour signaler un écart au moment de la livraison." },
+      { terme: 'Contrôle quantitatif', definition: "Vérification du nombre d'articles reçus par rapport au nombre annoncé." },
+      { terme: 'Contrôle qualitatif', definition: "Vérification de l'état et du bon fonctionnement des articles reçus." },
+      { terme: 'Écart de quantité', definition: "Différence entre la quantité commandée et la quantité réellement reçue." },
+      { terme: 'Écart de qualité', definition: "Article livré en bon nombre mais abîmé ou défectueux." },
+      { terme: 'Numéro de série', definition: "Identifiant unique gravé sur chaque appareil, qui permet de le tracer." },
+      { terme: 'Livraison complémentaire', definition: "Envoi ultérieur de l'article manquant, aux frais du fournisseur." },
+      { terme: 'Échange standard', definition: "Remplacement d'un article défectueux par un article neuf identique." },
+      { terme: 'Avoir', definition: "Document commercial qui réduit la somme due par le client." },
+      { terme: 'Geste commercial', definition: "Avantage offert au client pour compenser une gêne, sans y être obligé." },
+    ],
+    flashcards: [
+      { recto: "À quoi sert le procès-verbal de réception ?", verso: "À constater par écrit l'état réel de la marchandise au moment de la livraison." },
+      { recto: "Que risque-t-on en signant sans réserve ?", verso: "On ne peut plus rien réclamer au transporteur ensuite." },
+      { recto: "Combien de stations de recharge ont été livrées ?", verso: "3 seulement, alors que 4 étaient commandées." },
+      { recto: "Quel robot est arrivé abîmé ?", verso: "Le MK-2041-C : coque rayée sur 12 cm et roulement bruyant." },
+      { recto: "Qui est responsable de la station manquante ?", verso: "Enchanted Tools : erreur de préparation, l'emballage était intact." },
+      { recto: "Qui est responsable du robot abîmé ?", verso: "Le transporteur : la caisse était enfoncée et le film déchiré." },
+      { recto: "Quelle est la valeur HT d'une station de recharge ?", verso: "850 € HT, soit 1 020 € TTC." },
+      { recto: "Comment calcule-t-on un taux de conformité ?", verso: "(Éléments conformes ÷ éléments attendus) × 100." },
+      { recto: "Quel est le délai de réponse à une réclamation écrite ?", verso: "24 heures, même si la solution définitive prend plus de temps." },
+      { recto: "Quel est le plafond du geste commercial sans validation ?", verso: "2 000 € HT ; au-delà il faut l'accord écrit du responsable." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le document qui constate l’état réel de la marchandise à la réception est :', options: ['le procès-verbal de réception', 'le bon de commande', 'la facture', 'le devis'], bonne: 0 },
+      { type: 'unique', question: 'Signer un bon de livraison sans réserve signifie :', options: ['qu’on accepte la livraison telle quelle', 'qu’on se réserve un recours', 'qu’on refuse la livraison', 'qu’on paie comptant'], bonne: 0 },
+      { type: 'unique', question: 'Il manque une station de recharge : c’est un écart :', options: ['de quantité', 'de qualité', 'de référence', 'de délai'], bonne: 0 },
+      { type: 'unique', question: 'Le robot MK-2041-C rayé et bruyant relève d’un écart :', options: ['de qualité', 'de quantité', 'de délai', 'de prix'], bonne: 0 },
+      { type: 'unique', question: 'Emballage intact mais contenu manquant : le responsable est :', options: ['le fournisseur', 'le transporteur', 'le client', 'l’assureur'], bonne: 0 },
+      { type: 'unique', question: 'La valeur TTC de la station manquante est de :', options: ['1 020 €', '850 €', '1 200 €', '950 €'], bonne: 0 },
+      { type: 'unique', question: 'Sur 4 robots livrés, 3 sont conformes. Le taux de conformité est de :', options: ['75 %', '80 %', '25 %', '100 %'], bonne: 0 },
+      { type: 'unique', question: 'Remplacer un article défectueux par un article neuf identique s’appelle :', options: ['un échange standard', 'un avoir', 'une livraison complémentaire', 'une remise'], bonne: 0 },
+      { type: 'unique', question: 'Face à un client mécontent, on commence par :', options: ['reconnaître les faits', 'accuser le transporteur', 'discuter le montant', 'renvoyer au contrat'], bonne: 0 },
+      { type: 'unique', question: 'Une réponse écrite à une réclamation doit être envoyée sous :', options: ['24 heures', '8 jours', '30 jours', 'un mois'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Document du contrôle', 'Type d’écart', 'Solution de traitement'],
+      zones: [
+        { libelle: 'Le bon de livraison BL-2041', etiquetteIndex: 0 },
+        { libelle: 'Le procès-verbal de réception', etiquetteIndex: 0 },
+        { libelle: 'La réserve écrite datée et chiffrée', etiquetteIndex: 0 },
+        { libelle: 'Il manque une station de recharge', etiquetteIndex: 1 },
+        { libelle: 'La coque du robot est rayée', etiquetteIndex: 1 },
+        { libelle: 'Le colis arrive après la date prévue', etiquetteIndex: 1 },
+        { libelle: 'Envoyer l’article manquant à nos frais', etiquetteIndex: 2 },
+        { libelle: 'Remplacer le robot abîmé par un neuf', etiquetteIndex: 2 },
+        { libelle: 'Offrir une compensation pour la gêne', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez le tableau de contrôle de conformité de la livraison.", documents: ['Documents 1, 2 et 3', 'Annexe 1'], bareme: 3,
+        reponse: "Le contrôle se fait en trois colonnes : ce qui a été commandé (doc 3), ce qui a été annoncé au bon de livraison (doc 1) et ce qui a été réellement compté (doc 2).",
+        tableau: { colonnes: ['Élément', 'Commandé', 'Annoncé au BL', 'Reçu', 'Conforme'], lignes: [
+          ['Robots Mirokaï MIR-01', '4', '4', '4', 'Oui'],
+          ['Stations de recharge MIR-DOCK', '4', '4', '3', 'Non'],
+          ['Kits d’accessoires', '4', '4', '4', 'Oui'],
+          ['Robots en parfait état', '4', '4', '3', 'Non'],
+        ] },
+        complement: "0,75 point par ligne correctement complétée. Le point clé, à valoriser : le bon de livraison annonce 4 stations alors que 3 seulement ont été reçues. L'élève qui recopie le bon de livraison sans lire le procès-verbal ne trouve aucun écart. ERREUR CLASSIQUE à sanctionner : compter 6 colis reçus sur 6 annoncés et conclure que la livraison est conforme ; le nombre de colis est bien conforme, c'est le contenu du colis 5 qui ne l'est pas. Accepter toute formulation équivalente pour la dernière ligne (« robots fonctionnels », « robots en bon état »)." },
+
+      { intitule: "Identifiez les deux anomalies, leur type et le responsable.", documents: ['Documents 2, 5 et 7', 'Annexe 2'], bareme: 4,
+        reponse: "Deux anomalies seulement doivent être retenues. Les autres observations du procès-verbal ne sont pas des écarts de livraison.",
+        tableau: { colonnes: ['Anomalie', 'Type d’écart', 'Responsable', 'Indice'], lignes: [
+          ['Il manque 1 station de recharge (3 reçues sur 4)', 'Écart de quantité', 'Enchanted Tools', 'L’emballage du colis 5 était intact : le doc 5 indique qu’emballage intact + contenu manquant = erreur de préparation. Le doc 7 le confirme (Sofia Marchetti).'],
+          ['Robot MK-2041-C rayé sur 12 cm et roulement bruyant', 'Écart de qualité', 'Le transporteur', 'La caisse était enfoncée à l’angle et le film plastique déchiré : le doc 5 indique qu’emballage endommagé + produit abîmé = responsabilité du transporteur. Le freinage brusque porte de Bercy le confirme.'],
+        ] },
+        complement: "2 points par anomalie : 0,5 pour l'identification, 0,5 pour le type d'écart, 0,5 pour le responsable, 0,5 pour l'indice matériel. Exiger un indice MATÉRIEL (état de l'emballage), pas une simple affirmation. ERREURS CLASSIQUES à sanctionner : (1) retenir comme anomalie le fait que la livraison se soit faite par l'entrée de service, ou la question de M. Diallo sur le japonais, ou le nettoyage du hall — ce sont des informations parasites volontaires ; (2) attribuer la station manquante au transporteur alors que l'emballage était intact ; (3) inverser les deux responsabilités. Ne pas pénaliser l'élève qui écrit « Enchanted Tools » ou « nous » ou « le fournisseur ».",
+      },
+
+      { intitule: "Chiffrez l'écart et calculez le taux de conformité.", documents: ['Documents 3 et 6', 'Annexe 3'], bareme: 4,
+        reponse: "On applique les formules du document 6 avec les prix du document 3.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Quantité de stations manquantes', '4 − 3', '1 station'],
+          ['Valeur HT de l’écart', '1 × 850', '850,00 €'],
+          ['Valeur TTC de l’écart', '850 × 1,20', '1 020,00 €'],
+          ['Nombre de robots conformes', '4 − 1 (le MK-2041-C est abîmé)', '3 robots'],
+          ['Taux de conformité des robots', '(3 ÷ 4) × 100', '75 %'],
+        ] },
+        complement: "0,5 point pour la quantité manquante, 1 point pour la valeur HT, 1 point pour la valeur TTC, 0,5 point pour le nombre de robots conformes, 1 point pour le taux. Exiger l'opération écrite, pas seulement le résultat : retirer la moitié des points de la ligne si seul le résultat figure. ERREURS CLASSIQUES à sanctionner : (1) utiliser le prix du robot (30 000 €) au lieu de celui de la station (850 €) ; (2) utiliser le prix de la batterie de rechange (1 200 €), qui est un piège du document 3 puisqu'elle n'a pas été commandée ; (3) compter 4 robots conformes en oubliant que le MK-2041-C est abîmé, ce qui donne 100 % au lieu de 75 % ; (4) confondre les deux calculs et retirer le robot abîmé de la quantité manquante. Accepter 1 020 € obtenu par 850 + (850 × 0,20)." },
+
+      { intitule: "Rédigez la réserve à porter sur le procès-verbal.", documents: ['Documents 1, 2 et 5', 'Annexe 4'], bareme: 3,
+        reponse: "Une réserve recevable décrit les faits constatés, avec la date, les quantités et les numéros de série. Exemple de rédaction attendue : « Réserves émises le 15 juin 202N à 9 h 05 lors de la réception de la livraison BL-2041 (commande CD-2041). Premièrement, manque une station de recharge MIR-DOCK : 3 unités reçues dans le colis 5 pour 4 unités annoncées et commandées, valeur 850 € HT. Deuxièmement, robot Mirokaï n° de série MK-2041-C livré endommagé : caisse enfoncée à l'angle inférieur droit, film plastique déchiré, coque du globe roulant rayée sur 12 cm, éclat de peinture, roulement bruyant et déplacement dévié à la mise sous tension. Les trois autres robots (MK-2041-A, B et D) sont conformes et fonctionnels. Réserves formulées en présence du chauffeur, M. Aziz Benali, et de M. Diallo. »",
+        complement: "3 points répartis ainsi : 0,5 pour la date et la référence du bon de livraison ; 1 point pour la description chiffrée du manquant ; 1 point pour la description précise du dommage avec le numéro de série MK-2041-C ; 0,5 pour la mention des témoins ou des robots conformes. ERREURS CLASSIQUES à sanctionner : (1) une réserve vague du type « livraison non conforme » ou « matériel abîmé », qui ne vaut rien juridiquement ; (2) l'absence du numéro de série ; (3) une réserve qui donne un avis ou accuse (« le chauffeur a mal conduit ») au lieu de constater un fait. Ne pas pénaliser l'orthographe ni l'ordre des deux réserves." },
+
+      { intitule: "Choisissez les solutions de traitement et les dates d'engagement.", documents: ['Documents 5 et 7', 'Annexe 5'], bareme: 3,
+        reponse: "Le traitement combine une réponse immédiate et une réponse définitive pour le robot abîmé, car la cliente ouvre sa saison le 25 juin.",
+        tableau: { colonnes: ['Anomalie', 'Solution', 'Date', 'Justification'], lignes: [
+          ['Station manquante', 'Livraison complémentaire à nos frais', '17 juin 202N au matin', 'Erreur de préparation de notre fait, la station part de l’atelier le 16 juin. Le doc 5 prévoit la livraison complémentaire pour un article manquant.'],
+          ['Robot MK-2041-C (immédiat)', 'Mise à disposition du robot de démonstration MK-DEMO-07', '17 juin 202N', 'La cliente ouvre sa saison le 25 juin avec un séminaire de 180 personnes : elle doit disposer de 4 robots opérationnels avant cette date. Le robot de prêt est disponible immédiatement.'],
+          ['Robot MK-2041-C (définitif)', 'Échange standard par un robot neuf', '6 juillet 202N', 'La fabrication demande 3 semaines. On n’annonce pas une date plus proche que la production ne pourrait pas tenir.'],
+        ] },
+        complement: "1 point par ligne : 0,5 pour la solution, 0,25 pour la date, 0,25 pour la justification. Le raisonnement le plus important à valoriser est la distinction entre solution immédiate (prêt) et solution définitive (échange), justifiée par la date d'ouverture du 25 juin. ERREURS CLASSIQUES à sanctionner : (1) inventer une date qui ne figure pas dans la note de direction (par exemple « sous 48 heures » pour l'échange définitif), ce qui est exactement ce que le tuteur interdit ; (2) proposer un avoir ou un remboursement du robot abîmé alors que la cliente a besoin de robots fonctionnels, pas d'argent ; (3) ne proposer que l'échange à 3 semaines, ce qui laisse la cliente sans solution pour son séminaire. Accepter le 16 juin pour la station si l'élève justifie par le départ atelier, mais valoriser le 17 juin qui est la date de livraison réelle." },
+
+      { intitule: "Complétez la fiche CROC de préparation de l'appel.", documents: ['Documents 4, 5 et 7', 'Annexe 6'], bareme: 3,
+        reponse: "La fiche doit être opérationnelle, rédigée en phrases prêtes à être dites.",
+        tableau: { colonnes: ['Étape', 'Contenu attendu'], lignes: [
+          ['C — Contact', "Se présenter avec nom, fonction et entreprise, s’assurer que Mme Rousseau est disponible : « Bonjour Madame Rousseau, [prénom nom], du service commercial d’Enchanted Tools, je vous appelle au sujet de la livraison de ce matin. Avez-vous quelques minutes ? »"],
+          ['R — Raison', "Annoncer l’objet de l’appel en reconnaissant les faits : « J’ai bien reçu votre courriel. Vous avez raison sur les deux points, nous avons vérifié : il manque effectivement une station de recharge et le robot MK-2041-C a été endommagé. »"],
+          ['O — Objectif', "Annoncer les solutions et les dates : station complémentaire livrée le 17 juin, robot de prêt MK-DEMO-07 mis à disposition le 17 juin, échange définitif le 6 juillet, geste commercial. Confirmer que la formation des 16 et 17 juin est maintenue."],
+          ['C — Conclusion', "Vérifier l’accord de la cliente, annoncer l’envoi du courriel de confirmation écrite dans la journée, remercier et prendre congé : « Je vous confirme tout cela par écrit d’ici ce soir. Merci de votre confiance, Madame Rousseau. »"],
+        ] },
+        complement: "0,75 point par zone. Exiger des phrases prêtes à dire, pas des mots-clés isolés (« se présenter » seul ne vaut pas le point). ERREURS CLASSIQUES à sanctionner : (1) commencer par se justifier ou accuser le transporteur devant la cliente, ce qui est interdit par la note de direction ; (2) oublier de reconnaître les faits avant d'annoncer les solutions ; (3) oublier la prise de congé et l'annonce de l'écrit. Ne pas exiger le prénom de l'élève." },
+
+      { intitule: "Rédigez le courriel de réponse à Mme Rousseau.", documents: ['Documents 4, 5, 6 et 7', 'Annexe 7'], bareme: 4,
+        reponse: "Le courriel doit reprendre les cinq éléments : accusé de réception et reconnaissance des faits, solution pour la station, solution double pour le robot, geste commercial chiffré, formule de conclusion engageante. Exemple : « Madame Rousseau, j'ai bien reçu votre message de ce matin et je vous confirme que vos deux constats sont exacts. Concernant la station de recharge : notre atelier a commis une erreur de préparation, la station manquante vous sera livrée le 17 juin au matin, sans frais. Concernant le robot MK-2041-C : il a été endommagé pendant le transport. Nous procéderons à son échange par un appareil neuf, disponible le 6 juillet. Pour que vous disposiez bien de quatre robots opérationnels dès l'ouverture de votre saison le 25 juin, nous mettons à votre disposition dès le 17 juin un robot de remplacement, référence MK-DEMO-07, identique au vôtre. La formation de vos six réceptionnistes est maintenue les 16 et 17 juin. Enfin, pour la gêne occasionnée, nous vous accordons un avoir de 1 500 € HT sur le solde de votre facture. Je reste votre interlocuteur sur ce dossier et je vous appellerai le 17 juin pour vérifier que tout est en ordre. »",
+        complement: "Barème détaillé : 1 point pour la reconnaissance claire des deux faits sans se justifier ni accuser le transporteur ; 1 point pour la solution de la station avec sa date (17 juin) ; 1 point pour la double solution du robot (prêt le 17 juin ET échange le 6 juillet) ; 1 point pour le geste commercial chiffré et conforme au plafond. Accepter tout montant compris entre 500 et 2 000 € HT dès lors qu'il est justifié ; refuser un montant supérieur à 2 000 € HT sans mention d'un accord du responsable, et refuser un geste non chiffré (« un geste commercial vous sera accordé »). ERREURS CLASSIQUES à sanctionner : (1) écrire à la cliente que c'est la faute du transporteur, ce que la note de direction interdit expressément (« cela ne regarde pas la cliente ») ; (2) proposer une date d'échange plus courte que le 6 juillet ; (3) oublier le robot de prêt, ce qui laisse la cliente sans solution pour le 25 juin ; (4) répondre aux éléments parasites du courriel (la moquette, l'hôtel de Lyon, les clients japonais) ; (5) conditionner les solutions au règlement du solde. Ne pas pénaliser l'orthographe. Valoriser l'élève qui propose un rappel de suivi." },
+    ],
+  },
+}
+
+const ENCHANTED_M9: ContenuMission = {
+  travaux: {
+    consigne:
+      "Qualifiez trois demandes de service après-vente, appliquez le contrat de maintenance et les garanties, chiffrez ce qui est facturable, planifiez les interventions et rédigez la réponse au client.",
+    contexte:
+      "Nous sommes le 8 septembre 202N. Les 4 robots Mirokaï tournent depuis la mi-juin à l'hôtel Le Grand Siècle. L'incident de livraison est réglé : le robot MK-2041-C a été échangé le 6 juillet, la station de recharge a été livrée, la cliente a soldé sa facture. Vous êtes désormais affecté deux jours par semaine au service après-vente, avec Nadia Cherif. Ce matin, trois demandes sont arrivées sur le même dossier. Nadia vous prévient : « Au SAV, la question n'est jamais “est-ce qu'on répare ?”. C'est toujours “qui paie ?”. Le contrat de maintenance ne couvre pas tout, la garantie légale ne couvre pas la même chose que la garantie commerciale, et une casse due au client se facture. Tu qualifies d'abord, tu chiffres ensuite, tu planifies après. Et tu réponds à la cliente le jour même : c'est notre engagement contractuel. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.4 — Assurer le service après-vente",
+      detail: "C2.4.1 Qualifier une demande de service après-vente. C2.4.2 Appliquer les garanties et le contrat de maintenance. C2.4.3 Chiffrer une intervention facturable. C2.4.4 Planifier les interventions et informer le client.",
+    },
+    documents: [
+      // DOC 1 : le contrat de maintenance (ce qui est couvert, ce qui ne l'est pas)
+      { numero: 1, titre: "Le contrat de maintenance annuel MIR-CARE (extrait)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Contrat MIR-CARE n° MC-2041' },
+        { paragraphes: [
+          "Contrat souscrit le 14 avril 202N pour 4 robots, au prix de 2 400 € HT par robot et par an, soit 9 600 € HT au total. Période couverte : du 15 juin 202N au 14 juin 202N+1.",
+        ] },
+        { intertitre: 'Article 3 — Ce que le contrat couvre' },
+        { tableau: { colonnes: ['Prestation incluse', 'Détail', 'Limite annuelle'], lignes: [
+          ['Visite de maintenance préventive', 'Contrôle complet sur site, mise à jour logicielle', '2 visites par robot et par an'],
+          ['Intervention corrective sur site', 'Déplacement et main-d’œuvre d’un technicien', '4 interventions par robot et par an'],
+          ['Pièces d’usure normale', 'Roulements, brosses de globe, joints', 'Illimité'],
+          ['Assistance téléphonique', 'Du lundi au vendredi, 8 h – 19 h', 'Illimité'],
+          ['Prêt d’un robot de remplacement', 'Si l’immobilisation dépasse 5 jours ouvrés', 'Sur demande'],
+        ] } },
+        { intertitre: 'Article 4 — Ce que le contrat ne couvre pas' },
+        { paragraphes: [
+          "Les dommages résultant d'un choc, d'une chute, d'une immersion ou d'une utilisation non conforme à la notice.",
+          "Les dommages causés par un tiers, y compris un client de l'établissement.",
+          "Les consommables et les accessoires : housses, plateaux de service, batteries de rechange.",
+          "Les interventions demandées en dehors des heures ouvrées.",
+          "Les modifications logicielles demandées par le client (personnalisation des dialogues, ajout de langues supplémentaires).",
+        ] },
+        { intertitre: 'Article 7 — Délais d’intervention garantis' },
+        { tableau: { colonnes: ['Niveau d’urgence', 'Définition', 'Délai garanti'], lignes: [
+          ['Critique', 'Robot totalement immobilisé', '24 heures ouvrées'],
+          ['Majeur', 'Robot utilisable mais fonction dégradée', '72 heures ouvrées'],
+          ['Mineur', 'Gêne sans impact sur le service', '10 jours ouvrés'],
+        ] } },
+        { bulleConseil: { texte: ["Lisez l'article 4 aussi attentivement que l'article 3. Au SAV, ce qui n'est pas couvert est aussi important que ce qui l'est."] } },
+      ] },
+
+      // DOC 2 : les deux garanties (livret du stagiaire)
+      { numero: 2, titre: "Le livret du stagiaire — 15. Les garanties et le SAV", texte: [
+        { pageWeb: true },
+        { intertitre: 'Ne pas confondre les trois protections' },
+        { paragraphes: [
+          "Un client professionnel bénéficie de plusieurs protections qui se superposent. Elles n'ont ni la même durée, ni le même contenu, ni la même personne qui paie.",
+        ] },
+        { tableau: { colonnes: ['Protection', 'Durée', 'Ce qu’elle couvre', 'Qui paie'], lignes: [
+          ['Garantie légale de conformité', '2 ans à compter de la livraison', 'Le produit ne correspond pas à ce qui a été vendu ou ne fonctionne pas comme annoncé', 'Le vendeur'],
+          ['Garantie commerciale Enchanted', '3 ans à compter de la livraison', 'Toute panne d’origine interne, pièces et main-d’œuvre', 'Le vendeur'],
+          ['Contrat de maintenance MIR-CARE', '1 an renouvelable', 'L’entretien préventif, les visites, les pièces d’usure, l’assistance', 'Le client (il l’a acheté)'],
+        ] } },
+        { intertitre: 'La règle qui décide' },
+        { paragraphes: [
+          "Devant une demande, on se pose toujours la même question dans le même ordre : la panne vient-elle du produit lui-même, ou d'une cause extérieure ?",
+          "Si elle vient du produit : c'est la garantie qui joue, rien n'est facturé au client.",
+          "Si elle vient d'une cause extérieure (choc, mauvaise utilisation, tiers) : la garantie ne joue pas, l'intervention est facturée.",
+          "Si c'est un entretien normal prévu au contrat : c'est le contrat de maintenance qui joue, rien n'est facturé en plus, mais on décompte la visite du quota annuel.",
+        ] },
+        { intertitre: 'Un point que les élèves confondent souvent' },
+        { paragraphes: [
+          "Une demande peut être couverte par la garantie et consommer quand même un déplacement. Couvert ne veut pas dire illimité : le quota du contrat continue de se décompter.",
+        ] },
+        { bulleConseil: { texte: ["Ce n'est jamais le client qui décide sous quelle protection sa demande tombe. C'est le technicien, à partir de ce qu'il constate."] } },
+      ] },
+
+      // DOC 3 : les trois demandes arrivees (le coeur du dossier, avec du bruit)
+      { numero: 3, titre: "Les trois demandes reçues au SAV le 8 septembre", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Journal du service après-vente' },
+        { intertitre: 'Demande n° 1 — appel téléphonique de 8 h 42' },
+        { paragraphes: [
+          "Appelant : M. Diallo, contact technique de l'hôtel. Robot concerné : MK-2041-A.",
+          "Constat rapporté : depuis deux jours, le robot ne reconnaît plus les commandes vocales en anglais. Il répond en français à des clients qui lui parlent en anglais. Les autres langues fonctionnent. M. Diallo précise que personne n'a touché aux réglages et qu'aucune mise à jour n'a été faite depuis la livraison.",
+          "Le robot circule normalement, porte les plateaux, et accueille les clients. Il est utilisable, mais une fonction ne marche plus.",
+          "M. Diallo demande aussi, dans le même appel, si on peut ajouter le mandarin aux langues du robot, parce que l'hôtel attend un groupe de Shanghai en novembre.",
+        ] },
+        { intertitre: 'Demande n° 2 — courriel de 9 h 15' },
+        { paragraphes: [
+          "Expéditeur : Camille Rousseau. Robot concerné : MK-2041-B.",
+          "Constat rapporté : samedi soir, pendant un cocktail, un invité a fait tomber une coupe de champagne sur le robot en dansant. Le robot s'est arrêté net. Depuis, il ne redémarre plus du tout. Le personnel a essayé de le sécher au sèche-cheveux.",
+          "Mme Rousseau précise que l'invité a reconnu les faits devant témoins et que l'hôtel a fait un constat interne. Elle demande si son assurance responsabilité civile peut être mobilisée.",
+          "Le robot est totalement immobilisé.",
+        ] },
+        { intertitre: 'Demande n° 3 — message de 10 h 30 laissé sur le portail client' },
+        { paragraphes: [
+          "Auteur : M. Diallo. Robot concerné : MK-2041-D.",
+          "Constat rapporté : le robot fait un léger grincement quand il tourne à droite. Il fonctionne parfaitement par ailleurs, personne ne s'en plaint sauf le personnel de nuit quand le hall est silencieux.",
+          "Le robot a parcouru environ 900 km depuis sa mise en service. La notice indique un contrôle des roulements du globe tous les 800 km.",
+          "M. Diallo signale par ailleurs que la machine à café du hall est en panne, mais ce n'est pas notre problème.",
+        ] },
+        { bulleConseil: { texte: ["Chaque demande contient des informations qui servent à qualifier et des informations qui ne servent à rien. Repérez d'abord la cause de la panne : c'est elle qui décide qui paie."] } },
+      ] },
+
+      // DOC 4 : le bareme d'intervention SAV (les prix)
+      { numero: 4, titre: "Le barème des interventions SAV facturables", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Tarifs SAV en vigueur' },
+        { paragraphes: [
+          "Ces tarifs s'appliquent uniquement aux interventions non couvertes par la garantie ou par le contrat de maintenance.",
+        ] },
+        { tableau: { colonnes: ['Prestation', 'Tarif HT', 'Unité'], lignes: [
+          ['Déplacement d’un technicien en Île-de-France', '120,00 €', 'par déplacement'],
+          ['Main-d’œuvre atelier', '85,00 €', 'par heure entamée'],
+          ['Main-d’œuvre sur site', '110,00 €', 'par heure entamée'],
+          ['Diagnostic complet en atelier', '150,00 €', 'forfait'],
+          ['Carte électronique principale', '1 450,00 €', 'la pièce'],
+          ['Bloc moteur du globe roulant', '980,00 €', 'la pièce'],
+          ['Roulement de globe (pièce d’usure)', '65,00 €', 'la pièce'],
+          ['Batterie Saft de remplacement', '1 200,00 €', 'la pièce'],
+          ['Ajout d’une langue supplémentaire', '450,00 €', 'forfait par langue'],
+          ['Nettoyage et remise en état après liquide', '240,00 €', 'forfait'],
+        ] } },
+        { intertitre: 'Remise commerciale applicable' },
+        { paragraphes: [
+          "Un client titulaire d'un contrat MIR-CARE en cours de validité bénéficie de 15 % de remise sur le total HT de toute intervention facturable.",
+        ] },
+        { bulleConseil: { texte: ["Attention : toutes les lignes de ce barème ne concernent pas nos trois demandes. N'utilisez que celles dont vous avez besoin."] } },
+      ] },
+
+      // DOC 5 : fiche methode avec formules et exemple chiffre different
+      { numero: 5, titre: "Fiche méthode — Chiffrer une intervention SAV", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Un devis SAV se construit toujours dans le même ordre : les pièces, puis la main-d'œuvre, puis le déplacement, puis la remise, puis la TVA.",
+        ] },
+        { intertitre: 'Les formules' },
+        { tableau: { colonnes: ['Ce que l’on cherche', 'Formule'], lignes: [
+          ['Coût des pièces', 'somme des prix unitaires HT × quantités'],
+          ['Coût de la main-d’œuvre', 'nombre d’heures entamées × tarif horaire HT'],
+          ['Total HT avant remise', 'pièces + main-d’œuvre + déplacement + forfaits'],
+          ['Remise contrat', 'total HT avant remise × 15 % (soit × 0,15)'],
+          ['Total HT après remise', 'total HT avant remise − remise'],
+          ['Total TTC', 'total HT après remise × 1,20'],
+        ] } },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres que notre dossier)' },
+        { paragraphes: [
+          "Une borne d'accueil doit être réparée chez un client sous contrat : changement d'un écran à 620 € HT, 3 heures de main-d'œuvre sur site à 110 € HT, un déplacement à 120 € HT.",
+          "Pièces = 1 × 620 = 620 €. Main-d'œuvre = 3 × 110 = 330 €. Déplacement = 120 €.",
+          "Total HT avant remise = 620 + 330 + 120 = 1 070 €.",
+          "Remise contrat = 1 070 × 0,15 = 160,50 €. Total HT après remise = 1 070 − 160,50 = 909,50 €.",
+          "Total TTC = 909,50 × 1,20 = 1 091,40 €.",
+        ] },
+        { intertitre: 'Le piège des heures entamées' },
+        { paragraphes: [
+          "Une heure entamée est due en entier. Une intervention de 2 h 15 se facture 3 heures, pas 2,25 heures.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise d'autres chiffres et d'autres pièces que notre dossier. Reprenez la méthode, pas les montants."] } },
+      ] },
+
+      // DOC 6 : le planning de l'equipe technique (contrainte de planification)
+      { numero: 6, titre: "Le planning de l'équipe technique — semaine du 8 septembre", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Planning atelier et interventions' },
+        { paragraphes: [
+          "Deux techniciens sont mobilisables sur l'Île-de-France : Marc Lefèvre et Hélène Dubois. Une intervention sur site occupe une demi-journée.",
+        ] },
+        { tableau: { colonnes: ['Jour', 'Marc Lefèvre', 'Hélène Dubois'], lignes: [
+          ['Lundi 8 septembre', 'Matin : dossier Novotel Bercy — Après-midi : atelier', 'Journée : formation interne obligatoire'],
+          ['Mardi 9 septembre', 'Matin : disponible — Après-midi : disponible', 'Matin : disponible — Après-midi : ISIR Sorbonne'],
+          ['Mercredi 10 septembre', 'Journée : congé posé', 'Matin : disponible — Après-midi : disponible'],
+          ['Jeudi 11 septembre', 'Matin : disponible — Après-midi : atelier', 'Journée : déplacement Lille'],
+          ['Vendredi 12 septembre', 'Matin : atelier — Après-midi : disponible', 'Matin : disponible — Après-midi : disponible'],
+        ] } },
+        { intertitre: 'Contraintes de l’atelier' },
+        { paragraphes: [
+          "Un robot immobilisé doit être enlevé par nos soins et rapatrié à l'atelier de Paris 12e. L'enlèvement compte comme un déplacement.",
+          "Le diagnostic en atelier demande une journée complète avant tout devis.",
+          "Le stock atelier au 8 septembre : 2 cartes électroniques principales, 6 roulements de globe, 0 bloc moteur (réapprovisionnement sous 3 semaines).",
+        ] },
+        { bulleConseil: { texte: ["Une date d'intervention n'est valable que si un technicien est réellement libre ce jour-là. Vérifiez le planning avant de promettre quoi que ce soit."] } },
+      ] },
+
+      // DOC 7 : note de Nadia (le cadrage commercial)
+      { numero: 7, titre: "Note de Nadia Cherif, responsable SAV (8 septembre, 11 h 00)", texte: [
+        { noteDirection: {
+          titre: 'Note interne — dossier Le Grand Siècle, trois demandes SAV',
+          signature: 'Nadia Cherif, responsable du service après-vente',
+          intro: "De : Nadia Cherif. À : le stagiaire. Copie : Karim Haddad.",
+          paragraphe: "Trois demandes sur le même client le même matin. On répond aujourd'hui, en une seule fois, pas en trois courriels séparés.",
+          puces: [
+            "Sur la demande n° 1 : notre équipe logicielle a déjà identifié le problème. C'est un défaut du module de reconnaissance vocale présent sur une série de robots livrés au printemps. Rien à voir avec l'utilisation qu'en fait l'hôtel. Le correctif se déploie à distance, sans déplacement, en moins d'une heure.",
+            "Toujours sur la demande n° 1 : l'ajout du mandarin est une demande différente, ce n'est ni une panne ni un entretien. Traitez-la comme telle.",
+            "Sur la demande n° 2 : le sèche-cheveux a probablement aggravé les choses, mais ne le reprochez pas à la cliente par écrit. Le diagnostic dira. Prévoyez au minimum le nettoyage après liquide et le remplacement de la carte électronique principale, plus une heure de main-d'œuvre atelier.",
+            "Sur la demande n° 3 : 900 km parcourus pour un contrôle prévu tous les 800 km. C'est de l'entretien, pas une panne.",
+            "Rappel utile : l'hôtel a consommé 0 intervention corrective et 0 visite préventive depuis juin. Les quotas sont intacts.",
+            "Mme Rousseau nous a écrit qu'elle envisage d'équiper son futur établissement de Lyon. Le dossier est commercialement sensible : on est irréprochable sur la forme.",
+            "Ne facturez jamais quelque chose qui est couvert. Ne faites jamais cadeau de quelque chose qui ne l'est pas : cela crée un précédent que le commercial paiera l'an prochain.",
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette note vous donne la cause technique de chaque panne. Sans elle, vous ne pouvez pas qualifier correctement."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Qualifier les trois demandes",
+        contexte: "Avant tout chiffrage, il faut savoir sous quelle protection tombe chaque demande et qui va payer.",
+        questions: [
+          { numero: 1, consigne: "Pour chacune des trois demandes, indiquez le robot concerné, la cause de la panne, la protection applicable (garantie commerciale, contrat de maintenance, ou aucune) et le niveau d'urgence selon l'article 7 du contrat.", ressources: 'Documents 1, 2, 3 et 7, annexe 1. Compétence C2.4.1. La règle de décision figure au document 2 : la panne vient-elle du produit ou d’une cause extérieure ? Le document 7 vous donne la cause technique de chaque panne.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez pour chaque demande si elle est facturée au client ou non, en justifiant par l'article précis du contrat ou par la règle du livret. Traitez également la demande d'ajout du mandarin.", ressources: 'Documents 1, 2, 4 et 7, annexe 2. Compétence C2.4.2. Attention : l’ajout d’une langue n’est ni une panne ni un entretien. Cherchez dans quel article du contrat il tombe.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Chiffrer ce qui est facturable",
+        contexte: "Une seule des trois demandes donne lieu à un devis. On le construit dans l'ordre de la fiche méthode.",
+        questions: [
+          { numero: 3, consigne: "Établissez le devis de l'intervention facturable : détaillez les pièces, la main-d'œuvre, le déplacement et les forfaits, puis calculez le total HT avant remise. Montrez chaque opération.", ressources: 'Documents 4, 5 et 7, annexe 3. Compétence C2.4.3. Le document 7 vous indique précisément les prestations à prévoir. N’ajoutez rien qu’il ne mentionne pas.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez la remise contrat de 15 %, le total HT après remise et le total TTC. Calculez également le montant que l'hôtel aurait payé s'il n'avait pas souscrit le contrat MIR-CARE, et concluez en une phrase sur l'intérêt du contrat.", ressources: 'Documents 4 et 5, annexe 4. Compétence C2.4.3. La formule de la remise et un exemple entièrement calculé figurent au document 5.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Planifier et répondre au client",
+        contexte: "Il reste à poser des dates réalistes et à écrire une réponse unique, claire et complète.",
+        questions: [
+          { numero: 5, consigne: "Planifiez le traitement des trois demandes en respectant les délais garantis de l'article 7 et les disponibilités réelles des techniciens. Indiquez pour chacune la date, le technicien ou le mode d'intervention, et vérifiez le respect du délai garanti.", ressources: 'Documents 1, 6 et 7, annexe 5. Compétence C2.4.4. Une date n’est valable que si un technicien est libre. Le correctif logiciel de la demande 1 ne nécessite aucun déplacement.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le courriel unique de réponse à Mme Rousseau : reprise des trois demandes, qualification de chacune, ce qui est pris en charge et ce qui est facturé, montant TTC du devis, dates d'intervention, réponse à la demande de mandarin et à la question de l'assurance.", ressources: 'Documents 3, 4, 6 et 7, annexe 6. Compétence C2.4.4. Un seul courriel pour les trois demandes. La cliente a posé une question sur son assurance : ne l’oubliez pas.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Qualification des trois demandes', colonnes: ['Demande', 'Robot', 'Cause de la panne', 'Protection applicable', 'Niveau d’urgence'], nbLignes: 3, largeurs: ['14%', '13%', '30%', '25%', '18%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Demande n° 1', '', '', '', ''],
+        ['Demande n° 2', '', '', '', ''],
+        ['Demande n° 3', '', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Prise en charge : qui paie ?', colonnes: ['Demande', 'Facturé au client ? (oui / non)', 'Justification (article du contrat ou règle du livret)'], nbLignes: 4, largeurs: ['26%', '22%', '52%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Demande n° 1 — reconnaissance vocale', '', ''],
+        ['Demande n° 1 bis — ajout du mandarin', '', ''],
+        ['Demande n° 2 — robot immobilisé', '', ''],
+        ['Demande n° 3 — grincement', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Devis de l’intervention facturable (total HT avant remise)', colonnes: ['Ligne du devis', 'Détail (montrez l’opération)', 'Montant HT'], nbLignes: 5, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Pièces', '', ''],
+        ['Main-d’œuvre', '', ''],
+        ['Déplacement', '', ''],
+        ['Forfaits', '', ''],
+        ['TOTAL HT avant remise', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Remise, total TTC et intérêt du contrat', colonnes: ['Élément à calculer', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 5, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Remise contrat 15 %', '', ''],
+        ['TOTAL HT après remise', '', ''],
+        ['TOTAL TTC à facturer', '', ''],
+        ['Montant TTC sans contrat MIR-CARE', '', ''],
+        ['Conclusion en une phrase', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Planification des interventions', colonnes: ['Demande', 'Date retenue', 'Technicien ou mode', 'Délai garanti respecté ? Justifiez'], nbLignes: 3, largeurs: ['16%', '18%', '24%', '42%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Demande n° 1', '', '', ''],
+        ['Demande n° 2', '', '', ''],
+        ['Demande n° 3', '', '', ''],
+      ] },
+      { type: 'mail', id: 'annexe6', titre: "Annexe 6 — Courriel unique de réponse au client", deParDefaut: 'sav@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Distinguer garantie légale, garantie commerciale et contrat de maintenance",
+      "Qualifier une demande de SAV à partir de la cause de la panne",
+      "Déterminer qui paie une intervention",
+      "Établir un devis SAV dans l'ordre : pièces, main-d'œuvre, déplacement, remise, TVA",
+      "Appliquer la règle de l'heure entamée",
+      "Planifier des interventions en respectant délais garantis et disponibilités réelles",
+      "Répondre à plusieurs demandes dans un courriel unique et clair",
+    ],
+  },
+
+  synthese: {
+    titre: "Le service après-vente",
+    proposition: [
+      'La garantie légale de conformité', 'La garantie commerciale', 'Le contrat de maintenance',
+      'La cause interne au produit', 'La cause extérieure', "Le quota d'interventions",
+      "Le délai garanti", 'Le devis SAV', "L'heure entamée", 'La remise contrat 15 %',
+    ],
+    racine: {
+      id: 'racine', texte: 'Assurer le SAV',
+      enfants: [
+        { id: 'pro', texte: 'Les protections', enfants: [
+          { id: 'p1', texte: null, reponse: 'La garantie légale de conformité' },
+          { id: 'p2', texte: null, reponse: 'La garantie commerciale' },
+          { id: 'p3', texte: null, reponse: 'Le contrat de maintenance' },
+        ] },
+        { id: 'qui', texte: 'Qui paie', enfants: [
+          { id: 'q1', texte: null, reponse: 'La cause interne au produit' },
+          { id: 'q2', texte: null, reponse: 'La cause extérieure' },
+        ] },
+        { id: 'lim', texte: 'Les limites du contrat', enfants: [
+          { id: 'l1', texte: null, reponse: "Le quota d'interventions" },
+          { id: 'l2', texte: null, reponse: 'Le délai garanti' },
+        ] },
+        { id: 'chi', texte: 'Le chiffrage', enfants: [
+          { id: 'ch1', texte: null, reponse: 'Le devis SAV' },
+          { id: 'ch2', texte: null, reponse: "L'heure entamée" },
+          { id: 'ch3', texte: null, reponse: 'La remise contrat 15 %' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Qualifier une demande de SAV", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas par quoi commencer devant une panne." },
+        { niveau: 'debrouille', description: "Je décris la panne." },
+        { niveau: 'averti', description: "J'identifie la cause et la protection applicable." },
+        { niveau: 'expert', description: "Je qualifie aussi le niveau d'urgence et je repère les demandes hors contrat." },
+      ] },
+      { id: 'c2', intitule: "Appliquer les garanties", indicateurs: [
+        { niveau: 'novice', description: "Je confonds garantie et contrat de maintenance." },
+        { niveau: 'debrouille', description: "Je sais qu'il existe plusieurs protections." },
+        { niveau: 'averti', description: "Je dis qui paie et pourquoi." },
+        { niveau: 'expert', description: "Je cite l'article du contrat qui fonde ma décision." },
+      ] },
+      { id: 'c3', intitule: "Chiffrer une intervention", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quoi mettre dans un devis." },
+        { niveau: 'debrouille', description: "J'additionne les pièces." },
+        { niveau: 'averti', description: "Je calcule pièces, main-d'œuvre, déplacement et TVA." },
+        { niveau: 'expert', description: "J'applique la remise contrat et la règle de l'heure entamée sans erreur." },
+      ] },
+      { id: 'c4', intitule: "Planifier et informer", indicateurs: [
+        { niveau: 'novice', description: "Je donne une date au hasard." },
+        { niveau: 'debrouille', description: "Je regarde le planning." },
+        { niveau: 'averti', description: "Je vérifie qu'un technicien est libre et que le délai garanti est tenu." },
+        { niveau: 'expert', description: "Je réponds à toutes les demandes du client dans un seul message clair." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Service après-vente', definition: "Ensemble des prestations assurées après la vente : assistance, entretien, réparation." },
+      { terme: 'Garantie légale de conformité', definition: "Protection de 2 ans obligatoire : le produit doit correspondre à ce qui a été vendu." },
+      { terme: 'Garantie commerciale', definition: "Protection supplémentaire offerte par le vendeur, ici 3 ans sur les pannes d'origine interne." },
+      { terme: 'Contrat de maintenance', definition: "Contrat payant qui couvre l'entretien préventif, les visites et l'assistance." },
+      { terme: 'Maintenance préventive', definition: "Entretien réalisé avant la panne pour l'éviter." },
+      { terme: 'Intervention corrective', definition: "Intervention réalisée après une panne pour la réparer." },
+      { terme: 'Quota', definition: "Nombre maximal de prestations comprises dans le contrat sur une année." },
+      { terme: 'Délai garanti', definition: "Temps maximal contractuel entre la demande du client et l'intervention." },
+      { terme: 'Pièce d’usure', definition: "Pièce qui se dégrade avec l'utilisation normale et se remplace périodiquement." },
+      { terme: 'Heure entamée', definition: "Toute heure commencée est facturée en entier, même partiellement utilisée." },
+      { terme: 'Devis', definition: "Document qui chiffre une prestation avant sa réalisation, pour accord du client." },
+      { terme: 'Remise contrat', definition: "Réduction accordée aux clients sous contrat sur les interventions facturables (ici 15 %)." },
+    ],
+    flashcards: [
+      { recto: "Combien de temps dure la garantie légale de conformité ?", verso: "2 ans à compter de la livraison." },
+      { recto: "Combien de temps dure la garantie commerciale Enchanted ?", verso: "3 ans à compter de la livraison, pièces et main-d'œuvre." },
+      { recto: "Que couvre le contrat MIR-CARE ?", verso: "L'entretien préventif, les interventions correctives, les pièces d'usure et l'assistance." },
+      { recto: "Quelle question décide de qui paie ?", verso: "La panne vient-elle du produit lui-même ou d'une cause extérieure ?" },
+      { recto: "Une casse due à un client de l'hôtel est-elle couverte ?", verso: "Non : l'article 4 exclut les dommages causés par un tiers." },
+      { recto: "Quel est le délai garanti pour un robot totalement immobilisé ?", verso: "24 heures ouvrées (niveau critique)." },
+      { recto: "Combien coûte un déplacement de technicien en Île-de-France ?", verso: "120 € HT par déplacement." },
+      { recto: "Comment se facture une intervention de 2 h 15 ?", verso: "3 heures : toute heure entamée est due en entier." },
+      { recto: "Quelle remise pour un client sous contrat MIR-CARE ?", verso: "15 % sur le total HT de l'intervention facturable." },
+      { recto: "L'ajout d'une langue est-il couvert par le contrat ?", verso: "Non : l'article 4 exclut les modifications logicielles demandées par le client. 450 € HT par langue." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La garantie légale de conformité dure :', options: ['2 ans', '1 an', '3 ans', '5 ans'], bonne: 0 },
+      { type: 'unique', question: 'La garantie commerciale Enchanted dure :', options: ['3 ans', '2 ans', '1 an', '6 mois'], bonne: 0 },
+      { type: 'unique', question: 'Un défaut du module de reconnaissance vocale relève :', options: ['de la garantie commerciale', 'du client', 'du transporteur', 'd’un consommable'], bonne: 0 },
+      { type: 'unique', question: 'Un invité renverse une coupe sur le robot : l’intervention est :', options: ['facturée au client', 'gratuite', 'prise par la garantie', 'prise par le contrat'], bonne: 0 },
+      { type: 'unique', question: 'Le contrôle des roulements tous les 800 km relève :', options: ['de la maintenance préventive', 'de la garantie légale', 'd’une casse', 'd’un consommable'], bonne: 0 },
+      { type: 'unique', question: 'Le délai garanti pour un robot totalement immobilisé est de :', options: ['24 heures ouvrées', '72 heures ouvrées', '10 jours ouvrés', '30 jours'], bonne: 0 },
+      { type: 'unique', question: 'Une intervention de 2 h 15 se facture :', options: ['3 heures', '2 heures', '2,25 heures', '2,5 heures'], bonne: 0 },
+      { type: 'unique', question: 'La remise accordée à un client sous contrat MIR-CARE est de :', options: ['15 %', '5 %', '10 %', '20 %'], bonne: 0 },
+      { type: 'unique', question: 'L’ajout d’une langue supplémentaire coûte :', options: ['450 € HT', '240 € HT', '120 € HT', 'c’est gratuit'], bonne: 0 },
+      { type: 'unique', question: 'Le nombre d’interventions correctives incluses au contrat est de :', options: ['4 par robot et par an', '2 par robot et par an', 'illimité', '1 par an'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Protection du client', 'Cause qui rend facturable', 'Ligne du devis SAV'],
+      zones: [
+        { libelle: 'La garantie légale de conformité', etiquetteIndex: 0 },
+        { libelle: 'La garantie commerciale de 3 ans', etiquetteIndex: 0 },
+        { libelle: 'Le contrat de maintenance MIR-CARE', etiquetteIndex: 0 },
+        { libelle: 'Un choc provoqué par un invité', etiquetteIndex: 1 },
+        { libelle: 'Une utilisation non conforme à la notice', etiquetteIndex: 1 },
+        { libelle: 'Une modification logicielle demandée par le client', etiquetteIndex: 1 },
+        { libelle: 'Le déplacement du technicien à 120 € HT', etiquetteIndex: 2 },
+        { libelle: 'La main-d’œuvre atelier à 85 € HT de l’heure', etiquetteIndex: 2 },
+        { libelle: 'La remise contrat de 15 %', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Qualifiez les trois demandes.", documents: ['Documents 1, 2, 3 et 7', 'Annexe 1'], bareme: 4,
+        reponse: "La qualification se fait toujours à partir de la cause de la panne, donnée par la note de Nadia Cherif (document 7), et non à partir de ce que dit le client.",
+        tableau: { colonnes: ['Demande', 'Robot', 'Cause', 'Protection', 'Urgence'], lignes: [
+          ['N° 1', 'MK-2041-A', 'Défaut du module de reconnaissance vocale sur une série livrée au printemps : cause interne au produit', 'Garantie commerciale (3 ans, panne d’origine interne)', 'Majeur : le robot est utilisable mais une fonction est dégradée. Délai 72 h ouvrées.'],
+          ['N° 2', 'MK-2041-B', 'Liquide renversé par un invité pendant un cocktail : cause extérieure, dommage causé par un tiers', 'Aucune : exclu par l’article 4 du contrat', 'Critique : robot totalement immobilisé. Délai 24 h ouvrées.'],
+          ['N° 3', 'MK-2041-D', 'Usure normale des roulements du globe à 900 km, contrôle prévu tous les 800 km', 'Contrat de maintenance MIR-CARE (entretien et pièces d’usure)', 'Mineur : gêne sans impact sur le service. Délai 10 jours ouvrés.'],
+        ] },
+        complement: "4 points au total, soit 1,33 point par demande arrondi comme suit : 1,5 point pour la demande n° 1, 1,5 point pour la n° 2, 1 point pour la n° 3. Par demande : 0,25 pour le robot, 0,5 pour la cause, 0,5 pour la protection, 0,25 à 0,5 pour l'urgence. ERREURS CLASSIQUES à sanctionner : (1) qualifier la demande n° 2 de critique mais la placer sous garantie parce que le robot est neuf ; l'ancienneté n'a rien à voir, c'est la CAUSE qui décide ; (2) qualifier la demande n° 1 de critique alors que le robot circule, porte les plateaux et accueille les clients ; l'article 7 est explicite ; (3) placer la demande n° 3 sous garantie alors qu'il s'agit d'usure normale à un kilométrage supérieur au seuil de contrôle ; (4) retenir la machine à café du hall ou le groupe de Shanghai comme éléments de qualification. Accepter « garantie » sans préciser « commerciale » pour la demande n° 1 si la durée de 3 ans ou l'origine interne est mentionnée." },
+
+      { intitule: "Indiquez qui paie chaque demande, y compris l'ajout du mandarin.", documents: ['Documents 1, 2, 4 et 7', 'Annexe 2'], bareme: 3,
+        reponse: "Quatre lignes à traiter : les trois demandes plus la demande annexe d'ajout de langue, qui est un piège classique.",
+        tableau: { colonnes: ['Demande', 'Facturé ?', 'Justification'], lignes: [
+          ['N° 1 — reconnaissance vocale', 'Non', 'Panne d’origine interne : la garantie commerciale de 3 ans couvre pièces et main-d’œuvre (document 2). Le correctif est déployé à distance, sans déplacement.'],
+          ['N° 1 bis — ajout du mandarin', 'Oui', 'L’article 4 du contrat exclut expressément les modifications logicielles demandées par le client, dont l’ajout de langues supplémentaires. Tarif : 450 € HT par langue (document 4).'],
+          ['N° 2 — robot immobilisé', 'Oui', 'L’article 4 exclut les dommages causés par un tiers et ceux résultant d’une immersion ou d’un liquide. La cause est extérieure au produit, donc aucune garantie ne joue.'],
+          ['N° 3 — grincement', 'Non', 'Entretien et pièces d’usure normale : couvert par le contrat MIR-CARE (article 3). Rien n’est facturé en plus, mais l’intervention se décompte du quota annuel.'],
+        ] },
+        complement: "0,75 point par ligne : 0,25 pour le oui/non, 0,5 pour la justification référencée. Exiger une justification qui cite l'article du contrat ou la règle du livret, pas une simple opinion. ERREURS CLASSIQUES à sanctionner : (1) oublier purement et simplement la ligne du mandarin, qui est la question annexe glissée dans l'appel de 8 h 42 ; c'est le piège principal de la question ; (2) facturer la demande n° 3 en la confondant avec une panne ; (3) répondre « non » à la demande n° 2 par empathie pour la cliente, ce que la note de Nadia interdit expressément (« ne faites jamais cadeau de quelque chose qui ne l'est pas ») ; (4) oublier de préciser pour la demande n° 3 que le quota se décompte quand même, point que le document 2 signale comme souvent confondu. Valoriser l'élève qui fait cette dernière remarque." },
+
+      { intitule: "Établissez le devis de l'intervention facturable (total HT avant remise).", documents: ['Documents 4, 5 et 7', 'Annexe 3'], bareme: 4,
+        reponse: "Une seule intervention est facturable au titre d'une panne : la demande n° 2. Le document 7 en donne le contenu exact : nettoyage après liquide, carte électronique principale, une heure de main-d'œuvre atelier. S'y ajoute l'enlèvement du robot, qui compte comme un déplacement (document 6).",
+        tableau: { colonnes: ['Ligne du devis', 'Opération', 'Montant HT'], lignes: [
+          ['Pièces — carte électronique principale', '1 × 1 450', '1 450,00 €'],
+          ['Main-d’œuvre atelier', '1 h × 85', '85,00 €'],
+          ['Déplacement (enlèvement du robot)', '1 × 120', '120,00 €'],
+          ['Forfait nettoyage et remise en état après liquide', 'forfait', '240,00 €'],
+          ['TOTAL HT avant remise', '1 450 + 85 + 120 + 240', '1 895,00 €'],
+        ] },
+        complement: "1 point pour la pièce, 0,75 pour la main-d'œuvre, 0,75 pour le déplacement, 0,75 pour le forfait, 0,75 pour le total. Exiger l'opération écrite. ERREURS CLASSIQUES à sanctionner : (1) chiffrer aussi les demandes 1 et 3, qui ne sont pas facturables ; sanctionner lourdement, c'est l'erreur de raisonnement principale ; (2) ajouter le bloc moteur à 980 € ou la batterie à 1 200 €, qui figurent au barème mais ne sont mentionnés nulle part dans la note de Nadia ; (3) ajouter le diagnostic en atelier à 150 € : accepter cette ligne si l'élève la justifie par la contrainte du document 6 (« le diagnostic en atelier demande une journée complète avant tout devis »), ce qui donnerait 2 045 € HT ; dans ce cas, poursuivre le barème des questions suivantes en cohérence avec ce total ; (4) utiliser le tarif de main-d'œuvre sur site (110 €) alors que le robot est rapatrié à l'atelier ; (5) oublier le déplacement d'enlèvement. Accepter l'ordre des lignes indifféremment." },
+
+      { intitule: "Calculez la remise, le total TTC et l'intérêt du contrat.", documents: ['Documents 4 et 5', 'Annexe 4'], bareme: 3,
+        reponse: "On applique la remise de 15 % réservée aux titulaires d'un contrat MIR-CARE en cours de validité, puis la TVA.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Remise contrat 15 %', '1 895 × 0,15', '284,25 €'],
+          ['TOTAL HT après remise', '1 895 − 284,25', '1 610,75 €'],
+          ['TOTAL TTC à facturer', '1 610,75 × 1,20', '1 932,90 €'],
+          ['Montant TTC sans contrat MIR-CARE', '1 895 × 1,20', '2 274,00 €'],
+          ['Économie réalisée grâce au contrat', '2 274 − 1 932,90', '341,10 €'],
+        ] },
+        complement: "0,75 point pour la remise, 0,5 pour le HT après remise, 0,75 pour le TTC, 0,5 pour le montant sans contrat, 0,5 pour la conclusion. Conclusion attendue, toute formulation équivalente acceptée : le contrat MIR-CARE fait économiser 341,10 € TTC sur cette seule intervention, en plus de couvrir gratuitement les demandes 1 et 3. ERREURS CLASSIQUES à sanctionner : (1) appliquer la remise après la TVA au lieu de l'appliquer sur le HT ; l'ordre est donné au document 5 ; (2) calculer le TTC avec 1,02 ou 0,20 au lieu de 1,20 ; (3) présenter comme conclusion une phrase vide du type « le contrat est intéressant » sans citer le montant. Valoriser l'élève qui remarque que l'économie réelle est bien supérieure puisque les demandes 1 et 3 auraient également été facturées sans protection." },
+
+      { intitule: "Planifiez les trois interventions.", documents: ['Documents 1, 6 et 7', 'Annexe 5'], bareme: 3,
+        reponse: "Le point de départ est le lundi 8 septembre. Les délais garantis se comptent en jours et heures ouvrés. Le correctif de la demande 1 se déploie à distance et ne consomme aucun technicien sur site.",
+        tableau: { colonnes: ['Demande', 'Date', 'Technicien ou mode', 'Respect du délai'], lignes: [
+          ['N° 1 — vocale', 'Mardi 9 septembre', 'Déploiement du correctif à distance, moins d’une heure, aucun déplacement', 'Oui : niveau majeur, délai de 72 h ouvrées, largement tenu.'],
+          ['N° 2 — immobilisé', 'Mardi 9 septembre au matin', 'Marc Lefèvre : enlèvement du robot et transfert à l’atelier. Hélène Dubois est en formation obligatoire le 8 et à l’ISIR l’après-midi du 9.', 'Oui : niveau critique, délai de 24 h ouvrées à compter du 8 septembre. Marc est disponible le mardi matin.'],
+          ['N° 3 — grincement', 'Vendredi 12 septembre après-midi', 'Marc Lefèvre ou Hélène Dubois, tous deux disponibles. Roulements en stock (6 disponibles).', 'Oui : niveau mineur, délai de 10 jours ouvrés. Largement tenu.'],
+        ] },
+        complement: "1 point par demande : 0,5 pour une date réellement disponible au planning, 0,25 pour le technicien ou le mode, 0,25 pour la vérification du délai. ERREURS CLASSIQUES à sanctionner : (1) programmer une intervention le mercredi 10 avec Marc Lefèvre, qui est en congé posé ; (2) programmer quoi que ce soit avec Hélène Dubois le lundi 8 (formation obligatoire) ou le jeudi 11 (déplacement à Lille) ; (3) envoyer un technicien sur site pour la demande n° 1 alors que le correctif est distant, ce qui facture inutilement un déplacement ; (4) traiter la demande n° 2 le jeudi ou le vendredi, ce qui dépasse le délai critique de 24 h ouvrées. Accepter pour la demande n° 3 toute date du 9 au 22 septembre où un technicien est libre. Valoriser l'élève qui note que le bloc moteur est en rupture de stock mais qu'il n'est pas nécessaire ici." },
+
+      { intitule: "Rédigez le courriel unique de réponse à Mme Rousseau.", documents: ['Documents 3, 4, 6 et 7', 'Annexe 6'], bareme: 3,
+        reponse: "Un seul message, structuré demande par demande, qui distingue clairement ce qui est pris en charge de ce qui est facturé, et qui répond aux deux questions annexes (mandarin, assurance). Exemple de rédaction attendue : « Madame Rousseau, nous avons bien reçu vos trois demandes de ce matin et vous en trouverez le traitement complet ci-dessous. Robot MK-2041-A, reconnaissance vocale en anglais : il s'agit d'un défaut d'origine interne, entièrement couvert par notre garantie commerciale. Le correctif sera déployé à distance dès le mardi 9 septembre, sans intervention sur place et sans frais. Robot MK-2041-D, grincement en virage : votre robot a dépassé le seuil de contrôle des roulements. Cette intervention relève de votre contrat de maintenance et ne vous sera pas facturée. Un technicien passera le vendredi 12 septembre après-midi. Robot MK-2041-B, immobilisé : le dommage résulte d'un liquide renversé par un tiers, situation exclue de la garantie et du contrat par l'article 4. Nous enlèverons le robot le mardi 9 septembre au matin pour diagnostic et remise en état. Le devis s'élève à 1 610,75 € HT, soit 1 932,90 € TTC, remise contrat de 15 % déjà déduite. Concernant votre assurance : le dommage étant imputable à un tiers identifié ayant reconnu les faits, votre assurance responsabilité civile peut effectivement être sollicitée. Nous vous remettrons un rapport technique détaillé à l'appui de votre déclaration. Enfin, l'ajout du mandarin est possible. Ne relevant pas du contrat, il est proposé au tarif de 450 € HT. Nous pouvons l'intégrer avant novembre si vous nous donnez votre accord. Je reste à votre disposition. »",
+        complement: "Barème : 0,75 point pour le traitement clair des trois demandes avec ce qui est couvert et ce qui ne l'est pas ; 0,75 point pour le montant TTC exact et les dates ; 0,75 point pour la réponse à la question de l'assurance ; 0,75 point pour la réponse chiffrée sur le mandarin. ERREURS CLASSIQUES à sanctionner : (1) écrire trois courriels séparés, ce que la note de Nadia interdit ; (2) reprocher par écrit à la cliente l'usage du sèche-cheveux, ce que la note interdit expressément ; (3) ignorer la question de l'assurance, qui est une demande explicite de la cliente ; (4) ignorer le mandarin ; (5) annoncer un montant HT en le présentant comme le montant à payer ; (6) présenter la facturation de la demande n° 2 sans expliquer pourquoi elle n'est pas couverte, ce qui donne l'impression d'un abus. Ne pas pénaliser l'orthographe. Valoriser l'élève qui commence par les deux bonnes nouvelles (demandes 1 et 3, gratuites) avant d'annoncer la seule facturable, et celui qui rappelle la remise contrat comme un avantage." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'enchanted-m1': ENCHANTED_M1,
   'enchanted-m2': ENCHANTED_M2,
@@ -27864,6 +28734,8 @@ const CONTENUS: Record<string, ContenuMission> = {
   'enchanted-m5': ENCHANTED_M5,
   'enchanted-m6': ENCHANTED_M6,
   'enchanted-m7': ENCHANTED_M7,
+  'enchanted-m8': ENCHANTED_M8,
+  'enchanted-m9': ENCHANTED_M9,
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
