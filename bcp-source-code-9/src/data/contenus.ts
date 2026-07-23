@@ -27175,12 +27175,695 @@ const ENCHANTED_M5: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 6 - Suivre la commande et preparer la livraison
+// Bloc 2 : suivre les ventes. Classe de Premiere. VERSION RICHE + CALCULS delais.
+// Dates figees : signature 14 avril 202N, fabrication 8 semaines, livraison
+// mardi 15 juin, formation 16-17 juin. Penalite retard 1 % HT par semaine.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Assurez le suivi de la commande de l'hôtel : vérifiez le dossier, calculez les délais, établissez le planning de livraison et informez le client.",
+    contexte:
+      "La directrice de l'hôtel Le Grand Siècle a signé le devis le 14 avril 202N et versé son acompte. La vente est conclue, mais votre travail ne s'arrête pas là : c'est maintenant le suivi de la commande qui commence. Votre tuteur vous explique : « Beaucoup de vendeurs croient que tout se joue à la signature. C'est faux. Un client mal suivi après la vente, c'est un client perdu pour la suite. Tu dois vérifier que le dossier est complet, calculer les délais réels, préparer la livraison avec la logistique, et surtout tenir la cliente informée. Et attention : si nous livrons en retard, l'entreprise paie des pénalités. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.1 — Assurer le suivi de la commande et préparer la livraison",
+      detail: "C2.1.1 Vérifier et traiter le dossier de commande. C2.1.2 Calculer et contrôler les délais. C2.1.3 Organiser la livraison et informer le client.",
+    },
+    documents: [
+      // DOC 1 : accuse de reception de commande (document authentique)
+      { numero: 1, titre: "Accusé de réception de commande n° CD-2041", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Accusé de réception de commande' },
+        { tableau: { colonnes: ['Rubrique', 'Information'], lignes: [
+          ['N° de commande', 'CD-2041'],
+          ['Client', 'Hôtel Le Grand Siècle — 8, rue de la Paix, Paris'],
+          ['Interlocutrice', 'Camille Rousseau, directrice de l’accueil'],
+          ['Date de signature du devis', '14 avril 202N'],
+          ['Montant total TTC', '150 120,00 €'],
+          ['Acompte versé (30 %)', '45 036,00 € — reçu le 14 avril 202N'],
+          ['Solde à régler à la livraison', '105 084,00 €'],
+          ['Produits commandés', '4 robots Mirokaï (MIR-01), formation, maintenance annuelle'],
+          ['Adresse de livraison', 'Hôtel Le Grand Siècle — entrée logistique, 12 rue Volney, Paris'],
+          ['Contact sur place', 'M. Diallo, responsable technique — disponible du lundi au vendredi, 8 h à 17 h'],
+        ] } },
+        { bulleConseil: { texte: ["Vérifiez toujours qu'un dossier de commande est complet AVANT de lancer la fabrication. Une information manquante retarde toute la chaîne."] } },
+      ] },
+
+      // DOC 2 : conditions logistiques et delais (avec regles de calcul)
+      { numero: 2, titre: "Nos conditions logistiques et nos délais", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 12. Délais et logistique' },
+        { paragraphes: [
+          "Chaque commande suit un circuit précis. Voici les règles à connaître pour calculer une date de livraison et informer correctement le client.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Durée / règle'], lignes: [
+          ['Validation du dossier', '2 jours ouvrés après réception de l’acompte'],
+          ['Fabrication des robots', '8 semaines à compter de la signature'],
+          ['Contrôle qualité', '3 jours ouvrés avant expédition'],
+          ['Transport et installation', '1 journée sur site'],
+          ['Formation du personnel', '2 journées, après la mise en service'],
+          ['Livraison', 'Uniquement du lundi au vendredi, jamais le week-end'],
+        ] } },
+        { intertitre: 'Règle de calcul des pénalités de retard' },
+        { paragraphes: [
+          "Si Enchanted Tools livre après la date annoncée, une pénalité est due au client.",
+          "Formule : pénalité = montant HT de la commande × 1 % × nombre de semaines de retard.",
+          "Exemple avec d'autres chiffres : pour une commande de 80 000 € HT livrée avec 3 semaines de retard, la pénalité serait de 80 000 × 0,01 × 3 = 2 400 €.",
+        ] },
+        { bulleConseil: { texte: ["L'exemple utilise des chiffres différents de notre commande. À vous d'appliquer la même formule avec les vrais montants du dossier."] } },
+      ] },
+
+      // DOC 3 : courriel de l'atelier de production (probleme + info a trier)
+      { numero: 3, titre: "Courriel de l'atelier de production", texte: [
+        { mailLecture: {
+          de: 'production@enchanted.tools',
+          a: 'k.haddad@enchanted.tools',
+          objet: 'Commande CD-2041 — point de fabrication',
+          corps: [
+            "Bonjour Karim,",
+            "Point sur la commande CD-2041 (4 robots MIR-01).",
+            "La fabrication a démarré comme prévu. Les trois premiers robots sortent de chaîne dans les temps. L'atelier tourne bien, l'équipe a d'ailleurs battu son record de production ce mois-ci.",
+            "En revanche, le quatrième robot a un souci : le fournisseur de la batterie Saft nous livre avec 5 jours de retard. Cela ne remet pas en cause la date globale car nous avions prévu une marge, mais il faudra confirmer.",
+            "Autre information : la nouvelle cafétéria de l'atelier ouvre lundi, tu es le bienvenu.",
+            "Le contrôle qualité est programmé pour le 9 juin. Si tout est conforme, l'expédition peut partir dans la foulée.",
+            "Bonne journée,",
+            "Sofia Marchetti, responsable production",
+          ],
+        } },
+        { bulleConseil: { texte: ["Ce courriel contient des informations utiles pour le suivi… et d'autres qui ne servent à rien. Repérez celles qui concernent réellement la commande."] } },
+      ] },
+
+      // DOC 4 : planning previsionnel a completer (les dates)
+      { numero: 4, titre: "Le calendrier prévisionnel de la commande", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Suivi de commande CD-2041' },
+        { paragraphes: [
+          "Voici les étapes de la commande. Certaines dates sont déjà connues, d'autres sont à calculer à partir des règles du document 2.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Date', 'Statut'], lignes: [
+          ['Signature du devis et acompte', '14 avril 202N', 'Fait'],
+          ['Validation du dossier', '16 avril 202N', 'Fait'],
+          ['Fabrication (8 semaines)', 'du 16 avril au 9 juin 202N', 'En cours'],
+          ['Contrôle qualité', '9 juin 202N', 'Programmé'],
+          ['Livraison et installation sur site', 'mardi 15 juin 202N', 'À confirmer'],
+          ['Formation du personnel (2 jours)', '16 et 17 juin 202N', 'À planifier'],
+          ['Règlement du solde', 'à la livraison', 'En attente'],
+        ] } },
+        { bulleConseil: { texte: ["Attention : la livraison ne peut avoir lieu ni le week-end, ni en dehors des horaires du contact sur place (document 1)."] } },
+      ] },
+
+      // DOC 5 : fiche methode - informer le client
+      { numero: 5, titre: "Fiche méthode — Informer le client d'une livraison", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Un client bien informé est un client rassuré. Avant toute livraison, on envoie systématiquement un message de confirmation. Il doit contenir six informations, sans exception.",
+        ] },
+        { tableau: { colonnes: ['À indiquer', 'Pourquoi'], lignes: [
+          ['La référence de la commande', 'Pour que le client retrouve son dossier'],
+          ['La date et l’heure de livraison', 'Pour qu’il organise la présence de son personnel'],
+          ['Le lieu exact de livraison', 'Pour éviter toute erreur d’adresse'],
+          ['Ce qui sera livré', 'Pour qu’il vérifie la conformité à la réception'],
+          ['Ce qu’il doit prévoir', 'Accès, présence d’un responsable, espace dégagé'],
+          ['Le montant restant à régler', 'Pour qu’il prépare le règlement du solde'],
+        ] } },
+        { bulleConseil: { texte: ["Un message de livraison incomplet génère des appels, des retards et de l'agacement. Vérifiez les six points avant d'envoyer."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Vérifier le dossier de commande",
+        contexte: "Avant tout, on s'assure que le dossier est complet et exact.",
+        questions: [
+          { numero: 1, consigne: "Relevez dans l'accusé de réception les informations clés du dossier : numéro de commande, date de signature, montant TTC, acompte versé et solde restant dû.", ressources: 'Document 1, annexe 1. Compétence C2.1.1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Le courriel de l'atelier (doc 3) contient des informations utiles et d'autres inutiles pour le suivi de la commande. Classez-les en deux colonnes.", ressources: 'Document 3, annexe 2. Compétence C2.1.1. Plusieurs informations sont là pour vous distraire.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Contrôler les délais",
+        contexte: "On vérifie que les dates annoncées sont tenables, et on calcule le risque financier d'un retard.",
+        questions: [
+          { numero: 3, consigne: "La fabrication dure 8 semaines à compter de la signature du 14 avril. Vérifiez par le calcul que la date de fin de fabrication du 9 juin est correcte. Expliquez votre raisonnement.", ressources: 'Documents 2 et 4, annexe 3. Compétence C2.1.2. Comptez en semaines puis en jours.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Imaginons que la livraison prenne 2 semaines de retard. Calculez le montant de la pénalité due au client, en appliquant la formule du document 2. Montrez votre calcul.", ressources: 'Documents 1 et 2, annexe 4. Compétence C2.1.2. La pénalité se calcule sur le montant HT, pas sur le TTC.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Organiser la livraison et informer",
+        contexte: "Dernière étape : caler la livraison et prévenir la cliente dans les règles.",
+        questions: [
+          { numero: 5, consigne: "La livraison est prévue le mardi 15 juin. Vérifiez qu'elle respecte les deux contraintes de l'entreprise et du client, et justifiez pourquoi le samedi 12 juin aurait été impossible.", ressources: 'Documents 1, 2 et 4, annexe 5. Compétence C2.1.3. Croisez les horaires du contact sur place et les règles de livraison.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le courriel de confirmation de livraison à la directrice. Il doit contenir les six informations obligatoires de la fiche méthode.", ressources: 'Documents 1, 4 et 5, annexe 6. Compétence C2.1.3. Vérifiez les six points avant d’envoyer.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les informations clés du dossier', colonnes: ['Rubrique', 'Réponse'], nbLignes: 5, largeurs: ['45%', '55%'], prerempli: [
+        ['N° de commande', ''],
+        ['Date de signature du devis', ''],
+        ['Montant total TTC', ''],
+        ['Acompte versé (30 %)', ''],
+        ['Solde restant dû', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Trier les informations du courriel', colonnes: ['Informations UTILES au suivi', 'Informations INUTILES'], nbLignes: 4, largeurs: ['50%', '50%'], reponseMultiligne: false },
+      { type: 'texte', id: 'annexe3', titre: "Annexe 3 — Vérification de la date de fin de fabrication", lignes: 5 },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Calcul de la pénalité de retard', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 3, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Montant HT de la commande', '', ''],
+        ['Pénalité par semaine (HT × 0,01)', '', ''],
+        ['Pénalité pour 2 semaines', '', ''],
+      ] },
+      { type: 'texte', id: 'annexe5', titre: "Annexe 5 — Vérification de la date de livraison", lignes: 5 },
+      { type: 'mail', id: 'annexe6', titre: "Annexe 6 — Courriel de confirmation de livraison", deParDefaut: 'stagiaire@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Vérifier un dossier de commande",
+      "Trier les informations utiles au suivi",
+      "Calculer et contrôler des délais",
+      "Calculer une pénalité de retard",
+      "Organiser une livraison et informer le client",
+    ],
+  },
+
+  synthese: {
+    titre: "Le suivi de la commande",
+    proposition: [
+      "L'accusé de réception", "L'acompte de 30 %", 'Le solde à la livraison',
+      '8 semaines de fabrication', 'Le contrôle qualité', 'Livraison en jour ouvré',
+      'Pénalité 1 % HT par semaine', 'Les six informations obligatoires',
+      'Informer le client', 'Le suivi après la vente',
+    ],
+    racine: {
+      id: 'racine', texte: 'Suivre la commande',
+      enfants: [
+        { id: 'dos', texte: 'Le dossier', enfants: [
+          { id: 'd1', texte: null, reponse: "L'accusé de réception" },
+          { id: 'd2', texte: null, reponse: "L'acompte de 30 %" },
+          { id: 'd3', texte: null, reponse: 'Le solde à la livraison' },
+        ] },
+        { id: 'del', texte: 'Les délais', enfants: [
+          { id: 'e1', texte: null, reponse: '8 semaines de fabrication' },
+          { id: 'e2', texte: null, reponse: 'Le contrôle qualité' },
+          { id: 'e3', texte: null, reponse: 'Livraison en jour ouvré' },
+          { id: 'e4', texte: null, reponse: 'Pénalité 1 % HT par semaine' },
+        ] },
+        { id: 'inf', texte: 'La communication', enfants: [
+          { id: 'i1', texte: null, reponse: 'Les six informations obligatoires' },
+          { id: 'i2', texte: null, reponse: 'Informer le client' },
+          { id: 'i3', texte: null, reponse: 'Le suivi après la vente' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Vérifier un dossier", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelles informations vérifier." },
+        { niveau: 'debrouille', description: "Je relève quelques informations du dossier." },
+        { niveau: 'averti', description: "Je relève toutes les informations clés." },
+        { niveau: 'expert', description: "Je trie l'utile de l'inutile dans les échanges internes." },
+      ] },
+      { id: 'c2', intitule: "Contrôler les délais", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas calculer une date d'échéance." },
+        { niveau: 'debrouille', description: "Je calcule une durée simple." },
+        { niveau: 'averti', description: "Je vérifie une date par le calcul." },
+        { niveau: 'expert', description: "Je calcule aussi le coût d'un retard." },
+      ] },
+      { id: 'c3', intitule: "Organiser et informer", indicateurs: [
+        { niveau: 'novice', description: "J'oublie des contraintes de livraison." },
+        { niveau: 'debrouille', description: "Je vérifie une contrainte." },
+        { niveau: 'averti', description: "Je croise toutes les contraintes." },
+        { niveau: 'expert', description: "Je rédige un message complet et professionnel." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Accusé de réception de commande', definition: "Document qui confirme au client l'enregistrement de sa commande et en rappelle les éléments." },
+      { terme: 'Suivi de commande', definition: "Ensemble des actions menées après la vente pour que la livraison se passe bien." },
+      { terme: 'Acompte', definition: "Somme versée à la commande (ici 30 % du TTC)." },
+      { terme: 'Solde', definition: "Montant restant à payer, réglé à la livraison (ici 70 %)." },
+      { terme: 'Jour ouvré', definition: "Jour travaillé de l'entreprise, du lundi au vendredi (week-end exclu)." },
+      { terme: 'Délai de fabrication', definition: "Temps nécessaire pour produire la commande (ici 8 semaines)." },
+      { terme: 'Contrôle qualité', definition: "Vérification des produits avant expédition." },
+      { terme: 'Pénalité de retard', definition: "Somme due au client si la livraison a lieu après la date annoncée." },
+      { terme: 'Logistique', definition: "Organisation du transport, du stockage et de la livraison des produits." },
+      { terme: 'Mise en service', definition: "Installation et démarrage du produit chez le client." },
+      { terme: 'Contact sur place', definition: "Personne à joindre chez le client le jour de la livraison." },
+      { terme: 'Conformité', definition: "Fait que la livraison corresponde exactement à la commande." },
+    ],
+    flashcards: [
+      { recto: "Quel est le numéro de la commande de l'hôtel ?", verso: 'CD-2041.' },
+      { recto: "Quel acompte a été versé et quand ?", verso: '45 036 € (30 % du TTC), le 14 avril 202N.' },
+      { recto: "Quel montant reste dû à la livraison ?", verso: '105 084 € (le solde de 70 %).' },
+      { recto: "Combien de temps dure la fabrication ?", verso: '8 semaines à compter de la signature.' },
+      { recto: "Quels jours la livraison est-elle possible ?", verso: 'Du lundi au vendredi uniquement, jamais le week-end.' },
+      { recto: "Quelle est la formule de la pénalité de retard ?", verso: 'Montant HT × 1 % × nombre de semaines de retard.' },
+      { recto: "À combien s'élève la pénalité pour 2 semaines de retard ?", verso: '125 100 × 0,01 × 2 = 2 502 €.' },
+      { recto: "Quand a lieu le contrôle qualité ?", verso: 'Le 9 juin 202N, avant expédition.' },
+      { recto: "Combien d'informations doit contenir le message de livraison ?", verso: 'Six informations obligatoires.' },
+      { recto: "Qui est le contact sur place chez le client ?", verso: 'M. Diallo, responsable technique (lundi au vendredi, 8 h-17 h).' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le numéro de la commande est :', options: ['CD-2041', 'MIR-01', 'FORM-01'], bonne: 0 },
+      { type: 'unique', question: 'L’acompte versé s’élève à :', options: ['45 036 €', '105 084 €', '150 120 €'], bonne: 0 },
+      { type: 'unique', question: 'Le solde à régler à la livraison est de :', options: ['105 084 €', '45 036 €', '125 100 €'], bonne: 0 },
+      { type: 'unique', question: 'La fabrication dure :', options: ['8 semaines', '8 jours', '8 mois'], bonne: 0 },
+      { type: 'unique', question: 'La livraison est possible :', options: ['du lundi au vendredi', 'tous les jours', 'le week-end seulement'], bonne: 0 },
+      { type: 'unique', question: 'La pénalité de retard se calcule sur :', options: ['le montant HT', 'le montant TTC', 'l’acompte'], bonne: 0 },
+      { type: 'unique', question: 'Pour 2 semaines de retard, la pénalité est de :', options: ['2 502 €', '1 251 €', '3 000 €'], bonne: 0 },
+      { type: 'unique', question: 'Le contrôle qualité a lieu :', options: ['avant expédition', 'après la livraison', 'chez le client'], bonne: 0 },
+      { type: 'unique', question: 'Le message de livraison doit contenir :', options: ['six informations', 'deux informations', 'aucune règle'], bonne: 0 },
+      { type: 'unique', question: 'Le contact sur place est disponible :', options: ['8 h à 17 h en semaine', '24 h/24', 'le samedi'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque information : UTILE au suivi de la commande, ou INUTILE.',
+      etiquettes: ['Information UTILE', 'Information INUTILE'],
+      zones: [
+        { libelle: 'Le fournisseur de batterie a 5 jours de retard', etiquetteIndex: 0 },
+        { libelle: 'Le contrôle qualité est prévu le 9 juin', etiquetteIndex: 0 },
+        { libelle: 'Les trois premiers robots sortent dans les temps', etiquetteIndex: 0 },
+        { libelle: 'Une marge avait été prévue au planning', etiquetteIndex: 0 },
+        { libelle: 'L’atelier a battu son record de production', etiquetteIndex: 1 },
+        { libelle: 'La nouvelle cafétéria ouvre lundi', etiquetteIndex: 1 },
+        { libelle: 'L’équipe travaille bien en ce moment', etiquetteIndex: 1 },
+        { libelle: 'L’expédition peut partir après le contrôle', etiquetteIndex: 0 },
+        { libelle: 'Karim est invité à la cafétéria', etiquetteIndex: 1 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les informations clés du dossier de commande.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Toutes les informations figurent dans l'accusé de réception.",
+        tableau: { colonnes: ['Rubrique', 'Réponse'], lignes: [
+          ['N° de commande', 'CD-2041'],
+          ['Date de signature du devis', '14 avril 202N'],
+          ['Montant total TTC', '150 120,00 €'],
+          ['Acompte versé (30 %)', '45 036,00 €'],
+          ['Solde restant dû', '105 084,00 €'],
+        ] },
+        complement: "0,6 point par ligne correcte. Exercice de lecture précise d'un document commercial. Vérifier que l'élève ne confond pas acompte (45 036 €) et solde (105 084 €), erreur fréquente." },
+
+      { intitule: "Triez les informations du courriel de l'atelier.", documents: ['Document 3', 'Annexe 2'], bareme: 4,
+        reponse: "Il faut distinguer ce qui concerne la commande de ce qui relève du bavardage interne.",
+        tableau: { colonnes: ['UTILES au suivi', 'INUTILES'], lignes: [
+          ['Les 3 premiers robots sortent dans les temps', 'L’atelier a battu son record de production'],
+          ['Le 4e robot : batterie livrée avec 5 jours de retard', 'La nouvelle cafétéria ouvre lundi'],
+          ['Une marge avait été prévue, la date globale tient', 'Karim est invité à la cafétéria'],
+          ['Contrôle qualité programmé le 9 juin, expédition ensuite', ''],
+        ] },
+        complement: "0,5 point par information correctement classée (8 éléments). Le piège : le record de production et la cafétéria sont des informations sympathiques mais sans effet sur la commande. Un bon commercial va à l'essentiel. Pénaliser l'élève qui classe tout en « utile »." },
+
+      { intitule: "Vérifiez par le calcul la date de fin de fabrication.", documents: ['Documents 2 et 4', 'Annexe 3'], bareme: 4,
+        reponse: "La fabrication démarre le 14 avril et dure 8 semaines. 8 semaines = 8 × 7 = 56 jours. Du 14 avril, on compte : 16 jours pour finir avril (jusqu'au 30 avril), puis 31 jours de mai (soit 47 jours au 31 mai), puis 9 jours de juin pour atteindre 56 jours. On arrive donc au 9 juin 202N. La date annoncée est exacte.",
+        complement: "1 point pour la conversion 8 semaines = 56 jours, 2 points pour le décompte correct des mois (avril, mai, juin), 1 point pour la conclusion (date confirmée). Accepter tout raisonnement juste, y compris un décompte semaine par semaine. L'essentiel est que l'élève vérifie au lieu de recopier la date." },
+
+      { intitule: "Calculez la pénalité pour 2 semaines de retard.", documents: ['Documents 1 et 2', 'Annexe 4'], bareme: 4,
+        reponse: "On applique la formule du document 2 sur le montant HT.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Montant HT de la commande', 'TTC 150 120 − TVA 25 020 (ou total HT du devis)', '125 100 €'],
+          ['Pénalité par semaine', '125 100 × 0,01', '1 251 €'],
+          ['Pénalité pour 2 semaines', '1 251 × 2', '2 502 €'],
+        ] },
+        complement: "1 point pour identifier le bon montant HT (125 100 €, PAS le TTC), 1,5 point pour la pénalité hebdomadaire (1 251 €), 1,5 point pour le total (2 502 €). ERREUR À SANCTIONNER : calculer sur le TTC (150 120 × 0,01 × 2 = 3 002,40 €), ce qui est faux. Le document 2 précise bien « montant HT »." },
+
+      { intitule: "Vérifiez la date de livraison du mardi 15 juin.", documents: ['Documents 1, 2 et 4', 'Annexe 5'], bareme: 3,
+        reponse: "Le mardi 15 juin respecte les deux contraintes : c'est un jour ouvré (la livraison n'est possible que du lundi au vendredi, doc 2), et le contact sur place, M. Diallo, est disponible du lundi au vendredi de 8 h à 17 h (doc 1). De plus, la date est postérieure au contrôle qualité du 9 juin. Le samedi 12 juin aurait été impossible : c'est un week-end, la livraison n'est pas assurée ce jour-là et le contact sur place n'est pas présent.",
+        complement: "1 point pour la contrainte « jour ouvré » (doc 2), 1 point pour la disponibilité du contact sur place (doc 1), 1 point pour l'explication du refus du samedi. C'est une question de CROISEMENT : l'élève doit relier deux documents différents. Valoriser celui qui mentionne aussi le contrôle qualité préalable." },
+
+      { intitule: "Rédigez le courriel de confirmation de livraison.", documents: ['Documents 1, 4 et 5', 'Annexe 6'], bareme: 2,
+        reponse: "Le courriel doit contenir les six informations obligatoires de la fiche méthode.",
+        complement: "Les six points attendus : (1) référence de la commande CD-2041 ; (2) date et heure de livraison, mardi 15 juin 202N ; (3) lieu exact : entrée logistique, 12 rue Volney ; (4) ce qui sera livré : 4 robots Mirokaï MIR-01 avec installation ; (5) ce qu'elle doit prévoir : présence de M. Diallo, accès dégagé ; (6) montant restant à régler : 105 084 €. Exemple d'ouverture : « Madame Rousseau, j'ai le plaisir de vous confirmer la livraison de votre commande CD-2041… ». Barème : 2 points si les six informations sont présentes et le ton professionnel ; retirer 0,25 par information manquante. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 7 - Facturer et gerer le paiement
+// Bloc 2 : suivre les ventes. Classe de Premiere. VERSION RICHE + CALCULS.
+// Chaine figee : HT 125 100, TVA 25 020, TTC 150 120, acompte 45 036,
+// solde 105 084. Escompte 2 % = 2 101,68. Retard 15 j = 431,85 + 40 € forfait.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Établissez la facture définitive de l'hôtel, calculez le solde à payer, appliquez les conditions de règlement et traitez le retard de paiement.",
+    contexte:
+      "Les 4 robots Mirokaï ont été livrés et installés le 15 juin 202N à l'hôtel Le Grand Siècle. Tout s'est bien passé. Il faut maintenant facturer : établir le document officiel qui réclame le paiement du solde. Votre tuteur insiste : « La facture, c'est du sérieux. C'est un document légal, obligatoire entre professionnels, qui sert de preuve en cas de litige. Un chiffre faux, une mention oubliée, et c'est l'entreprise qui est en tort. Tu dois aussi savoir gérer ce qui suit : les remises pour paiement rapide, les délais, et surtout les retards. Parce qu'un client qui ne paie pas, c'est de la trésorerie en moins pour nous. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.2 — Établir la facture et suivre le règlement",
+      detail: "C2.2.1 Établir une facture conforme. C2.2.2 Calculer le solde, l'escompte et les pénalités. C2.2.3 Relancer un client en retard de paiement.",
+    },
+    documents: [
+      // DOC 1 : facture officielle (document authentique et complet)
+      { numero: 1, titre: "La facture n° FA-2041 (document officiel)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS SAS — FACTURE' },
+        { paragraphes: [
+          "Enchanted Tools SAS — 14 rue du Faubourg Saint-Antoine, 75012 Paris — SIRET 892 451 337 00024 — TVA intracommunautaire FR 12 892451337",
+        ] },
+        { tableau: { colonnes: ['Rubrique', 'Information'], lignes: [
+          ['Numéro de facture', 'FA-2041'],
+          ['Date d’émission', '15 juin 202N'],
+          ['Référence commande', 'CD-2041 du 14 avril 202N'],
+          ['Client', 'Hôtel Le Grand Siècle — 8 rue de la Paix, 75002 Paris'],
+          ['Date de livraison', '15 juin 202N'],
+          ['Échéance de règlement', '30 jours à compter de la date d’émission'],
+        ] } },
+        { intertitre: 'Détail de la facturation' },
+        { tableau: { colonnes: ['Désignation', 'Qté', 'PU HT', 'Total HT'], lignes: [
+          ['Robot Mirokaï MIR-01', '4', '30 000,00 €', '120 000,00 €'],
+          ['Remise commerciale 5 % sur robots', '—', '—', '− 6 000,00 €'],
+          ['Formation du personnel (forfait)', '1', '1 500,00 €', '1 500,00 €'],
+          ['Contrat de maintenance annuel', '4', '2 400,00 €', '9 600,00 €'],
+          ['TOTAL HT', '', '', '125 100,00 €'],
+          ['TVA 20 %', '', '', '25 020,00 €'],
+          ['TOTAL TTC', '', '', '150 120,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["Une facture entre professionnels doit obligatoirement mentionner : le numéro, la date, les coordonnées et le SIRET du vendeur, celles du client, le détail des prestations, les montants HT, la TVA, le TTC et les conditions de règlement."] } },
+      ] },
+
+      // DOC 2 : conditions de reglement (avec les formules)
+      { numero: 2, titre: "Nos conditions de règlement", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 13. Facturation et règlement' },
+        { paragraphes: [
+          "Voici les règles appliquées par Enchanted Tools à tous ses clients professionnels.",
+        ] },
+        { tableau: { colonnes: ['Règle', 'Détail'], lignes: [
+          ['Acompte', '30 % du TTC, versé à la commande'],
+          ['Solde', 'Le reste, exigible à la livraison'],
+          ['Délai de paiement', '30 jours à compter de la date de facture'],
+          ['Escompte', '2 % de remise sur le solde si le client paie sous 8 jours'],
+          ['Pénalité de retard', 'Taux annuel de 10 % sur le montant impayé, au prorata des jours de retard'],
+          ['Indemnité forfaitaire', '40 € de frais de recouvrement, dus dès le premier jour de retard'],
+        ] } },
+        { intertitre: 'Les formules de calcul' },
+        { paragraphes: [
+          "Solde à payer = Total TTC − acompte déjà versé.",
+          "Escompte = solde × 2 % (soit × 0,02). Net à payer = solde − escompte.",
+          "Pénalité de retard = montant impayé × 10 % × (nombre de jours de retard ÷ 365).",
+          "Montant total dû en cas de retard = solde + pénalité + 40 € d'indemnité forfaitaire.",
+        ] },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres)' },
+        { paragraphes: [
+          "Une facture de 60 000 € TTC, avec un acompte de 18 000 € déjà versé, payée avec 20 jours de retard.",
+          "Solde = 60 000 − 18 000 = 42 000 €. Pénalité = 42 000 × 0,10 × (20 ÷ 365) = 230,14 €. Total dû = 42 000 + 230,14 + 40 = 42 270,14 €.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise d'autres chiffres que notre facture. Appliquez la même méthode avec les vrais montants de l'hôtel."] } },
+      ] },
+
+      // DOC 3 : releve du compte client (l'acompte deja verse)
+      { numero: 3, titre: "Relevé du compte client — Hôtel Le Grand Siècle", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Service comptabilité' },
+        { tableau: { colonnes: ['Date', 'Opération', 'Débit', 'Crédit'], lignes: [
+          ['14 avril 202N', 'Acompte 30 % sur commande CD-2041 (virement reçu)', '', '45 036,00 €'],
+          ['15 juin 202N', 'Facture FA-2041 (total TTC)', '150 120,00 €', ''],
+          ['—', 'Solde restant dû à ce jour', '', 'à calculer'],
+        ] } },
+        { paragraphes: [
+          "Le compte client récapitule tout ce que le client a déjà payé et tout ce qu'il doit. Le débit correspond à ce qu'il doit, le crédit à ce qu'il a versé.",
+        ] },
+      ] },
+
+      // DOC 4 : courriel de la cliente (demande escompte) - info a trier
+      { numero: 4, titre: "Courriel de la cliente", texte: [
+        { mailLecture: {
+          de: 'accueil@legrandsiecle-paris.fr',
+          a: 'compta@enchanted.tools',
+          objet: 'Réception de votre facture FA-2041',
+          corps: [
+            "Bonjour,",
+            "Nous avons bien reçu votre facture et je vous confirme que l'installation s'est parfaitement déroulée. Le personnel est ravi, les robots ont même été applaudis par des clients japonais hier soir.",
+            "Notre service comptabilité m'indique que nous pourrions régler rapidement, sous 8 jours, si cela nous permet de bénéficier de la remise dont vous m'aviez parlé. Pouvez-vous me confirmer le montant exact que nous aurions alors à payer ?",
+            "Par ailleurs, nous envisageons de refaire la moquette du hall cet automne, et peut-être d'ouvrir un second établissement à Lyon l'an prochain.",
+            "Dans l'attente de votre retour,",
+            "Camille Rousseau, directrice de l'accueil",
+          ],
+        } },
+        { bulleConseil: { texte: ["La cliente pose une question précise. Repérez-la : c'est à elle que vous devrez répondre par un calcul."] } },
+      ] },
+
+      // DOC 5 : note interne (le retard finalement constate)
+      { numero: 5, titre: "Note du service comptabilité (30 juillet 202N)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Note interne' },
+        { paragraphes: [
+          "Objet : facture FA-2041 — retard de paiement constaté.",
+          "Finalement, l'hôtel n'a pas réglé sous 8 jours et n'a donc pas bénéficié de l'escompte. La facture, émise le 15 juin, arrivait à échéance le 15 juillet 202N.",
+          "À ce jour, 30 juillet 202N, le règlement n'est toujours pas parvenu. Le retard est donc constaté depuis l'échéance.",
+          "Merci de calculer les sommes dues et de préparer une relance courtoise mais ferme. Nous tenons à ce client : le ton doit rester commercial, sans agressivité.",
+          "Nadia Cherif, responsable comptabilité",
+        ] },
+        { bulleConseil: { texte: ["Pour calculer le nombre de jours de retard, comptez à partir de la date d'échéance, pas de la date de facture."] } },
+      ] },
+
+      // DOC 6 : fiche methode - la relance
+      { numero: 6, titre: "Fiche méthode — Relancer un client en retard", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Relancer un client demande du tact : il faut obtenir le paiement sans abîmer la relation commerciale. Une relance efficace suit cinq points.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Ce qu’on écrit'], lignes: [
+          ['1. Rappeler la référence', 'Numéro de facture, date, montant'],
+          ['2. Constater le retard', 'Sans accuser : « sauf erreur de notre part… »'],
+          ['3. Indiquer les sommes dues', 'Solde + pénalités + indemnité, avec le détail'],
+          ['4. Proposer une solution', 'Demander le règlement sous un délai court, proposer de l’aide'],
+          ['5. Rester commercial', 'Formule de politesse, rappel de la qualité de la relation'],
+        ] } },
+        { bulleConseil: { texte: ["On n'écrit jamais « vous n'avez pas payé ». On écrit « sauf erreur de notre part, nous n'avons pas encore enregistré votre règlement »."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Vérifier et comprendre la facture",
+        contexte: "On commence par contrôler le document officiel et le compte du client.",
+        questions: [
+          { numero: 1, consigne: "Relevez les mentions obligatoires présentes sur la facture FA-2041 : numéro, date d'émission, identification du vendeur (SIRET), client, échéance de règlement.", ressources: 'Document 1, annexe 1. Compétence C2.2.1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "À partir du relevé de compte, calculez le solde restant dû par l'hôtel. Montrez votre calcul.", ressources: 'Documents 1, 2 et 3, annexe 2. Compétence C2.2.2. Formule : total TTC − acompte versé.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Répondre à la demande d'escompte",
+        contexte: "La cliente demande combien elle paierait en réglant vite. À vous de calculer.",
+        questions: [
+          { numero: 3, consigne: "Identifiez la question précise posée par la cliente dans son courriel, puis calculez l'escompte de 2 % et le net à payer si elle règle sous 8 jours. Montrez vos calculs.", ressources: 'Documents 2 et 4, annexe 3. Compétence C2.2.2. Le courriel contient aussi des informations sans rapport : ne vous laissez pas distraire.', annexeId: 'annexe3' },
+        ] },
+      { titre: "Activité 3 — Traiter le retard de paiement",
+        contexte: "L'hôtel n'a finalement pas payé. On calcule ce qui est dû et on relance.",
+        questions: [
+          { numero: 4, consigne: "Calculez le nombre exact de jours de retard au 30 juillet 202N. Expliquez à partir de quelle date vous comptez et pourquoi.", ressources: 'Documents 1 et 5, annexe 4. Compétence C2.2.2. On compte à partir de l’échéance, pas de la date de facture.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Calculez la pénalité de retard, puis le montant total dû par l'hôtel au 30 juillet (solde + pénalité + indemnité forfaitaire). Montrez chaque étape.", ressources: 'Documents 2 et 5, annexe 5. Compétence C2.2.2. Appliquez la formule du document 2.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le courriel de relance à la directrice, en respectant les cinq points de la fiche méthode et le ton demandé par la comptabilité.", ressources: 'Documents 5 et 6, annexe 6. Compétence C2.2.3. Courtois mais ferme : ne jamais accuser le client.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les mentions obligatoires de la facture', colonnes: ['Mention', 'Information relevée'], nbLignes: 5, largeurs: ['45%', '55%'], prerempli: [
+        ['Numéro de facture', ''],
+        ['Date d’émission', ''],
+        ['SIRET du vendeur', ''],
+        ['Client facturé', ''],
+        ['Échéance de règlement', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Calcul du solde restant dû', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 3, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Total TTC de la facture', '', ''],
+        ['Acompte déjà versé', '', ''],
+        ['Solde restant dû', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Escompte et net à payer', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['La question posée par la cliente', '', ''],
+        ['Solde avant escompte', '', ''],
+        ['Escompte 2 % (solde × 0,02)', '', ''],
+        ['Net à payer sous 8 jours', '', ''],
+      ] },
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Nombre de jours de retard (avec explication)", lignes: 4 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Pénalité et montant total dû', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Montant impayé (solde)', '', ''],
+        ['Pénalité de retard (formule doc 2)', '', ''],
+        ['Indemnité forfaitaire', '', ''],
+        ['TOTAL dû au 30 juillet', '', ''],
+      ] },
+      { type: 'mail', id: 'annexe6', titre: "Annexe 6 — Courriel de relance", deParDefaut: 'compta@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Contrôler les mentions obligatoires d'une facture",
+      "Calculer un solde à partir d'un compte client",
+      "Calculer un escompte pour paiement rapide",
+      "Calculer des pénalités de retard",
+      "Rédiger une relance courtoise et ferme",
+    ],
+  },
+
+  synthese: {
+    titre: "La facture et le règlement",
+    proposition: [
+      'La facture', 'Les mentions obligatoires', 'Le solde', "L'acompte déduit",
+      "L'escompte 2 %", 'Le délai de 30 jours', 'La pénalité de retard',
+      "L'indemnité de 40 €", 'La relance', 'Courtois mais ferme',
+    ],
+    racine: {
+      id: 'racine', texte: 'Facturer et encaisser',
+      enfants: [
+        { id: 'fac', texte: 'Le document', enfants: [
+          { id: 'f1', texte: null, reponse: 'La facture' },
+          { id: 'f2', texte: null, reponse: 'Les mentions obligatoires' },
+        ] },
+        { id: 'mon', texte: 'Les montants', enfants: [
+          { id: 'm1', texte: null, reponse: 'Le solde' },
+          { id: 'm2', texte: null, reponse: "L'acompte déduit" },
+          { id: 'm3', texte: null, reponse: "L'escompte 2 %" },
+        ] },
+        { id: 'del', texte: 'Les délais', enfants: [
+          { id: 'd1', texte: null, reponse: 'Le délai de 30 jours' },
+          { id: 'd2', texte: null, reponse: 'La pénalité de retard' },
+          { id: 'd3', texte: null, reponse: "L'indemnité de 40 €" },
+        ] },
+        { id: 'rel', texte: 'Le recouvrement', enfants: [
+          { id: 'r1', texte: null, reponse: 'La relance' },
+          { id: 'r2', texte: null, reponse: 'Courtois mais ferme' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Contrôler une facture", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les mentions obligatoires." },
+        { niveau: 'debrouille', description: "Je repère quelques mentions." },
+        { niveau: 'averti', description: "Je vérifie toutes les mentions obligatoires." },
+        { niveau: 'expert', description: "Je repère une facture incomplète ou erronée." },
+      ] },
+      { id: 'c2', intitule: "Calculer les montants", indicateurs: [
+        { niveau: 'novice', description: "Je confonds acompte, solde et total." },
+        { niveau: 'debrouille', description: "Je calcule le solde." },
+        { niveau: 'averti', description: "Je calcule aussi l'escompte." },
+        { niveau: 'expert', description: "Je calcule pénalités et total dû sans erreur." },
+      ] },
+      { id: 'c3', intitule: "Relancer un client", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas comment aborder le retard." },
+        { niveau: 'debrouille', description: "Je rappelle la facture impayée." },
+        { niveau: 'averti', description: "Je détaille les sommes dues." },
+        { niveau: 'expert', description: "Je relance fermement en préservant la relation." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Facture', definition: "Document commercial obligatoire qui détaille la prestation et réclame le paiement." },
+      { terme: 'Mentions obligatoires', definition: "Informations que toute facture doit contenir (numéro, date, SIRET, montants, échéance)." },
+      { terme: 'SIRET', definition: "Numéro d'identification unique d'un établissement d'entreprise en France." },
+      { terme: 'Acompte', definition: "Somme déjà versée par le client à la commande, déduite de la facture finale." },
+      { terme: 'Solde', definition: "Montant restant à payer après déduction de l'acompte." },
+      { terme: 'Escompte', definition: "Remise accordée au client qui paie plus tôt que le délai prévu (ici 2 % sous 8 jours)." },
+      { terme: 'Échéance', definition: "Date limite à laquelle le paiement doit être effectué." },
+      { terme: 'Pénalité de retard', definition: "Somme due par le client qui paie après l'échéance." },
+      { terme: 'Indemnité forfaitaire', definition: "Frais fixes de recouvrement (40 €) dus dès le premier jour de retard." },
+      { terme: 'Relance', definition: "Message adressé au client pour réclamer un paiement en retard." },
+      { terme: 'Débit', definition: "Dans un compte client, ce que le client doit à l'entreprise." },
+      { terme: 'Crédit', definition: "Dans un compte client, ce que le client a déjà versé." },
+    ],
+    flashcards: [
+      { recto: "Quel est le numéro de la facture de l'hôtel ?", verso: 'FA-2041, émise le 15 juin 202N.' },
+      { recto: "Comment calcule-t-on le solde à payer ?", verso: 'Total TTC − acompte déjà versé.' },
+      { recto: "Quel est le solde dû par l'hôtel ?", verso: '150 120 − 45 036 = 105 084 €.' },
+      { recto: "Qu'est-ce qu'un escompte ?", verso: 'Une remise pour paiement anticipé (ici 2 % sous 8 jours).' },
+      { recto: "Combien vaut l'escompte de 2 % sur le solde ?", verso: '105 084 × 0,02 = 2 101,68 €.' },
+      { recto: "Quel est le délai de paiement accordé ?", verso: '30 jours à compter de la date de facture.' },
+      { recto: "Quelle est l'échéance de la facture du 15 juin ?", verso: 'Le 15 juillet 202N.' },
+      { recto: "Quelle est la formule de la pénalité de retard ?", verso: 'Montant impayé × 10 % × (jours de retard ÷ 365).' },
+      { recto: "Combien vaut l'indemnité forfaitaire de recouvrement ?", verso: '40 €, dus dès le premier jour de retard.' },
+      { recto: "Comment formuler une relance sans accuser ?", verso: '« Sauf erreur de notre part, nous n’avons pas encore enregistré votre règlement. »' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le solde à payer se calcule par :', options: ['TTC − acompte', 'TTC + acompte', 'HT − TVA'], bonne: 0 },
+      { type: 'unique', question: 'Le solde dû par l’hôtel est de :', options: ['105 084 €', '45 036 €', '150 120 €'], bonne: 0 },
+      { type: 'unique', question: 'Un escompte est accordé pour :', options: ['un paiement anticipé', 'un retard', 'une grosse commande'], bonne: 0 },
+      { type: 'unique', question: 'L’escompte de 2 % représente :', options: ['2 101,68 €', '1 050,84 €', '3 002,40 €'], bonne: 0 },
+      { type: 'unique', question: 'Le délai de paiement est de :', options: ['30 jours', '8 jours', '90 jours'], bonne: 0 },
+      { type: 'unique', question: 'La facture du 15 juin arrive à échéance le :', options: ['15 juillet', '15 juin', '30 juillet'], bonne: 0 },
+      { type: 'unique', question: 'La pénalité se calcule à partir de :', options: ['la date d’échéance', 'la date de facture', 'la date de commande'], bonne: 0 },
+      { type: 'unique', question: 'L’indemnité forfaitaire de recouvrement est de :', options: ['40 €', '100 €', '10 €'], bonne: 0 },
+      { type: 'unique', question: 'Dans un compte client, le crédit correspond à :', options: ['ce que le client a versé', 'ce qu’il doit', 'la TVA'], bonne: 0 },
+      { type: 'unique', question: 'Une bonne relance est :', options: ['courtoise mais ferme', 'agressive', 'silencieuse'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Mention obligatoire', 'Calcul', 'Règle de délai'],
+      zones: [
+        { libelle: 'Le numéro de facture FA-2041', etiquetteIndex: 0 },
+        { libelle: 'Le SIRET du vendeur', etiquetteIndex: 0 },
+        { libelle: 'La date d’émission', etiquetteIndex: 0 },
+        { libelle: 'TTC − acompte = solde', etiquetteIndex: 1 },
+        { libelle: 'Solde × 0,02 = escompte', etiquetteIndex: 1 },
+        { libelle: 'Impayé × 10 % × (jours ÷ 365)', etiquetteIndex: 1 },
+        { libelle: 'Paiement sous 30 jours', etiquetteIndex: 2 },
+        { libelle: 'Escompte si règlement sous 8 jours', etiquetteIndex: 2 },
+        { libelle: '40 € dus dès le 1ᵉʳ jour de retard', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les mentions obligatoires de la facture.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Toutes les mentions figurent en tête de la facture.",
+        tableau: { colonnes: ['Mention', 'Information'], lignes: [
+          ['Numéro de facture', 'FA-2041'],
+          ['Date d’émission', '15 juin 202N'],
+          ['SIRET du vendeur', '892 451 337 00024'],
+          ['Client facturé', 'Hôtel Le Grand Siècle, 8 rue de la Paix, 75002 Paris'],
+          ['Échéance de règlement', '30 jours à compter de l’émission (soit le 15 juillet 202N)'],
+        ] },
+        complement: "0,6 point par mention correcte. Objectif : montrer qu'une facture est un document légal encadré. Valoriser l'élève qui déduit lui-même la date d'échéance (15 juillet) à partir du délai de 30 jours." },
+
+      { intitule: "Calculez le solde restant dû.", documents: ['Documents 1, 2 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "On déduit du total TTC l'acompte déjà versé.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Total TTC de la facture', '—', '150 120,00 €'],
+          ['Acompte déjà versé', 'crédit du 14 avril', '45 036,00 €'],
+          ['Solde restant dû', '150 120 − 45 036', '105 084,00 €'],
+        ] },
+        complement: "1 point par ligne. Le relevé de compte (doc 3) montre l'acompte au crédit : l'élève doit comprendre que ce qui a été versé se déduit. Erreur fréquente : additionner au lieu de soustraire, ou oublier l'acompte." },
+
+      { intitule: "Identifiez la question de la cliente et calculez l'escompte.", documents: ['Documents 2 et 4', 'Annexe 3'], bareme: 4,
+        reponse: "La cliente demande le montant exact à payer si elle règle sous 8 jours.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Question posée', '—', 'Quel montant exact payer en réglant sous 8 jours ?'],
+          ['Solde avant escompte', '—', '105 084,00 €'],
+          ['Escompte 2 %', '105 084 × 0,02', '2 101,68 €'],
+          ['Net à payer sous 8 jours', '105 084 − 2 101,68', '102 982,32 €'],
+        ] },
+        complement: "1 point pour identifier la vraie question (le courriel parle aussi de la moquette, de Lyon, des clients japonais : ce sont des distracteurs), 1 point pour le solde, 1 point pour l'escompte (2 101,68 €), 1 point pour le net (102 982,32 €). Sanctionner l'élève qui applique l'escompte au TTC complet au lieu du solde." },
+
+      { intitule: "Calculez le nombre de jours de retard au 30 juillet.", documents: ['Documents 1 et 5', 'Annexe 4'], bareme: 3,
+        reponse: "La facture du 15 juin, payable à 30 jours, arrivait à échéance le 15 juillet 202N. Au 30 juillet, le retard se compte à partir de l'échéance : du 15 au 30 juillet, cela fait 15 jours de retard.",
+        complement: "1 point pour établir l'échéance (15 juillet), 1 point pour le décompte correct (15 jours), 1 point pour l'explication du point de départ (on compte depuis l'échéance, PAS depuis la date de facture). ERREUR CLASSIQUE : compter depuis le 15 juin (45 jours), ce qui est faux. Le doc 5 le rappelle explicitement." },
+
+      { intitule: "Calculez la pénalité et le montant total dû.", documents: ['Documents 2 et 5', 'Annexe 5'], bareme: 5,
+        reponse: "On applique la formule du document 2.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Montant impayé (solde)', '—', '105 084,00 €'],
+          ['Pénalité de retard', '105 084 × 0,10 × (15 ÷ 365)', '431,85 €'],
+          ['Indemnité forfaitaire', 'forfait légal', '40,00 €'],
+          ['TOTAL dû au 30 juillet', '105 084 + 431,85 + 40', '105 555,85 €'],
+        ] },
+        complement: "1 point pour le montant impayé, 2 points pour la pénalité (accepter 431,85 € ou un arrondi proche à 431,84/431,86 selon la méthode), 1 point pour l'indemnité, 1 point pour le total (105 555,85 €). Vérifier l'enchaînement : si le nombre de jours de la question 4 est faux, évaluer la cohérence de la démarche. Détail du calcul : 105 084 × 0,10 = 10 508,40 ; 10 508,40 × 15 ÷ 365 = 431,85." },
+
+      { intitule: "Rédigez le courriel de relance.", documents: ['Documents 5 et 6', 'Annexe 6'], bareme: 2,
+        reponse: "La relance doit suivre les cinq points de la fiche méthode, sur un ton courtois mais ferme.",
+        complement: "Les cinq points attendus : (1) rappel de la facture FA-2041 du 15 juin, 105 084 € ; (2) constat du retard sans accusation (« sauf erreur de notre part, nous n'avons pas encore enregistré votre règlement ») ; (3) détail des sommes dues : solde 105 084 € + pénalité 431,85 € + indemnité 40 € = 105 555,85 € ; (4) demande de règlement sous un délai court, proposition d'aide ; (5) formule commerciale rappelant la qualité de la relation (l'installation s'est bien passée). Barème : 2 points si les cinq points sont respectés et le ton juste ; retirer 0,5 par point manquant ou si le ton devient accusateur. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'enchanted-m1': ENCHANTED_M1,
   'enchanted-m2': ENCHANTED_M2,
   'enchanted-m3': ENCHANTED_M3,
   'enchanted-m4': ENCHANTED_M4,
   'enchanted-m5': ENCHANTED_M5,
+  'enchanted-m6': ENCHANTED_M6,
+  'enchanted-m7': ENCHANTED_M7,
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
