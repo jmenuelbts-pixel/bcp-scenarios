@@ -28726,6 +28726,452 @@ const ENCHANTED_M9: ContenuMission = {
   },
 }
 
+const ENCHANTED_M10: ContenuMission = {
+  travaux: {
+    consigne:
+      "Analysez les résultats de la vente, mesurez la satisfaction de la cliente, calculez les indicateurs commerciaux du dossier, construisez une offre de fidélisation chiffrée et présentez votre bilan à votre tuteur.",
+    contexte:
+      "Nous sommes le 12 janvier 202N+1. Le dossier Le Grand Siècle est ouvert depuis neuf mois : premier rendez-vous en mars, signature le 14 avril, livraison le 15 juin, incident réglé début juillet, trois demandes SAV traitées en septembre. Depuis, plus rien : les robots tournent, personne ne se plaint. C'est le moment que Karim Haddad choisit pour vous convoquer. « Un dossier, ça ne s'arrête pas quand le client a payé. C'est là que le vrai travail commence. Un client acquis coûte cinq fois moins cher qu'un client à conquérir, et celui-là ouvre un établissement à Lyon. Alors tu vas me faire trois choses : tu analyses ce que cette vente nous a rapporté, tu regardes objectivement ce qu'on a raté, et tu me construis une offre pour l'année prochaine. Avec des chiffres. Pas des impressions. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.5 — Fidéliser le client et analyser la performance de la vente",
+      detail: "C2.5.1 Calculer et interpréter les indicateurs commerciaux d'un dossier. C2.5.2 Exploiter une enquête de satisfaction. C2.5.3 Construire une offre de fidélisation chiffrée. C2.5.4 Rendre compte de son analyse à sa hiérarchie.",
+    },
+    documents: [
+      // DOC 1 : le recapitulatif financier complet du dossier
+      { numero: 1, titre: "Le récapitulatif financier du dossier Le Grand Siècle", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche de synthèse client CD-2041' },
+        { paragraphes: [
+          "Document édité par la comptabilité le 10 janvier 202N+1. Il récapitule tout ce que ce client nous a rapporté depuis l'ouverture du dossier.",
+        ] },
+        { intertitre: 'Les encaissements de l’année' },
+        { tableau: { colonnes: ['Date', 'Nature', 'Montant HT'], lignes: [
+          ['14 avril 202N', 'Acompte 30 % sur commande CD-2041', '37 530,00 €'],
+          ['15 juin 202N', 'Solde de la commande CD-2041', '87 570,00 €'],
+          ['30 septembre 202N', 'Intervention SAV facturable (robot MK-2041-B)', '1 610,75 €'],
+          ['15 octobre 202N', 'Ajout de la langue mandarin', '450,00 €'],
+          ['TOTAL encaissé HT sur l’exercice', '', '127 160,75 €'],
+        ] } },
+        { intertitre: 'Le détail du chiffre d’affaires initial' },
+        { tableau: { colonnes: ['Poste', 'Montant HT', 'Part'], lignes: [
+          ['Vente des 4 robots (après remise 5 %)', '114 000,00 €', 'à calculer'],
+          ['Formation du personnel', '1 500,00 €', 'à calculer'],
+          ['Contrat de maintenance annuel', '9 600,00 €', 'à calculer'],
+          ['TOTAL HT de la commande', '125 100,00 €', '100 %'],
+        ] } },
+        { intertitre: 'Les coûts engagés sur le dossier' },
+        { tableau: { colonnes: ['Poste de coût', 'Montant HT'], lignes: [
+          ['Coût d’achat des 4 robots (coût de revient usine)', '82 000,00 €'],
+          ['Coût de la formation dispensée', '900,00 €'],
+          ['Coût des interventions SAV prises en charge (garantie et contrat)', '1 240,00 €'],
+          ['Coût de l’échange du robot MK-2041-C', '0,00 € (refacturé au transporteur)'],
+          ['Geste commercial accordé en juin', '1 500,00 €'],
+          ['TOTAL des coûts', '85 640,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["Toutes les lignes de ce document ne servent pas au même calcul. Le chiffre d'affaires n'est pas la marge, et la marge n'est pas le bénéfice."] } },
+      ] },
+
+      // DOC 2 : la fiche methode avec formules et exemple chiffre different
+      { numero: 2, titre: "Fiche méthode — Les indicateurs d'un dossier client", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Analyser une vente, c'est répondre à trois questions : combien a-t-on vendu, combien a-t-on gagné, et combien ce client peut-il nous rapporter demain.",
+        ] },
+        { intertitre: 'Les formules' },
+        { tableau: { colonnes: ['Indicateur', 'Formule', 'Ce qu’il mesure'], lignes: [
+          ['Chiffre d’affaires HT', 'somme des ventes hors taxes', 'Le volume d’activité'],
+          ['Marge commerciale', 'chiffre d’affaires HT − coûts engagés', 'Ce qui reste à l’entreprise'],
+          ['Taux de marge', '(marge ÷ chiffre d’affaires HT) × 100', 'La rentabilité en pourcentage'],
+          ['Part d’un poste dans le CA', '(montant du poste ÷ CA total) × 100', 'Le poids d’une famille de produits'],
+          ['Panier moyen par robot', 'chiffre d’affaires HT ÷ nombre de robots vendus', 'Ce que rapporte une unité vendue'],
+          ['Chiffre d’affaires récurrent', 'somme des revenus qui se répètent chaque année', 'La part stable du client'],
+        ] } },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres que notre dossier)' },
+        { paragraphes: [
+          "Une agence a vendu 6 bornes d'accueil pour un chiffre d'affaires de 48 000 € HT. Les coûts engagés sur ce dossier s'élèvent à 31 200 € HT.",
+          "Marge commerciale = 48 000 − 31 200 = 16 800 €.",
+          "Taux de marge = (16 800 ÷ 48 000) × 100 = 35 %.",
+          "Panier moyen par borne = 48 000 ÷ 6 = 8 000 € HT.",
+          "Si le contrat d'entretien représente 4 800 € HT dans ce total, sa part est de (4 800 ÷ 48 000) × 100 = 10 %.",
+        ] },
+        { intertitre: 'Un point important' },
+        { paragraphes: [
+          "Le chiffre d'affaires récurrent est celui que l'on retrouve l'année suivante sans avoir à revendre : contrats de maintenance, abonnements, services annuels. C'est lui qui sécurise une entreprise.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise d'autres chiffres et un autre produit. Reprenez la méthode, pas les montants."] } },
+      ] },
+
+      // DOC 3 : l'enquete de satisfaction (donnees brutes a exploiter)
+      { numero: 3, titre: "Les résultats de l'enquête de satisfaction annuelle", texte: [
+        { pageWeb: true },
+        { intertitre: 'Enquête clients Enchanted Tools — décembre 202N' },
+        { paragraphes: [
+          "Enquête envoyée à nos 34 clients professionnels équipés depuis plus de six mois. 28 réponses exploitables, soit un taux de retour de 82 %.",
+          "Chaque critère est noté de 1 (très insatisfait) à 10 (très satisfait). Voici les résultats du Grand Siècle comparés à la moyenne de nos clients.",
+        ] },
+        { tableau: { colonnes: ['Critère évalué', 'Note du Grand Siècle', 'Moyenne de nos clients'], lignes: [
+          ['Qualité du produit', '9 / 10', '8,4 / 10'],
+          ['Respect des délais de livraison', '5 / 10', '7,9 / 10'],
+          ['Qualité de la formation du personnel', '9 / 10', '8,1 / 10'],
+          ['Réactivité du service après-vente', '9 / 10', '7,2 / 10'],
+          ['Clarté de la facturation', '6 / 10', '8,0 / 10'],
+          ['Relation avec le commercial', '8 / 10', '8,3 / 10'],
+        ] } },
+        { intertitre: 'Le commentaire libre laissé par la cliente' },
+        { paragraphes: [
+          "« Les robots sont exactement ce que nous espérions et nos clients les adorent. Le personnel a été très bien formé. Le SAV est irréprochable : trois demandes traitées en une journée, avec une réponse claire sur ce qui était couvert et ce qui ne l'était pas, c'est rare.",
+          "En revanche, la réception a été pénible : une station manquante et un robot abîmé le jour de la livraison, cela fait beaucoup pour un premier contact. J'ajoute que j'ai reçu une relance de paiement alors que j'attendais encore la résolution de l'incident, ce que j'ai trouvé maladroit.",
+          "Nous ouvrons Lyon en septembre. Je vous consulterai, mais je regarderai aussi ce que propose la concurrence. »",
+          "Camille Rousseau, directrice de l'accueil.",
+        ] },
+        { intertitre: 'Note globale et indicateur de recommandation' },
+        { paragraphes: [
+          "Note globale attribuée par l'hôtel : 8 sur 10.",
+          "À la question « recommanderiez-vous Enchanted Tools à un confrère ? », la cliente a répondu « probablement ».",
+          "Sur l'ensemble de nos 28 répondants, 19 ont répondu « certainement », 6 « probablement » et 3 « probablement pas ».",
+        ] },
+        { bulleConseil: { texte: ["Un client peut donner une bonne note globale et signaler un point grave. Regardez les écarts critère par critère, pas seulement la moyenne."] } },
+      ] },
+
+      // DOC 4 : la grille de fidelisation (les leviers disponibles)
+      { numero: 4, titre: "Le livret du stagiaire — 16. Fidéliser un client professionnel", texte: [
+        { pageWeb: true },
+        { intertitre: 'Pourquoi fidéliser' },
+        { paragraphes: [
+          "Conquérir un nouveau client coûte environ cinq fois plus cher que conserver un client existant : prospection, déplacements, temps commercial, remises d'entrée.",
+          "Un client fidèle achète plus souvent, accepte plus facilement les nouveautés et recommande l'entreprise autour de lui.",
+        ] },
+        { intertitre: 'Les quatre leviers de fidélisation' },
+        { tableau: { colonnes: ['Levier', 'En quoi ça consiste', 'Effet recherché'], lignes: [
+          ['Le levier contractuel', 'Renouveler ou étendre un contrat de service', 'Sécuriser un revenu récurrent'],
+          ['Le levier commercial', 'Accorder un avantage tarifaire au réachat', 'Rendre le réachat plus intéressant que la concurrence'],
+          ['Le levier relationnel', 'Rendez-vous de suivi, interlocuteur dédié, information privilégiée', 'Créer un lien difficile à rompre'],
+          ['Le levier de l’extension', 'Proposer un produit ou service complémentaire', 'Augmenter le panier du client'],
+        ] } },
+        { intertitre: 'Nos offres de fidélisation disponibles' },
+        { tableau: { colonnes: ['Offre', 'Contenu', 'Tarif HT'], lignes: [
+          ['Renouvellement MIR-CARE standard', 'Reconduction du contrat de maintenance à l’identique', '2 400 € par robot et par an'],
+          ['Renouvellement MIR-CARE PREMIUM', 'Idem + visites préventives illimitées + délai critique ramené à 12 h + robot de prêt systématique', '3 100 € par robot et par an'],
+          ['Remise fidélité au réachat', 'Sur toute nouvelle commande de robots dans les 24 mois', '8 % sur le prix catalogue'],
+          ['Extension de garantie à 5 ans', 'Prolongation de la garantie commerciale', '1 900 € par robot, une seule fois'],
+          ['Formation de perfectionnement', 'Une journée sur site pour le personnel déjà formé', '1 200 € forfait'],
+          ['Rendez-vous trimestriel de suivi', 'Quatre points annuels avec le commercial référent', 'Gratuit pour les clients sous contrat'],
+        ] } },
+        { bulleConseil: { texte: ["Une offre de fidélisation doit répondre à ce que le client a vécu, pas à ce que l'on a envie de vendre. Relisez son enquête avant de choisir vos leviers."] } },
+      ] },
+
+      // DOC 5 : la concurrence (l'element de tension)
+      { numero: 5, titre: "Note de veille concurrentielle (5 janvier 202N+1)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Service marketing' },
+        { paragraphes: [
+          "Un concurrent allemand, Robotik Service GmbH, s'est implanté en France en novembre. Il cible l'hôtellerie haut de gamme.",
+        ] },
+        { tableau: { colonnes: ['Élément', 'Robotik Service GmbH', 'Enchanted Tools'], lignes: [
+          ['Prix catalogue du robot', '27 500 € HT', '30 000 € HT'],
+          ['Contrat de maintenance annuel', '2 900 € par robot', '2 400 € par robot'],
+          ['Délai d’intervention critique garanti', '48 heures', '24 heures'],
+          ['Langues disponibles', '12 langues', 'plus de 50 langues'],
+          ['Formation du personnel', 'en option, 2 400 €', 'incluse dans la commande'],
+          ['Présence en France', '1 agence à Lyon', '1 site à Paris'],
+        ] } },
+        { paragraphes: [
+          "Le concurrent est moins cher à l'achat mais plus cher à l'entretien, moins réactif et moins complet. Il dispose en revanche d'une agence à Lyon.",
+          "Le service marketing rappelle par ailleurs que le salon Hospitality Paris se tiendra du 3 au 5 mars, que le nouveau modèle Mirokaï 2 sortira en juin, et que la couleur bronze sera disponible en série.",
+        ] },
+        { bulleConseil: { texte: ["Face à un concurrent moins cher, on ne baisse pas son prix : on démontre ce que le client obtient en plus. Cherchez dans ce tableau les arguments qui parlent à un hôtelier."] } },
+      ] },
+
+      // DOC 6 : note de Karim (le cadrage, avec contraintes)
+      { numero: 6, titre: "Note de Karim Haddad (12 janvier 202N+1, 9 h 00)", texte: [
+        { noteDirection: {
+          titre: 'Note interne — préparation du rendez-vous annuel Le Grand Siècle',
+          signature: 'Karim Haddad, responsable commercial',
+          intro: "De : Karim Haddad. À : le stagiaire. Copie : Nadia Cherif.",
+          paragraphe: "Le rendez-vous annuel avec Mme Rousseau est calé au 4 février. Je veux ton analyse et ta proposition avant le 20 janvier.",
+          puces: [
+            "Le contrat MIR-CARE arrive à échéance le 14 juin. Il faut le renouveler, c'est la priorité absolue : c'est notre revenu récurrent sur ce client.",
+            "Sur l'enquête : ne me cache pas les mauvaises notes. Je veux savoir précisément sur quels critères nous sommes en dessous de la moyenne de nos clients et pourquoi.",
+            "Sur le projet de Lyon : elle ouvre en septembre. Robotik a une agence là-bas, nous non. Ne promettez aucune implantation à Lyon, nous n'en avons pas le projet.",
+            "Sur l'offre : je veux un montant total chiffré, pas une liste de possibilités. Vous pouvez combiner plusieurs leviers, mais tout ce que vous proposez doit figurer au catalogue du document 4.",
+            "Sur la remise : je vous autorise une remise commerciale supplémentaire de 5 % maximum sur le renouvellement du contrat de maintenance, et rien d'autre. Cette remise se calcule sur le montant du contrat avant TVA.",
+            "N'oubliez pas que la formation de perfectionnement répond directement à un point qu'elle a soulevé dans son commentaire. Relisez-le.",
+            "Le rendez-vous trimestriel est gratuit et ne coûte que du temps. C'est notre meilleure arme contre un concurrent qui a une agence à Lyon et nous pas.",
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette note fixe vos limites : le plafond de remise, l'interdiction de promettre Lyon, et l'obligation de chiffrer. Tout le reste est à vous."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Analyser la performance de la vente",
+        contexte: "Avant de proposer quoi que ce soit, il faut savoir ce que ce client a réellement rapporté.",
+        questions: [
+          { numero: 1, consigne: "Calculez le chiffre d'affaires HT total encaissé sur l'exercice, la marge commerciale du dossier et le taux de marge. Montrez chaque opération.", ressources: 'Documents 1 et 2, annexe 1. Compétence C2.5.1. Les formules et un exemple entièrement calculé figurent au document 2. Attention à ne pas confondre le chiffre d’affaires de la commande initiale et le total encaissé sur l’exercice.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Calculez la part de chaque poste dans le chiffre d'affaires de la commande initiale, ainsi que le panier moyen par robot vendu. Identifiez ensuite le chiffre d'affaires récurrent de ce client et expliquez en une phrase pourquoi il compte plus que le reste.", ressources: 'Documents 1 et 2, annexe 2. Compétence C2.5.1. Le chiffre d’affaires récurrent est celui qui revient chaque année sans avoir à revendre.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Exploiter l'enquête de satisfaction",
+        contexte: "Les chiffres disent ce qu'on a gagné. L'enquête dit ce qu'on a raté.",
+        questions: [
+          { numero: 3, consigne: "Relevez les critères sur lesquels l'hôtel note Enchanted Tools en dessous de la moyenne des clients. Pour chacun, calculez l'écart et reliez-le à un événement précis du dossier survenu au cours de l'année.", ressources: 'Documents 3 et 6, annexe 3. Compétence C2.5.2. Le commentaire libre de la cliente explique les mauvaises notes. Reliez chaque écart à un fait daté, pas à une supposition.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez le pourcentage de clients qui recommanderaient certainement Enchanted Tools, puis situez le Grand Siècle par rapport à cet ensemble. Concluez en une phrase sur le risque que représente ce client.", ressources: 'Documents 3 et 5, annexe 4. Compétence C2.5.2. Sur 28 répondants. Pensez à ce que la cliente écrit sur Lyon et sur la concurrence.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Construire l'offre et rendre compte",
+        contexte: "Il reste à transformer cette analyse en une proposition chiffrée, puis à la défendre devant votre tuteur.",
+        questions: [
+          { numero: 5, consigne: "Construisez l'offre de fidélisation à présenter le 4 février : choisissez vos leviers, justifiez chaque choix par un élément de l'enquête ou de la veille, appliquez la remise autorisée et calculez le montant total HT puis TTC de la proposition.", ressources: 'Documents 3, 4, 5 et 6, annexe 5. Compétence C2.5.3. Vous ne pouvez proposer que des offres figurant au document 4. La remise de 5 % ne s’applique qu’au contrat de maintenance.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le compte rendu d'analyse destiné à Karim Haddad : bilan chiffré de la vente, points forts, points faibles avec leur cause, risque concurrentiel et offre proposée avec son montant.", ressources: 'Tous les documents, annexe 6. Compétence C2.5.4. Un compte rendu professionnel présente des faits chiffrés, pas des impressions. Rappelez-vous l’interdiction de promettre une implantation à Lyon.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Chiffre d’affaires, marge et taux de marge', colonnes: ['Indicateur', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Chiffre d’affaires HT encaissé sur l’exercice', '', ''],
+        ['Total des coûts engagés', '', ''],
+        ['Marge commerciale', '', ''],
+        ['Taux de marge', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Structure du chiffre d’affaires et revenu récurrent', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 6, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Part des robots dans la commande', '', ''],
+        ['Part de la formation', '', ''],
+        ['Part du contrat de maintenance', '', ''],
+        ['Panier moyen par robot vendu', '', ''],
+        ['Chiffre d’affaires récurrent annuel', '', ''],
+        ['Pourquoi il compte plus (une phrase)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Les critères en dessous de la moyenne', colonnes: ['Critère', 'Note hôtel', 'Moyenne clients', 'Écart', 'Événement du dossier qui l’explique'], nbLignes: 3, largeurs: ['24%', '11%', '13%', '10%', '42%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Indicateur de recommandation et niveau de risque', colonnes: ['Élément à calculer', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Nombre de répondants', '', ''],
+        ['Part des clients qui recommanderaient certainement', '', ''],
+        ['Position du Grand Siècle dans cet ensemble', '', ''],
+        ['Conclusion sur le risque (une phrase)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — L’offre de fidélisation chiffrée', colonnes: ['Offre retenue', 'Levier utilisé', 'Justification (enquête ou veille)', 'Calcul', 'Montant HT'], nbLignes: 6, largeurs: ['22%', '14%', '30%', '18%', '16%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['Sous-total HT', '', '', '', ''],
+        ['Remise autorisée', '', '', '', ''],
+        ['TOTAL de l’offre (HT puis TTC)', '', '', '', ''],
+      ] },
+      { type: 'compterendu', id: 'annexe6', titre: "Annexe 6 — Le compte rendu d'analyse du dossier",
+        entete: "Éditeur de compte rendu — Analyse annuelle d'un dossier client",
+        champsEntete: [
+          { id: 'date', label: 'Date' },
+          { id: 'emetteur', label: 'Émetteur' },
+          { id: 'destinataire', label: 'Destinataire' },
+          { id: 'objet', label: 'Objet' },
+        ],
+        sections: [
+          { id: 's1', titre: '1. Bilan chiffré de la vente', indice: "Chiffre d'affaires, marge, taux de marge, revenu récurrent." },
+          { id: 's2', titre: '2. Les points forts du dossier', indice: "Appuyez-vous sur les notes supérieures à la moyenne." },
+          { id: 's3', titre: '3. Les points faibles et leur cause', indice: "Citez les écarts chiffrés et l'événement qui les explique." },
+          { id: 's4', titre: '4. Le risque concurrentiel', indice: "Robotik Service GmbH, le projet de Lyon, la réponse à apporter." },
+          { id: 's5', titre: "5. L'offre de fidélisation proposée", indice: "Les leviers retenus et le montant total HT et TTC." },
+        ],
+      },
+    ],
+
+    objectifs: [
+      "Calculer le chiffre d'affaires, la marge et le taux de marge d'un dossier",
+      "Mesurer la part de chaque poste et le panier moyen",
+      "Identifier le chiffre d'affaires récurrent d'un client",
+      "Exploiter une enquête de satisfaction en reliant les notes à des faits",
+      "Calculer un indicateur de recommandation",
+      "Construire une offre de fidélisation chiffrée à partir de leviers identifiés",
+      "Rédiger un compte rendu d'analyse destiné à sa hiérarchie",
+    ],
+  },
+
+  synthese: {
+    titre: "L'analyse de la vente et la fidélisation",
+    proposition: [
+      "Le chiffre d'affaires HT", 'La marge commerciale', 'Le taux de marge',
+      "Le chiffre d'affaires récurrent", "L'enquête de satisfaction", 'Le taux de recommandation',
+      'Le levier contractuel', 'Le levier commercial', 'Le levier relationnel', "Le levier de l'extension",
+    ],
+    racine: {
+      id: 'racine', texte: 'Analyser et fidéliser',
+      enfants: [
+        { id: 'per', texte: 'Mesurer la performance', enfants: [
+          { id: 'pe1', texte: null, reponse: "Le chiffre d'affaires HT" },
+          { id: 'pe2', texte: null, reponse: 'La marge commerciale' },
+          { id: 'pe3', texte: null, reponse: 'Le taux de marge' },
+        ] },
+        { id: 'dur', texte: 'Sécuriser dans la durée', enfants: [
+          { id: 'du1', texte: null, reponse: "Le chiffre d'affaires récurrent" },
+        ] },
+        { id: 'eco', texte: 'Écouter le client', enfants: [
+          { id: 'ec1', texte: null, reponse: "L'enquête de satisfaction" },
+          { id: 'ec2', texte: null, reponse: 'Le taux de recommandation' },
+        ] },
+        { id: 'lev', texte: 'Les leviers de fidélisation', enfants: [
+          { id: 'le1', texte: null, reponse: 'Le levier contractuel' },
+          { id: 'le2', texte: null, reponse: 'Le levier commercial' },
+          { id: 'le3', texte: null, reponse: 'Le levier relationnel' },
+          { id: 'le4', texte: null, reponse: "Le levier de l'extension" },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Calculer les indicateurs commerciaux", indicateurs: [
+        { niveau: 'novice', description: "Je confonds chiffre d'affaires et marge." },
+        { niveau: 'debrouille', description: "Je calcule un chiffre d'affaires." },
+        { niveau: 'averti', description: "Je calcule la marge et le taux de marge." },
+        { niveau: 'expert', description: "J'identifie aussi le revenu récurrent et j'explique ce qu'il apporte." },
+      ] },
+      { id: 'c2', intitule: "Exploiter une enquête de satisfaction", indicateurs: [
+        { niveau: 'novice', description: "Je regarde seulement la note globale." },
+        { niveau: 'debrouille', description: "Je repère les notes basses." },
+        { niveau: 'averti', description: "Je calcule les écarts avec la moyenne." },
+        { niveau: 'expert', description: "Je relie chaque écart à un fait daté du dossier." },
+      ] },
+      { id: 'c3', intitule: "Construire une offre de fidélisation", indicateurs: [
+        { niveau: 'novice', description: "Je propose une remise sans réfléchir." },
+        { niveau: 'debrouille', description: "Je choisis une offre au catalogue." },
+        { niveau: 'averti', description: "Je combine plusieurs leviers et je chiffre le total." },
+        { niveau: 'expert', description: "Je justifie chaque levier par un élément de l'enquête ou de la veille." },
+      ] },
+      { id: 'c4', intitule: "Rendre compte à sa hiérarchie", indicateurs: [
+        { niveau: 'novice', description: "Je raconte ce qui s'est passé." },
+        { niveau: 'debrouille', description: "Je structure mon compte rendu." },
+        { niveau: 'averti', description: "J'appuie chaque point sur un chiffre." },
+        { niveau: 'expert', description: "Je présente aussi les points faibles et une recommandation argumentée." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: "Chiffre d'affaires", definition: "Total des ventes réalisées sur une période, exprimé hors taxes." },
+      { terme: 'Marge commerciale', definition: "Différence entre le chiffre d'affaires et les coûts engagés." },
+      { terme: 'Taux de marge', definition: "Marge rapportée au chiffre d'affaires, exprimée en pourcentage." },
+      { terme: 'Panier moyen', definition: "Chiffre d'affaires divisé par le nombre d'unités vendues." },
+      { terme: "Chiffre d'affaires récurrent", definition: "Revenu qui se répète chaque année sans nouvelle vente, comme un contrat de maintenance." },
+      { terme: 'Fidélisation', definition: "Ensemble des actions visant à conserver un client et à le faire réacheter." },
+      { terme: 'Enquête de satisfaction', definition: "Questionnaire adressé aux clients pour mesurer leur perception du produit et du service." },
+      { terme: 'Taux de recommandation', definition: "Part des clients prêts à conseiller l'entreprise à d'autres." },
+      { terme: 'Veille concurrentielle', definition: "Surveillance organisée des offres et des pratiques des concurrents." },
+      { terme: 'Levier de fidélisation', definition: "Moyen d'action pour retenir un client : contrat, tarif, relation ou extension." },
+      { terme: 'Remise fidélité', definition: "Avantage tarifaire réservé à un client déjà acquis lors d'un réachat." },
+      { terme: 'Compte rendu', definition: "Document professionnel qui restitue une analyse et des recommandations à sa hiérarchie." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on la marge commerciale ?", verso: "Chiffre d'affaires HT − coûts engagés." },
+      { recto: "Comment calcule-t-on le taux de marge ?", verso: "(Marge ÷ chiffre d'affaires HT) × 100." },
+      { recto: "Quel est le chiffre d'affaires HT encaissé sur l'exercice ?", verso: "127 160,75 € HT." },
+      { recto: "Quelle est la marge commerciale du dossier ?", verso: "127 160,75 − 85 640 = 41 520,75 €." },
+      { recto: "Qu'est-ce que le chiffre d'affaires récurrent ?", verso: "Le revenu qui revient chaque année sans revendre, ici le contrat de maintenance de 9 600 € HT." },
+      { recto: "Sur quels critères l'hôtel note-t-il en dessous de la moyenne ?", verso: "Le respect des délais de livraison (5/10) et la clarté de la facturation (6/10)." },
+      { recto: "Combien coûte le renouvellement MIR-CARE PREMIUM ?", verso: "3 100 € HT par robot et par an." },
+      { recto: "Quels sont les quatre leviers de fidélisation ?", verso: "Contractuel, commercial, relationnel et extension." },
+      { recto: "Pourquoi fidéliser plutôt que conquérir ?", verso: "Conquérir un nouveau client coûte environ cinq fois plus cher." },
+      { recto: "Quel est l'avantage clé face à Robotik Service ?", verso: "Un délai critique de 24 h contre 48 h, plus de 50 langues et la formation incluse." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La marge commerciale se calcule par :', options: ['CA HT − coûts engagés', 'CA HT + coûts', 'CA TTC − TVA', 'coûts − CA HT'], bonne: 0 },
+      { type: 'unique', question: 'Le taux de marge s’exprime :', options: ['en pourcentage du CA', 'en euros', 'en nombre d’unités', 'en jours'], bonne: 0 },
+      { type: 'unique', question: 'La marge du dossier Le Grand Siècle est de :', options: ['41 520,75 €', '85 640,00 €', '127 160,75 €', '125 100,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le chiffre d’affaires récurrent de ce client correspond :', options: ['au contrat de maintenance', 'à la vente des robots', 'à la formation', 'à l’acompte'], bonne: 0 },
+      { type: 'unique', question: 'Le critère le plus mal noté par l’hôtel est :', options: ['le respect des délais de livraison', 'la qualité du produit', 'le service après-vente', 'la formation'], bonne: 0 },
+      { type: 'unique', question: 'Conquérir un nouveau client coûte environ :', options: ['5 fois plus cher que le conserver', '2 fois moins cher', 'le même prix', '10 fois moins cher'], bonne: 0 },
+      { type: 'unique', question: 'Proposer un rendez-vous trimestriel de suivi relève du levier :', options: ['relationnel', 'contractuel', 'commercial', 'de l’extension'], bonne: 0 },
+      { type: 'unique', question: 'Le délai d’intervention critique de Robotik Service est de :', options: ['48 heures', '24 heures', '12 heures', '72 heures'], bonne: 0 },
+      { type: 'unique', question: 'La remise supplémentaire autorisée par le responsable est de :', options: ['5 % sur le contrat de maintenance', '10 % sur tout', '8 % sur les robots', 'aucune'], bonne: 0 },
+      { type: 'unique', question: 'Un compte rendu professionnel doit présenter :', options: ['des faits chiffrés', 'des impressions', 'uniquement les points forts', 'des promesses'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Indicateur de performance', 'Levier de fidélisation', 'Argument face à la concurrence'],
+      zones: [
+        { libelle: 'Le taux de marge', etiquetteIndex: 0 },
+        { libelle: 'Le panier moyen par robot', etiquetteIndex: 0 },
+        { libelle: "Le chiffre d'affaires récurrent", etiquetteIndex: 0 },
+        { libelle: 'Le renouvellement du contrat MIR-CARE', etiquetteIndex: 1 },
+        { libelle: 'La remise fidélité de 8 % au réachat', etiquetteIndex: 1 },
+        { libelle: 'Le rendez-vous trimestriel de suivi', etiquetteIndex: 1 },
+        { libelle: 'Un délai critique de 24 h contre 48 h', etiquetteIndex: 2 },
+        { libelle: 'Plus de 50 langues contre 12', etiquetteIndex: 2 },
+        { libelle: 'La formation incluse et non en option', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez le chiffre d'affaires, la marge et le taux de marge.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 4,
+        reponse: "Le chiffre d'affaires à retenir est le total encaissé sur l'exercice, qui inclut la commande initiale mais aussi le SAV facturable et l'ajout de langue.",
+        tableau: { colonnes: ['Indicateur', 'Opération', 'Résultat'], lignes: [
+          ["Chiffre d'affaires HT encaissé", '37 530 + 87 570 + 1 610,75 + 450', '127 160,75 €'],
+          ['Total des coûts engagés', '82 000 + 900 + 1 240 + 0 + 1 500', '85 640,00 €'],
+          ['Marge commerciale', '127 160,75 − 85 640', '41 520,75 €'],
+          ['Taux de marge', '(41 520,75 ÷ 127 160,75) × 100', '32,65 %'],
+        ] },
+        complement: "1 point pour le chiffre d'affaires, 1 point pour le total des coûts, 1 point pour la marge, 1 point pour le taux. Exiger l'opération écrite. Accepter le taux arrondi entre 32,6 % et 32,7 %. ERREURS CLASSIQUES à sanctionner : (1) retenir 125 100 € (le total de la commande initiale) au lieu du total encaissé sur l'exercice, en oubliant le SAV et le mandarin ; c'est le piège principal, le document 1 sépare volontairement les deux tableaux ; (2) additionner l'acompte et le solde en croyant qu'ils s'ajoutent au total de la commande, ce qui donnerait un double comptage ; vérifier que l'élève a bien compris que 37 530 + 87 570 = 125 100 € ; (3) oublier le geste commercial de 1 500 € dans les coûts ; (4) inclure l'échange du robot MK-2041-C dans les coûts alors qu'il a été refacturé au transporteur et vaut 0 € ; (5) calculer le taux de marge sur les coûts au lieu du chiffre d'affaires. Valoriser l'élève qui remarque que l'acompte et le solde recomposent exactement la commande initiale." },
+
+      { intitule: "Calculez la structure du chiffre d'affaires et le revenu récurrent.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 4,
+        reponse: "Les parts se calculent sur le total de la commande initiale, soit 125 100 € HT, et non sur le total encaissé.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Part des robots', '(114 000 ÷ 125 100) × 100', '91,13 %'],
+          ['Part de la formation', '(1 500 ÷ 125 100) × 100', '1,20 %'],
+          ['Part du contrat de maintenance', '(9 600 ÷ 125 100) × 100', '7,67 %'],
+          ['Panier moyen par robot vendu', '125 100 ÷ 4', '31 275,00 €'],
+          ["Chiffre d'affaires récurrent annuel", 'contrat de maintenance', '9 600,00 €'],
+        ] },
+        complement: "0,5 point par part (1,5 point au total), 1 point pour le panier moyen, 1 point pour l'identification du revenu récurrent, 0,5 point pour l'explication. Accepter les arrondis à deux décimales ou à l'unité (91 %, 1 %, 8 %). Vérifier que la somme des trois parts fait bien 100 %. Explication attendue, toute formulation équivalente acceptée : le contrat de maintenance revient chaque année sans qu'il soit nécessaire de revendre un robot, il sécurise donc le revenu de l'entreprise et rend le client durablement rentable. ERREURS CLASSIQUES à sanctionner : (1) calculer les parts sur 127 160,75 € au lieu de 125 100 €, ce qui fausse les trois résultats ; (2) utiliser 120 000 € pour les robots en oubliant la remise de 5 % déjà déduite, alors que le document 1 donne bien 114 000 € ; (3) diviser par 4 le total encaissé plutôt que le chiffre d'affaires de la commande pour le panier moyen ; accepter 31 790,19 € si l'élève justifie explicitement son choix ; (4) désigner la vente des robots comme revenu récurrent, ce qui est le contresens central de la question." },
+
+      { intitule: "Relevez les critères en dessous de la moyenne et expliquez-les.", documents: ['Documents 3 et 6', 'Annexe 3'], bareme: 4,
+        reponse: "Deux critères seulement sont en dessous de la moyenne des clients. Un troisième est très légèrement inférieur et peut être accepté s'il est correctement calculé.",
+        tableau: { colonnes: ['Critère', 'Hôtel', 'Moyenne', 'Écart', 'Événement explicatif'], lignes: [
+          ['Respect des délais de livraison', '5 / 10', '7,9 / 10', '− 2,9 points', "La réception du 15 juin : une station de recharge manquante et le robot MK-2041-C livré endommagé. La cliente l'écrit dans son commentaire : « la réception a été pénible »."],
+          ['Clarté de la facturation', '6 / 10', '8,0 / 10', '− 2,0 points', "La relance de paiement envoyée le 30 juillet alors que l'incident de livraison n'était pas encore soldé dans l'esprit de la cliente. Elle qualifie cela de « maladroit »."],
+          ['Relation avec le commercial', '8 / 10', '8,3 / 10', '− 0,3 point', "Écart très faible, non significatif. À accepter si l'élève le relève et le calcule correctement, mais ne pas l'exiger."],
+        ] },
+        complement: "1,5 point pour chacun des deux critères principaux (0,25 pour le critère, 0,5 pour l'écart chiffré, 0,75 pour l'événement daté) et 1 point pour la qualité globale du raisonnement, dont 0,5 bonus si le troisième écart est relevé et correctement qualifié de non significatif. ERREURS CLASSIQUES à sanctionner : (1) retenir la qualité du produit ou le SAV, qui sont au-dessus de la moyenne, par confusion entre note basse en valeur absolue et note inférieure à la moyenne ; (2) donner un écart sans le calculer (« beaucoup plus bas ») ; (3) expliquer les mauvaises notes par une supposition (« la cliente est exigeante ») au lieu de citer un fait daté du dossier ; le commentaire libre donne les deux causes explicitement ; (4) attribuer la mauvaise note de facturation à une erreur de calcul sur la facture, alors qu'aucune erreur n'a été commise : c'est le moment de la relance qui est en cause, pas son contenu. Valoriser l'élève qui note que le SAV, initialement source de tension, est devenu le meilleur écart positif du dossier (9 contre 7,2)." },
+
+      { intitule: "Calculez le taux de recommandation et concluez sur le risque.", documents: ['Documents 3 et 5', 'Annexe 4'], bareme: 2,
+        reponse: "Le calcul porte sur les 28 répondants, pas sur les 34 clients interrogés.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Nombre de répondants', 'donné par l’enquête', '28 répondants'],
+          ['Part des clients qui recommanderaient certainement', '(19 ÷ 28) × 100', '67,86 %'],
+          ['Position du Grand Siècle', 'a répondu « probablement »', 'Dans les 6 clients tièdes, soit 21,43 % des répondants'],
+        ] },
+        complement: "0,5 point pour le nombre de répondants, 0,75 point pour le pourcentage, 0,25 point pour la position du client, 0,5 point pour la conclusion. Accepter 68 % arrondi. Conclusion attendue, toute formulation équivalente acceptée : le Grand Siècle n'est pas un client acquis. Il donne une bonne note globale mais ne recommande que « probablement », il annonce qu'il consultera la concurrence pour Lyon, et Robotik Service dispose justement d'une agence sur place. Le risque de perdre le projet lyonnais, voire le renouvellement du contrat, est réel. ERREURS CLASSIQUES à sanctionner : (1) calculer sur 34 clients au lieu de 28 répondants, ce qui donne 55,88 % ; le taux de retour de 82 % est donné pour permettre cette vérification ; (2) additionner « certainement » et « probablement » pour gonfler le taux à 89 %, ce qui masque exactement le problème ; sanctionner nettement, c'est une erreur d'analyse, pas de calcul ; (3) conclure que le client est satisfait donc acquis, en s'arrêtant à la note globale de 8/10." },
+
+      { intitule: "Construisez l'offre de fidélisation chiffrée.", documents: ['Documents 3, 4, 5 et 6', 'Annexe 5'], bareme: 4,
+        reponse: "Plusieurs combinaisons sont recevables. La proposition attendue combine le levier contractuel (priorité fixée par Karim Haddad), le levier relationnel (gratuit et efficace contre l'agence lyonnaise du concurrent) et une réponse à un point soulevé par la cliente.",
+        tableau: { colonnes: ['Offre retenue', 'Levier', 'Justification', 'Calcul', 'Montant HT'], lignes: [
+          ['Renouvellement MIR-CARE PREMIUM (4 robots)', 'Contractuel', "Le SAV est le meilleur critère du dossier (9 contre 7,2). Le PREMIUM ramène le délai critique à 12 h, contre 48 h chez Robotik : c'est l'argument le plus fort face au concurrent.", '4 × 3 100', '12 400,00 €'],
+          ['Formation de perfectionnement', 'Extension', "La cliente note la formation 9/10 et six réceptionnistes sont déjà formés. Une journée de perfectionnement prépare aussi l'ouverture de Lyon sans rien promettre d'autre.", 'forfait', '1 200,00 €'],
+          ['Rendez-vous trimestriel de suivi', 'Relationnel', "Gratuit pour les clients sous contrat. Crée un lien régulier là où Robotik n'a qu'une proximité géographique. Répond au fait que la cliente ne recommande que « probablement ».", 'inclus', '0,00 €'],
+          ['Sous-total HT', '', '', '12 400 + 1 200 + 0', '13 600,00 €'],
+          ['Remise 5 % sur le contrat de maintenance uniquement', 'Commercial', "Plafond autorisé par la note de Karim Haddad, applicable au seul contrat.", '12 400 × 0,05', '− 620,00 €'],
+          ['TOTAL HT de l’offre', '', '', '13 600 − 620', '12 980,00 €'],
+          ['TOTAL TTC de l’offre', '', '', '12 980 × 1,20', '15 576,00 €'],
+        ] },
+        complement: "1,5 point pour le choix de leviers cohérents et justifiés par l'enquête ou la veille (0,5 par offre retenue, minimum trois lignes attendues) ; 1 point pour le sous-total ; 1 point pour la remise correctement appliquée au seul contrat ; 0,5 point pour le total TTC. Accepter toute combinaison différente à condition qu'elle figure au document 4, qu'elle soit justifiée et correctement chiffrée : par exemple le renouvellement MIR-CARE standard (4 × 2 400 = 9 600 €) avec extension de garantie (4 × 1 900 = 7 600 €) est recevable. Recalculer alors le barème en cohérence avec les montants de l'élève. ERREURS CLASSIQUES à sanctionner : (1) appliquer les 5 % sur le total de l'offre au lieu du seul contrat de maintenance, ce que la note interdit explicitement ; (2) inventer une offre absente du document 4, notamment une implantation ou un technicien dédié à Lyon, ce que la note interdit expressément ; sanctionner lourdement, c'est le piège central ; (3) proposer la remise fidélité de 8 % alors qu'aucune nouvelle commande de robots n'est en cours ; l'accepter uniquement si l'élève la présente comme une offre conditionnelle liée au projet de Lyon et ne l'intègre pas au total ; (4) ne pas chiffrer et se contenter d'une liste de possibilités, ce que Karim Haddad refuse par avance ; (5) oublier le TTC. Valoriser l'élève qui inclut le rendez-vous trimestriel à 0 € en expliquant qu'un levier gratuit reste un levier." },
+
+      { intitule: "Rédigez le compte rendu d'analyse à Karim Haddad.", documents: ['Tous les documents', 'Annexe 6'], bareme: 2,
+        reponse: "Le compte rendu suit les cinq sections de l'annexe. Il est daté, adressé, et chaque affirmation est appuyée sur un chiffre.",
+        tableau: { colonnes: ['Section', 'Contenu attendu'], lignes: [
+          ['En-tête', "Date du 12 au 20 janvier 202N+1, émetteur : le stagiaire, destinataire : Karim Haddad, objet : analyse annuelle du dossier Le Grand Siècle et proposition de fidélisation."],
+          ['1. Bilan chiffré', "127 160,75 € HT encaissés, 41 520,75 € de marge, 32,65 % de taux de marge, 9 600 € HT de revenu récurrent annuel, panier moyen de 31 275 € par robot."],
+          ['2. Points forts', "Produit noté 9/10 contre 8,4 de moyenne, formation 9/10 contre 8,1, SAV 9/10 contre 7,2. Le service après-vente est notre meilleur différentiel."],
+          ['3. Points faibles', "Délais de livraison 5/10, soit − 2,9 points, à cause de la station manquante et du robot endommagé du 15 juin. Facturation 6/10, soit − 2,0 points, à cause de la relance du 30 juillet jugée maladroite."],
+          ['4. Risque concurrentiel', "Robotik Service GmbH, agence à Lyon, robot moins cher de 2 500 €. La cliente ne recommande que « probablement » et annonce qu'elle consultera la concurrence pour Lyon. Nos arguments : 24 h contre 48 h, plus de 50 langues contre 12, formation incluse."],
+          ['5. Offre proposée', "MIR-CARE PREMIUM sur 4 robots, formation de perfectionnement, rendez-vous trimestriel, remise de 5 % sur le contrat. Total 12 980 € HT, soit 15 576 € TTC."],
+        ] },
+        complement: "0,25 point pour l'en-tête complet, 0,25 par section correctement traitée (1,25 point au total), 0,5 point pour la présence effective de chiffres dans chaque section. ERREURS CLASSIQUES à sanctionner : (1) rédiger un récit chronologique du dossier au lieu d'une analyse structurée ; (2) omettre la section 3, c'est-à-dire ne présenter que les bonnes nouvelles, alors que Karim Haddad demande explicitement l'inverse (« ne me cache pas les mauvaises notes ») ; sanctionner par la perte de la section et de la moitié du point de forme ; (3) écrire des appréciations sans chiffre (« la cliente est plutôt satisfaite ») ; (4) proposer dans le compte rendu une implantation à Lyon. Ne pas pénaliser l'orthographe. Valoriser l'élève qui conclut par une recommandation explicite sur le rendez-vous du 4 février." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
   'enchanted-m1': ENCHANTED_M1,
   'enchanted-m2': ENCHANTED_M2,
@@ -28736,6 +29182,7 @@ const CONTENUS: Record<string, ContenuMission> = {
   'enchanted-m7': ENCHANTED_M7,
   'enchanted-m8': ENCHANTED_M8,
   'enchanted-m9': ENCHANTED_M9,
+  'enchanted-m10': ENCHANTED_M10,
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
