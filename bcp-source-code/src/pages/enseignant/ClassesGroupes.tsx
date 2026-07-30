@@ -5,8 +5,10 @@
 
 import { useEffect, useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
+import { PastilleInitiales } from '../../lib/theme'
 import { COULEUR_PROF } from '../../data/schema'
 import { listerElevesAcceptes, ajouterEleveManuel } from '../../lib/enseignant'
+import { classeVerrouillee, definirVerrouClasse } from '../../lib/messagerie'
 import type { Profil } from '../../lib/auth'
 import {
   listerClasses,
@@ -53,6 +55,23 @@ export function ClassesGroupes() {
   const [nouvelleClasse, setNouvelleClasse] = useState('')
   const [nouveauGroupe, setNouveauGroupe] = useState('')
   const [classeCourante, setClasseCourante] = useState<string | null>(null)
+  const [verrouille, setVerrouille] = useState(false)
+  const [majVerrou, setMajVerrou] = useState(false)
+
+  useEffect(() => {
+    if (!classeCourante) { setVerrouille(false); return }
+    classeVerrouillee(classeCourante).then(setVerrouille)
+  }, [classeCourante])
+
+  async function basculerVerrou() {
+    if (!classeCourante) return
+    setMajVerrou(true)
+    const nouvel = !verrouille
+    const { erreur } = await definirVerrouClasse(classeCourante, nouvel)
+    setMajVerrou(false)
+    if (erreur) { alert('Erreur : ' + erreur); return }
+    setVerrouille(nouvel)
+  }
 
   async function toutRecharger() {
     const [c, g, e, l] = await Promise.all([
@@ -97,13 +116,13 @@ export function ClassesGroupes() {
     liaisons.some((l) => l.eleve_id === eleveId && l.groupe_id === groupeId)
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant" />
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
         <h1 style={{ fontSize: 20, color: '#1F2933', margin: '0 0 16px' }}>Classes et groupes</h1>
 
         {/* Creation de classe */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16 }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
             <span style={{ fontSize: 13, fontWeight: 700 }}>Nouvelle classe :</span>
             <input value={nouvelleClasse} onChange={(e) => setNouvelleClasse(e.target.value)} placeholder="Ex : Terminale MCV B" style={{ ...champ, minWidth: 220 }} />
@@ -123,8 +142,39 @@ export function ClassesGroupes() {
 
         {classeCourante && (
           <>
+            {/* Verrou messagerie entre eleves */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Discussions entre élèves</div>
+                <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+                  {verrouille
+                    ? 'Verrouillées : les élèves ne peuvent plus se parler entre eux. Ils peuvent toujours vous écrire.'
+                    : 'Autorisées : les élèves de cette classe peuvent discuter entre eux.'}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={basculerVerrou}
+                disabled={majVerrou}
+                style={{
+                  fontFamily: 'Arial, sans-serif',
+                  background: verrouille ? '#C0392B' : COULEUR_PROF,
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '10px 18px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: majVerrou ? 'wait' : 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {verrouille ? 'Déverrouiller' : 'Verrouiller (évaluation)'}
+              </button>
+            </div>
+
             {/* Groupes de la classe */}
-            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 700 }}>Groupes de cette classe :</span>
                 <input value={nouveauGroupe} onChange={(e) => setNouveauGroupe(e.target.value)} placeholder="Ex : Groupe A" style={{ ...champ, minWidth: 180 }} />
@@ -144,7 +194,7 @@ export function ClassesGroupes() {
             </div>
 
             {/* Affectation des eleves */}
-            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 14 }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14 }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Élèves de la classe et groupes</div>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -160,7 +210,7 @@ export function ClassesGroupes() {
                   <tbody>
                     {elevesClasse.map((e) => (
                       <tr key={e.id}>
-                        <td style={{ fontSize: 13, fontWeight: 600, padding: '6px 8px', borderBottom: '1px solid #F3F6F9' }}>{e.nom} {e.prenom}</td>
+                        <td style={{ fontSize: 13, fontWeight: 600, padding: '6px 8px', borderBottom: '1px solid #F3F6F9' }}><span style={{ display:'inline-flex', alignItems:'center', gap:9 }}><PastilleInitiales nom={e.nom} prenom={e.prenom} taille={26} />{e.nom} {e.prenom}</span></td>
                         <td style={{ padding: '6px 8px', borderBottom: '1px solid #F3F6F9' }}>
                           <select value={e.classe_id ?? ''} onChange={async (ev) => { await affecterClasse(e.id, ev.target.value || null); toutRecharger() }} style={{ ...champ, padding: '4px 6px', fontSize: 12 }}>
                             <option value="">— Sans classe —</option>
@@ -208,7 +258,7 @@ function ElevesSansClasse({ eleves, classes, onChange }: { eleves: Profil[]; cla
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {sans.map((e) => (
           <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 13, minWidth: 200 }}>{e.nom} {e.prenom}</span>
+            <span style={{ fontSize: 13, minWidth: 200, display:'inline-flex', alignItems:'center', gap:9 }}><PastilleInitiales nom={e.nom} prenom={e.prenom} taille={26} />{e.nom} {e.prenom}</span>
             <select defaultValue="" onChange={async (ev) => { if (ev.target.value) { await affecterClasse(e.id, ev.target.value); onChange() } }} style={{ ...champ, padding: '4px 6px', fontSize: 12 }}>
               <option value="">— Affecter à une classe —</option>
               {classes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}

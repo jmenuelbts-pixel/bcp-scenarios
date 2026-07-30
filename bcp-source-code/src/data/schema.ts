@@ -318,8 +318,11 @@ export const TOUTES_MISSIONS: { scenario: Scenario; mission: Mission }[] =
     scenario.missions.map((mission) => ({ scenario, mission }))
   )
 
-// Couleur principale du professeur (convention du projet).
-export const COULEUR_PROF = '#1B6B3A'
+// Couleur principale du professeur (bleu ciel).
+export const COULEUR_PROF = '#0EA5E9'
+// Degrade bleu ciel pour les en-tetes et boutons principaux.
+export const DEGRADE_PROF_ENTETE = 'linear-gradient(135deg, #38BDF8 0%, #22D3EE 55%, #2DD4BF 100%)'
+export const DEGRADE_PROF_BOUTON = 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)'
 
 // ---------------------------------------------------------------------------
 // LISIBILITE DES COULEURS

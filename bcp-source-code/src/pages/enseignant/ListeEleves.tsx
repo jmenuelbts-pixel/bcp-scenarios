@@ -98,14 +98,14 @@ export function ListeEleves() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant" />
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
         <h1 style={{ fontSize: 20, color: '#1F2933', margin: '0 0 16px' }}>Liste des élèves</h1>
 
         {/* Ajout d'un eleve manuel */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Ajouter un élève :</span>
           <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Prénom" style={champManuel} />
           <input value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom" style={champManuel} />
@@ -117,7 +117,7 @@ export function ListeEleves() {
         </div>
 
         {/* Filtre classe / groupe */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 12, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 12, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 700 }}>Filtrer :</span>
           <select value={filtreClasse} onChange={(e) => { setFiltreClasse(e.target.value); setFiltreGroupe('') }} style={{ ...champManuel, minWidth: 180 }}>
             <option value="">Toutes les classes</option>
@@ -452,7 +452,7 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
           <thead>
             <tr>
-              <th style={{ ...thStyle, textAlign: 'left', position: 'sticky', left: 0, background: '#F4F7FA', minWidth: 150 }}>Nom Prénom</th>
+              <th style={{ ...thStyle, textAlign: 'left', position: 'sticky', left: 0, background: '#F1F6F3', minWidth: 150 }}>Nom Prénom</th>
               <th style={thStyle}>Inscription</th>
               <th style={thStyle}>Moyenne /20</th>
               {colonnes.map((c) => (
@@ -519,7 +519,7 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
                     <button
                       type="button"
                       onClick={() => rafraichirColonne(c)}
-                      style={{ fontFamily: 'Arial, sans-serif', background: '#EAF7EF', border: '1px solid #A8D5BC', color: '#1B6B3A', fontSize: 10, cursor: 'pointer', marginTop: 4, borderRadius: 6, padding: '3px 6px', width: '100%' }}
+                      style={{ fontFamily: 'Arial, sans-serif', background: '#EAF7EF', border: '1px solid #A8D5BC', color: '#0EA5E9', fontSize: 10, cursor: 'pointer', marginTop: 4, borderRadius: 6, padding: '3px 6px', width: '100%' }}
                     >
                       Rafraîchir les scores
                     </button>

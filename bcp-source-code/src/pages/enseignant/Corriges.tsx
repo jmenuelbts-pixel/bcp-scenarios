@@ -24,7 +24,7 @@ export function Corriges() {
   const [missionSel, setMissionSel] = useState<{ scenarioId: string; mission: Mission } | null>(null)
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant/corriges" />
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>

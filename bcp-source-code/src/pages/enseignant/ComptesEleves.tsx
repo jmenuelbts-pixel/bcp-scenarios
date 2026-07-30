@@ -106,7 +106,7 @@ export function ComptesEleves() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant" />
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '24px' }}>
         <h1 style={{ fontSize: 24, color: '#1F2933', margin: '0 0 6px 0' }}>Comptes élèves</h1>
