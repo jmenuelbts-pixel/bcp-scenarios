@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
+import { PanneauInvite } from './PanneauInvite'
 import { COULEUR_PROF } from '../../data/schema'
 import { listerComptesEleves, definirMotDePasseEleve } from '../../lib/enseignant'
 import type { Profil } from '../../lib/auth'
@@ -117,6 +118,8 @@ export function ComptesEleves() {
           il ne sera plus affiché. L'élève peut aussi le réinitialiser lui-même depuis la page de connexion
           (lien « Mot de passe oublié »).
         </p>
+
+        <PanneauInvite />
 
         {chargement ? (
           <p style={{ fontSize: 14, color: '#6B7280' }}>Chargement...</p>

@@ -27,6 +27,8 @@ export interface Profil {
   statut: Statut | null
   classe_id?: string | null
   manuel?: boolean | null
+  est_invite?: boolean | null
+  invite_actif?: boolean | null
   created_at?: string | null
 }
 
