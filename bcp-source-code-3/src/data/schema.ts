@@ -92,10 +92,28 @@ function construireMissions(scenarioId: string, titres: string[]): Mission[] {
 }
 
 // --- Renault : scenario modele de reference, entierement renseigne ---------
+const ENCHANTED: Scenario = {
+  id: 'enchanted',
+  nom: 'Enchanted Tools',
+  couleur: '#BF5517',
+  missions: construireMissions('enchanted', [
+    "Decouvrir l'entreprise et le robot Mirokai",
+    "Preparer la vente et l'argumentaire CAP",
+    'Accueillir le client et decouvrir ses besoins',
+    'Argumenter et traiter les objections',
+    'Etablir le devis et conclure la vente',
+    'Suivre la commande et preparer la livraison',
+    'Facturer et gerer le paiement',
+    'Controler la livraison et traiter une reclamation',
+    'Assurer le service apres-vente',
+    'Fideliser le client et analyser la vente',
+  ]),
+}
+
 const RENAULT: Scenario = {
   id: 'renault',
   nom: 'Renault',
-  couleur: '#FFCC00',
+  couleur: '#877503',
   missions: construireMissions('renault', [
     "La presentation de l'unite",
     'La zone de chalandise',
@@ -112,7 +130,7 @@ const RENAULT: Scenario = {
 const PEUGEOT: Scenario = {
   id: 'peugeot',
   nom: 'Peugeot',
-  couleur: '#00513B',
+  couleur: '#078747',
   missions: construireMissions('peugeot', [
     "Le secteur de l'automobile",
     'La reglementation sur les concessions automobiles',
@@ -134,7 +152,7 @@ const PEUGEOT: Scenario = {
 const ORPI: Scenario = {
   id: 'orpi',
   nom: 'Orpi',
-  couleur: '#E2001A',
+  couleur: '#07827A',
   missions: construireMissions('orpi', [
     "La phase preparatoire a la mise en oeuvre d'une action de FDRC",
     "L'oral de la phase preparatoire a la mise en oeuvre de l'action de FDRC",
@@ -147,7 +165,7 @@ const ORPI: Scenario = {
 const MAMIE_AND_CO: Scenario = {
   id: 'mamie-and-co',
   nom: 'Mamie And Co',
-  couleur: '#C71585',
+  couleur: '#BF2BD6',
   missions: construireMissions('mamie-and-co', [
     "La presentation de l'unite commerciale et de la clientele",
     "Les caracteristiques du produit et les mobiles d'achat",
@@ -164,7 +182,7 @@ const MAMIE_AND_CO: Scenario = {
 const LEROY_MERLIN: Scenario = {
   id: 'leroy-merlin',
   nom: 'Leroy Merlin',
-  couleur: '#7AB51D',
+  couleur: '#4F7613',
   missions: construireMissions('leroy-merlin', [
     "La presentation de l'unite commerciale et de son marche",
     'La recherche des besoins et la proposition de produit',
@@ -178,7 +196,7 @@ const LEROY_MERLIN: Scenario = {
 const HYDRAO: Scenario = {
   id: 'hydrao',
   nom: 'Hydrao',
-  couleur: '#0090D4',
+  couleur: '#097CB5',
   missions: construireMissions('hydrao', [
     "La presentation de l'unite commerciale et de la clientele",
     'La participation a une operation de prospection',
@@ -194,7 +212,7 @@ const HYDRAO: Scenario = {
 const FREE: Scenario = {
   id: 'free',
   nom: 'Free',
-  couleur: '#CD1F2D',
+  couleur: '#7214FF',
   missions: construireMissions('free', [
     "La presentation de l'unite commerciale et de la clientele",
     "Le traitement de la reclamation en reception d'appel",
@@ -208,7 +226,7 @@ const FREE: Scenario = {
 const CITROEN: Scenario = {
   id: 'citroen',
   nom: 'Citroen',
-  couleur: '#DA291C',
+  couleur: '#DE0B91',
   missions: construireMissions('citroen', [
     "La presentation de l'entreprise Citroen",
     "Le processus d'achat chez Citroen",
@@ -220,7 +238,7 @@ const CITROEN: Scenario = {
 const AMPARIS: Scenario = {
   id: 'amparis',
   nom: 'AMParis',
-  couleur: '#1B6B3A',
+  couleur: '#078707',
   missions: construireMissions('amparis', [
     "La presentation de l'unite commerciale et de la clientele",
     "Les recherches et l'exploitation d'information",
@@ -268,6 +286,7 @@ export const SCENARIOS: Scenario[] = [
   AMPARIS,
   CHAUSSON,
   CITROEN,
+  ENCHANTED,
   FREE,
   HYDRAO,
   KILOUTOU,
@@ -299,8 +318,11 @@ export const TOUTES_MISSIONS: { scenario: Scenario; mission: Mission }[] =
     scenario.missions.map((mission) => ({ scenario, mission }))
   )
 
-// Couleur principale du professeur (convention du projet).
-export const COULEUR_PROF = '#1B6B3A'
+// Couleur principale du professeur (bleu ciel).
+export const COULEUR_PROF = '#0EA5E9'
+// Degrade bleu ciel pour les en-tetes et boutons principaux.
+export const DEGRADE_PROF_ENTETE = 'linear-gradient(135deg, #38BDF8 0%, #22D3EE 55%, #2DD4BF 100%)'
+export const DEGRADE_PROF_BOUTON = 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)'
 
 // ---------------------------------------------------------------------------
 // LISIBILITE DES COULEURS
@@ -327,17 +349,18 @@ function assombrir(hex: string, facteur: number): string {
   return `#${hx(r)}${hx(g)}${hx(b)}`
 }
 
-// Couleur de fond d'en-tete lisible pour un scenario : si la couleur de marque
-// est trop claire (jaune Renault par exemple), on l'assombrit afin que le texte
-// blanc reste lisible. La couleur de marque d'origine reste utilisee pour les
-// pastilles et barres sur fond clair.
+// Couleur de fond d'en-tete d'un scenario. Les couleurs de la palette sont
+// deja calibrees pour que le texte blanc reste lisible (contraste WCAG >= 4.5),
+// on les utilise donc telles quelles. L'assombrissement automatique est
+// conserve en filet de securite si une couleur trop claire etait ajoutee.
 export function couleurEntete(couleur: string): string {
   return luminance(couleur) > 0.6 ? assombrir(couleur, 0.35) : couleur
 }
 
-// Couleur de texte lisible (fonce ou blanc) a poser sur un fond donne.
-export function couleurTexteSur(couleur: string): string {
-  return luminance(couleur) > 0.6 ? '#1F2933' : '#FFFFFF'
+// Couleur de texte a poser sur un fond de scenario : toujours blanc. Toutes
+// les couleurs de la palette garantissent un contraste suffisant.
+export function couleurTexteSur(_couleur: string): string {
+  return '#FFFFFF'
 }
 
 // Eclaircit une couleur en la melangeant avec du blanc. facteur entre 0 et 1

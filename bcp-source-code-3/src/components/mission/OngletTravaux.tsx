@@ -605,7 +605,13 @@ function BulleVue({ b, couleur }: { b: NonNullable<BlocDocumentTexte['bulle']>; 
             <p key={i} style={{ fontSize: 14, color: '#2D3748', lineHeight: 1.7, margin: i === b.lignes.length - 1 ? 0 : '0 0 8px 0', fontStyle: 'italic' }}>{l}</p>
           ))}
         </div>
-        {b.videoLien && (
+        {b.videoLocale && (
+          <video controls preload="metadata" style={{ display: 'block', width: '100%', maxWidth: 640, marginTop: 10, borderRadius: 10, border: `2px solid ${c}` }}>
+            <source src={b.videoLocale} type="video/mp4" />
+            Votre navigateur ne peut pas lire cette vidéo.
+          </video>
+        )}
+        {b.videoLien && !b.videoLocale && (
           <a href={b.videoLien} target="_blank" rel="noopener noreferrer"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 8, textDecoration: 'none', background: '#FFFFFF', color: c, border: `1px solid ${c}`, borderRadius: 16, padding: '5px 12px', fontSize: 12, fontWeight: 700 }}>
             ▶ Regarder la vidéo

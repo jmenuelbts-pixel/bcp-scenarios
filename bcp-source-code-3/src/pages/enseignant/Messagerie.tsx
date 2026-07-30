@@ -19,6 +19,7 @@ import {
   type Message,
 } from '../../lib/messagerie'
 import type { Profil } from '../../lib/auth'
+import { PastilleInitiales } from '../../lib/theme'
 
 export function Messagerie() {
   const navigate = useNavigate()
@@ -132,7 +133,7 @@ export function Messagerie() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <button type="button" onClick={() => navigate('/enseignant')} style={btnRetour}>
@@ -147,7 +148,7 @@ export function Messagerie() {
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24, display: 'grid', gridTemplateColumns: '280px 1fr', gap: 16 }}>
         {/* Colonne gauche : liste des eleves */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 12, height: 'fit-content' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 12, height: 'fit-content' }}>
           <button
             type="button"
             onClick={() => {
@@ -225,7 +226,7 @@ export function Messagerie() {
         </div>
 
         {/* Colonne droite : conversation ou composition collective */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, display: 'flex', flexDirection: 'column', minHeight: 420 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', display: 'flex', flexDirection: 'column', minHeight: 420 }}>
           {!selection && !collectif ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA5B1', fontSize: 14 }}>
               Sélectionnez un élève ou écrivez à toute la classe.

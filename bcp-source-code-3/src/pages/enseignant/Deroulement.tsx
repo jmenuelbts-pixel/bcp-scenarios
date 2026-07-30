@@ -25,7 +25,7 @@ export function Deroulement() {
   const texteEntete = couleurTexteSur(fondEntete)
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant/deroulement" />
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
