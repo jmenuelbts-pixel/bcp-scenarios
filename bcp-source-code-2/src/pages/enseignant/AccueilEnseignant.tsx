@@ -194,7 +194,7 @@ export function AccueilEnseignant() {
   }, [profil])
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       {/* En-tete */}
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div

@@ -15,6 +15,10 @@
 import { COULEUR_PROF } from '../data/schema'
 
 // Couleurs de rendu.
+
+// Nom de l'enseignant, appose en pied de chaque export PDF.
+export const NOM_ENSEIGNANT = 'Jacky MENUEL'
+
 export const ENCRE_ELEVE = '#1D4ED8' // bleu : reponses de l'eleve
 export const ENCRE_PROF = '#B91C1C' // rouge : correction du professeur
 export const ENCRE_NEUTRE = '#1F2933' // noir : consignes et libelles
@@ -191,9 +195,9 @@ export function imprimerPdf(doc: DocumentPdf): void {
   </header>
   ${sectionsHtml}
   <div class="pied">
-    <span class="nom">${piedGauche}</span>
+    <span class="nom">${piedGauche || echapper(NOM_ENSEIGNANT)}</span>
     <span class="contexte">${piedCentre}</span>
-    <span class="num"></span>
+    <span class="num">${echapper(NOM_ENSEIGNANT)}</span>
   </div>
   <script>window.onload = function () { window.print(); };</script>
 </body>

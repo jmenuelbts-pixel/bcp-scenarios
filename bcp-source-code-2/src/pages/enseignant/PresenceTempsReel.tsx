@@ -85,7 +85,7 @@ export function PresenceTempsReel() {
   )
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <style>{'@keyframes pulsePresence{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}'}</style>
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div style={{ maxWidth: 980, margin: '0 auto' }}>
@@ -143,7 +143,7 @@ export function PresenceTempsReel() {
               const progression = enMission ? Math.max(0, Math.min(100, p?.progression ?? 0)) : 0
 
               return (
-                <div key={e.id} style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: '14px 16px' }}>
+                <div key={e.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: '14px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     <span
                       aria-hidden="true"

@@ -249,7 +249,7 @@ export function Exports() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <button type="button" onClick={() => navigate('/enseignant')} style={btnRetour}>
@@ -263,7 +263,7 @@ export function Exports() {
       </header>
 
       <main style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-        <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 20 }}>
+        <section style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 20 }}>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
             Classe
           </label>
