@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
+import { ChampMotDePasse, motDePasseValide } from '../components/ui/ChampMotDePasse'
 
 type Vue = 'connexion' | 'inscription' | 'oubli'
 
@@ -52,8 +53,8 @@ export function ConnexionEtudiant({ onRetour }: Props) {
           setErreur('Le nom et le prénom sont obligatoires.')
           return
         }
-        if (motDePasse.length < 6) {
-          setErreur('Le mot de passe doit comporter au moins 6 caractères.')
+        if (!motDePasseValide(motDePasse)) {
+          setErreur('Le mot de passe ne respecte pas les règles indiquées sous le champ.')
           return
         }
         if (motDePasse !== confirmation) {
@@ -214,13 +215,12 @@ export function ConnexionEtudiant({ onRetour }: Props) {
         {vue !== 'oubli' && (
           <>
             <label style={etiquette}>Mot de passe</label>
-            <input
-              style={champ}
-              type="password"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder={vue === 'inscription' ? '6 caractères minimum' : ''}
+            <ChampMotDePasse
+              valeur={motDePasse}
+              onChange={setMotDePasse}
+              placeholder={vue === 'inscription' ? 'Choisissez un mot de passe' : ''}
               autoComplete={vue === 'connexion' ? 'current-password' : 'new-password'}
+              afficherRegles={vue === 'inscription'}
             />
           </>
         )}
@@ -251,11 +251,9 @@ export function ConnexionEtudiant({ onRetour }: Props) {
         {vue === 'inscription' && (
           <>
             <label style={etiquette}>Confirmer le mot de passe</label>
-            <input
-              style={champ}
-              type="password"
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
+            <ChampMotDePasse
+              valeur={confirmation}
+              onChange={setConfirmation}
               placeholder="Répétez le mot de passe"
               autoComplete="new-password"
             />

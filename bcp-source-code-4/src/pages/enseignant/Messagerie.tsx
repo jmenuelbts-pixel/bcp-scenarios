@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { COULEUR_PROF } from '../../data/schema'
 import { useAuth } from '../../lib/auth'
 import { listerElevesAcceptes } from '../../lib/enseignant'
+import { listerClasses, type Classe } from '../../lib/classes'
 import {
   conversation,
   envoyerMessage,
@@ -16,9 +17,12 @@ import {
   supprimerConversation,
   sonderMessages,
   sonderConversation,
+  classeVerrouillee,
+  definirVerrouClasse,
   type Message,
 } from '../../lib/messagerie'
 import type { Profil } from '../../lib/auth'
+import { PastilleInitiales } from '../../lib/theme'
 
 export function Messagerie() {
   const navigate = useNavigate()
@@ -33,12 +37,40 @@ export function Messagerie() {
   const [texte, setTexte] = useState('')
   const [chargement, setChargement] = useState(true)
   const finRef = useRef<HTMLDivElement>(null)
+  const [classes, setClasses] = useState<Classe[]>([])
+  const [classeVerrou, setClasseVerrou] = useState<string>('')
+  const [verrouille, setVerrouille] = useState(false)
+  const [majVerrou, setMajVerrou] = useState(false)
   // Reflete la selection courante pour le rappel temps reel sans recreer
   // l'abonnement a chaque changement de selection.
   const selectionRef = useRef<string | null>(null)
   useEffect(() => {
     selectionRef.current = selection
   }, [selection])
+
+  useEffect(() => {
+    listerClasses().then((cs) => {
+      setClasses(cs)
+      if (cs.length > 0) setClasseVerrou((prec) => prec || cs[0].id)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!classeVerrou) { setVerrouille(false); return }
+    classeVerrouillee(classeVerrou).then(setVerrouille)
+    const t = setInterval(() => classeVerrouillee(classeVerrou).then(setVerrouille), 5000)
+    return () => clearInterval(t)
+  }, [classeVerrou])
+
+  async function basculerVerrou() {
+    if (!classeVerrou) return
+    setMajVerrou(true)
+    const nouvel = !verrouille
+    const { erreur } = await definirVerrouClasse(classeVerrou, nouvel)
+    setMajVerrou(false)
+    if (erreur) { alert('Erreur : ' + erreur); return }
+    setVerrouille(nouvel)
+  }
 
   // Charge les eleves et le compte de messages non lus par eleve (messages
   // que l'eleve a envoyes au professeur et que le professeur n'a pas lus).
@@ -132,7 +164,7 @@ export function Messagerie() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <button type="button" onClick={() => navigate('/enseignant')} style={btnRetour}>
@@ -145,9 +177,50 @@ export function Messagerie() {
         </div>
       </header>
 
-      <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24, display: 'grid', gridTemplateColumns: '280px 1fr', gap: 16 }}>
+      <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
+        {/* Barre de verrou des discussions entre eleves, par classe */}
+        <div style={{ background: verrouille ? '#FDECEA' : '#FFFFFF', border: `1px solid ${verrouille ? '#F0C2BC' : '#EAF0F5'}`, borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Discussions entre élèves :</span>
+          <select
+            value={classeVerrou}
+            onChange={(e) => setClasseVerrou(e.target.value)}
+            style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '8px 10px', fontSize: 14, minWidth: 170 }}
+          >
+            {classes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+          </select>
+          <span style={{ fontSize: 13, fontWeight: 700, color: verrouille ? '#C0392B' : '#0F9E75' }}>
+            {verrouille ? 'Verrouillées' : 'Autorisées'}
+          </span>
+          <div style={{ flex: 1 }} />
+          <button
+            type="button"
+            onClick={basculerVerrou}
+            disabled={majVerrou || !classeVerrou}
+            style={{
+              fontFamily: 'Arial, sans-serif',
+              background: verrouille ? '#C0392B' : COULEUR_PROF,
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: 10,
+              padding: '10px 18px',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: majVerrou ? 'wait' : 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {verrouille ? 'Déverrouiller' : 'Verrouiller (évaluation)'}
+          </button>
+          <span style={{ fontSize: 12, color: '#6B7280', width: '100%' }}>
+            {verrouille
+              ? "Les élèves de cette classe ne peuvent plus se parler entre eux ni voir leur historique. Ils peuvent toujours vous écrire."
+              : "Les élèves de cette classe peuvent discuter entre eux. Verrouillez pendant une évaluation."}
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 16 }}>
         {/* Colonne gauche : liste des eleves */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 12, height: 'fit-content' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 12, height: 'fit-content' }}>
           <button
             type="button"
             onClick={() => {
@@ -225,7 +298,7 @@ export function Messagerie() {
         </div>
 
         {/* Colonne droite : conversation ou composition collective */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, display: 'flex', flexDirection: 'column', minHeight: 420 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', display: 'flex', flexDirection: 'column', minHeight: 420 }}>
           {!selection && !collectif ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA5B1', fontSize: 14 }}>
               Sélectionnez un élève ou écrivez à toute la classe.
@@ -306,6 +379,7 @@ export function Messagerie() {
               </button>
             </div>
           )}
+        </div>
         </div>
       </main>
     </div>

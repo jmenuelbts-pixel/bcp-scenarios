@@ -3,8 +3,10 @@
 // case A propos, grille des 9 scenarios sous forme de paves colores.
 // Style entierement inline, police Arial, aucune classe Tailwind dans le JSX.
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { SCENARIOS } from '../../data/schema'
+import { useAuth } from '../../lib/auth'
+import { scenariosOuverts } from '../../lib/invite'
 import {
   PROGRESSION_VIDE,
   type ProgressionEleve,
@@ -39,6 +41,19 @@ export function AccueilEtudiant({
   onOuvrirExports,
 }: AccueilEtudiantProps) {
   const [aproposOuvert, setAproposOuvert] = useState(false)
+  const { profil } = useAuth()
+  const estInvite = profil?.est_invite === true
+  const [scenariosVisibles, setScenariosVisibles] = useState<string[] | null>(null)
+
+  // Si l'utilisateur est l'invite, on ne montre que les scenarios ouverts.
+  useEffect(() => {
+    if (!estInvite) { setScenariosVisibles(null); return }
+    scenariosOuverts().then(setScenariosVisibles)
+  }, [estInvite])
+
+  const scenariosAffiches = estInvite
+    ? SCENARIOS.filter((sc) => (scenariosVisibles ?? []).includes(sc.id))
+    : SCENARIOS
 
   // Message d'accueil tire au hasard a chaque connexion, toujours avec le prenom.
   const salutation = useMemo(() => {
@@ -244,7 +259,7 @@ export function AccueilEtudiant({
           gap: 20,
         }}
       >
-        {SCENARIOS.map((scenario) => (
+        {scenariosAffiches.map((scenario) => (
           <ScenarioCard
             key={scenario.id}
             scenario={scenario}

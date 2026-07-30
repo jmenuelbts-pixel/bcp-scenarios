@@ -195,3 +195,65 @@ export function sonderConversation(
     clearInterval(timer)
   }
 }
+
+// --- Verrou de messagerie par classe ---------------------------------------
+// Empeche les eleves d'une classe de discuter entre eux (typiquement pendant
+// une evaluation). Les echanges avec l'enseignant restent toujours possibles.
+// La securite reelle est assuree par les politiques RLS ; ces fonctions ne
+// font que piloter et lire l'etat.
+
+import type { Profil } from './auth'
+
+// Lit l'etat de verrouillage d'une classe (false si aucune ligne).
+export async function classeVerrouillee(classeId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('verrou_messagerie')
+    .select('verrouille')
+    .eq('classe_id', classeId)
+    .maybeSingle()
+  return (data as { verrouille: boolean } | null)?.verrouille ?? false
+}
+
+// Verrouille ou deverrouille les discussions entre eleves d'une classe.
+// Reserve a l'enseignant (garanti par RLS). Upsert sur la cle classe_id.
+export async function definirVerrouClasse(
+  classeId: string,
+  verrouille: boolean
+): Promise<{ erreur: string | null }> {
+  const { error } = await supabase
+    .from('verrou_messagerie')
+    .upsert({ classe_id: classeId, verrouille, maj_le: new Date().toISOString() }, { onConflict: 'classe_id' })
+  return { erreur: error ? error.message : null }
+}
+
+// Liste les contacts d'un eleve dans la messagerie : l'enseignant (toujours),
+// et ses camarades de classe si celle-ci n'est pas verrouillee.
+// Renvoie chaque contact avec un booleen estEnseignant pour l'affichage.
+export async function contactsEleve(
+  eleve: Profil
+): Promise<{ contact: Profil; estEnseignant: boolean }[]> {
+  // L'enseignant : toujours present.
+  const { data: profs } = await supabase
+    .from('profiles')
+    .select('id, email, prenom, nom, role, classe_id')
+    .eq('role', 'enseignant')
+  const contacts: { contact: Profil; estEnseignant: boolean }[] =
+    ((profs as Profil[]) ?? []).map((p) => ({ contact: p, estEnseignant: true }))
+
+  // Les camarades : seulement si la classe n'est pas verrouillee.
+  if (eleve.classe_id) {
+    const verrou = await classeVerrouillee(eleve.classe_id)
+    if (!verrou) {
+      const { data: camarades } = await supabase
+        .from('profiles')
+        .select('id, email, prenom, nom, role, classe_id')
+        .eq('role', 'etudiant')
+        .eq('classe_id', eleve.classe_id)
+        .neq('id', eleve.id)
+      for (const c of (camarades as Profil[]) ?? []) {
+        contacts.push({ contact: c, estEnseignant: false })
+      }
+    }
+  }
+  return contacts
+}

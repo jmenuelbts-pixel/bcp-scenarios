@@ -7,6 +7,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
 import { COULEUR_PROF } from '../../data/schema'
+import { PastilleInitiales, CarteStat, OMBRE_CARTE, DEGRADE_PROF } from '../../lib/theme'
 import { listerElevesAcceptes, ajouterEleveManuel, supprimerEleve } from '../../lib/enseignant'
 import type { Profil } from '../../lib/auth'
 import { SCENARIOS } from '../../data/schema'
@@ -97,14 +98,14 @@ export function ListeEleves() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant" />
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
         <h1 style={{ fontSize: 20, color: '#1F2933', margin: '0 0 16px' }}>Liste des élèves</h1>
 
         {/* Ajout d'un eleve manuel */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Ajouter un élève :</span>
           <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Prénom" style={champManuel} />
           <input value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom" style={champManuel} />
@@ -116,7 +117,7 @@ export function ListeEleves() {
         </div>
 
         {/* Filtre classe / groupe */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 12, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 12, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 700 }}>Filtrer :</span>
           <select value={filtreClasse} onChange={(e) => { setFiltreClasse(e.target.value); setFiltreGroupe('') }} style={{ ...champManuel, minWidth: 180 }}>
             <option value="">Toutes les classes</option>
@@ -142,11 +143,11 @@ export function ListeEleves() {
                 onClick={() => setOnglet(o)}
                 style={{
                   fontFamily: 'Arial, sans-serif',
-                  background: actif ? COULEUR_PROF : '#FFFFFF',
+                  background: actif ? DEGRADE_PROF : '#FFFFFF',
                   color: actif ? '#FFFFFF' : COULEUR_PROF,
-                  border: `1px solid ${COULEUR_PROF}`,
-                  borderRadius: 99,
-                  padding: '8px 20px',
+                  border: actif ? 'none' : `1px solid ${COULEUR_PROF}`,
+                  borderRadius: 10,
+                  padding: '9px 22px',
                   fontSize: 14,
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -273,12 +274,13 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: 16, marginBottom: 12, fontSize: 13 }}>
-        <span style={{ color: '#2E8B57', fontWeight: 700 }}>Présents : {nbPresents}</span>
-        <span style={{ color: '#A33', fontWeight: 700 }}>Absents : {nbAbsents}</span>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+        <CarteStat libelle="Effectif" valeur={eleves.length} />
+        <CarteStat libelle="Présents" valeur={nbPresents} couleur="#0F9E75" />
+        <CarteStat libelle="Absents" valeur={nbAbsents} couleur="#C0392B" />
       </div>
 
-      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12 }}>
+      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 12, boxShadow: OMBRE_CARTE }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
           <thead>
             <tr>
@@ -292,7 +294,12 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
               const s = etat(e.id)
               return (
                 <tr key={e.id}>
-                  <td style={{ ...tdStyle, fontWeight: 600 }}>{e.nom} {e.prenom}</td>
+                  <td style={{ ...tdStyle, fontWeight: 600 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                      <PastilleInitiales nom={e.nom} prenom={e.prenom} />
+                      {e.nom} {e.prenom}
+                    </span>
+                  </td>
                   <td style={{ ...tdStyle, textAlign: 'center' }}>
                     <input type="checkbox" checked={s.absent} onChange={() => basculerAbsent(e.id)} style={{ width: 18, height: 18, cursor: 'pointer' }} />
                   </td>
@@ -441,11 +448,11 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12 }}>
+      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 12, boxShadow: OMBRE_CARTE }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
           <thead>
             <tr>
-              <th style={{ ...thStyle, textAlign: 'left', position: 'sticky', left: 0, background: '#F4F7FA', minWidth: 150 }}>Nom Prénom</th>
+              <th style={{ ...thStyle, textAlign: 'left', position: 'sticky', left: 0, background: '#F1F6F3', minWidth: 150 }}>Nom Prénom</th>
               <th style={thStyle}>Inscription</th>
               <th style={thStyle}>Moyenne /20</th>
               {colonnes.map((c) => (
@@ -512,7 +519,7 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
                     <button
                       type="button"
                       onClick={() => rafraichirColonne(c)}
-                      style={{ fontFamily: 'Arial, sans-serif', background: '#EAF7EF', border: '1px solid #A8D5BC', color: '#1B6B3A', fontSize: 10, cursor: 'pointer', marginTop: 4, borderRadius: 6, padding: '3px 6px', width: '100%' }}
+                      style={{ fontFamily: 'Arial, sans-serif', background: '#EAF7EF', border: '1px solid #A8D5BC', color: '#0EA5E9', fontSize: 10, cursor: 'pointer', marginTop: 4, borderRadius: 6, padding: '3px 6px', width: '100%' }}
                     >
                       Rafraîchir les scores
                     </button>

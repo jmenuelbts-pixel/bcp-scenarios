@@ -14,6 +14,8 @@ import {
   type Mission,
 } from '../../data/schema'
 import { getContenuMission, type PosteOrganigramme } from '../../data/contenus'
+import { BoutonExportPdf } from '../../components/ui/BoutonExportPdf'
+import { exporterCorrigeMission } from '../../lib/pdf'
 
 export function Corriges() {
   // Scenario actuellement deplie (un seul a la fois).
@@ -22,7 +24,7 @@ export function Corriges() {
   const [missionSel, setMissionSel] = useState<{ scenarioId: string; mission: Mission } | null>(null)
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant/corriges" />
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
@@ -182,9 +184,20 @@ export function Corriges() {
                                   <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>
                                     Corrigé structuré
                                   </span>
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: scenario.couleur }}>
-                                    Total : {total} points
-                                  </span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                                    <span style={{ fontSize: 13, fontWeight: 700, color: scenario.couleur }}>
+                                      Total : {total} points
+                                    </span>
+                                    <BoutonExportPdf
+                                      onExport={() =>
+                                        exporterCorrigeMission(
+                                          mission.id,
+                                          `Mission ${mission.numero} — ${mission.titre}`,
+                                          scenario.nom,
+                                        )
+                                      }
+                                    />
+                                  </div>
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
