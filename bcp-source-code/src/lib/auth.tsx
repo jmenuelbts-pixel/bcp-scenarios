@@ -27,6 +27,8 @@ export interface Profil {
   statut: Statut | null
   classe_id?: string | null
   manuel?: boolean | null
+  est_invite?: boolean | null
+  invite_actif?: boolean | null
   created_at?: string | null
 }
 
@@ -73,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function chargerProfil(userId: string) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, prenom, nom, date_naissance, role, entreprise, statut')
+      .select('id, email, prenom, nom, date_naissance, role, entreprise, statut, classe_id, est_invite, invite_actif')
       .eq('id', userId)
       .maybeSingle()
     if (error) {

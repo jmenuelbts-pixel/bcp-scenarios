@@ -8,7 +8,6 @@ import { EnteteProf } from '../../components/ui/EnteteProf'
 import { PastilleInitiales } from '../../lib/theme'
 import { COULEUR_PROF } from '../../data/schema'
 import { listerElevesAcceptes, ajouterEleveManuel } from '../../lib/enseignant'
-import { classeVerrouillee, definirVerrouClasse } from '../../lib/messagerie'
 import type { Profil } from '../../lib/auth'
 import {
   listerClasses,
@@ -55,23 +54,6 @@ export function ClassesGroupes() {
   const [nouvelleClasse, setNouvelleClasse] = useState('')
   const [nouveauGroupe, setNouveauGroupe] = useState('')
   const [classeCourante, setClasseCourante] = useState<string | null>(null)
-  const [verrouille, setVerrouille] = useState(false)
-  const [majVerrou, setMajVerrou] = useState(false)
-
-  useEffect(() => {
-    if (!classeCourante) { setVerrouille(false); return }
-    classeVerrouillee(classeCourante).then(setVerrouille)
-  }, [classeCourante])
-
-  async function basculerVerrou() {
-    if (!classeCourante) return
-    setMajVerrou(true)
-    const nouvel = !verrouille
-    const { erreur } = await definirVerrouClasse(classeCourante, nouvel)
-    setMajVerrou(false)
-    if (erreur) { alert('Erreur : ' + erreur); return }
-    setVerrouille(nouvel)
-  }
 
   async function toutRecharger() {
     const [c, g, e, l] = await Promise.all([
@@ -142,37 +124,6 @@ export function ClassesGroupes() {
 
         {classeCourante && (
           <>
-            {/* Verrou messagerie entre eleves */}
-            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Discussions entre élèves</div>
-                <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
-                  {verrouille
-                    ? 'Verrouillées : les élèves ne peuvent plus se parler entre eux. Ils peuvent toujours vous écrire.'
-                    : 'Autorisées : les élèves de cette classe peuvent discuter entre eux.'}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={basculerVerrou}
-                disabled={majVerrou}
-                style={{
-                  fontFamily: 'Arial, sans-serif',
-                  background: verrouille ? '#C0392B' : COULEUR_PROF,
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '10px 18px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: majVerrou ? 'wait' : 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {verrouille ? 'Déverrouiller' : 'Verrouiller (évaluation)'}
-              </button>
-            </div>
-
             {/* Groupes de la classe */}
             <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
