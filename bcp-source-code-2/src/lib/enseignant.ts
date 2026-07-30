@@ -6,7 +6,7 @@
 import { supabase } from './supabase'
 import type { Profil } from './auth'
 
-const CHAMPS = 'id, email, prenom, nom, date_naissance, role, entreprise, statut, classe_id, manuel, mdp_simple, created_at'
+const CHAMPS = 'id, email, prenom, nom, date_naissance, role, entreprise, statut, classe_id, manuel, created_at'
 
 // Ajoute un eleve manuellement (sans passage par l'inscription). Le profil est
 // cree avec le statut 'accepte' pour apparaitre immediatement dans l'appel et
@@ -15,8 +15,7 @@ export async function ajouterEleveManuel(
   prenom: string,
   nom: string,
   email: string,
-  classeId: string | null = null,
-  mdpSimple: string | null = null
+  classeId: string | null = null
 ): Promise<{ id: string | null; erreur: string | null }> {
   const id =
     typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -31,15 +30,14 @@ export async function ajouterEleveManuel(
     statut: 'accepte',
     manuel: true,
     classe_id: classeId,
-    mdp_simple: mdpSimple,
   })
   return { id: error ? null : id, erreur: error?.message ?? null }
 }
 
 // --- Comptes eleves (chantier B) -------------------------------------------
 
-// Liste des eleves acceptes pour l'espace Comptes eleves : nom, prenom, email,
-// caractere manuel et mot de passe simple (seulement rempli pour les manuels).
+// Liste des eleves acceptes pour l'espace Comptes eleves : nom, prenom, email
+// et caractere manuel. Aucun mot de passe n'est stocke ni lisible.
 export async function listerComptesEleves(): Promise<Profil[]> {
   const { data } = await supabase
     .from('profiles')
@@ -50,18 +48,20 @@ export async function listerComptesEleves(): Promise<Profil[]> {
   return (data as Profil[]) ?? []
 }
 
-// Definit ou modifie le mot de passe simple visible d'un eleve manuel.
-// Ne s'applique qu'aux eleves manuels : les comptes Auth ont un mot de passe
-// chiffre non modifiable ici.
-export async function definirMdpSimple(
+// Definit le mot de passe d'un eleve via l'Edge Function serveur.
+// Le mot de passe est confie a Supabase Auth (chiffre) et n'est jamais stocke
+// en clair dans la base. La cle service_role reste cote serveur.
+export async function definirMotDePasseEleve(
   eleveId: string,
-  mdpSimple: string
+  motDePasse: string
 ): Promise<{ erreur: string | null }> {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ mdp_simple: mdpSimple })
-    .eq('id', eleveId)
-  return { erreur: error?.message ?? null }
+  const { data, error } = await supabase.functions.invoke('reinitialiser-mdp-eleve', {
+    body: { eleve_id: eleveId, nouveau_mdp: motDePasse },
+  })
+  if (error) return { erreur: error.message }
+  const rep = data as { erreur?: string } | null
+  if (rep?.erreur) return { erreur: rep.erreur }
+  return { erreur: null }
 }
 
 // Supprime un eleve (profil). A utiliser avec prudence : supprime aussi ses

@@ -27,7 +27,6 @@ export interface Profil {
   statut: Statut | null
   classe_id?: string | null
   manuel?: boolean | null
-  mdp_simple?: string | null
   created_at?: string | null
 }
 

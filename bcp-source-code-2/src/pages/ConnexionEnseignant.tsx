@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import { useAuth, EMAIL_ENSEIGNANT } from '../lib/auth'
 import { supabase } from '../lib/supabase'
+import { ChampMotDePasse } from '../components/ui/ChampMotDePasse'
 
 interface Props {
   onRetour: () => void
@@ -131,11 +132,9 @@ export function ConnexionEnseignant({ onRetour }: Props) {
         />
 
         <label style={etiquette}>Mot de passe</label>
-        <input
-          style={champ}
-          type="password"
-          value={motDePasse}
-          onChange={(e) => setMotDePasse(e.target.value)}
+        <ChampMotDePasse
+          valeur={motDePasse}
+          onChange={setMotDePasse}
           autoComplete="current-password"
         />
 

@@ -1387,6 +1387,7 @@ export interface BlocDocumentTexte {
     couleurAvatar?: string
     lignes: string[] // paragraphes du temoignage
     videoLien?: string
+    videoLocale?: string // chemin d'une video hebergee dans l'app (ex: /docs/enchanted/x.mp4)
   }
   // Gabarit de note professionnelle (De / A / Date / Objet + corps), facon vrai
   // logiciel de traitement de texte, avec en-tete logo. L'eleve la complete.
@@ -1660,16 +1661,16 @@ const RENAULT_M1: ContenuMission = {
         titre: "Activité 1 — L'entreprise et ses produits",
         contexte: "Votre responsable vous demande de vous familiariser avec l'entreprise en complétant son identité.",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Indiquez les horaires d\'ouverture de la partie showroom de la concession.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Indiquez les deux grands types de biens proposés par la concession Renault.', ressources: 'Lire le document 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Indiquez les services proposés par la concession Renault.', ressources: 'Lire le document 4, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez les horaires d\'ouverture de la partie showroom de la concession.', ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Indiquez les deux grands types de biens proposés par la concession Renault.', ressources: 'Lire le document 3, compléter l\'annexe 3. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Indiquez les services proposés par la concession Renault.', ressources: 'Lire le document 4, compléter l\'annexe 4. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 2 — Le personnel de l\'entreprise',
         questions: [
-          { numero: 5, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction de chaque personne.", ressources: 'Lire le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 5, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction de chaque personne.", ressources: 'Lire le document 5, compléter l\'annexe 5. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe5' },
         ],
       },
     ],
@@ -2086,29 +2087,29 @@ const RENAULT_M2: ContenuMission = {
         titre: 'Activité 1 — Les éléments de provenance de la clientèle',
         contexte: "Votre responsable M. Prauviste souhaite mettre en place une campagne de communication. Il vous demande donc d'analyser le lieu de provenance des clients de la concession et du garage à partir du fichier clients car il souhaite informer ceux qui sont à 20 minutes maximum, des Journées Portes Ouvertes qui auront lieu le 11 novembre à 10 heures à 20 heures.",
         questions: [
-          { numero: 1, consigne: 'À partir des chèques, des relevés d\'identité bancaire et des suggestions des clients, complétez le tableau de provenance.', ressources: 'Lire les documents 1, 2 et 3, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 1, consigne: 'À partir des chèques, des relevés d\'identité bancaire et des suggestions des clients, complétez le tableau de provenance.', ressources: 'Lire les documents 1, 2 et 3, compléter l\'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — La détermination de la zone de chalandise : en temps',
         contexte: "Maintenant, votre tuteur M. Yves Jamen souhaite que vous évaluiez, en voiture, la distance en temps qui sépare les clients de la concession.",
         questions: [
-          { numero: 2, consigne: 'Retrouvez et notez l\'adresse de la concession Renault.', ressources: 'Compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Complétez le tableau en inscrivant les nom et prénom des clients, calculez la distance en temps (Google Maps) puis arrondissez à la dizaine supérieure.', ressources: 'Lire le document 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 2, consigne: 'Retrouvez et notez l\'adresse de la concession Renault.', ressources: 'Compléter l\'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Complétez le tableau en inscrivant les nom et prénom des clients, calculez la distance en temps (Google Maps) puis arrondissez à la dizaine supérieure.', ressources: 'Lire le document 4, compléter l\'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 3 — La construction de la zone de chalandise',
         contexte: "Maintenant que vous avez identifié la provenance des clients et le temps qu'ils mettent pour se rendre à la concession, votre tuteur vous demande de répondre à sa question.",
         questions: [
-          { numero: 4, consigne: 'Selon vous, quel est l\'avantage pour la concession Renault de connaître d\'où viennent ses clients ?', ressources: 'Compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 4, consigne: 'Selon vous, quel est l\'avantage pour la concession Renault de connaître d\'où viennent ses clients ?', ressources: 'Compléter l\'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 4 — Sélectionner les clients',
         contexte: "Votre tuteur vous annonce qu'il ne souhaite faire bénéficier de ces journées portes ouvertes qu'aux clients de la zone primaire ou secondaire et qui ont une voiture achetée avant 2015. Il vous charge de les identifier tandis que les prospects, eux, seront contactés par l'autre stagiaire de la concession.",
         questions: [
-          { numero: 5, consigne: 'Indiquez le nom et le mail des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2015).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 5, consigne: 'Indiquez le nom et le mail des clients qui recevront l\'invitation (zone primaire ou secondaire et véhicule acheté avant 2015).', ressources: 'Lire l\'annexe 1 et le document 5, compléter l\'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe5' },
         ],
       },
     ],
@@ -2362,22 +2363,22 @@ const RENAULT_M3: ContenuMission = {
         titre: 'Activité 1 — La rédaction du courriel pour les Journées Portes Ouvertes',
         contexte: "Nous sommes le 2 novembre et votre tuteur est absent du bureau aujourd'hui. Il vous laisse une note dans laquelle il vous demande de rédiger le courriel commercial qui sera envoyé à tous les clients que vous avez sélectionnés précédemment selon les critères qu'il vous avait donnés.",
         questions: [
-          { numero: 1, consigne: 'Rédigez le courriel destiné aux clients sélectionnés. Vous pouvez le rédiger directement sur l\'annexe 1a, ou en ligne (lien Quizinière / QR code, annexe 1b).', ressources: 'Lire le document 1, compléter l\'annexe 1a.', annexeId: 'annexe1a' },
+          { numero: 1, consigne: 'Rédigez le courriel destiné aux clients sélectionnés. Vous pouvez le rédiger directement sur l\'annexe 1a, ou en ligne (lien Quizinière / QR code, annexe 1b).', ressources: 'Lire le document 1, compléter l\'annexe 1a. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe1a' },
         ],
       },
       {
         titre: 'Activité 2 — La prise de contact par SMS',
         contexte: "Nous sommes le 10 novembre et c'est demain qu'auront lieu les Journées Portes Ouvertes organisées par Renault. Ce sera une journée très importante pour la concession et votre tuteur souhaite absolument que vous vous entraîniez à prendre contact avec la clientèle et ce quel que soit le canal utilisé.",
         questions: [
-          { numero: 2, consigne: 'Rédigez le SMS destiné aux clients sélectionnés pour rappeler l\'évènement.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 2, consigne: 'Rédigez le SMS destiné aux clients sélectionnés pour rappeler l\'évènement.', ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe2' },
         ],
       },
       {
         titre: 'Activité 3 — La prise de contact en face-à-face',
         contexte: "Nous sommes aujourd'hui le 11 novembre il est 9h et l'évènement organisé va commencer dans une heure. Vous jetez un dernier coup d'œil rapide sur le livret que vous a donné votre responsable la veille. Il comporte les consignes pour faire un accueil positif au client.",
         questions: [
-          { numero: 3, consigne: 'Pour chaque élément non verbal et sa signification, indiquez la communication que vous adopterez face au client.', ressources: 'Lire les documents 3 et 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Rédigez la phrase d\'accueil que vous prononcerez pour répondre au client.', ressources: 'Lire et compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 3, consigne: 'Pour chaque élément non verbal et sa signification, indiquez la communication que vous adopterez face au client.', ressources: 'Lire les documents 3 et 4, compléter l\'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Rédigez la phrase d\'accueil que vous prononcerez pour répondre au client.', ressources: 'Lire et compléter l\'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe4' },
         ],
       },
     ],
@@ -2641,22 +2642,22 @@ const RENAULT_M4: ContenuMission = {
         titre: 'Activité 1 — Le questionnement',
         contexte: "L'étape de la prise de contact passée, vous êtes en confiance pour pouvoir mener l'entretien de vente en commençant par faire la recherche des besoins afin de pouvoir ensuite prodiguer les meilleurs conseils à vos clients.",
         questions: [
-          { numero: 1, consigne: "Questionnez M. Dupont avec la méthode en entonnoir (du général au particulier). En fonction de chaque réponse, construisez la question du vendeur et cochez le type de question dont il s'agit (O : ouverte, F : fermée, A : alternative, CM : choix multiple).", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1dlg' },
+          { numero: 1, consigne: "Questionnez M. Dupont avec la méthode en entonnoir (du général au particulier). En fonction de chaque réponse, construisez la question du vendeur et cochez le type de question dont il s'agit (O : ouverte, F : fermée, A : alternative, CM : choix multiple).", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1dlg' },
         ],
       },
       {
         titre: "Activité 2 — Les mobiles et les motivations d'achat",
         contexte: "Maintenant que vous avez questionné les clients quant à leurs attentes, vous cherchez à connaître les raisons qui incitent la famille Dupont à changer de voiture. Vous consultez la page 3 de votre livret.",
         questions: [
-          { numero: 2, consigne: "Cochez le ou les mobiles d'achat exprimés par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2mob' },
-          { numero: 3, consigne: "Cochez la ou les motivations d'achat exprimées par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3mot' },
+          { numero: 2, consigne: "Cochez le ou les mobiles d'achat exprimés par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2mob' },
+          { numero: 3, consigne: "Cochez la ou les motivations d'achat exprimées par les clients lors du dialogue, puis justifiez en reportant la phrase de M. Dupont.", ressources: "Lire le document 2, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3mot' },
         ],
       },
       {
         titre: 'Activité 3 — La reformulation',
         contexte: "Vous avez fait une recherche des besoins exhaustive et pour être sûr que vous avez correctement compris toutes les exigences de la famille Dupont, vous procédez à la reformulation.",
         questions: [
-          { numero: 4, consigne: "Reformulez toutes les demandes du client en utilisant la reformulation synthèse.", ressources: "Lire le document 3, compléter l'annexe 4. [C.1.2]", annexeId: 'annexe4ref' },
+          { numero: 4, consigne: "Reformulez toutes les demandes du client en utilisant la reformulation synthèse.", ressources: "Lire le document 3, compléter l'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe4ref' },
         ],
       },
     ],
@@ -2732,7 +2733,7 @@ const RENAULT_M4: ContenuMission = {
       {
         intitule: 'Le questionnement (annexe 1).',
         documents: ['Document 1', 'Annexe 1'],
-        bareme: 6,
+        bareme: 7,
         reponse:
           "Questions attendues (méthode en entonnoir), avec leur type : « Je peux vous aider ? » (Ouverte). « Vous avez regardé les modèles sur notre site ? » (Fermée). « Vous recherchez plutôt un véhicule neuf ou d'occasion ? » (Alternative). « Vous cherchez une voiture pour quelle utilisation ? » (Ouverte). « Vous recherchez plutôt une essence, diésel, électrique ou hybride ? » (Choix multiple). « Vous êtes intéressé par une marque en particulier ? » (Ouverte). « Vous préférez une boîte manuelle ou automatique ? » (Alternative). « Avez-vous réfléchi à la couleur ? » (Fermée). « Vous aimez plutôt les couleurs chaudes ou froides ? » (Alternative). « Quel est votre budget ? » (Fermée). « Avez-vous d'autres exigences ? » (Fermée).",
         tableau: {
@@ -2755,7 +2756,7 @@ const RENAULT_M4: ContenuMission = {
       {
         intitule: "Les mobiles d'achat (annexe 2).",
         documents: ['Document 2', 'Annexe 2'],
-        bareme: 4,
+        bareme: 5,
         reponse:
           "Nouveauté : « on aimerait bien la changer rapidement pour un modèle plus récent ». Argent : « ce type de voiture peut coûter cher, donc nous sommes prêts à mettre environ 8 300 € maximum ». Sympathie : « on aime la marque Renault ». Environnement : « plutôt électrique, nous sommes très écolos ».",
         tableau: {
@@ -2787,7 +2788,7 @@ const RENAULT_M4: ContenuMission = {
       {
         intitule: 'La reformulation synthèse (annexe 4).',
         documents: ['Document 3', 'Annexe 4'],
-        bareme: 4,
+        bareme: 5,
         reponse:
           "« Si j'ai bien compris, vous recherchez un véhicule d'occasion électrique de type citadine, gris et de la marque Renault, avec une boîte automatique et moins de 20 000 km, pour un budget maximum de 8 300 €. C'est bien cela ? »",
       },
@@ -3028,28 +3029,28 @@ const RENAULT_M5: ContenuMission = {
         titre: 'Activité 1 — La réalisation de la fiche produit du véhicule',
         contexte: "Les clients vous ont confirmé que vous avez bien compris leurs besoins. Il est donc temps de leur proposer des produits correspondant à leurs besoins.",
         questions: [
-          { numero: 1, consigne: "Utilisez le configurateur Renault en reportant les besoins de la famille Dupont (mission 4, annexe 1) pour faire apparaître les véhicules disponibles, puis réalisez la fiche produit du premier véhicule.", ressources: "Utiliser le configurateur (annexe 1), lire le document 2, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1cfg' },
-          { numero: 2, consigne: 'Réalisez la fiche produit du second véhicule correspondant aux besoins du couple.', ressources: "Lire le document 3, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2fp' },
+          { numero: 1, consigne: "Utilisez le configurateur Renault en reportant les besoins de la famille Dupont (mission 4, annexe 1) pour faire apparaître les véhicules disponibles, puis réalisez la fiche produit du premier véhicule.", ressources: "Utiliser le configurateur (annexe 1), lire le document 2, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1cfg' },
+          { numero: 2, consigne: 'Réalisez la fiche produit du second véhicule correspondant aux besoins du couple.', ressources: "Lire le document 3, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2fp' },
         ],
       },
       {
         titre: 'Activité 2 — La proposition de produit',
         questions: [
-          { numero: 3, consigne: 'Quel est le véhicule le plus approprié ? Justifiez votre réponse.', ressources: "Comparer les fiches produit, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3choix' },
+          { numero: 3, consigne: 'Quel est le véhicule le plus approprié ? Justifiez votre réponse.', ressources: "Comparer les fiches produit, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3choix' },
         ],
       },
       {
         titre: 'Activité 3 — La démonstration',
         contexte: "Vous faites une démonstration aux clients pour les inciter à acheter le véhicule que vous leur conseillez.",
         questions: [
-          { numero: 4, consigne: "Montrez aux clients quelques secondes de la vidéo du véhicule pour qu'ils se l'imaginent, puis indiquez ce que vous mettez en avant pendant la démonstration.", ressources: 'Visionner la vidéo de démonstration, compléter l\'annexe 4. [C.1.2]', annexeId: 'annexe4demo' },
+          { numero: 4, consigne: "Montrez aux clients quelques secondes de la vidéo du véhicule pour qu'ils se l'imaginent, puis indiquez ce que vous mettez en avant pendant la démonstration.", ressources: 'Visionner la vidéo de démonstration, compléter l\'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe4demo' },
         ],
       },
       {
         titre: "Activité 4 — L'argumentation",
         contexte: "Maintenant que vous avez fait une proposition qui semble plaire aux clients. Vous allez devoir argumenter pour leur montrer en quoi selon vous, c'est le véhicule qui leur correspond le mieux.",
         questions: [
-          { numero: 5, consigne: 'Construisez les 3 arguments que vous présenterez à la famille Dupont en respectant la méthode C.A.P.', ressources: "Lire le document 1, compléter l'annexe 5. [C.1.2]", annexeId: 'annexe5cap' },
+          { numero: 5, consigne: 'Construisez les 3 arguments que vous présenterez à la famille Dupont en respectant la méthode C.A.P.', ressources: "Lire le document 1, compléter l'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe5cap' },
         ],
       },
     ],
@@ -3427,20 +3428,20 @@ const RENAULT_M6: ContenuMission = {
         titre: "Activité 1 — L'identification des objections",
         contexte: "Malgré votre démonstration et votre argumentaire très pertinent, cela n'a pas suffi à complètement rassurer la famille Dupont. En effet, pendant la discussion, elle a émis plusieurs objections qui lui font douter quant au véhicule que vous lui avez proposé. Il vous appartient maintenant de lever ses freins pour avancer dans le processus de vente.",
         questions: [
-          { numero: 1, consigne: "Pour chaque phrase de M. Dupont, indiquez s'il s'agit d'une objection sincère ou d'une objection prétexte.", ressources: "Lire le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1obj' },
+          { numero: 1, consigne: "Pour chaque phrase de M. Dupont, indiquez s'il s'agit d'une objection sincère ou d'une objection prétexte.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1obj' },
         ],
       },
       {
         titre: 'Activité 2 — Le traitement des objections',
         questions: [
-          { numero: 2, consigne: "Traitez chaque objection de M. Dupont en utilisant la technique indiquée. Appuyez-vous sur le document 2 pour l'objection liée à l'autonomie et à la recharge.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2trait' },
+          { numero: 2, consigne: "Traitez chaque objection de M. Dupont en utilisant la technique indiquée. Appuyez-vous sur le document 2 pour l'objection liée à l'autonomie et à la recharge.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2trait' },
         ],
       },
       {
         titre: "Activité 3 — L'annonce du prix",
         contexte: "Les clients ont été convaincus par vos réponses face à leurs nombreux doutes. Ils ont donc une dernière objection sur le prix.",
         questions: [
-          { numero: 3, consigne: "Rédigez l'annonce du prix du véhicule (8 290 €) en respectant les consignes de votre responsable : faire preuve d'empathie puis utiliser la technique de l'addition.", ressources: "Lire le document 4, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3prix' },
+          { numero: 3, consigne: "Rédigez l'annonce du prix du véhicule (8 290 €) en respectant les consignes de votre responsable : faire preuve d'empathie puis utiliser la technique de l'addition.", ressources: "Lire le document 4, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3prix' },
         ],
       },
     ],
@@ -3481,7 +3482,7 @@ const RENAULT_M6: ContenuMission = {
       {
         intitule: "Identifier le type des objections (annexe 1).",
         documents: ['Document 1', 'Annexe 1'],
-        bareme: 4,
+        bareme: 5,
         reponse:
           "Objection 1 : sincère. Objection 2 : prétexte. Objection 3 : prétexte. Objection 4 : sincère.",
         tableau: {
@@ -3497,7 +3498,7 @@ const RENAULT_M6: ContenuMission = {
       {
         intitule: "Traiter les objections avec la technique indiquée (annexe 2).",
         documents: ['Documents 1 et 2', 'Annexe 2'],
-        bareme: 8,
+        bareme: 10,
         reponse:
           "Traitement attendu par objection et par technique imposée.",
         tableau: {
@@ -3529,7 +3530,7 @@ const RENAULT_M6: ContenuMission = {
       {
         intitule: "Annoncer le prix (annexe 3).",
         documents: ['Document 4', 'Annexe 3'],
-        bareme: 4,
+        bareme: 5,
         reponse:
           "Annonce attendue : empathie puis technique de l'addition (énumérer des avantages forts avant d'annoncer le prix). Exemple : « Je comprends que le budget compte beaucoup pour vous. Avec ce véhicule, vous avez une motorisation électrique économique, une garantie jusqu'à 36 mois, 76 points de contrôle et l'application de gestion à distance. Le tout pour 8 290 € seulement. »",
       },
@@ -3780,25 +3781,25 @@ const RENAULT_M7: ContenuMission = {
         titre: "Activité 1 — Les signaux d'achat",
         contexte: "Le prix a été annoncé et les clients semblent séduits.",
         questions: [
-          { numero: 1, consigne: "Indiquez les signaux d'achat de M. et Mme Dupont (verbaux et non verbaux, positifs et négatifs).", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1sig' },
+          { numero: 1, consigne: "Indiquez les signaux d'achat de M. et Mme Dupont (verbaux et non verbaux, positifs et négatifs).", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe1sig' },
         ],
       },
       {
         titre: 'Activité 2 — Conclure la vente',
         contexte: "En écoutant la conversation en aparté du couple, vous vous rendez compte qu'il est prêt à acheter cette voiture. Pour les inciter à se décider vous choisissez de conclure.",
         questions: [
-          { numero: 2, consigne: "Retrouvez les deux arguments « joker » importants à présenter aux prospects.", ressources: "Lire les documents 3 et 4, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2joker' },
-          { numero: 3, consigne: "Complétez le test « prime à la conversion » avec les informations du couple. Le test est intégré ci-dessous.", ressources: "Lire les documents 4 et 5, compléter le test (annexe 4b). [C.1.2]", annexeId: 'annexe4btest' },
-          { numero: 4, consigne: "Rédigez la phrase que vous prononcerez pour annoncer le résultat, en utilisant la conclusion « joker ».", ressources: "Lire le document 3 et l'annexe 2, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3phrase' },
+          { numero: 2, consigne: "Retrouvez les deux arguments « joker » importants à présenter aux prospects.", ressources: "Lire les documents 3 et 4, compléter l'annexe 2. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe2joker' },
+          { numero: 3, consigne: "Complétez le test « prime à la conversion » avec les informations du couple. Le test est intégré ci-dessous.", ressources: "Lire les documents 4 et 5, compléter le test (annexe 4b). Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe4btest' },
+          { numero: 4, consigne: "Rédigez la phrase que vous prononcerez pour annoncer le résultat, en utilisant la conclusion « joker ».", ressources: "Lire le document 3 et l'annexe 2, compléter l'annexe 3. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe3phrase' },
         ],
       },
       {
         titre: 'Activité 3 — Calculer le crédit',
         contexte: "Le couple est séduit par votre argument et souhaite acheter le véhicule. Cependant, il veut savoir combien cet achat va lui coûter.",
         questions: [
-          { numero: 5, consigne: "Calculez le crédit proposé à M. et Mme Dupont (reste à vivre, reste à vivre minimum, taux d'endettement, intérêts à payer), puis concluez.", ressources: "Lire les documents 6 et 7, compléter l'annexe 4a. [C.1.3]", annexeId: 'annexe4acredit' },
-          { numero: 6, consigne: "Calculez le montant que le couple paiera après déduction de la prime à la conversion.", ressources: "Lire le document 5, consulter l'annexe 4, compléter l'annexe 5. [C.1.3]", annexeId: 'annexe5remise' },
-          { numero: 7, consigne: "Commentez les résultats trouvés à l'annexe 5.", ressources: "Compléter l'annexe 6. [C.1.3]", annexeId: 'annexe6comm' },
+          { numero: 5, consigne: "Calculez le crédit proposé à M. et Mme Dupont (reste à vivre, reste à vivre minimum, taux d'endettement, intérêts à payer), puis concluez.", ressources: "Lire les documents 6 et 7, compléter l'annexe 4a. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe4acredit' },
+          { numero: 6, consigne: "Calculez le montant que le couple paiera après déduction de la prime à la conversion.", ressources: "Lire le document 5, consulter l'annexe 4, compléter l'annexe 5. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe5remise' },
+          { numero: 7, consigne: "Commentez les résultats trouvés à l'annexe 5.", ressources: "Compléter l'annexe 6. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe6comm' },
         ],
       },
     ],
@@ -3901,7 +3902,7 @@ const RENAULT_M7: ContenuMission = {
       {
         intitule: "Les signaux d'achat (annexe 1).",
         documents: ['Documents 1 et 2', 'Annexe 1'],
-        bareme: 4,
+        bareme: 3,
         reponse: "Signaux relevés dans le dialogue (document 2).",
         tableau: {
           colonnes: ['Client', 'Verbal +', 'Verbal −', 'Non verbal +', 'Non verbal −'],
@@ -3927,7 +3928,7 @@ const RENAULT_M7: ContenuMission = {
       {
         intitule: 'Test « prime à la conversion » (annexe 4b).',
         documents: ['Documents 4 et 5', 'Annexe 4b'],
-        bareme: 3,
+        bareme: 2,
         reponse: "Réponses à saisir dans le test, d'après le document 5.",
         tableau: {
           colonnes: ['Question du test', 'Réponse'],
@@ -3944,14 +3945,14 @@ const RENAULT_M7: ContenuMission = {
       {
         intitule: 'La phrase de conclusion « joker » (annexe 3).',
         documents: ['Document 3', 'Annexe 2', 'Annexe 3'],
-        bareme: 3,
+        bareme: 2,
         reponse:
           "« Bravo ! Vous êtes éligible à la prime à la conversion de 5 000 €. Je ne veux pas vous presser, mais cette prime n'est réservée qu'aux 200 000 premiers acheteurs sur toute la France, ce qui est très peu. Il ne faut donc pas trop tarder à vous décider. »",
       },
       {
         intitule: 'Le calcul du crédit (annexe 4a).',
         documents: ['Documents 6 et 7', 'Annexe 4a'],
-        bareme: 8,
+        bareme: 6,
         reponse: "Calculs selon la méthode du document 6.",
         tableau: {
           colonnes: ['Éléments', 'Calculs', 'Résultats'],
@@ -3968,7 +3969,7 @@ const RENAULT_M7: ContenuMission = {
       {
         intitule: 'Le montant après la prime (annexe 5).',
         documents: ['Document 5', 'Annexe 4', 'Annexe 5'],
-        bareme: 4,
+        bareme: 3,
         reponse: "Application de la prime à la conversion.",
         tableau: {
           colonnes: ['Élément', 'Montant'],
@@ -4175,13 +4176,13 @@ const RENAULT_M8: ContenuMission = {
       {
         titre: 'Activité 1 — La phrase de M. Dupont',
         questions: [
-          { numero: 1, consigne: "Relisez la mission 4 (annexe 1, découverte des besoins). Retrouvez la phrase de M. Dupont qui peut faire l'objet d'une vente additionnelle, puis recopiez-la.", ressources: "Relire la mission 4 (annexe 1), compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1phrase' },
+          { numero: 1, consigne: "Relisez la mission 4 (annexe 1, découverte des besoins). Retrouvez la phrase de M. Dupont qui peut faire l'objet d'une vente additionnelle, puis recopiez-la.", ressources: "Relire la mission 4 (annexe 1), compléter l'annexe 1. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe1phrase' },
         ],
       },
       {
         titre: "Activité 2 — L'accessoire à proposer",
         questions: [
-          { numero: 2, consigne: "Dans le catalogue d'accessoires, sélectionnez l'accessoire le plus adapté à la phrase de M. Dupont, puis justifiez votre choix et indiquez son prix.", ressources: "Consulter le catalogue (annexe 2), compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2cat' },
+          { numero: 2, consigne: "Dans le catalogue d'accessoires, sélectionnez l'accessoire le plus adapté à la phrase de M. Dupont, puis justifiez votre choix et indiquez son prix.", ressources: "Consulter le catalogue (annexe 2), compléter l'annexe 2. Compétence C1.3 — Assurer l'exécution de la vente.", annexeId: 'annexe2cat' },
         ],
       },
     ],
@@ -4231,14 +4232,14 @@ const RENAULT_M8: ContenuMission = {
       {
         intitule: 'La phrase de M. Dupont (annexe 1).',
         documents: ['Mission 4 (annexe 1)', 'Annexe 1'],
-        bareme: 4,
+        bareme: 8,
         reponse:
           "« D'ailleurs il faudra qu'on achète un autre kit de sécurité parce que celui qui est dans ma voiture est complètement déchiré. »",
       },
       {
         intitule: "L'accessoire à proposer (annexe 2).",
         documents: ['Catalogue (annexe 2)', 'Annexe 2'],
-        bareme: 6,
+        bareme: 12,
         reponse: "Accessoire adapté à la phrase de M. Dupont.",
         tableau: {
           colonnes: ['Élément', 'Réponse attendue'],
@@ -4457,33 +4458,33 @@ const CITROEN_M1: ContenuMission = {
         titre: "Activité 1 — Recherche d'informations sur l'entreprise",
         contexte: "Pour mieux connaître la marque, vous plongez dans l'histoire de Citroën car il est important de connaître les origines de l'entreprise, ses modèles emblématiques et sa vision pour comprendre son identité.",
         questions: [
-          { numero: 1, consigne: "Donnez le nom du fondateur de l'entreprise et l'année de création.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Expliquez comment l'entreprise voit les déplacements écologiques.", ressources: "Consulter le document 2, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
-          { numero: 3, consigne: "Indiquez le chiffre d'affaires réalisé par Citroën.", ressources: "Consulter le document 3, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
-          { numero: 4, consigne: "Énumérez les 2 modèles marquants de l'histoire de Citroën.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
-          { numero: 5, consigne: 'Indiquez le nombre de voitures vendues par Citroën en 2023.', ressources: "Consulter le document 3, compléter l'annexe 1. [C.1.1]", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Donnez le nom du fondateur de l'entreprise et l'année de création.", ressources: "Consulter le document 1, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Expliquez comment l'entreprise voit les déplacements écologiques.", ressources: "Consulter le document 2, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 3, consigne: "Indiquez le chiffre d'affaires réalisé par Citroën.", ressources: "Consulter le document 3, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 4, consigne: "Énumérez les 2 modèles marquants de l'histoire de Citroën.", ressources: "Consulter le document 1, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 5, consigne: 'Indiquez le nombre de voitures vendues par Citroën en 2023.', ressources: "Consulter le document 3, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — Analyse du marché de Citroën',
         contexte: "Ensuite, votre responsable vous demande d'analyser le marché dans lequel Citroën évolue en identifiant les principaux concurrents de la marque et en examinant son positionnement ainsi que les tendances de consommation qui influencent le secteur automobile.",
         questions: [
-          { numero: 6, consigne: 'Citez les principaux concurrents de Citroën sur le marché français.', ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
-          { numero: 7, consigne: 'Indiquez les 2 gammes principales de véhicules que vend la marque.', ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
-          { numero: 8, consigne: "Détaillez la méthode qui a permis à l'entreprise de conquérir le marché français.", ressources: "Consulter le document 4, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
-          { numero: 9, consigne: 'Précisez les tendances de consommation actuelles en matière de véhicules.', ressources: "Consulter le document 5, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
-          { numero: 10, consigne: 'Indiquez pourquoi les jeunes consommateurs sont attirés par les véhicules Citroën.', ressources: "Consulter le document 5, compléter l'annexe 2. [C.1.1]", annexeId: 'annexe2' },
+          { numero: 6, consigne: 'Citez les principaux concurrents de Citroën sur le marché français.', ressources: "Consulter le document 4, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 7, consigne: 'Indiquez les 2 gammes principales de véhicules que vend la marque.', ressources: "Consulter le document 4, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 8, consigne: "Détaillez la méthode qui a permis à l'entreprise de conquérir le marché français.", ressources: "Consulter le document 4, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 9, consigne: 'Précisez les tendances de consommation actuelles en matière de véhicules.', ressources: "Consulter le document 5, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 10, consigne: 'Indiquez pourquoi les jeunes consommateurs sont attirés par les véhicules Citroën.', ressources: "Consulter le document 5, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
         ],
       },
       {
         titre: 'Activité 3 — Étude des produits de la marque',
         contexte: "Maintenant, vous allez vous concentrer sur l'étude des produits offerts par Citroën et découvrir la diversité de sa gamme de véhicules, les caractéristiques de certains modèles et les innovations récentes.",
         questions: [
-          { numero: 11, consigne: 'Indiquez les 4 types de véhicules de la gamme Citroën.', ressources: "Consulter le document 6, compléter l'annexe 3. [C.1.1]", annexeId: 'annexe3' },
-          { numero: 12, consigne: 'Citez les deux points forts des modèles Citroën mentionnés dans le document.', ressources: "Consulter le document 6, compléter l'annexe 4. [C.1.1]", annexeId: 'annexe4' },
-          { numero: 13, consigne: 'Donnez le nom du nouveau modèle lancé par Citroën en 2023.', ressources: "Consulter le document 7, compléter l'annexe 5. [C.1.1]", annexeId: 'annexe5' },
-          { numero: 14, consigne: 'Précisez comment Citroën répond à la demande de véhicules électriques.', ressources: "Consulter le document 6, compléter l'annexe 6. [C.1.1]", annexeId: 'annexe6' },
-          { numero: 15, consigne: 'Nommez la nouvelle technologie intégrée dans les modèles récents pour améliorer la conduite.', ressources: "Consulter le document 6, compléter l'annexe 7. [C.1.1]", annexeId: 'annexe7' },
+          { numero: 11, consigne: 'Indiquez les 4 types de véhicules de la gamme Citroën.', ressources: "Consulter le document 6, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
+          { numero: 12, consigne: 'Citez les deux points forts des modèles Citroën mentionnés dans le document.', ressources: "Consulter le document 6, compléter l'annexe 4. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe4' },
+          { numero: 13, consigne: 'Donnez le nom du nouveau modèle lancé par Citroën en 2023.', ressources: "Consulter le document 7, compléter l'annexe 5. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe5' },
+          { numero: 14, consigne: 'Précisez comment Citroën répond à la demande de véhicules électriques.', ressources: "Consulter le document 6, compléter l'annexe 6. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe6' },
+          { numero: 15, consigne: 'Nommez la nouvelle technologie intégrée dans les modèles récents pour améliorer la conduite.', ressources: "Consulter le document 6, compléter l'annexe 7. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe7' },
         ],
       },
     ],
@@ -4515,7 +4516,7 @@ const CITROEN_M1: ContenuMission = {
       {
         intitule: "Éléments de l'histoire de l'entreprise (annexe 1).",
         documents: ['Documents 1, 2 et 3', 'Annexe 1'],
-        bareme: 10,
+        bareme: 7,
         reponse: "Voir tableau.",
         tableau: {
           colonnes: ['Élément', 'Réponse'],
@@ -4533,7 +4534,7 @@ const CITROEN_M1: ContenuMission = {
       {
         intitule: 'Le marché de Citroën (annexe 2).',
         documents: ['Documents 4 et 5', 'Annexe 2'],
-        bareme: 10,
+        bareme: 7,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ["Éléments d'analyse", 'Réponses'],
@@ -4549,7 +4550,7 @@ const CITROEN_M1: ContenuMission = {
       {
         intitule: 'Les types de véhicules de la gamme (annexe 3).',
         documents: ['Document 6', 'Annexe 3'],
-        bareme: 4,
+        bareme: 2,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['Type 1', 'Type 2', 'Type 3', 'Type 4'],
@@ -4561,25 +4562,25 @@ const CITROEN_M1: ContenuMission = {
       {
         intitule: 'Les points forts des modèles (annexe 4).',
         documents: ['Document 6', 'Annexe 4'],
-        bareme: 2,
+        bareme: 1,
         reponse: "Le design moderne et la compacité de la C3 pour la vie urbaine ; l'espace intérieur généreux et les technologies avancées du C5 Aircross.",
       },
       {
         intitule: 'Le nouveau modèle (annexe 5).',
         documents: ['Document 7', 'Annexe 5'],
-        bareme: 2,
+        bareme: 1,
         reponse: "Le nouveau modèle lancé par Citroën en 2023 est la ë-C3, un véhicule entièrement électrique.",
       },
       {
         intitule: 'La réponse à la demande de véhicules électriques (annexe 6).',
         documents: ['Document 6', 'Annexe 6'],
-        bareme: 2,
+        bareme: 1,
         reponse: "Citroën développe plusieurs modèles électriques, dont la ë-C3, qui offre une autonomie de 300 km et intègre des technologies optimisées pour l'efficacité énergétique.",
       },
       {
         intitule: 'La nouvelle technologie (annexe 7).',
         documents: ['Document 6', 'Annexe 7'],
-        bareme: 2,
+        bareme: 1,
         reponse: "Les modèles récents intègrent des systèmes d'assistance à la conduite et des technologies de connectivité avancées pour améliorer le confort et la sécurité des passagers.",
       },
     ],
@@ -4932,41 +4933,41 @@ const CITROEN_M2: ContenuMission = { //x
         titre: 'Activité 1 — Prise de contact en face-à-face',
         contexte: "Votre tuteur vous demande d'apprendre comment établir un contact efficace avec un concessionnaire automobile car selon lui, une bonne prise de contact est fondamentale pour instaurer un climat de confiance et commencer une relation commerciale fructueuse.",
         questions: [
-          { numero: 1, consigne: 'Énumérez les étapes clés à suivre lors de la prise de contact avec un client dans une concession automobile.', ressources: "Consulter le document 1, compléter l'annexe 1. [C.1.2]", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Indiquez pourquoi il est important d'avoir une bonne préparation avant d'aborder un client.", ressources: "Consulter le document 1, compléter l'annexe 2. [C.1.2]", annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Créez 2 questions ouvertes et 2 questions fermées qui seront posées au client pour mieux découvrir ses besoins.', ressources: "Consulter le document 1, compléter l'annexe 3. [C.1.2]", annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Expliquez comment un vendeur peut créer un lien de confiance avec le client lors de la première rencontre.', ressources: "Consulter le document 1, compléter l'annexe 4. [C.1.2]", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Indiquez l'importance de donner aux clients des informations utiles sur les véhicules.", ressources: "Consulter le document 1, compléter l'annexe 5. [C.1.2]", annexeId: 'annexe5' },
+          { numero: 1, consigne: 'Énumérez les étapes clés à suivre lors de la prise de contact avec un client dans une concession automobile.', ressources: "Consulter le document 1, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez pourquoi il est important d'avoir une bonne préparation avant d'aborder un client.", ressources: "Consulter le document 1, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Créez 2 questions ouvertes et 2 questions fermées qui seront posées au client pour mieux découvrir ses besoins.', ressources: "Consulter le document 1, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Expliquez comment un vendeur peut créer un lien de confiance avec le client lors de la première rencontre.', ressources: "Consulter le document 1, compléter l'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Indiquez l'importance de donner aux clients des informations utiles sur les véhicules.", ressources: "Consulter le document 1, compléter l'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe5' },
         ],
       },
       {
         titre: 'Activité 2 — Découverte des besoins',
         contexte: "Il vous demande ensuite d'étudier les besoins d'une cliente à travers un dialogue pour lui proposer ensuite un véhicule adapté.",
         questions: [
-          { numero: 6, consigne: 'Énumérez les critères mentionnés par Clara pour sa voiture.', ressources: "Consulter le document 2 et le document 3, compléter l'annexe 6. [C.1.2]", annexeId: 'annexe6' },
-          { numero: 7, consigne: 'Indiquez pourquoi la taille de la voiture est importante pour Clara.', ressources: "Consulter le document 2, compléter l'annexe 7. [C.1.2]", annexeId: 'annexe7' },
-          { numero: 8, consigne: 'Donnez le budget maximum que Clara souhaite respecter.', ressources: "Consulter le document 2, compléter l'annexe 8. [C.1.2]", annexeId: 'annexe8' },
+          { numero: 6, consigne: 'Énumérez les critères mentionnés par Clara pour sa voiture.', ressources: "Consulter le document 2 et le document 3, compléter l'annexe 6. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Indiquez pourquoi la taille de la voiture est importante pour Clara.', ressources: "Consulter le document 2, compléter l'annexe 7. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Donnez le budget maximum que Clara souhaite respecter.', ressources: "Consulter le document 2, compléter l'annexe 8. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe8' },
         ],
       },
       {
         titre: "Activité 3 — La proposition d'une voiture",
         contexte: "Ensuite votre responsable vous apprend à présenter des véhicules qui correspondent aux critères émis par le client car cette étape est essentielle pour le convaincre que les options proposées répondent bien à ses besoins.",
         questions: [
-          { numero: 9, consigne: 'Citez les 3 modèles proposés par le vendeur.', ressources: "Consulter le document 4, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
-          { numero: 10, consigne: 'Indiquez quel modèle est entièrement électrique et quel est son prix.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
-          { numero: 11, consigne: 'Donnez le nom du modèle le plus économique en termes de consommation de carburant. Justifiez votre réponse.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
-          { numero: 12, consigne: 'Précisez quel équipement commun est présent sur les 3 véhicules.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
-          { numero: 13, consigne: 'Citez le modèle qui dépasse le budget de Clara. Justifiez votre réponse.', ressources: "Consulter le document 5, compléter l'annexe 9. [C.1.2]", annexeId: 'annexe9' },
+          { numero: 9, consigne: 'Citez les 3 modèles proposés par le vendeur.', ressources: "Consulter le document 4, compléter l'annexe 9. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe9' },
+          { numero: 10, consigne: 'Indiquez quel modèle est entièrement électrique et quel est son prix.', ressources: "Consulter le document 5, compléter l'annexe 9. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe9' },
+          { numero: 11, consigne: 'Donnez le nom du modèle le plus économique en termes de consommation de carburant. Justifiez votre réponse.', ressources: "Consulter le document 5, compléter l'annexe 9. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe9' },
+          { numero: 12, consigne: 'Précisez quel équipement commun est présent sur les 3 véhicules.', ressources: "Consulter le document 5, compléter l'annexe 9. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe9' },
+          { numero: 13, consigne: 'Citez le modèle qui dépasse le budget de Clara. Justifiez votre réponse.', ressources: "Consulter le document 5, compléter l'annexe 9. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe9' },
         ],
       },
       {
         titre: "Activité 4 — L'accord du client",
         contexte: "Enfin, il vous demande de suivre le processus de finalisation de l'achat d'une voiture. Il vous montre les étapes clés comme choisir le modèle, discuter du financement, comprendre le contrat, et enfin, recevoir les clés de la voiture. Il souhaite que vous compreniez l'importance de bien se préparer avant de signer et de s'assurer que tout est clair.",
         questions: [
-          { numero: 14, consigne: "Citez les étapes que Clara et son père doivent suivre pour finaliser l'achat de la voiture.", ressources: "Consulter le document 6, compléter l'annexe 10. [C.1.2]", annexeId: 'annexe10' },
-          { numero: 15, consigne: "Indiquez les 2 types d'options de financement proposé par le vendeur.", ressources: "Consulter le document 6, compléter l'annexe 11. [C.1.2]", annexeId: 'annexe11' },
-          { numero: 16, consigne: 'Selon vous, pourquoi est-il importante que Clara comprenne bien le contrat avant de le signer.', ressources: "Consulter le document 6, compléter l'annexe 12. [C.1.2]", annexeId: 'annexe12' },
-          { numero: 17, consigne: 'Racontez ce qui se passe au moment de la remise des clés.', ressources: "Consulter le document 6, compléter l'annexe 12. [C.1.2]", annexeId: 'annexe12' },
+          { numero: 14, consigne: "Citez les étapes que Clara et son père doivent suivre pour finaliser l'achat de la voiture.", ressources: "Consulter le document 6, compléter l'annexe 10. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe10' },
+          { numero: 15, consigne: "Indiquez les 2 types d'options de financement proposé par le vendeur.", ressources: "Consulter le document 6, compléter l'annexe 11. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe11' },
+          { numero: 16, consigne: 'Selon vous, pourquoi est-il importante que Clara comprenne bien le contrat avant de le signer.', ressources: "Consulter le document 6, compléter l'annexe 12. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe12' },
+          { numero: 17, consigne: 'Racontez ce qui se passe au moment de la remise des clés.', ressources: "Consulter le document 6, compléter l'annexe 12. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe12' },
         ],
       },
     ],
@@ -5001,7 +5002,7 @@ const CITROEN_M2: ContenuMission = { //x
       {
         intitule: 'Les étapes clés (annexe 1).',
         documents: ['Document 1', 'Annexe 1'],
-        bareme: 6,
+        bareme: 3,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['Étape', 'Réponse'],
@@ -5018,14 +5019,14 @@ const CITROEN_M2: ContenuMission = { //x
       {
         intitule: "L'importance d'une bonne préparation (annexe 2).",
         documents: ['Document 1', 'Annexe 2'],
-        bareme: 2,
+        bareme: 1,
         reponse:
           "Une bonne préparation permet au vendeur de connaître les produits, les promotions, et d'adopter une attitude accueillante, ce qui contribue à établir une relation de confiance dès le départ.",
       },
       {
         intitule: 'Questions aux clients (annexe 3).',
         documents: ['Document 1', 'Annexe 3'],
-        bareme: 4,
+        bareme: 1,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['4 questions', 'Réponse'],
@@ -5040,21 +5041,21 @@ const CITROEN_M2: ContenuMission = { //x
       {
         intitule: 'Création du lien de confiance (annexe 4).',
         documents: ['Document 1', 'Annexe 4'],
-        bareme: 2,
+        bareme: 1,
         reponse:
           "En s'engageant dans une conversation amicale, en posant des questions sur les besoins spécifiques du client, et en montrant un intérêt sincère pour ses souhaits.",
       },
       {
         intitule: "Importance de donner des informations sur le véhicule (annexe 5).",
         documents: ['Document 1', 'Annexe 5'],
-        bareme: 2,
+        bareme: 1,
         reponse:
           "Transmettre des informations pertinentes aide le client à prendre une décision éclairée et démontre que le vendeur connaît bien ses produits, renforçant ainsi la confiance.",
       },
       {
         intitule: 'Critères de Clara pour sa voiture (annexe 6).',
         documents: ['Documents 2 et 3', 'Annexe 6'],
-        bareme: 5,
+        bareme: 2,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['5 critères', 'Réponse'],
@@ -5070,20 +5071,20 @@ const CITROEN_M2: ContenuMission = { //x
       {
         intitule: 'Taille du véhicule (annexe 7).',
         documents: ['Document 2', 'Annexe 7'],
-        bareme: 2,
+        bareme: 1,
         reponse:
           "Clara souhaite une voiture suffisamment petite pour faciliter le stationnement en ville, ce qui est crucial pour ses trajets quotidiens au lycée.",
       },
       {
         intitule: 'Budget (annexe 8).',
         documents: ['Document 2', 'Annexe 8'],
-        bareme: 2,
+        bareme: 1,
         reponse: "Clara ne souhaite pas dépasser 20 000 euros pour l'achat de sa voiture.",
       },
       {
         intitule: "Proposition d'une voiture (annexe 9).",
         documents: ['Documents 4 et 5', 'Annexe 9'],
-        bareme: 10,
+        bareme: 4,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['Élément', 'Réponse'],
@@ -5099,7 +5100,7 @@ const CITROEN_M2: ContenuMission = { //x
       {
         intitule: "Étapes de finalisation de l'achat (annexe 10).",
         documents: ['Document 6', 'Annexe 10'],
-        bareme: 5,
+        bareme: 2,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['Étape', 'Réponse'],
@@ -5115,13 +5116,13 @@ const CITROEN_M2: ContenuMission = { //x
       {
         intitule: 'Options de financement (annexe 11).',
         documents: ['Document 6', 'Annexe 11'],
-        bareme: 2,
+        bareme: 1,
         reponse: 'Le vendeur propose un crédit auto classique et un leasing.',
       },
       {
         intitule: 'Lire le contrat et la remise des clés (annexe 12).',
         documents: ['Document 6', 'Annexe 12'],
-        bareme: 4,
+        bareme: 2,
         reponse: 'Voir tableau.',
         tableau: {
           colonnes: ['Élément', 'Réponse'],
@@ -5297,25 +5298,25 @@ const CITROEN_M3: ContenuMission = {
         titre: "Activité 1 — Suivre l'évolution de la commande",
         contexte: "Vous décidez d'étudier les étapes à suivre pour assurer le suivi d'une commande après la signature du contrat. En effet, cette procédure est essentielle pour garantir une expérience client satisfaisante et pour s'assurer que le véhicule est livré dans les délais.",
         questions: [
-          { numero: 1, consigne: 'Indiquez quelle est la première étape après avoir fait la sélection du véhicule.', ressources: "Consulter le document 1, compléter l'annexe 1. [C.2.1]", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Expliquez ce qu'est un numéro de commande et son rôle.", ressources: "Consulter le document 1, compléter l'annexe 2. [C.2.1]", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Indiquez combien de temps peut durer la production d'un véhicule.", ressources: "Consulter le document 1, compléter l'annexe 3. [C.2.1]", annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Détaillez ce qui se passe lors de la livraison du véhicule.', ressources: "Consulter le document 1, compléter l'annexe 4. [C.2.1]", annexeId: 'annexe4' },
+          { numero: 1, consigne: 'Indiquez quelle est la première étape après avoir fait la sélection du véhicule.', ressources: "Consulter le document 1, compléter l'annexe 1. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Expliquez ce qu'est un numéro de commande et son rôle.", ressources: "Consulter le document 1, compléter l'annexe 2. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez combien de temps peut durer la production d'un véhicule.", ressources: "Consulter le document 1, compléter l'annexe 3. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Détaillez ce qui se passe lors de la livraison du véhicule.', ressources: "Consulter le document 1, compléter l'annexe 4. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 2 — Informer le client sur les conditions et les délais de livraison',
         contexte: "Enfin, votre tuteur vous demande d'examiner la façon d'informer le client sur les conditions et les délais de livraison de sa citadine.",
         questions: [
-          { numero: 5, consigne: "Indiquez comment la disponibilité d'un modèle peut changer la date de livraison.", ressources: "Consulter le document 2, compléter l'annexe 5. [C.2.1]", annexeId: 'annexe5' },
-          { numero: 6, consigne: 'Listez les documents que le client doit fournir avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 6. [C.2.1]", annexeId: 'annexe6' },
-          { numero: 7, consigne: 'Indiquez toutes les vérifications qui doivent être faites avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 7. [C.2.1]", annexeId: 'annexe7' },
-          { numero: 8, consigne: 'Détaillez ce que le client doit faire concernant le paiement avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 8. [C.2.1]", annexeId: 'annexe8' },
-          { numero: 9, consigne: 'Indiquez les délais de livraison pour un modèle en stock.', ressources: "Consulter le document 3, compléter l'annexe 9. [C.2.1]", annexeId: 'annexe9' },
-          { numero: 10, consigne: "Retrouvez le temps que peut prendre la livraison d'un modèle personnalisé.", ressources: "Consulter le document 3, compléter l'annexe 10. [C.2.1]", annexeId: 'annexe10' },
-          { numero: 11, consigne: 'Indiquez les délais de livraison pour les véhicules électriques et hybrides.', ressources: "Consulter le document 3, compléter l'annexe 11. [C.2.1]", annexeId: 'annexe11' },
-          { numero: 12, consigne: "Précisez ce que reçoivent les clients pour connaître l'état de leur commande. Expliquez-en l'intérêt.", ressources: "Consulter le document 3, compléter l'annexe 12. [C.2.1]", annexeId: 'annexe12' },
-          { numero: 13, consigne: 'Détaillez les raisons pour lesquelles les délais de livraison peuvent varier.', ressources: "Consulter le document 3, compléter l'annexe 13. [C.2.1]", annexeId: 'annexe13' },
+          { numero: 5, consigne: "Indiquez comment la disponibilité d'un modèle peut changer la date de livraison.", ressources: "Consulter le document 2, compléter l'annexe 5. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Listez les documents que le client doit fournir avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 6. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Indiquez toutes les vérifications qui doivent être faites avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 7. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Détaillez ce que le client doit faire concernant le paiement avant la livraison.', ressources: "Consulter le document 2, compléter l'annexe 8. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe8' },
+          { numero: 9, consigne: 'Indiquez les délais de livraison pour un modèle en stock.', ressources: "Consulter le document 3, compléter l'annexe 9. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe9' },
+          { numero: 10, consigne: "Retrouvez le temps que peut prendre la livraison d'un modèle personnalisé.", ressources: "Consulter le document 3, compléter l'annexe 10. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe10' },
+          { numero: 11, consigne: 'Indiquez les délais de livraison pour les véhicules électriques et hybrides.', ressources: "Consulter le document 3, compléter l'annexe 11. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe11' },
+          { numero: 12, consigne: "Précisez ce que reçoivent les clients pour connaître l'état de leur commande. Expliquez-en l'intérêt.", ressources: "Consulter le document 3, compléter l'annexe 12. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe12' },
+          { numero: 13, consigne: 'Détaillez les raisons pour lesquelles les délais de livraison peuvent varier.', ressources: "Consulter le document 3, compléter l'annexe 13. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe13' },
         ],
       },
     ],
@@ -5340,8 +5341,8 @@ const CITROEN_M3: ContenuMission = {
       { intitule: 'La première étape de la sélection (annexe 1).', documents: ['Document 1', 'Annexe 1'], bareme: 2, reponse: 'La première étape est la signature du contrat.' },
       { intitule: 'Le numéro de commande (annexe 2).', documents: ['Document 1', 'Annexe 2'], bareme: 2, reponse: "C'est un numéro unique attribué à chaque commande, permettant de suivre son évolution." },
       { intitule: 'La production des véhicules (annexe 3).', documents: ['Document 1', 'Annexe 3'], bareme: 2, reponse: 'Cela peut durer de quelques semaines à plusieurs mois, en fonction de divers facteurs.' },
-      { intitule: 'La livraison du véhicule (annexe 4).', documents: ['Document 1', 'Annexe 4'], bareme: 2, reponse: 'Lors de la livraison, le concessionnaire explique les fonctionnalités, remet les documents nécessaires, et effectue une dernière inspection avec le client.' },
-      { intitule: "La disponibilité d'un modèle (annexe 5).", documents: ['Document 2', 'Annexe 5'], bareme: 2, reponse: "La disponibilité détermine si le véhicule peut être livré rapidement ou s'il nécessite une production spéciale, ce qui peut retarder la livraison." },
+      { intitule: 'La livraison du véhicule (annexe 4).', documents: ['Document 1', 'Annexe 4'], bareme: 1, reponse: 'Lors de la livraison, le concessionnaire explique les fonctionnalités, remet les documents nécessaires, et effectue une dernière inspection avec le client.' },
+      { intitule: "La disponibilité d'un modèle (annexe 5).", documents: ['Document 2', 'Annexe 5'], bareme: 1, reponse: "La disponibilité détermine si le véhicule peut être livré rapidement ou s'il nécessite une production spéciale, ce qui peut retarder la livraison." },
       {
         intitule: 'Les documents à fournir (annexe 6).', documents: ['Document 2', 'Annexe 6'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Document', 'Document'], lignes: [
@@ -5349,12 +5350,12 @@ const CITROEN_M3: ContenuMission = {
           ["Une pièce d'identité", ''],
         ] },
       },
-      { intitule: 'Les vérifications à opérer (annexe 7).', documents: ['Document 2', 'Annexe 7'], bareme: 2, reponse: 'Le véhicule doit avoir passé avec succès le contrôle qualité.' },
-      { intitule: 'Le paiement à la livraison (annexe 8).', documents: ['Document 2', 'Annexe 8'], bareme: 2, reponse: 'Le paiement doit être effectué dans les délais convenus dans le contrat avant la livraison.' },
-      { intitule: 'Les délais de livraison (annexe 9).', documents: ['Document 3', 'Annexe 9'], bareme: 2, reponse: 'Le délai de livraison est généralement de 1 à 2 semaines.' },
-      { intitule: "La livraison d'un modèle personnalisé (annexe 10).", documents: ['Document 3', 'Annexe 10'], bareme: 2, reponse: 'Cela peut aller de 4 à 12 semaines.' },
-      { intitule: 'Les délais pour une voiture électrique ou hybride (annexe 11).', documents: ['Document 3', 'Annexe 11'], bareme: 2, reponse: "Les délais peuvent aller jusqu'à 16 semaines." },
-      { intitule: "Connaissance de l'état de la commande (annexe 12).", documents: ['Document 3', 'Annexe 12'], bareme: 2, reponse: "Les clients reçoivent des notifications concernant l'état de leur commande et une estimation des délais de livraison." },
+      { intitule: 'Les vérifications à opérer (annexe 7).', documents: ['Document 2', 'Annexe 7'], bareme: 1, reponse: 'Le véhicule doit avoir passé avec succès le contrôle qualité.' },
+      { intitule: 'Le paiement à la livraison (annexe 8).', documents: ['Document 2', 'Annexe 8'], bareme: 1, reponse: 'Le paiement doit être effectué dans les délais convenus dans le contrat avant la livraison.' },
+      { intitule: 'Les délais de livraison (annexe 9).', documents: ['Document 3', 'Annexe 9'], bareme: 1, reponse: 'Le délai de livraison est généralement de 1 à 2 semaines.' },
+      { intitule: "La livraison d'un modèle personnalisé (annexe 10).", documents: ['Document 3', 'Annexe 10'], bareme: 1, reponse: 'Cela peut aller de 4 à 12 semaines.' },
+      { intitule: 'Les délais pour une voiture électrique ou hybride (annexe 11).', documents: ['Document 3', 'Annexe 11'], bareme: 1, reponse: "Les délais peuvent aller jusqu'à 16 semaines." },
+      { intitule: "Connaissance de l'état de la commande (annexe 12).", documents: ['Document 3', 'Annexe 12'], bareme: 1, reponse: "Les clients reçoivent des notifications concernant l'état de leur commande et une estimation des délais de livraison." },
       {
         intitule: 'Les délais de livraison (annexe 13).', documents: ['Document 3', 'Annexe 13'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Raison', 'Raison'], lignes: [
@@ -5581,17 +5582,17 @@ const AMPARIS_M1: ContenuMission = {
       {
         titre: "Activité 1 — Identification de l'entreprise",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Consulter le document 1, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Consulter le document 1, compléter l'annexe 1. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 — Les biens et les services de l'entreprise",
         questions: [
-          { numero: 2, consigne: "Listez les 3 grands types de biens vendus par l'entreprise.", ressources: "Consulter le document 2, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise puis cochez s'ils sont marchands ou non marchands.", ressources: "Consulter le document 3, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
-          { numero: 4, consigne: "Quelles sont les villes dans lesquelles s'étend la zone de chalandise (secteur d'intervention) de AMParis. Dans quel département se trouve chacune d'elle.", ressources: "Consulter le document 4, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Donnez le nom du partenaire de l'entreprise.", ressources: "Consulter le document 5, compléter l'annexe 5. [C.4B.1]", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Après avoir lu les différents documents de l'entreprise, dites selon vous quel est le type de clientèle de l'entreprise.", ressources: "Consulter le document 6, compléter l'annexe 6. [C.4B.1]", annexeId: 'annexe6' },
+          { numero: 2, consigne: "Listez les 3 grands types de biens vendus par l'entreprise.", ressources: "Consulter le document 2, compléter l'annexe 2. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise puis cochez s'ils sont marchands ou non marchands.", ressources: "Consulter le document 3, compléter l'annexe 3. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Quelles sont les villes dans lesquelles s'étend la zone de chalandise (secteur d'intervention) de AMParis. Dans quel département se trouve chacune d'elle.", ressources: "Consulter le document 4, compléter l'annexe 4. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Donnez le nom du partenaire de l'entreprise.", ressources: "Consulter le document 5, compléter l'annexe 5. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Après avoir lu les différents documents de l'entreprise, dites selon vous quel est le type de clientèle de l'entreprise.", ressources: "Consulter le document 6, compléter l'annexe 6. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe6' },
         ],
       },
     ],
@@ -5620,7 +5621,7 @@ const AMPARIS_M1: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: "Identité de l'entreprise (annexe 1).", documents: ['Sites internet', 'Annexe 1'], bareme: 9, reponse: 'Voir tableau.',
+        intitule: "Identité de l'entreprise (annexe 1).", documents: ['Sites internet', 'Annexe 1'], bareme: 6, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Champ', 'Réponse'], lignes: [
           ['Dénomination', 'A.M.PARIS'],
           ['Forme juridique', 'Société par actions simplifiée (S.A.S)'],
@@ -5634,11 +5635,11 @@ const AMPARIS_M1: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Les biens (annexe 2).', documents: ['Site internet', 'Annexe 2'], bareme: 3, reponse: 'Voir tableau.',
+        intitule: 'Les biens (annexe 2).', documents: ['Site internet', 'Annexe 2'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Les grands types de biens vendus'], lignes: [['Photocopieurs'], ['Imprimantes'], ['Télécopieurs']] },
       },
       {
-        intitule: 'Les services (annexe 3).', documents: ['Site internet', 'Annexe 3'], bareme: 6, reponse: 'Voir tableau. (X* : selon le cas, le commercial peut proposer la gratuité quand il veut emporter l\u2019adhésion de l\u2019acheteur.)',
+        intitule: 'Les services (annexe 3).', documents: ['Site internet', 'Annexe 3'], bareme: 4, reponse: 'Voir tableau. (X* : selon le cas, le commercial peut proposer la gratuité quand il veut emporter l\u2019adhésion de l\u2019acheteur.)',
         tableau: { colonnes: ['Les services', 'Marchand', 'Non marchand'], lignes: [
           ['Livraison', 'X*', 'X*'],
           ['Location', 'X', ''],
@@ -5649,7 +5650,7 @@ const AMPARIS_M1: ContenuMission = {
         ] },
       },
       {
-        intitule: 'La zone de chalandise (annexe 4).', documents: ['Site internet', 'Annexe 4'], bareme: 8, reponse: 'Voir tableau.',
+        intitule: 'La zone de chalandise (annexe 4).', documents: ['Site internet', 'Annexe 4'], bareme: 6, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Villes', 'Département'], lignes: [
           ['Paris', '75'], ['Boulogne-Billancourt', '92'], ['Saint-Denis', '93'], ['Montreuil', '93'],
           ['Nanterre', '92'], ['Créteil', '94'], ['Courbevoie', '92'], ['Versailles', '78'],
@@ -5658,7 +5659,7 @@ const AMPARIS_M1: ContenuMission = {
         ] },
       },
       { intitule: 'Le partenaire (annexe 5).', documents: ['Site internet', 'Annexe 5'], bareme: 1, reponse: 'Ricoh.' },
-      { intitule: 'La clientèle (annexe 6).', documents: ['Document', 'Annexe 6'], bareme: 2, reponse: "C'est une clientèle de professionnels." },
+      { intitule: 'La clientèle (annexe 6).', documents: ['Document', 'Annexe 6'], bareme: 1, reponse: "C'est une clientèle de professionnels." },
     ],
   },
   synthese: {
@@ -5837,16 +5838,16 @@ const AMPARIS_M2: ContenuMission = {
         titre: 'Activité 1 — La segmentation et la cible de prospection',
         contexte: "Pour commencer, elle souhaite que vous sachiez ce qu'est une cible et que vous l'identifiiez.",
         questions: [
-          { numero: 1, consigne: 'Cochez les critères de segmentation retenus par votre tutrice et justifiez votre réponse.', ressources: "Lire les documents 1 et 2, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
+          { numero: 1, consigne: 'Cochez les critères de segmentation retenus par votre tutrice et justifiez votre réponse.', ressources: "Lire les documents 1 et 2, compléter l'annexe 1. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — La cible de la prospection',
         contexte: "Maintenant que vous savez quelle est la cible à viser, votre tutrice vous remet un extrait d'annuaire comportant des types d'organisations différentes.",
         questions: [
-          { numero: 2, consigne: 'Indiquez quelle est la cible que votre responsable souhaite viser.', ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Selon vous, quelle est la définition de la cible.', ressources: "Lire le document 2, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Retrouvez les organisations qui correspondent à la cible indiquée par votre responsable.', ressources: "Lire le document 3, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4' },
+          { numero: 2, consigne: 'Indiquez quelle est la cible que votre responsable souhaite viser.', ressources: "Lire le document 1, compléter l'annexe 2. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Selon vous, quelle est la définition de la cible.', ressources: "Lire le document 2, compléter l'annexe 3. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Retrouvez les organisations qui correspondent à la cible indiquée par votre responsable.', ressources: "Lire le document 3, compléter l'annexe 4. Compétence C4B.1 — Rechercher et analyser les informations à des fins d'exploitation.", annexeId: 'annexe4' },
         ],
       },
     ],
@@ -5872,7 +5873,7 @@ const AMPARIS_M2: ContenuMission = {
       { intitule: 'La cible (annexe 2).', documents: ['Document 1', 'Annexe 2'], bareme: 2, reponse: 'Les établissements scolaires du 17ème arrondissement.' },
       { intitule: 'Définition de la cible (annexe 3).', documents: ['Document 2', 'Annexe 3'], bareme: 2, reponse: "C'est l'ensemble des clients ou prospects que l'entreprise souhaite toucher à travers ses actions commerciales ou de communication afin d'augmenter ses ventes." },
       {
-        intitule: 'Les organisations correspondant à la cible (annexe 4).', documents: ['Document 3', 'Annexe 4'], bareme: 11, reponse: 'Les établissements scolaires du 17ème arrondissement. Voir tableau.',
+        intitule: 'Les organisations correspondant à la cible (annexe 4).', documents: ['Document 3', 'Annexe 4'], bareme: 12, reponse: 'Les établissements scolaires du 17ème arrondissement. Voir tableau.',
         tableau: { colonnes: ['Nom', 'Activité', 'Adresse', 'Numéro de tél', 'E-mail'], lignes: [
           ['Léon Gambetta', 'Collège public', '149, avenue Gambetta', '01.43.61.87.16', 'leongambetta@ac-paris.fr'],
           ['Maria Deraismes', 'Lycée Professionnel', '19, rue Maria Deraismes', '01.46.27.94.37', 'ce.0753350j@ac-paris.fr'],
@@ -6118,38 +6119,38 @@ const AMPARIS_M3: ContenuMission = {
         titre: 'Activité 1 — Les techniques de prospection adaptées',
         contexte: "Votre tutrice vous demande de lui proposer deux techniques de prospection les plus adaptées pour vous mettre en contact avec les prospects. Votre tutrice vous rappelle que s'il existe une infinité de techniques de prospection, toutes ne peuvent pas être applicables dans tous les types d'entreprise car certaines ne conviennent pas à la structure ou l'image de celle-ci. Elle souhaite que les techniques de prospection que vous choisirez soient dynamiques mais qu'elles permettent également d'avoir un contact direct et chaleureux avec les prospects.",
         questions: [
-          { numero: 1, consigne: 'Listez les avantages et les inconvénients de chaque technique de prospection.', ressources: "Lire le document 2, compléter l'annexe 1. [C.4B.2]", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Répartissez les techniques de prospection selon qu'elles soient à distance ou de contact direct.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Retrouvez toutes les techniques qu'il est possible d'utiliser chez AMParis. Justifiez votre réponse par rapport aux exigences de votre tutrice.", ressources: "Lire le document 2, compléter l'annexe 3. [C.4B.2]", annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Indiquez les 2 techniques que vous retiendrez pour la prospection de votre cible. Justifiez votre réponse en citant le document 2.', ressources: "Compléter l'annexe 4. [C.4B.2]", annexeId: 'annexe4' },
+          { numero: 1, consigne: 'Listez les avantages et les inconvénients de chaque technique de prospection.', ressources: "Lire le document 2, compléter l'annexe 1. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Répartissez les techniques de prospection selon qu'elles soient à distance ou de contact direct.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Retrouvez toutes les techniques qu'il est possible d'utiliser chez AMParis. Justifiez votre réponse par rapport aux exigences de votre tutrice.", ressources: "Lire le document 2, compléter l'annexe 3. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Indiquez les 2 techniques que vous retiendrez pour la prospection de votre cible. Justifiez votre réponse en citant le document 2.', ressources: "Compléter l'annexe 4. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 2 — La prospection écrite',
         contexte: "Vous avez déterminé le type de prospection à distance que vous souhaitez mettre en place et grâce à votre justification pertinente, votre tuteur vous a donné son accord. Vous observez attentivement les coordonnées de chacune des organisations que vous avez sélectionnées (Mission 2 annexe 4). Le document de prospection écrit est « dynamique et pas cher » comme vous l'a demandé votre tutrice dans le document 1.",
         questions: [
-          { numero: 5, consigne: 'Rédigez le document de prospection écrite que vous allez envoyer à vos prospects.', ressources: "Lire le document 3, compléter l'annexe 5. [C.4B.2]", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Retournez à la Mission 2, l'annexe 4, puis indiquez quelle coordonnée est manquante.", ressources: "Compléter l'annexe 6. [C.4B.2]", annexeId: 'annexe6', contexteAvant: "Cependant, vous constatez que pour l'une des organisations, les coordonnées nécessaires à l'envoi du document ne sont pas disponibles." },
-          { numero: 7, consigne: "Donnez le nom de l'organisation dont la coordonnée est manquante.", ressources: "Compléter l'annexe 7. [C.4B.2]", annexeId: 'annexe7' },
-          { numero: 8, consigne: "Quelle autre coordonnée de l'organisation est disponible pour envoyer le document de prospection écrit.", ressources: "Compléter l'annexe 8. [C.4B.2]", annexeId: 'annexe8' },
-          { numero: 9, consigne: "Indiquez quelle autre technique de prospection écrite il est possible d'utiliser.", ressources: "Relire le document 2, compléter l'annexe 9. [C.4B.2]", annexeId: 'annexe9' },
-          { numero: 10, consigne: "Rédigez le document de prospection écrite que vous allez envoyer à vos prospects. N'oubliez pas d'adapter le document 3 au type de document que vous allez rédiger.", ressources: "Relire le document 3, compléter l'annexe 10. [C.4B.2]", annexeId: 'annexe10' },
+          { numero: 5, consigne: 'Rédigez le document de prospection écrite que vous allez envoyer à vos prospects.', ressources: "Lire le document 3, compléter l'annexe 5. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Retournez à la Mission 2, l'annexe 4, puis indiquez quelle coordonnée est manquante.", ressources: "Compléter l'annexe 6. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe6', contexteAvant: "Cependant, vous constatez que pour l'une des organisations, les coordonnées nécessaires à l'envoi du document ne sont pas disponibles." },
+          { numero: 7, consigne: "Donnez le nom de l'organisation dont la coordonnée est manquante.", ressources: "Compléter l'annexe 7. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe7' },
+          { numero: 8, consigne: "Quelle autre coordonnée de l'organisation est disponible pour envoyer le document de prospection écrit.", ressources: "Compléter l'annexe 8. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe8' },
+          { numero: 9, consigne: "Indiquez quelle autre technique de prospection écrite il est possible d'utiliser.", ressources: "Relire le document 2, compléter l'annexe 9. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe9' },
+          { numero: 10, consigne: "Rédigez le document de prospection écrite que vous allez envoyer à vos prospects. N'oubliez pas d'adapter le document 3 au type de document que vous allez rédiger.", ressources: "Relire le document 3, compléter l'annexe 10. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe10' },
         ],
       },
       {
         titre: 'Activité 3 — La prospection téléphonique',
         contexte: "Le document de prospection écrite que vous avez rédigé a été validé par votre tutrice. Cela fait une semaine que vous avez tout envoyé, et vous vous préparez maintenant pour la prospection de contact direct pour relancer vos prospects, les gestionnaires et les chefs d'établissements.",
         questions: [
-          { numero: 11, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: "Lire les documents 4 et 5, compléter l'annexe 11. [C.4B.2]", annexeId: 'annexe11' },
+          { numero: 11, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: "Lire les documents 4 et 5, compléter l'annexe 11. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe11' },
         ],
       },
       {
         titre: "Activité 4 — La réalisation d'une fiche prospect",
         contexte: "Après avoir réalisé votre fiche d'appel, votre tutrice vous demande de préparer la fiche prospect qui sera utilisée lors de la campagne de prospection téléphonique.",
         questions: [
-          { numero: 12, consigne: "Listez tous les éléments que vous devez faire figurer dans chaque partie d'une fiche prospect.", ressources: "Lire le document 6, compléter l'annexe 12. [C.4B.2]", annexeId: 'annexe12' },
-          { numero: 13, consigne: 'Réalisez un modèle de fiche prospect.', ressources: "Compléter l'annexe 13. [C.4B.2]", annexeId: 'annexe13' },
-          { numero: 14, consigne: 'Complétez les deux premières parties de la fiche prospect.', ressources: "Consulter la Mission 2 document 3 puis lire les documents 7 et 8, compléter l'annexe 13. [C.4B.2]", annexeId: 'annexe13' },
+          { numero: 12, consigne: "Listez tous les éléments que vous devez faire figurer dans chaque partie d'une fiche prospect.", ressources: "Lire le document 6, compléter l'annexe 12. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe12' },
+          { numero: 13, consigne: 'Réalisez un modèle de fiche prospect.', ressources: "Compléter l'annexe 13. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe13' },
+          { numero: 14, consigne: 'Complétez les deux premières parties de la fiche prospect.', ressources: "Consulter la Mission 2 document 3 puis lire les documents 7 et 8, compléter l'annexe 13. Compétence C4B.2 — Participer à la conception d'une opération de prospection.", annexeId: 'annexe13' },
         ],
       },
     ],
@@ -6172,7 +6173,7 @@ const AMPARIS_M3: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: 'Avantages et inconvénients (annexe 1).', documents: ['Document 2', 'Annexe 1'], bareme: 10, reponse: 'Voir tableau.',
+        intitule: 'Avantages et inconvénients (annexe 1).', documents: ['Document 2', 'Annexe 1'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Techniques de prospection', 'Avantages', 'Inconvénients'], lignes: [
           ['Le boîtage', 'Il permet un ciblage extrêmement précis. Moyen efficace de générer de la sympathie.', 'Perçu comme étant assez envahissant. Chronophage.'],
           ["L'e-mailing", "Très peu coûteuse. Permet de générer des demandes de devis ou de prises de rendez-vous. Mettre des images animées et dynamique qui attirent l'attention.", 'Taux de retour (= réponse) extrêmement faible.'],
@@ -6182,7 +6183,7 @@ const AMPARIS_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Techniques à distance ou de contact (annexe 2).', documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 5, reponse: 'Voir tableau.',
+        intitule: 'Techniques à distance ou de contact (annexe 2).', documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Prospection à distance', 'Prospection de contact'], lignes: [
           ['E-mailing', 'Boîtage'],
           ['Publipostage', 'Prospection de terrain'],
@@ -6190,31 +6191,31 @@ const AMPARIS_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: "Techniques utilisables dans l'entreprise (annexe 3).", documents: ['Document 2', 'Annexe 3'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: "Techniques utilisables dans l'entreprise (annexe 3).", documents: ['Document 2', 'Annexe 3'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Techniques utilisables', 'Justifications'], lignes: [
           ["L'e-mailing", 'Les techniques de prospection choisies doivent être dynamiques.'],
           ['Le phoning', '« Avoir un contact direct et chaleureux avec les prospects. »'],
         ] },
       },
       {
-        intitule: 'Techniques retenues (annexe 4).', documents: ['Document 2', 'Annexe 4'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Techniques retenues (annexe 4).', documents: ['Document 2', 'Annexe 4'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Techniques', 'Justifications'], lignes: [
           ["L'e-mailing", "Document 2 : « …permet également de mettre des liens vers les produits de l'entreprise, de mettre des images animées et dynamique qui attirent l'attention »"],
           ['Le phoning', "Document 2 : « …les clients veulent aujourd'hui une bonne offre mais aussi et surtout un bon relationnel. »"],
         ] },
       },
       {
-        intitule: 'Rédaction de la prospection écrite — e-mailing (annexe 5).', documents: ['Document 3', 'Annexe 5'], bareme: 6, reponse:
+        intitule: 'Rédaction de la prospection écrite — e-mailing (annexe 5).', documents: ['Document 3', 'Annexe 5'], bareme: 1, reponse:
           "Nouveau message — De : contact@amparis.fr — A : [destinataire] — Objet : Remise sur la location des photocopieurs. Corps : – 20 % pendant 1 an pour la location d'un photocopieur couleur. Offre valable jusqu'au 28.03.202N. https://www.amparis.fr/photocopieur-couleur. Tél : 01.47.90.27.79" },
       { intitule: 'La coordonnée manquante (annexe 6).', documents: ['Mission 2 annexe 4', 'Annexe 6'], bareme: 1, reponse: 'Il manque un e-mail.' },
       { intitule: "Le nom de l'organisation (annexe 7).", documents: ['Mission 2 annexe 4', 'Annexe 7'], bareme: 1, reponse: 'Lycée privé Saint Michel des Batignolles.' },
       { intitule: "L'autre coordonnée disponible (annexe 8).", documents: ['Mission 2 annexe 4', 'Annexe 8'], bareme: 1, reponse: "L'adresse postale (14, avenue de Saint-Ouen)." },
       { intitule: "L'autre technique de prospection écrite (annexe 9).", documents: ['Document 2', 'Annexe 9'], bareme: 1, reponse: 'Le publipostage.' },
       {
-        intitule: 'Rédaction de la prospection écrite — publipostage (annexe 10).', documents: ['Document 3', 'Annexe 10'], bareme: 6, reponse:
+        intitule: 'Rédaction de la prospection écrite — publipostage (annexe 10).', documents: ['Document 3', 'Annexe 10'], bareme: 1, reponse:
           "Lycée Privé Saint Michel Des Batignolles, 14, avenue de Saint-Ouen, 75017 Paris. Paris, le 15 mars 202N. Objet : Remise sur la location des photocopieurs. Notre société AMParis a le plaisir de vous informer de l'offre promotionnelle du mois. Afin de vous aider à faire des économies, nous vous proposons une remise exceptionnelle de - 20 % la première année sur la location de photocopieurs. La remise est valable jusqu'au 28 mars 202N. Ne tardez pas et soyez le premier à réserver votre photocopieur. Nous vous remercions de votre attention et nous vous invitons à vous rendre sur notre site pour découvrir toute notre sélection de photocopieurs : https://www.amparis.fr/photocopieur-couleur. AMParis." },
       {
-        intitule: "Fiche d'appel CROC (annexe 11).", documents: ['Documents 4 et 5', 'Annexe 11'], bareme: 8, reponse: 'Voir fiche.',
+        intitule: "Fiche d'appel CROC (annexe 11).", documents: ['Documents 4 et 5', 'Annexe 11'], bareme: 2, reponse: 'Voir fiche.',
         tableau: { colonnes: ['Étape', 'Contenu'], lignes: [
           ['Contact', "Bonjour, Mme/ M…., Je suis Prénom NOM d'AMParis, vous êtes bien le (la) gestionnaire de l'établissement (nom de l'établissement) ?"],
           ['Raison', "Je vous appelle suite à l'e-mail que je vous ai envoyé il y a une semaine. Il y a -20% sur les locations de photocopieurs couleurs pendant un an."],
@@ -6223,7 +6224,7 @@ const AMPARIS_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: "Éléments d'une fiche prospect (annexe 12).", documents: ['Document 6', 'Annexe 12'], bareme: 8, reponse: 'Voir tableau.',
+        intitule: "Éléments d'une fiche prospect (annexe 12).", documents: ['Document 6', 'Annexe 12'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Partie de la fiche', 'Éléments à faire figurer'], lignes: [
           ["Coordonnées de l'entreprise", 'Dénomination, Téléphone, Adresse, Site internet'],
           ['Coordonnées du décisionnaire', 'Nom, Prénom, Fonction, E-mail'],
@@ -6232,7 +6233,7 @@ const AMPARIS_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Modèle de fiche contact complété (annexe 13).', documents: ['Mission 2 document 3', 'Documents 7 et 8', 'Annexe 13'], bareme: 8, reponse:
+        intitule: 'Modèle de fiche contact complété (annexe 13).', documents: ['Mission 2 document 3', 'Documents 7 et 8', 'Annexe 13'], bareme: 3, reponse:
           "FICHE CONTACT. Coordonnées de l'organisation : Dénomination Maria Deraismes (Lycée Professionnel), Adresse 19, rue Maria Deraismes 75017 Paris, Téléphone 01.46.27.94.37, Site internet [à compléter]. Coordonnées du décisionnaire : Nom Larue, Prénom Barbara, Fonction Gestionnaire, E-mail [à compléter]. Les besoins du client et le résultat de la prospection sont complétés pendant le rendez-vous." },
     ],
   },
@@ -6394,33 +6395,33 @@ const AMPARIS_M4: ContenuMission = {
       {
         titre: 'Activité 1 — Les tâches à effectuer',
         questions: [
-          { numero: 1, consigne: "Listez les prospects que vous allez appeler aujourd'hui.", ressources: "Consulter la Mission 2 annexe 4, compléter l'annexe 1. [C.4B.2]", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Complétez le fichier contacts à l'aide des numéros que vous avez eu en appelant.", ressources: "Lire le document 1, compléter l'annexe 2. [C.4B.2]", annexeId: 'annexe2', contexteAvant: "Vous avez passé les appels à l'ensemble des organisations sélectionnées. Certains décisionnaires vous ont répondu ce qui permet de compléter le fichier contacts." },
+          { numero: 1, consigne: "Listez les prospects que vous allez appeler aujourd'hui.", ressources: "Consulter la Mission 2 annexe 4, compléter l'annexe 1. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Complétez le fichier contacts à l'aide des numéros que vous avez eu en appelant.", ressources: "Lire le document 1, compléter l'annexe 2. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe2', contexteAvant: "Vous avez passé les appels à l'ensemble des organisations sélectionnées. Certains décisionnaires vous ont répondu ce qui permet de compléter le fichier contacts." },
         ],
       },
       {
         titre: 'Activité 2 — Les objectifs de rendez-vous',
         contexte: "Votre tuteur tient à ce que votre opération de phoning soit rentable et pour qu'elle le soit, étant donné le fait que vous soyez dans l'entreprise depuis très peu de temps, elle vous demande de réussir à obtenir au moins 2 rendez-vous.",
         questions: [
-          { numero: 3, consigne: 'Combien de rendez-vous avez-vous réussi à avoir suite à votre campagne de téléprospection ?', ressources: "Consulter l'annexe 2, compléter l'annexe 3. [C.4B.2]", annexeId: 'annexe3' },
-          { numero: 4, consigne: "Complétez votre agenda en y inscrivant les rendez-vous que vous avez réussi à obtenir.", ressources: "Consulter l'annexe 2, compléter l'annexe 4. [C.4B.2]", annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Calculez votre taux de réalisation.', ressources: "Lire le document 2, compléter l'annexe 5. [C.4B.2]", annexeId: 'annexe5' },
-          { numero: 6, consigne: 'Quel commentaire pouvez-vous faire lorsque vous comparez les objectifs qui vous ont été fixés et ce que vous avez réalisé ?', ressources: "Consulter l'annexe 5, compléter l'annexe 6. [C.4B.2]", annexeId: 'annexe6' },
+          { numero: 3, consigne: 'Combien de rendez-vous avez-vous réussi à avoir suite à votre campagne de téléprospection ?', ressources: "Consulter l'annexe 2, compléter l'annexe 3. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Complétez votre agenda en y inscrivant les rendez-vous que vous avez réussi à obtenir.", ressources: "Consulter l'annexe 2, compléter l'annexe 4. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Calculez votre taux de réalisation.', ressources: "Lire le document 2, compléter l'annexe 5. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Quel commentaire pouvez-vous faire lorsque vous comparez les objectifs qui vous ont été fixés et ce que vous avez réalisé ?', ressources: "Consulter l'annexe 5, compléter l'annexe 6. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe6' },
         ],
       },
       {
         titre: "Activité 3 — Calcul du coût de l'opération",
         contexte: "Votre tutrice vous avait demandé au moment de la mise en place de l'opération de prospection, que celle-ci ne coûte pas trop cher à l'entreprise, soit 20€ maximum. Elle vous demande maintenant de calculer le coût réel de l'opération.",
         questions: [
-          { numero: 7, consigne: "Calculez le coût de l'opération.", ressources: "Consulter la Mission 2 annexe 4 puis lire le document 3, compléter l'annexe 7. [C.4B.2]", annexeId: 'annexe7' },
-          { numero: 8, consigne: 'Commentez ces résultats au regard du budget que vous a accordé Mme Pauret pour la mise en place de l\u2019opération.', ressources: "Consulter l'annexe 7, compléter l'annexe 8. [C.4B.2]", annexeId: 'annexe8' },
+          { numero: 7, consigne: "Calculez le coût de l'opération.", ressources: "Consulter la Mission 2 annexe 4 puis lire le document 3, compléter l'annexe 7. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Commentez ces résultats au regard du budget que vous a accordé Mme Pauret pour la mise en place de l\u2019opération.', ressources: "Consulter l'annexe 7, compléter l'annexe 8. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe8' },
         ],
       },
       {
         titre: 'Activité 4 — Mettre à jour le fichier client',
         contexte: "L'opération de prospection s'est bien passée et votre tutrice est satisfaite. Pour que celle-ci soit complétement terminée, elle vous demande de mettre à jour le fichier clients en rentrant les informations qui vous ont été données au cours de vos appels.",
         questions: [
-          { numero: 9, consigne: 'Mettez à jour le fichier clients en rentrant les informations qui vous ont été données au cours de vos appels.', ressources: "Relire le document 1 (Mission 4) et le document 2 (Mission 2), compléter l'annexe 9. [C.4B.2]", annexeId: 'annexe9' },
+          { numero: 9, consigne: 'Mettez à jour le fichier clients en rentrant les informations qui vous ont été données au cours de vos appels.', ressources: "Relire le document 1 (Mission 4) et le document 2 (Mission 2), compléter l'annexe 9. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe9' },
         ],
       },
     ],
@@ -6439,7 +6440,7 @@ const AMPARIS_M4: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: 'Prospects à contacter (annexe 1).', documents: ['Mission 2 annexe 4', 'Annexe 1'], bareme: 11, reponse: 'Voir tableau.',
+        intitule: 'Prospects à contacter (annexe 1).', documents: ['Mission 2 annexe 4', 'Annexe 1'], bareme: 4, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Organisations', 'Numéro de téléphone'], lignes: [
           ['École maternelle publique Ampère', '01.47.63.23.72'],
           ['Collège public André Malraux', '01.45.74.49.15'],
@@ -6455,7 +6456,7 @@ const AMPARIS_M4: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Tableau de gestion des appels (annexe 2).', documents: ['Document 1', 'Annexe 2'], bareme: 11, reponse: "Voir tableau. Chaque ligne reprend l'organisation, l'interlocuteur, le téléphone, le rappel, la date de RDV éventuelle, l'envoi de documents, le rappel à prévoir et le motif de refus.",
+        intitule: 'Tableau de gestion des appels (annexe 2).', documents: ['Document 1', 'Annexe 2'], bareme: 5, reponse: "Voir tableau. Chaque ligne reprend l'organisation, l'interlocuteur, le téléphone, le rappel, la date de RDV éventuelle, l'envoi de documents, le rappel à prévoir et le motif de refus.",
         tableau: { colonnes: ['Organisation', 'Interlocuteur / fonction', 'Téléphone', 'Rdv (date)', 'Refus (cause)'], lignes: [
           ['Léon Gambetta', "Personnel d'accueil", '01 43 61 87 16', 'Non', 'Pas de démarchage'],
           ['Maria Deraismes', 'Barbara Larue - Gestionnaire', '01.46.27.94.37', '16.03 à 16H30', ''],
@@ -6472,21 +6473,21 @@ const AMPARIS_M4: ContenuMission = {
       },
       { intitule: 'Nombre de rendez-vous obtenus (annexe 3).', documents: ['Annexe 2', 'Annexe 3'], bareme: 1, reponse: '3 rendez-vous (Maria Deraismes - Carnot - André Malraux).' },
       {
-        intitule: 'Agenda (annexe 4).', documents: ['Annexe 2', 'Annexe 4'], bareme: 3, reponse: 'Mars 202N : Carnot le 14 mars à 14h, André Malraux le 17 mars à 14h, Maria Deraismes le 16 mars à 16h30.',
+        intitule: 'Agenda (annexe 4).', documents: ['Annexe 2', 'Annexe 4'], bareme: 1, reponse: 'Mars 202N : Carnot le 14 mars à 14h, André Malraux le 17 mars à 14h, Maria Deraismes le 16 mars à 16h30.',
       },
-      { intitule: 'Calcul du taux de réalisation (annexe 5).', documents: ['Document 2', 'Annexe 5'], bareme: 2, reponse: 'Objectifs réalisés / objectifs à atteindre x 100 = 3 / 2 x 100 = 150 %.' },
-      { intitule: 'Commentaire (annexe 6).', documents: ['Annexe 5', 'Annexe 6'], bareme: 2, reponse: "Les objectifs fixés par l'entreprise ont été dépassés (150 %, soit 3 rendez-vous obtenus pour 2 demandés)." },
+      { intitule: 'Calcul du taux de réalisation (annexe 5).', documents: ['Document 2', 'Annexe 5'], bareme: 1, reponse: 'Objectifs réalisés / objectifs à atteindre x 100 = 3 / 2 x 100 = 150 %.' },
+      { intitule: 'Commentaire (annexe 6).', documents: ['Annexe 5', 'Annexe 6'], bareme: 1, reponse: "Les objectifs fixés par l'entreprise ont été dépassés (150 %, soit 3 rendez-vous obtenus pour 2 demandés)." },
       {
-        intitule: "Coût de l'opération (annexe 7).", documents: ['Mission 2 annexe 4', 'Document 3', 'Annexe 7'], bareme: 4, reponse: 'Voir tableau. Total = 2,46 €.',
+        intitule: "Coût de l'opération (annexe 7).", documents: ['Mission 2 annexe 4', 'Document 3', 'Annexe 7'], bareme: 1, reponse: 'Voir tableau. Total = 2,46 €.',
         tableau: { colonnes: ['Éléments', 'Quantité', 'Calculs', 'Résultats'], lignes: [
           ['Coût appels passés', '12', '12 x 0,08', '0,96 €'],
           ['Coût publipostage', '1', '1 x (0,15 + 1,05 + 0,30)', '1,50 €'],
           ['Total', '', '', '2,46 €'],
         ] },
       },
-      { intitule: 'Commentaire (annexe 8).', documents: ['Annexe 7', 'Annexe 8'], bareme: 2, reponse: "Le budget donné par Mme Pauret qui était de 20 € maximum n'a pas été dépassé (coût réel : 2,46 €)." },
+      { intitule: 'Commentaire (annexe 8).', documents: ['Annexe 7', 'Annexe 8'], bareme: 1, reponse: "Le budget donné par Mme Pauret qui était de 20 € maximum n'a pas été dépassé (coût réel : 2,46 €)." },
       {
-        intitule: 'Fichier clients mis à jour (annexe 9).', documents: ['Mission 4 doc 1', 'Mission 2 doc 2', 'Annexe 9'], bareme: 11, reponse: 'Voir tableau.',
+        intitule: 'Fichier clients mis à jour (annexe 9).', documents: ['Mission 4 doc 1', 'Mission 2 doc 2', 'Annexe 9'], bareme: 5, reponse: 'Voir tableau.',
         tableau: { colonnes: ["Type d'organisation", "Nom", 'Personne décisionnaire', 'Téléphone'], lignes: [
           ['École maternelle publique', 'Ampère', 'Julien Tabua', '01.47.63.23.72'],
           ['Collège public', 'André Malraux', 'Fanta Diagoura', '01.45.74.49.15'],
@@ -6656,28 +6657,28 @@ const ORPI_M1: ContenuMission = {
         titre: "Activité 1 — Les sources d'informations internes et externes de l'entreprise",
         contexte: "Maxime fait appel à vous pour l'aider à préparer son PowerPoint en utilisant les informations qu'il a recueillies auprès de son tuteur.",
         questions: [
-          { numero: 1, consigne: "Réalisez la fiche d'identité de l'entreprise Orpi Guy Môquet.", ressources: 'Consulter le document 1, compléter la diapositive 1. [3.1.2]', annexeId: 'ppt' },
-          { numero: 2, consigne: "Indiquez quelle est la zone de prospection de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 2. [3.1.2]', annexeId: 'ppt' },
-          { numero: 3, consigne: 'Dressez le profil de la clientèle.', ressources: 'Consulter le document 1, compléter la diapositive 3. [3.1.2]', annexeId: 'ppt' },
-          { numero: 4, consigne: "Listez les forces et les faiblesses de l'agence ainsi que les opportunités et les menaces qui peuvent peser sur elle.", ressources: 'Consulter le document 1, compléter la diapositive 4. [3.1.2]', annexeId: 'ppt' },
-          { numero: 5, consigne: 'Identifiez les deux catégories de concurrents puis listez-les.', ressources: 'Consulter le document 1, compléter la diapositive 5. [3.1.2]', annexeId: 'ppt' },
+          { numero: 1, consigne: "Réalisez la fiche d'identité de l'entreprise Orpi Guy Môquet.", ressources: 'Consulter le document 1, compléter la diapositive 1. [3.1.2]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 2, consigne: "Indiquez quelle est la zone de prospection de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 2. [3.1.2]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 3, consigne: 'Dressez le profil de la clientèle.', ressources: 'Consulter le document 1, compléter la diapositive 3. [3.1.2]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 4, consigne: "Listez les forces et les faiblesses de l'agence ainsi que les opportunités et les menaces qui peuvent peser sur elle.", ressources: 'Consulter le document 1, compléter la diapositive 4. [3.1.2]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 5, consigne: 'Identifiez les deux catégories de concurrents puis listez-les.', ressources: 'Consulter le document 1, compléter la diapositive 5. [3.1.2]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
         ],
       },
       {
         titre: 'Activité 2 — Les sollicitations clients et leur traitement',
         contexte: "M. Lefevre, le responsable de l'agence, vous interroge à son tour sur les demandes des clients que vous avez reçues, qu'elles aient été formulées en face-à-face, par mail ou par téléphone.",
         questions: [
-          { numero: 6, consigne: "Repérez les demandes de clients les plus fréquentes et la façon dont elles sont traitées.", ressources: 'Consulter le document 1, compléter la diapositive 6. [3.1.1]', annexeId: 'ppt' },
+          { numero: 6, consigne: "Repérez les demandes de clients les plus fréquentes et la façon dont elles sont traitées.", ressources: 'Consulter le document 1, compléter la diapositive 6. [3.1.1]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
         ],
       },
       {
         titre: 'Activité 3 — Les outils de fidélisation et/ou de développement de la relation client',
         contexte: "Toujours dans le cadre de la constitution de son dossier pour son oral, Maxime s'intéresse à la fidélisation chez Orpi Guy Môquet.",
         questions: [
-          { numero: 7, consigne: "Précisez les méthodes de fidélisation mises en place au sein de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 7. [3.1.4]', annexeId: 'ppt' },
-          { numero: 8, consigne: "En vous appuyant sur les propos de M. Lefevre, identifiez le problème de fidélisation (= constat) qui existe au sein de l'agence.", ressources: 'Consulter le document 1, compléter la diapositive 8. [3.1.4]', annexeId: 'ppt' },
-          { numero: 9, consigne: 'À partir du constat, formulez la problématique sous forme de question.', ressources: 'Consulter le document 1, compléter la diapositive 9. [3.1.4]', annexeId: 'ppt' },
-          { numero: 10, consigne: "Proposez 2 actions au regard du contexte exposé par M. Lefevre. Justifiez ce choix en indiquant l'avantage et/ou l'objectif de chacune d'elle.", ressources: 'Consulter le document 1, compléter la diapositive 10. [3.1.4]', annexeId: 'ppt' },
+          { numero: 7, consigne: "Précisez les méthodes de fidélisation mises en place au sein de l'entreprise.", ressources: 'Consulter le document 1, compléter la diapositive 7. [3.1.4]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 8, consigne: "En vous appuyant sur les propos de M. Lefevre, identifiez le problème de fidélisation (= constat) qui existe au sein de l'agence.", ressources: 'Consulter le document 1, compléter la diapositive 8. [3.1.4]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 9, consigne: 'À partir du constat, formulez la problématique sous forme de question.', ressources: 'Consulter le document 1, compléter la diapositive 9. [3.1.4]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
+          { numero: 10, consigne: "Proposez 2 actions au regard du contexte exposé par M. Lefevre. Justifiez ce choix en indiquant l'avantage et/ou l'objectif de chacune d'elle.", ressources: 'Consulter le document 1, compléter la diapositive 10. [3.1.4]. Compétence C3.1 — Traiter et exploiter l\'information ou le contact client.', annexeId: 'ppt' },
         ],
       },
     ],
@@ -6714,7 +6715,7 @@ const ORPI_M1: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: "Fiche d'identité (diapositive 1).", documents: ['Document 1'], bareme: 7, reponse: 'Voir tableau.',
+        intitule: "Fiche d'identité (diapositive 1).", documents: ['Document 1'], bareme: 5, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Élément', 'Réponse'], lignes: [
           ["Nom de l'entreprise", 'Orpi Guy Môquet'],
           ['Date de création', '2012'],
@@ -6725,9 +6726,9 @@ const ORPI_M1: ContenuMission = {
           ['Activités', 'Vente de biens, gestion locative, accompagnement des investisseurs'],
         ] },
       },
-      { intitule: 'La zone de prospection (diapositive 2).', documents: ['Document 1'], bareme: 2, reponse: "Principalement le 17ème arrondissement de Paris, ainsi que les arrondissements voisins (18ème, 9ème) et la région parisienne (investisseurs)." },
+      { intitule: 'La zone de prospection (diapositive 2).', documents: ['Document 1'], bareme: 1, reponse: "Principalement le 17ème arrondissement de Paris, ainsi que les arrondissements voisins (18ème, 9ème) et la région parisienne (investisseurs)." },
       {
-        intitule: 'Le profil de la clientèle (diapositive 3).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
+        intitule: 'Le profil de la clientèle (diapositive 3).', documents: ['Document 1'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Critère', 'Réponse'], lignes: [
           ['Typologie', "Particuliers (acheteurs/locataires pour habiter) et investisseurs"],
           ['Caractéristiques', "Tranche d'âge 30-45 ans, jeunes couples ou professionnels cherchant un quartier calme et accessible"],
@@ -6735,7 +6736,7 @@ const ORPI_M1: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Le SWOT (diapositive 4).', documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Le SWOT (diapositive 4).', documents: ['Document 1'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['', ''], lignes: [
           ['Forces', 'Réputation locale, fidélité des clients, bouche-à-oreille, équipe compétente et réactive'],
           ['Faiblesses', "Absence d'approche numérique, outils trop classiques inadaptés aux jeunes générations"],
@@ -6744,26 +6745,26 @@ const ORPI_M1: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Les concurrents (diapositive 5).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
+        intitule: 'Les concurrents (diapositive 5).', documents: ['Document 1'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Catégorie', 'Concurrents'], lignes: [
           ['Concurrents directs', 'Century 21 (face au métro Guy Môquet), L\u2019Adresse'],
           ['Concurrents indirects', 'Les sites internet comme Seloger.com'],
         ] },
       },
       {
-        intitule: 'Sollicitations clients et traitement (diapositive 6).', documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Sollicitations clients et traitement (diapositive 6).', documents: ['Document 1'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['', ''], lignes: [
           ['Exemples', "Demandes sur les prix des biens et la disponibilité des appartements en vente ou en location"],
           ['Traitement', "Réponse rapide et personnalisée, détails précis avec photos et visites virtuelles ; un suivi de qualité renforce la relation client et la fidélité"],
         ] },
       },
       {
-        intitule: 'Outils de fidélisation actuels (diapositive 7).', documents: ['Document 1'], bareme: 2, reponse: 'Compte Instagram (non utilisé depuis plusieurs mois) ; système de parrainage récompensant les apporteurs d\u2019affaires.',
+        intitule: 'Outils de fidélisation actuels (diapositive 7).', documents: ['Document 1'], bareme: 1, reponse: 'Compte Instagram (non utilisé depuis plusieurs mois) ; système de parrainage récompensant les apporteurs d\u2019affaires.',
       },
-      { intitule: 'Le constat (diapositive 8).', documents: ['Document 1'], bareme: 3, reponse: "L'agence dispose d'outils numériques (Instagram) mais ne les exploite pas. La relation client n'est pas digitalisée, ce qui ne répond pas aux attentes des jeunes générations." },
-      { intitule: 'La problématique (diapositive 9).', documents: ['Document 1'], bareme: 2, reponse: "Comment l'agence Orpi Guy Môquet peut-elle améliorer la fidélisation et la relation client grâce au numérique ?" },
+      { intitule: 'Le constat (diapositive 8).', documents: ['Document 1'], bareme: 2, reponse: "L'agence dispose d'outils numériques (Instagram) mais ne les exploite pas. La relation client n'est pas digitalisée, ce qui ne répond pas aux attentes des jeunes générations." },
+      { intitule: 'La problématique (diapositive 9).', documents: ['Document 1'], bareme: 1, reponse: "Comment l'agence Orpi Guy Môquet peut-elle améliorer la fidélisation et la relation client grâce au numérique ?" },
       {
-        intitule: "Propositions d'action (diapositive 10).", documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: "Propositions d'action (diapositive 10).", documents: ['Document 1'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Action', 'Avantage / Objectif'], lignes: [
           ['Action 1 : réactiver et animer le compte Instagram', "Toucher une clientèle plus large et plus jeune, améliorer la visibilité (comme Century 21)"],
           ['Action 2 : développer le système de parrainage / un dispositif numérique de fidélisation', "Récompenser les apporteurs d'affaires et fidéliser les clients existants"],
@@ -6931,15 +6932,15 @@ const ORPI_M2: ContenuMission = {
         titre: "Activité 1 — Préparer l'oral de la situation 1",
         contexte: "Afin de vous préparer à votre propre oral en entreprise qui aura lieu dans quelques semaines, votre professeur d'économie-gestion vous demande de vous exercer sur le PowerPoint de Maxime. Votre entraînement devra durer 10 minutes maximum.",
         questions: [
-          { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint.', ressources: "Lire le document 1, compléter l'annexe 1. [3.1.4]", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio).', annexeId: undefined },
-          { numero: 3, consigne: "Téléchargez votre oral de votre portable à votre session d'ordinateur.", ressources: 'Étape pratique (transfert du fichier).', annexeId: undefined },
+          { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint.', ressources: "Lire le document 1, compléter l'annexe 1. [3.1.4]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio). Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: undefined },
+          { numero: 3, consigne: "Téléchargez votre oral de votre portable à votre session d'ordinateur.", ressources: 'Étape pratique (transfert du fichier). Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: undefined },
         ],
       },
       {
         titre: 'Activité 2 — Créer une animation de présentation de la situation 1',
         questions: [
-          { numero: 4, consigne: 'Suivez les instructions pour créer votre animation de présentation.', ressources: "Consulter le document 2, suivre l'annexe 2. [3.1.4]", annexeId: 'annexe2' },
+          { numero: 4, consigne: 'Suivez les instructions pour créer votre animation de présentation.', ressources: "Consulter le document 2, suivre l'annexe 2. [3.1.4]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe2' },
         ],
       },
     ],
@@ -6961,9 +6962,9 @@ const ORPI_M2: ContenuMission = {
   },
   corrige: {
     questions: [
-      { intitule: "Rédaction de l'oral (annexe 1).", documents: ['Document 1'], bareme: 10, reponse: "L'oral reprend la trame du document 1. Introduction : « Bonjour, je m'appelle [Nom], je suis en terminale Bac Pro MCV B au lycée Maria Deraismes. Aujourd'hui je vais vous présenter la phase préparatoire d'une action de FDRC menée chez Orpi Guy Môquet. Ma présentation se divise en trois parties : d'abord l'analyse de l'entreprise, ensuite les sollicitations clients, et enfin mes propositions d'actions. » Développement : présentation des 10 diapositives (identité, zone de prospection, clientèle, SWOT, concurrents, sollicitations clients, outils de fidélisation, constat, problématique, deux propositions d'action). Conclusion : « Pour conclure, nous avons vu l'identité et la situation de l'agence, les demandes des clients et deux actions pour améliorer la fidélisation grâce au numérique. Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions. »" },
-      { intitule: 'Enregistrement et transfert (étapes pratiques).', documents: ['Document 1'], bareme: 0, reponse: "Étapes pratiques : enregistrer l'oral (10 minutes maximum) sur le téléphone, puis transférer le fichier audio sur la session de l'ordinateur." },
-      { intitule: "Création de l'animation (annexe 2).", documents: ['Document 2'], bareme: 0, reponse: "Suivre le mode opératoire Adobe Express : créer maintenant, choisir un personnage humain (catégorie Professionnels) et un arrière-plan, importer le fichier audio de l'oral, télécharger la vidéo, s'inscrire avec le compte Google, puis déposer la capsule dans le DIGIPAD à la rubrique « MES VIDEOS »." },
+      { intitule: "Rédaction de l'oral (annexe 1).", documents: ['Document 1'], bareme: 18, reponse: "L'oral reprend la trame du document 1. Introduction : « Bonjour, je m'appelle [Nom], je suis en terminale Bac Pro MCV B au lycée Maria Deraismes. Aujourd'hui je vais vous présenter la phase préparatoire d'une action de FDRC menée chez Orpi Guy Môquet. Ma présentation se divise en trois parties : d'abord l'analyse de l'entreprise, ensuite les sollicitations clients, et enfin mes propositions d'actions. » Développement : présentation des 10 diapositives (identité, zone de prospection, clientèle, SWOT, concurrents, sollicitations clients, outils de fidélisation, constat, problématique, deux propositions d'action). Conclusion : « Pour conclure, nous avons vu l'identité et la situation de l'agence, les demandes des clients et deux actions pour améliorer la fidélisation grâce au numérique. Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions. »" },
+      { intitule: 'Enregistrement et transfert (étapes pratiques).', documents: ['Document 1'], bareme: 1, reponse: "Étapes pratiques : enregistrer l'oral (10 minutes maximum) sur le téléphone, puis transférer le fichier audio sur la session de l'ordinateur." },
+      { intitule: "Création de l'animation (annexe 2).", documents: ['Document 2'], bareme: 1, reponse: "Suivre le mode opératoire Adobe Express : créer maintenant, choisir un personnage humain (catégorie Professionnels) et un arrière-plan, importer le fichier audio de l'oral, télécharger la vidéo, s'inscrire avec le compte Google, puis déposer la capsule dans le DIGIPAD à la rubrique « MES VIDEOS »." },
     ],
   },
   synthese: {
@@ -7215,20 +7216,20 @@ const ORPI_M3: ContenuMission = {
       {
         titre: "Activité 1 — La mise en œuvre de l'action de fidélisation : mise à jour du compte Instagram",
         questions: [
-          { numero: 1, consigne: "Notez le nom de l'action qui a été retenue après le premier oral de Maxime.", ressources: 'Lire le document 1, compléter la diapositive 1. [3.2.1]', annexeId: 'ppt' },
-          { numero: 2, consigne: "Indiquez quelle est la cible et les objectifs de l'action.", ressources: 'Lire les documents 1 et 2, compléter la diapositive 2. [3.2.1]', annexeId: 'ppt' },
-          { numero: 3, consigne: "Listez les outils nécessaires à la réalisation de l'action ainsi que les contraintes auxquelles Maxime devra faire face.", ressources: 'Lire les documents 1, 3 et 4, compléter la diapositive 3. [3.2.1]', annexeId: 'ppt' },
-          { numero: 4, consigne: "Indiquez les principales étapes de la mise en place de l'action ainsi que le rôle de Maxime à chaque étape.", ressources: 'Lire le document 1, compléter la diapositive 4. [3.2.2]', annexeId: 'ppt' },
-          { numero: 5, consigne: "Énumérez les opportunités de vente au rebond qui ont été saisies par Maxime lors de l'action de fidélisation.", ressources: 'Lire les documents 1 et 5, compléter la diapositive 5. [3.2.5]', annexeId: 'ppt' },
-          { numero: 6, consigne: "Expliquez comment Maxime a enrichi la S.I.C. suite à l'action.", ressources: 'Lire le document 1, compléter la diapositive 6. [3.3.1]', annexeId: 'ppt' },
+          { numero: 1, consigne: "Notez le nom de l'action qui a été retenue après le premier oral de Maxime.", ressources: 'Lire le document 1, compléter la diapositive 1. [3.2.1]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
+          { numero: 2, consigne: "Indiquez quelle est la cible et les objectifs de l'action.", ressources: 'Lire les documents 1 et 2, compléter la diapositive 2. [3.2.1]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
+          { numero: 3, consigne: "Listez les outils nécessaires à la réalisation de l'action ainsi que les contraintes auxquelles Maxime devra faire face.", ressources: 'Lire les documents 1, 3 et 4, compléter la diapositive 3. [3.2.1]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
+          { numero: 4, consigne: "Indiquez les principales étapes de la mise en place de l'action ainsi que le rôle de Maxime à chaque étape.", ressources: 'Lire le document 1, compléter la diapositive 4. [3.2.2]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
+          { numero: 5, consigne: "Énumérez les opportunités de vente au rebond qui ont été saisies par Maxime lors de l'action de fidélisation.", ressources: 'Lire les documents 1 et 5, compléter la diapositive 5. [3.2.5]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
+          { numero: 6, consigne: "Expliquez comment Maxime a enrichi la S.I.C. suite à l'action.", ressources: 'Lire le document 1, compléter la diapositive 6. [3.3.1]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
         ],
       },
       {
         titre: "Activité 2 — L'évaluation et le bilan de l'action",
         contexte: "Deux semaines après la mise à jour du compte Instagram de l'agence Orpi Guy Môquet, Maxime, stagiaire, fait le bilan avec M. Lefevre sur les résultats de l'action de fidélisation. Ils analysent les premiers retours, les indicateurs de performance et envisagent des ajustements pour optimiser l'efficacité de l'action.",
         questions: [
-          { numero: 7, consigne: "Évaluez l'action de fidélisation mise en place par Maxime en analysant les indicateurs quantitatifs et qualitatifs.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 7. [3.3.2]', annexeId: 'ppt' },
-          { numero: 8, consigne: "Pour chaque indicateur qualitatif négatif, présentez les suggestions d'amélioration proposées par Maxime.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 8. [3.3.2 / 3.3.4]', annexeId: 'ppt' },
+          { numero: 7, consigne: "Évaluez l'action de fidélisation mise en place par Maxime en analysant les indicateurs quantitatifs et qualitatifs.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 7. [3.3.2]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
+          { numero: 8, consigne: "Pour chaque indicateur qualitatif négatif, présentez les suggestions d'amélioration proposées par Maxime.", ressources: 'Lire les documents 1 et 6, compléter la diapositive 8. [3.3.2 / 3.3.4]. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.', annexeId: 'ppt' },
         ],
       },
     ],
@@ -7250,23 +7251,23 @@ const ORPI_M3: ContenuMission = {
   },
   corrige: {
     questions: [
-      { intitule: "Nom de l'action (diapositive 1).", documents: ['Document 1'], bareme: 2, reponse: "La mise à jour et l'animation du compte Instagram de l'agence." },
+      { intitule: "Nom de l'action (diapositive 1).", documents: ['Document 1'], bareme: 1, reponse: "La mise à jour et l'animation du compte Instagram de l'agence." },
       {
-        intitule: 'Cible et objectifs (diapositive 2).', documents: ['Documents 1 et 2'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Cible et objectifs (diapositive 2).', documents: ['Documents 1 et 2'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['', ''], lignes: [
           ['Cible', "Une clientèle plus jeune et connectée : jeunes couples et investisseurs immobiliers qui utilisent Instagram."],
           ['Objectifs', "Renforcer l'image de l'agence et la moderniser ; garder le contact avec les clients (nouveaux biens, actualités) ; augmenter la visibilité et attirer une nouvelle clientèle."],
         ] },
       },
       {
-        intitule: 'Outils et contraintes (diapositive 3).', documents: ['Documents 1, 3 et 3 bis'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Outils et contraintes (diapositive 3).', documents: ['Documents 1, 3 et 3 bis'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['', ''], lignes: [
           ['Outils', 'Les réseaux sociaux, particulièrement Instagram (création de contenu, planification des publications, interaction avec les abonnés).'],
           ['Contraintes', "Les délais (environ 5 heures par semaine) ; la collaboration nécessaire avec Virginie pour les photos et informations ; le budget (pas de dépenses supplémentaires, surtout du temps et de l'effort)."],
         ] },
       },
       {
-        intitule: 'Étapes et participation (diapositive 4).', documents: ['Document 1'], bareme: 5, reponse: 'Voir tableau.',
+        intitule: 'Étapes et participation (diapositive 4).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Étape', 'Participation de Maxime'], lignes: [
           ['1. Audit du compte existant', 'Vérifier ce qui est en ligne et la mise à jour des informations'],
           ['2. Création d\u2019un calendrier éditorial', 'Création du calendrier (rôle principal de Maxime)'],
@@ -7276,15 +7277,15 @@ const ORPI_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Ventes au rebond (diapositive 5).', documents: ['Documents 1 et 4'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Ventes au rebond (diapositive 5).', documents: ['Documents 1 et 4'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Situation', 'Opportunité'], lignes: [
           ["Un client s'intéresse à un bien", 'Proposer des visites virtuelles ou un suivi personnalisé par email'],
           ['Un investisseur intéressé par un bien', 'Proposer un service de gestion locative pour le mettre en location'],
         ] },
       },
-      { intitule: 'Enrichissement du SIC (diapositive 6).', documents: ['Document 1'], bareme: 3, reponse: "Ajouter au CRM les informations sur les interactions Instagram : lorsqu'un client contacte l'agence par message ou s'abonne, l'ajouter au CRM en notant ses préférences (type de bien recherché, zone géographique), pour personnaliser les futurs échanges et relancer de manière ciblée." },
+      { intitule: 'Enrichissement du SIC (diapositive 6).', documents: ['Document 1'], bareme: 2, reponse: "Ajouter au CRM les informations sur les interactions Instagram : lorsqu'un client contacte l'agence par message ou s'abonne, l'ajouter au CRM en notant ses préférences (type de bien recherché, zone géographique), pour personnaliser les futurs échanges et relancer de manière ciblée." },
       {
-        intitule: "Évaluation de l'action (diapositive 7).", documents: ['Documents 1, 5 et 5 bis'], bareme: 6, reponse: 'Voir tableau.',
+        intitule: "Évaluation de l'action (diapositive 7).", documents: ['Documents 1, 5 et 5 bis'], bareme: 4, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Indicateurs quantitatifs', 'Indicateurs qualitatifs'], lignes: [
           ['+20% de vues ; post appartement rénové : 350 vues / 50 likes (contre 100 vues / 15 likes avant)', 'Commentaires globalement positifs : clients apprécient les photos et descriptions détaillées'],
           ['+10% de nouveaux abonnés en 2 semaines', 'Commentaires négatifs : trop peu de posts publiés'],
@@ -7292,7 +7293,7 @@ const ORPI_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: "Bilan et suggestions d'amélioration (diapositive 8).", documents: ['Documents 1 et 6'], bareme: 6, reponse: 'Voir tableau.',
+        intitule: "Bilan et suggestions d'amélioration (diapositive 8).", documents: ['Documents 1 et 6'], bareme: 4, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Indicateur négatif', "Suggestion d'amélioration"], lignes: [
           ['Trop peu de posts publiés', 'Publier 3 à 4 fois par semaine ; utiliser les stories Instagram pour maintenir l\u2019engagement en temps réel'],
           ['Trop longue attente pour une réponse', 'Répondre plus rapidement aux commentaires et messages'],
@@ -7461,15 +7462,15 @@ const ORPI_M4: ContenuMission = {
         titre: "Activité 1 — Préparer l'oral de la situation 2",
         contexte: "Afin de vous préparer à votre propre oral qui aura lieu dans quelques semaines dans votre établissement scolaire, votre professeur d'économie-gestion vous demande de vous exercer sur la 2ème partie du PowerPoint de Maxime.",
         questions: [
-          { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint (2ème partie).', ressources: "Lire le document 1, compléter l'annexe 1. [3.3.2]", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio).', annexeId: undefined },
-          { numero: 3, consigne: "Téléchargez votre oral de votre portable à votre session d'ordinateur.", ressources: 'Étape pratique (transfert du fichier).', annexeId: undefined },
+          { numero: 1, consigne: 'Mettez par écrit tous les éléments du PowerPoint (2ème partie).', ressources: "Lire le document 1, compléter l'annexe 1. [3.3.2]. Compétence C3.3 — Évaluer les actions de fidélisation et de développement de la relation client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Enregistrez votre oral sur votre téléphone mobile pendant 10 minutes maximum.', ressources: 'Étape pratique (enregistrement audio). Compétence C3.3 — Évaluer les actions de fidélisation et de développement de la relation client.', annexeId: undefined },
+          { numero: 3, consigne: "Téléchargez votre oral de votre portable à votre session d'ordinateur.", ressources: 'Étape pratique (transfert du fichier). Compétence C3.3 — Évaluer les actions de fidélisation et de développement de la relation client.', annexeId: undefined },
         ],
       },
       {
         titre: 'Activité 2 — Créer une animation de présentation de la situation 2',
         questions: [
-          { numero: 4, consigne: 'Suivez les instructions pour créer votre animation de présentation.', ressources: "Consulter le document 2, suivre l'annexe 2. [3.3.4]", annexeId: 'annexe2' },
+          { numero: 4, consigne: 'Suivez les instructions pour créer votre animation de présentation.', ressources: "Consulter le document 2, suivre l'annexe 2. [3.3.4]. Compétence C3.3 — Évaluer les actions de fidélisation et de développement de la relation client.", annexeId: 'annexe2' },
         ],
       },
     ],
@@ -7491,9 +7492,9 @@ const ORPI_M4: ContenuMission = {
   },
   corrige: {
     questions: [
-      { intitule: "Rédaction de l'oral (annexe 1).", documents: ['Document 1'], bareme: 10, reponse: "L'oral reprend la trame du document 1 appliquée à la 2ème partie du PowerPoint. Introduction : « Bonjour, je m'appelle [Nom], je suis en terminale Bac Pro MCV B au lycée Maria Deraismes. Aujourd'hui je vais vous présenter la mise en œuvre et le bilan d'une action de FDRC menée chez Orpi Guy Môquet. Ma présentation se divise en deux parties : d'abord la mise en œuvre de l'action, ensuite son évaluation et son bilan. » Développement : présentation des diapositives (nom de l'action : mise à jour du compte Instagram ; cible et objectifs ; outils et contraintes ; étapes et participation ; ventes au rebond ; enrichissement du SIC ; indicateurs quantitatifs +20% de vues et +10% d'abonnés ; indicateurs qualitatifs ; bilan et suggestions : publier 3 à 4 fois par semaine, utiliser les stories, répondre plus vite). Conclusion : « Pour conclure, l'action a augmenté la visibilité et les interactions de l'agence ; des axes d'amélioration restent à mettre en place. Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions. »" },
-      { intitule: 'Enregistrement et transfert (étapes pratiques).', documents: ['Document 1'], bareme: 0, reponse: "Étapes pratiques : enregistrer l'oral (10 minutes maximum) sur le téléphone, puis transférer le fichier audio sur la session de l'ordinateur." },
-      { intitule: "Création de l'animation (annexe 2).", documents: ['Document 2'], bareme: 0, reponse: "Suivre le mode opératoire Adobe Express : créer maintenant, choisir un personnage humain (catégorie Professionnels) et un arrière-plan, importer le fichier audio de l'oral, télécharger la vidéo, s'inscrire avec le compte Google, puis déposer la capsule dans le DIGIPAD à la rubrique « MES VIDEOS »." },
+      { intitule: "Rédaction de l'oral (annexe 1).", documents: ['Document 1'], bareme: 18, reponse: "L'oral reprend la trame du document 1 appliquée à la 2ème partie du PowerPoint. Introduction : « Bonjour, je m'appelle [Nom], je suis en terminale Bac Pro MCV B au lycée Maria Deraismes. Aujourd'hui je vais vous présenter la mise en œuvre et le bilan d'une action de FDRC menée chez Orpi Guy Môquet. Ma présentation se divise en deux parties : d'abord la mise en œuvre de l'action, ensuite son évaluation et son bilan. » Développement : présentation des diapositives (nom de l'action : mise à jour du compte Instagram ; cible et objectifs ; outils et contraintes ; étapes et participation ; ventes au rebond ; enrichissement du SIC ; indicateurs quantitatifs +20% de vues et +10% d'abonnés ; indicateurs qualitatifs ; bilan et suggestions : publier 3 à 4 fois par semaine, utiliser les stories, répondre plus vite). Conclusion : « Pour conclure, l'action a augmenté la visibilité et les interactions de l'agence ; des axes d'amélioration restent à mettre en place. Je vous remercie de m'avoir écouté. Je suis prêt(e) à répondre à vos questions. »" },
+      { intitule: 'Enregistrement et transfert (étapes pratiques).', documents: ['Document 1'], bareme: 1, reponse: "Étapes pratiques : enregistrer l'oral (10 minutes maximum) sur le téléphone, puis transférer le fichier audio sur la session de l'ordinateur." },
+      { intitule: "Création de l'animation (annexe 2).", documents: ['Document 2'], bareme: 1, reponse: "Suivre le mode opératoire Adobe Express : créer maintenant, choisir un personnage humain (catégorie Professionnels) et un arrière-plan, importer le fichier audio de l'oral, télécharger la vidéo, s'inscrire avec le compte Google, puis déposer la capsule dans le DIGIPAD à la rubrique « MES VIDEOS »." },
     ],
   },
   synthese: {
@@ -7687,27 +7688,27 @@ const FREE_M1: ContenuMission = {
       {
         titre: "Activité 1 — Identification de l'entreprise",
         questions: [
-          { numero: 1, consigne: "Consultez le site internet de l'entreprise puis complétez l'identité de l'entreprise.", ressources: "Consulter le document 3, compléter l'annexe 1. [C.4B.1]", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Indiquez selon vous le type de clientèle visée par Free.', ressources: "Compléter l'annexe 2. [C.4B.1]", annexeId: 'annexe2' },
+          { numero: 1, consigne: "Consultez le site internet de l'entreprise puis complétez l'identité de l'entreprise.", ressources: "Consulter le document 3, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez selon vous le type de clientèle visée par Free.', ressources: "Compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
         ],
       },
       {
         titre: "Activité 2 — Les biens et les services de l'entreprise",
         questions: [
-          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise.", ressources: "Consulter le document 2, compléter l'annexe 3. [C.4B.1]", annexeId: 'annexe3' },
-          { numero: 4, consigne: "Énumérez les 2 biens que l'on retrouve chez Free.", ressources: "Consulter le document 2, compléter l'annexe 4. [C.4B.1]", annexeId: 'annexe4' },
+          { numero: 3, consigne: "Listez les différents services proposés par l'entreprise.", ressources: "Consulter le document 2, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Énumérez les 2 biens que l'on retrouve chez Free.", ressources: "Consulter le document 2, compléter l'annexe 4. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 3 — Les concurrents',
         questions: [
-          { numero: 5, consigne: "Listez les différents concurrents de l'entreprise.", ressources: "Lire le document 1 et le document 4, compléter l'annexe 5. [C.4B.1]", annexeId: 'annexe5' },
+          { numero: 5, consigne: "Listez les différents concurrents de l'entreprise.", ressources: "Lire le document 1 et le document 4, compléter l'annexe 5. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe5' },
         ],
       },
       {
         titre: "Activité 4 — L'organigramme",
         questions: [
-          { numero: 6, consigne: "Reproduisez l'organigramme de Free en plaçant chaque personne et sa fonction (en français).", ressources: "Consulter le document 5, compléter l'annexe 6. [C.4B.1]", annexeId: 'annexe6' },
+          { numero: 6, consigne: "Reproduisez l'organigramme de Free en plaçant chaque personne et sa fonction (en français).", ressources: "Consulter le document 5, compléter l'annexe 6. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe6' },
         ],
       },
     ],
@@ -7729,7 +7730,7 @@ const FREE_M1: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: "Identité de l'entreprise (annexe 1).", documents: ['Document 3'], bareme: 9, reponse: 'Voir tableau.',
+        intitule: "Identité de l'entreprise (annexe 1).", documents: ['Document 3'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Champ', 'Réponse'], lignes: [
           ["Secteur d'activité", 'Télécommunications filaires'],
           ['Date de création / immatriculation RCS', '18.02.1999'],
@@ -7744,7 +7745,7 @@ const FREE_M1: ContenuMission = {
       },
       { intitule: 'La clientèle (annexe 2).', documents: ['Annexe 2'], bareme: 1, reponse: 'Ce sont des particuliers car les produits proposés sont faits pour les particuliers (forfait téléphonique et Freebox).' },
       {
-        intitule: 'Les services (annexe 3).', documents: ['Document 2'], bareme: 15, reponse: 'Voir tableau.',
+        intitule: 'Les services (annexe 3).', documents: ['Document 2'], bareme: 6, reponse: 'Voir tableau.',
         tableau: { colonnes: ['2€', '12,99€', '19,99€', '29,99€', '39,99€'], lignes: [
           ['Internet en 4G+ 50 Mo', 'Internet en 4G+ 80 Go', 'Internet en 4G+ 100 Go', 'Internet Fibre jusqu\u2019à 5Gbit/s', 'Internet Fibre techno 10G Epon'],
           ['Appels 2h SMS, MMS illimité', 'Appels 2h SMS, MMS illimité', 'Appels 2h SMS, MMS illimité', 'Wifi Répéteur Wifi inclus', 'Wifi Répéteur Wifi inclus'],
@@ -7752,17 +7753,17 @@ const FREE_M1: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Les biens (annexe 4).', documents: ['Document 2'], bareme: 2, reponse: 'Voir tableau.',
+        intitule: 'Les biens (annexe 4).', documents: ['Document 2'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Les biens', ''], lignes: [['Freebox', 'Mobile']] },
       },
       {
-        intitule: 'Les concurrents (annexe 5).', documents: ['Documents 1 et 4'], bareme: 15, reponse: 'Voir tableau.',
+        intitule: 'Les concurrents (annexe 5).', documents: ['Documents 1 et 4'], bareme: 6, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Les concurrents directs', 'Les concurrents indirects'], lignes: [
           ['Orange ; SFR ; Bouygues', 'B&YOU ; Syma Mobile ; NRJ Mobile ; La Poste Mobile ; Prixtel ; Coriolis Telecom ; Auchan Telecom ; Cdiscount Mobile ; Réglo Mobile ; Crédit Mutuel Mobile ; CIC Mobile ; Budget Mobile'],
         ] },
       },
       {
-        intitule: "Organigramme (annexe 6).", documents: ['Document 5'], bareme: 10, reponse: 'Voir tableau.',
+        intitule: "Organigramme (annexe 6).", documents: ['Document 5'], bareme: 4, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Personne', 'Fonction'], lignes: [
           ['Xavier Niel', 'Directeur délégué à la stratégie'],
           ['Thomas Reynaud', 'Directeur Général'],
@@ -7992,17 +7993,17 @@ const FREE_M2: ContenuMission = {
         titre: 'Activité 1 — La méthode C.E.R.C. en réception d\u2019appel',
         contexte: "Avant d'analyser cet appel, votre tutrice vous donne quelques conseils et vous rappelle quelques règles.",
         questions: [
-          { numero: 1, consigne: "Pour chacun des éléments d'une bonne prise de contact, retrouvez les contenus qui les constituent.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Indiquez les numéros dans le dialogue qui correspondent aux différentes étapes de la méthode C.E.R.C.', ressources: "Lire les documents 2 et 3, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Cochez les interventions du Free Helper (conseiller relation client à distance Free) qui selon vous méritent d'être améliorées.", ressources: "Compléter l'annexe 3.", annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Reformulez et corrigez toutes les interventions que vous avez cochées et qui selon vous sont à améliorer.', ressources: "Observer l'annexe 3 puis compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 1, consigne: "Pour chacun des éléments d'une bonne prise de contact, retrouvez les contenus qui les constituent.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez les numéros dans le dialogue qui correspondent aux différentes étapes de la méthode C.E.R.C.', ressources: "Lire les documents 2 et 3, compléter l'annexe 2. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Cochez les interventions du Free Helper (conseiller relation client à distance Free) qui selon vous méritent d'être améliorées.", ressources: "Compléter l'annexe 3. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Reformulez et corrigez toutes les interventions que vous avez cochées et qui selon vous sont à améliorer.', ressources: "Observer l'annexe 3 puis compléter l'annexe 4. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 2 — L\u2019accueil téléphonique',
         contexte: "Vous êtes maintenant prêt à recevoir votre premier appel en appliquant tous les conseils que vous a donné votre tutrice. Un client vous contacte au 3244.",
         questions: [
-          { numero: 5, consigne: "Utilisez la méthode C.E.R.C. pour rédiger votre plan de réception d'appel en fonction de la réclamation du client.", ressources: "Lire les documents 3 à 6, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 5, consigne: "Utilisez la méthode C.E.R.C. pour rédiger votre plan de réception d'appel en fonction de la réclamation du client.", ressources: "Lire les documents 3 à 6, compléter l'annexe 5. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe5' },
         ],
       },
     ],
@@ -8022,7 +8023,7 @@ const FREE_M2: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: 'Éléments de la prise de contact (annexe 1).', documents: ['Document 1'], bareme: 3, reponse: 'Voir tableau.',
+        intitule: 'Éléments de la prise de contact (annexe 1).', documents: ['Document 1'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ["Les éléments d'une bonne prise de contact", 'Contenus'], lignes: [
           ['Les signes non verbaux', 'Sourire, intonation, débit…'],
           ["L'attitude en face-à-face ou au téléphone", 'Empathie'],
@@ -8030,7 +8031,7 @@ const FREE_M2: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Étapes de la méthode C.E.R.C. (annexe 2).', documents: ['Documents 2 et 3'], bareme: 10, reponse: 'Voir tableau.',
+        intitule: 'Étapes de la méthode C.E.R.C. (annexe 2).', documents: ['Documents 2 et 3'], bareme: 6, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Étapes', 'Numéros dans le dialogue'], lignes: [
           ['1 — Contact', '1'],
           ['2 — Écoute', '5 – 7 – 9 – 11'],
@@ -8039,13 +8040,13 @@ const FREE_M2: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Interventions à améliorer (annexe 3).', documents: ['Document 2'], bareme: 8, reponse: 'Interventions à améliorer : 1, 5, 7, 9, 11, 15, 19, 21.',
+        intitule: 'Interventions à améliorer (annexe 3).', documents: ['Document 2'], bareme: 5, reponse: 'Interventions à améliorer : 1, 5, 7, 9, 11, 15, 19, 21.',
         tableau: { colonnes: ['Numéro', 'À améliorer'], lignes: [
           ['1', 'X'], ['3', ''], ['5', 'X'], ['7', 'X'], ['9', 'X'], ['11', 'X'], ['13', ''], ['15', 'X'], ['17', ''], ['19', 'X'], ['21', 'X'],
         ] },
       },
       {
-        intitule: 'Reformulations (annexe 4).', documents: ['Annexe 3'], bareme: 8, reponse: 'Voir tableau.',
+        intitule: 'Reformulations (annexe 4).', documents: ['Annexe 3'], bareme: 5, reponse: 'Voir tableau.',
         tableau: { colonnes: ["N°", 'Proposition de reformulation'], lignes: [
           ['1', '« Bonjour, [prénom] de chez Free, à votre écoute. »'],
           ['5', '« En quoi puis-je vous aider ? »'],
@@ -8058,7 +8059,7 @@ const FREE_M2: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Fiche d\u2019appel C.E.R.C. (annexe 5).', documents: ['Documents 3 à 6'], bareme: 6, reponse: 'Voir fiche.',
+        intitule: 'Fiche d\u2019appel C.E.R.C. (annexe 5).', documents: ['Documents 3 à 6'], bareme: 3, reponse: 'Voir fiche.',
         tableau: { colonnes: ['Étape', 'Contenu'], lignes: [
           ['CONTACT', '« Bonjour, [Prénom] de chez Free, à votre écoute. »'],
           ['ÉCOUTE — Questionnement', '« En quoi puis-je vous aider ? » / « Dans combien de temps déménagez-vous ? »'],
@@ -8249,22 +8250,22 @@ const FREE_M3: ContenuMission = {
         titre: 'Activité 1 — La réalisation de la fiche technique de la Freebox Pop',
         contexte: "Votre tutrice vous demande de réaliser la fiche produit de la nouvelle Freebox Pop.",
         questions: [
-          { numero: 1, consigne: 'Complétez les caractéristiques techniques en consultant les pages internet Free.', ressources: "Lire le document 1 (et le document 4), compléter l'annexe 1.", annexeId: 'annexe1', boutonLien: 'https://drive.google.com/file/d/1o2WOxZIrinhZKujwzvZn11ZZLfLJ8OnH/view', boutonLibelle: 'Ouvrir la page Freebox Pop' },
-          { numero: 2, consigne: 'Complétez les caractéristiques commerciales en consultant les pages internet Free.', ressources: "Lire le document 2 (et le document 5), compléter l'annexe 2.", annexeId: 'annexe2', boutonLien: 'https://drive.google.com/file/d/1LMqNdUlRYr9jNx1qMSZWfp6YhBQeORyC/view', boutonLibelle: 'Ouvrir la page offre Freebox Pop' },
+          { numero: 1, consigne: 'Complétez les caractéristiques techniques en consultant les pages internet Free.', ressources: "Lire le document 1 (et le document 4), compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1', boutonLien: 'https://drive.google.com/file/d/1o2WOxZIrinhZKujwzvZn11ZZLfLJ8OnH/view', boutonLibelle: 'Ouvrir la page Freebox Pop' },
+          { numero: 2, consigne: 'Complétez les caractéristiques commerciales en consultant les pages internet Free.', ressources: "Lire le document 2 (et le document 5), compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2', boutonLien: 'https://drive.google.com/file/d/1LMqNdUlRYr9jNx1qMSZWfp6YhBQeORyC/view', boutonLibelle: 'Ouvrir la page offre Freebox Pop' },
         ],
       },
       {
         titre: 'Activité 2 — Les mobiles d\u2019achat',
         contexte: "Votre tutrice vous demande maintenant de repérer à l'avance les mobiles suscités par l'achat de la nouvelle Freebox chez les clients afin de pouvoir anticiper leurs motivations d'achat profondes lorsqu'ils seront au téléphone.",
         questions: [
-          { numero: 3, consigne: "À partir de l'annexe 1 « caractéristiques de base » et de l'annexe 2 « prix », cochez les mobiles SONCASE qui correspondent à la Freebox Pop puis justifiez votre réponse.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 3, consigne: "À partir de l'annexe 1 « caractéristiques de base » et de l'annexe 2 « prix », cochez les mobiles SONCASE qui correspondent à la Freebox Pop puis justifiez votre réponse.", ressources: "Lire le document 3, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 3 — L\u2019argumentation',
         contexte: "Désormais vous avez toutes les connaissances sur les caractéristiques de la Freebox et les mobiles d'achat qu'elle suscite, votre tutrice vous demande de construire des arguments pour convaincre les clients.",
         questions: [
-          { numero: 4, consigne: "Pour chaque mobile d'achat, construisez les arguments que vous présenterez au client pour l'inciter à souscrire à la nouvelle Freebox Pop.", ressources: "Compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 4, consigne: "Pour chaque mobile d'achat, construisez les arguments que vous présenterez au client pour l'inciter à souscrire à la nouvelle Freebox Pop.", ressources: "Compléter l'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe4' },
         ],
       },
     ],
@@ -8285,7 +8286,7 @@ const FREE_M3: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: 'Caractéristiques techniques (annexe 1).', documents: ['Documents 1 et 4'], bareme: 19, reponse: 'Voir tableau.',
+        intitule: 'Caractéristiques techniques (annexe 1).', documents: ['Documents 1 et 4'], bareme: 10, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Section', 'Caractéristiques'], lignes: [
           ['Caractéristiques de base', 'La fibre ultra rapide ; un wifi rapide et fiable ; répéteur wifi Pop ; application Freebox Connect ; Google Play ; télécommande ; téléphonez sans limite'],
           ['Connectivité', 'Compatible fibre, ADSL2… ; Wi-Fi AC2100 MU-MIMO, Bi-band ; Norme WPA3 ; Bluetooth'],
@@ -8294,7 +8295,7 @@ const FREE_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Caractéristiques commerciales (annexe 2).', documents: ['Documents 2 et 5'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Caractéristiques commerciales (annexe 2).', documents: ['Documents 2 et 5'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Caractéristique', 'Réponse'], lignes: [
           ['Contact Free', 'En ligne'],
           ['', 'En boutique'],
@@ -8303,7 +8304,7 @@ const FREE_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Mobiles d\u2019achat SONCASE (annexe 3).', documents: ['Document 3'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Mobiles d\u2019achat SONCASE (annexe 3).', documents: ['Document 3'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['SONCASE', 'Coché', 'Justification'], lignes: [
           ['Sécurité', 'X', 'Wifi fiable, intègre le nouveau protocole de chiffrement WPA3'],
           ['Orgueil', '', ''],
@@ -8315,7 +8316,7 @@ const FREE_M3: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Construction des arguments (annexe 4).', documents: ['Annexes 1, 2 et 3'], bareme: 12, reponse: 'Voir tableau.',
+        intitule: 'Construction des arguments (annexe 4).', documents: ['Annexes 1, 2 et 3'], bareme: 6, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Mobiles d\u2019achat', 'Caractéristiques', 'Avantages'], lignes: [
           ['Sécurité', 'Nouveau protocole de chiffrement WPA3', 'Protection des connexions'],
           ['Nouveauté', 'Freebox Connect', "Contrôler ses équipements d'un coup d'œil ; planifier des plages horaires d'accès au wifi"],
@@ -8569,37 +8570,37 @@ const FREE_M4: ContenuMission = {
         titre: 'Activité 1 — La définition de la vente au rebond',
         contexte: "Afin que vous compreniez ce qu'est la vente au rebond, Mme Vière vous donne quelques explications.",
         questions: [
-          { numero: 1, consigne: 'Analysez la vente au rebond.', ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Analysez la vente additionnelle.', ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Expliquez la différence entre la vente au rebond et la vente additionnelle.', ressources: "Lire les documents 1 et 2, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 1, consigne: 'Analysez la vente au rebond.', ressources: "Lire le document 1, compléter l'annexe 1. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Analysez la vente additionnelle.', ressources: "Lire le document 2, compléter l'annexe 2. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Expliquez la différence entre la vente au rebond et la vente additionnelle.', ressources: "Lire les documents 1 et 2, compléter l'annexe 3. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 2 — Se préparer à recevoir l\u2019appel',
         contexte: "Avant de recevoir l'appel, votre tutrice vous transmet l'ensemble des procédures à appliquer.",
         questions: [
-          { numero: 4, consigne: "Indiquez les étapes à respecter pour faire une vente au rebond lors d'une réception d'appel.", ressources: "Consulter le document 3, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Rédigez la première partie (Contact) de votre plan de réception d\u2019appel.', ressources: "Consulter le document 3, compléter l'annexe 5.", annexeId: 'annexe5' },
-          { numero: 6, consigne: 'Rédigez la deuxième partie (Écoute) de votre plan de réception d\u2019appel puis questionnez le client.', ressources: "Lire les documents 3 et 4, compléter l'annexe 5 ; lire le document 5, compléter l'annexe 6.", annexeId: 'annexe5' },
-          { numero: 7, consigne: 'Indiquez les différentes étapes de la procédure de traitement de la demande du client.', ressources: "Lire le document 6, compléter l'annexe 7.", annexeId: 'annexe7' },
-          { numero: 8, consigne: 'Rédigez la troisième partie (Réponse) de votre plan de réception d\u2019appel.', ressources: "Lire le document 6, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 4, consigne: "Indiquez les étapes à respecter pour faire une vente au rebond lors d'une réception d'appel.", ressources: "Consulter le document 3, compléter l'annexe 4. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Rédigez la première partie (Contact) de votre plan de réception d\u2019appel.', ressources: "Consulter le document 3, compléter l'annexe 5. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Rédigez la deuxième partie (Écoute) de votre plan de réception d\u2019appel puis questionnez le client.', ressources: "Lire les documents 3 et 4, compléter l'annexe 5 ; lire le document 5, compléter l'annexe 6. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe5' },
+          { numero: 7, consigne: 'Indiquez les différentes étapes de la procédure de traitement de la demande du client.', ressources: "Lire le document 6, compléter l'annexe 7. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe7' },
+          { numero: 8, consigne: 'Rédigez la troisième partie (Réponse) de votre plan de réception d\u2019appel.', ressources: "Lire le document 6, compléter l'annexe 5. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe5' },
         ],
       },
       {
         titre: 'Activité 3 — La pratique de la vente au rebond',
         contexte: "La demande du client est traitée, vous allez maintenant tenter de faire une vente au rebond en proposant la nouvelle Freebox Pop.",
         questions: [
-          { numero: 9, consigne: 'Rédigez la manière dont vous allez présenter au téléphone à M. Seption la nouvelle Freebox en choisissant 3 arguments par rapport aux caractéristiques de base.', ressources: "Consulter la Mission 3 (annexe 4), compléter l'annexe 8.", annexeId: 'annexe8' },
+          { numero: 9, consigne: 'Rédigez la manière dont vous allez présenter au téléphone à M. Seption la nouvelle Freebox en choisissant 3 arguments par rapport aux caractéristiques de base.', ressources: "Consulter la Mission 3 (annexe 4), compléter l'annexe 8. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe8' },
         ],
       },
       {
         titre: 'Activité 4 — L\u2019annonce du prix et la livraison',
         contexte: "Le client a validé votre proposition. Vous lui annoncez le prix et les modalités de livraison.",
         questions: [
-          { numero: 10, consigne: "Annoncez le prix au client ainsi que sa subtilité, puis utilisez la technique de la « soustraction » pour réfuter son objection sur le prix.", ressources: "Lire le document 7 ; lire les documents 8, 9 et 10, compléter l'annexe 9.", annexeId: 'annexe9' },
-          { numero: 11, consigne: 'Annoncez au client les délais de livraison de sa nouvelle Freebox en le rassurant.', ressources: "Lire le document 11, compléter l'annexe 10.", annexeId: 'annexe10' },
-          { numero: 12, consigne: 'Expliquez au client la procédure pour bénéficier de la Freebox Pop.', ressources: "Consulter le document 12, compléter l'annexe 11.", annexeId: 'annexe11' },
-          { numero: 13, consigne: 'Rédigez la quatrième partie (Conclusion) de votre plan de réception d\u2019appel.', ressources: "Lire le document 13, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 10, consigne: "Annoncez le prix au client ainsi que sa subtilité, puis utilisez la technique de la « soustraction » pour réfuter son objection sur le prix.", ressources: "Lire le document 7 ; lire les documents 8, 9 et 10, compléter l'annexe 9. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe9' },
+          { numero: 11, consigne: 'Annoncez au client les délais de livraison de sa nouvelle Freebox en le rassurant.', ressources: "Lire le document 11, compléter l'annexe 10. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe10' },
+          { numero: 12, consigne: 'Expliquez au client la procédure pour bénéficier de la Freebox Pop.', ressources: "Consulter le document 12, compléter l'annexe 11. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe11' },
+          { numero: 13, consigne: 'Rédigez la quatrième partie (Conclusion) de votre plan de réception d\u2019appel.', ressources: "Lire le document 13, compléter l'annexe 5. Compétence C2.3 — Traiter les retours et les réclamations du client.", annexeId: 'annexe5' },
         ],
       },
     ],
@@ -8625,7 +8626,7 @@ const FREE_M4: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: 'Analyse de la vente au rebond (annexe 1).', documents: ['Document 1'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Analyse de la vente au rebond (annexe 1).', documents: ['Document 1'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Questions', 'Réponses'], lignes: [
           ["Qui prend l'initiative du contact ?", "Le client (« … à l'initiative du client… »)."],
           ['Définition de la vente au rebond', "Profiter d'un contact généralement pris à l'initiative du client pour évoquer ou formuler une offre commerciale distincte après avoir traité sa demande initiale."],
@@ -8634,7 +8635,7 @@ const FREE_M4: ContenuMission = {
         ] },
       },
       {
-        intitule: 'La vente additionnelle (annexe 2).', documents: ['Document 2'], bareme: 6, reponse: 'Voir tableau.',
+        intitule: 'La vente additionnelle (annexe 2).', documents: ['Document 2'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Questions', 'Réponses'], lignes: [
           ['Définition', "La vente additionnelle est mise en œuvre par un commercial lorsque le client qui vient acheter un produit se voit en proposer un autre pour compléter le produit principal."],
           ['Les deux types', 'La vente complémentaire ; la vente supplémentaire.'],
@@ -8644,9 +8645,9 @@ const FREE_M4: ContenuMission = {
           ['Exemple (supplémentaire)', 'Accepter toute réponse cohérente (ex : carte bleue proposée avec un livret d\u2019épargne).'],
         ] },
       },
-      { intitule: 'La différence (annexe 3).', documents: ['Documents 1 et 2'], bareme: 2, reponse: "Dans la vente au rebond, le commercial propose un produit lors d'un contact pris par le client pour un autre sujet. Dans la vente additionnelle, le commercial profite de l'achat d'un produit par le client pour lui en proposer un deuxième qui lui est directement lié." },
+      { intitule: 'La différence (annexe 3).', documents: ['Documents 1 et 2'], bareme: 1, reponse: "Dans la vente au rebond, le commercial propose un produit lors d'un contact pris par le client pour un autre sujet. Dans la vente additionnelle, le commercial profite de l'achat d'un produit par le client pour lui en proposer un deuxième qui lui est directement lié." },
       {
-        intitule: 'Le cheminement de la vente au rebond (annexe 4).', documents: ['Document 3'], bareme: 6, reponse: 'Voir tableau.',
+        intitule: 'Le cheminement de la vente au rebond (annexe 4).', documents: ['Document 3'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Ordre', 'Étape'], lignes: [
           ['1', "Je reçois un appel et j'applique le contact"],
           ['2', 'Je pratique l\u2019écoute et je questionne'],
@@ -8659,7 +8660,7 @@ const FREE_M4: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Fiche d\u2019appel C.E.R.C. (annexe 5).', documents: ['Documents 3, 4, 6 et 13'], bareme: 8, reponse: 'Voir fiche.',
+        intitule: 'Fiche d\u2019appel C.E.R.C. (annexe 5).', documents: ['Documents 3, 4, 6 et 13'], bareme: 3, reponse: 'Voir fiche.',
         tableau: { colonnes: ['Étape', 'Contenu'], lignes: [
           ['CONTACT', '« Bonjour, Freemobile, [Prénom], à votre écoute (ou : en quoi puis-je vous aider ?) »'],
           ['ÉCOUTE', '« Très bien, alors nous allons voir tout ça ensemble. » (commencer le questionnaire, voir QR Code annexe 6)'],
@@ -8667,26 +8668,26 @@ const FREE_M4: ContenuMission = {
           ['CONCLUSION', "« J'espère avoir répondu à toutes vos questions. Juste après cet appel, vous recevrez un questionnaire de satisfaction, je vous prie de bien vouloir y répondre. Je vous remercie et je vous souhaite une excellente journée au nom de Free. »"],
         ] },
       },
-      { intitule: 'Le questionnaire (annexe 6).', documents: ['Document 5'], bareme: 0, reponse: "Lien du questionnaire : https://forms.gle/DxZffUh4kzLWTuGZ8 (à flasher ou cliquer)." },
+      { intitule: 'Le questionnaire (annexe 6).', documents: ['Document 5'], bareme: 1, reponse: "Lien du questionnaire : https://forms.gle/DxZffUh4kzLWTuGZ8 (à flasher ou cliquer)." },
       {
-        intitule: 'Étapes de l\u2019échange de la télécommande (annexe 7).', documents: ['Document 6'], bareme: 3, reponse: 'Voir tableau.',
+        intitule: 'Étapes de l\u2019échange de la télécommande (annexe 7).', documents: ['Document 6'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['N°', 'Contenu de l\u2019étape'], lignes: [
           ['1', 'Envoi par Free d\u2019un mail de confirmation au client.'],
           ['2', 'Envoi, 48h après, d\u2019un deuxième mail et d\u2019un SMS sur le téléphone portable du client pour l\u2019informer de la livraison du produit.'],
           ['3', "Un agent d'UPS viendra à son domicile pour effectuer l'échange et lui fera signer un justificatif."],
         ] },
       },
-      { intitule: 'Présentation des caractéristiques (annexe 8).', documents: ['Mission 3'], bareme: 6, reponse: "« Je profite de votre appel M. Seption pour vous dire qu'en ce moment, il y a la nouvelle Freebox Pop qui est sortie. - Elle possède la fibre ultra rapide : vous pourrez regarder un film, télécharger des fichiers à toute vitesse et sans interruption ; - Elle intègre le nouveau protocole de chiffrement WPA3 qui permet de protéger vos connexions ; - Avec sa ligne fixe, vous pourrez appeler dans plus de 110 pays sans surcoût ; - Elle dispose d'un répéteur wifi Pop qui vous permettra d'avoir un wifi de qualité dans toutes les pièces. Est-ce que vous seriez intéressé par cette offre ? »" },
+      { intitule: 'Présentation des caractéristiques (annexe 8).', documents: ['Mission 3'], bareme: 3, reponse: "« Je profite de votre appel M. Seption pour vous dire qu'en ce moment, il y a la nouvelle Freebox Pop qui est sortie. - Elle possède la fibre ultra rapide : vous pourrez regarder un film, télécharger des fichiers à toute vitesse et sans interruption ; - Elle intègre le nouveau protocole de chiffrement WPA3 qui permet de protéger vos connexions ; - Avec sa ligne fixe, vous pourrez appeler dans plus de 110 pays sans surcoût ; - Elle dispose d'un répéteur wifi Pop qui vous permettra d'avoir un wifi de qualité dans toutes les pièces. Est-ce que vous seriez intéressé par cette offre ? »" },
       {
-        intitule: 'L\u2019annonce du prix et la réfutation (annexe 9).', documents: ['Documents 7, 8, 9 et 10'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'L\u2019annonce du prix et la réfutation (annexe 9).', documents: ['Documents 7, 8, 9 et 10'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Consigne', 'Réponse'], lignes: [
           ['Prix et subtilité', '29,99 € pendant 1 an puis 39,99 €, sans engagement.'],
           ['Phrase de réfutation (soustraction)', "« Je vous comprends M. Seption, mais pour toute souscription valable aujourd'hui uniquement, Free vous offre les frais de migration de 49€ et les frais d'envoi de 20€. »"],
         ] },
       },
-      { intitule: 'Les délais de livraison (annexe 10).', documents: ['Document 11'], bareme: 4, reponse: "« Votre Freebox Pop vous sera livrée d'ici 3 mois. Nous sommes désolés pour ce délai mais c'est dû à un problème de stock de Server Free Delta car l'offre a beaucoup de succès. Mais soyez rassuré, votre commande a bien été enregistrée et tant que la migration ne sera pas effective, votre Freebox actuelle fonctionnera normalement. »" },
+      { intitule: 'Les délais de livraison (annexe 10).', documents: ['Document 11'], bareme: 1, reponse: "« Votre Freebox Pop vous sera livrée d'ici 3 mois. Nous sommes désolés pour ce délai mais c'est dû à un problème de stock de Server Free Delta car l'offre a beaucoup de succès. Mais soyez rassuré, votre commande a bien été enregistrée et tant que la migration ne sera pas effective, votre Freebox actuelle fonctionnera normalement. »" },
       {
-        intitule: 'Étapes de l\u2019échange de la Freebox (annexe 11).', documents: ['Document 12'], bareme: 4, reponse: 'Voir tableau.',
+        intitule: 'Étapes de l\u2019échange de la Freebox (annexe 11).', documents: ['Document 12'], bareme: 2, reponse: 'Voir tableau.',
         tableau: { colonnes: ['N°', 'Contenu de l\u2019étape'], lignes: [
           ['1', "Le client sera informé par mail ou par SMS de l'arrivée de sa Freebox pour faire l'échange."],
           ['2', "Le client doit emballer dans un carton tous les équipements qu'il a reçus."],
@@ -8950,19 +8951,19 @@ const FREE_M5: ContenuMission = {
         titre: 'Activité 1 — La satisfaction du client',
         contexte: "Votre tutrice vous remet le questionnaire de satisfaction qui est envoyé à chaque client après son appel. En effet, il est important que vous sachiez les points sur lesquels vous serez jugé, car la note obtenue conditionne à la fin de chaque mois le versement d'une prime.",
         questions: [
-          { numero: 1, consigne: "Pour chacune des questions de l'enquête de satisfaction, indiquez le type de question dont il s'agit.", ressources: "Lire le document 1, consulter le document 2, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Calculez ce que représentent en pourcentage les avis négatifs et positifs.', ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2a', contexteAvant: "Nous sommes à la fin du mois et vous avez reçu 300 appels. Vous souhaitez savoir le montant de la prime que vous allez percevoir sur votre salaire." },
-          { numero: 3, consigne: 'Calculez le montant de la rémunération que vous allez percevoir ce mois-ci.', ressources: "Lire le document 4, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 1, consigne: "Pour chacune des questions de l'enquête de satisfaction, indiquez le type de question dont il s'agit.", ressources: "Lire le document 1, consulter le document 2, compléter l'annexe 1. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Calculez ce que représentent en pourcentage les avis négatifs et positifs.', ressources: "Lire le document 3, compléter l'annexe 2. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe2a', contexteAvant: "Nous sommes à la fin du mois et vous avez reçu 300 appels. Vous souhaitez savoir le montant de la prime que vous allez percevoir sur votre salaire." },
+          { numero: 3, consigne: 'Calculez le montant de la rémunération que vous allez percevoir ce mois-ci.', ressources: "Lire le document 4, compléter l'annexe 3. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 2 — La fidélisation du client',
         contexte: "Mme Vière vous transmet un document qu'elle a trouvé dans la presse spécialisée et vous demande de l'étudier.",
         questions: [
-          { numero: 4, consigne: 'Trouvez un titre pour chaque étape du document.', ressources: "Lire le document 5, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5.", annexeId: 'annexe5a', contexteAvant: "Free est très présent sur les réseaux sociaux. Votre tutrice vous a sélectionné un certain nombre de messages de clients mécontents et elle vous demande de leur répondre consciencieusement car trouver une solution efficace fait partie du processus de fidélisation." },
-          { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6.", annexeId: 'annexe6a' },
-          { numero: 7, consigne: "Analysez la partie II du questionnaire « FREE ET VOUS » (Instagram) et indiquez à quelle étape du document 5 elle correspond. Justifiez.", ressources: "Lire le document 9, compléter l'annexe 7.", annexeId: 'annexe7' },
+          { numero: 4, consigne: 'Trouvez un titre pour chaque étape du document.', ressources: "Lire le document 5, compléter l'annexe 4. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Rédigez sur X la réponse à Trobairitz.', ressources: "Lire les documents 6 et 8, compléter l'annexe 5. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe5a', contexteAvant: "Free est très présent sur les réseaux sociaux. Votre tutrice vous a sélectionné un certain nombre de messages de clients mécontents et elle vous demande de leur répondre consciencieusement car trouver une solution efficace fait partie du processus de fidélisation." },
+          { numero: 6, consigne: 'Rédigez sur Facebook la réponse à Anthony.', ressources: "Lire les documents 7 et 8, compléter l'annexe 6. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe6a' },
+          { numero: 7, consigne: "Analysez la partie II du questionnaire « FREE ET VOUS » (Instagram) et indiquez à quelle étape du document 5 elle correspond. Justifiez.", ressources: "Lire le document 9, compléter l'annexe 7. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe7' },
         ],
       },
     ],
@@ -8980,13 +8981,13 @@ const FREE_M5: ContenuMission = {
   corrige: {
     questions: [
       {
-        intitule: 'Type de chaque question (annexe 1).', documents: ['Documents 1 et 2'], bareme: 11, reponse: 'Voir tableau.',
+        intitule: 'Type de chaque question (annexe 1).', documents: ['Documents 1 et 2'], bareme: 5, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Question', 'Type'], lignes: [
           ['1', 'Question fermée'], ['2', 'Question à échelle (échelle d\u2019évaluation)'], ['3', 'Question avec échelle de Likert'], ['4', 'Question avec échelle de Likert'], ['5', 'Question avec échelle de Likert'], ['6', 'Question ouverte'], ['7', 'Question fermée'], ['8', 'Question ouverte'], ['9', 'Question avec échelle de Likert'], ['10', 'Question avec échelle de Likert'], ['11', 'Question ouverte'],
         ] },
       },
       {
-        intitule: 'Avis en pourcentage (annexe 2a et 2b).', documents: ['Document 3'], bareme: 12, reponse: 'Sur 300 avis par question. Négatif % = négatifs / 300 × 100.',
+        intitule: 'Avis en pourcentage (annexe 2a et 2b).', documents: ['Document 3'], bareme: 5, reponse: 'Sur 300 avis par question. Négatif % = négatifs / 300 × 100.',
         tableau: { colonnes: ['Question', 'Avis négatifs en %', 'Avis positifs en %'], lignes: [
           ['2 - Contact', '15/300 = 5 %', '95 %'],
           ['3 - Amabilité/courtoisie', '23/300 = 7,67 %', '92,33 %'],
@@ -8998,7 +8999,7 @@ const FREE_M5: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Calcul de la rémunération (annexe 3).', documents: ['Document 4'], bareme: 6, reponse: 'Voir tableau.',
+        intitule: 'Calcul de la rémunération (annexe 3).', documents: ['Document 4'], bareme: 3, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Élément', 'Valeur'], lignes: [
           ['Objectif d\u2019avis positifs réalisé', '87 %'],
           ['Tranche de la prime', 'Entre 80 % et 90 % → 80 % de la prime'],
@@ -9008,16 +9009,16 @@ const FREE_M5: ContenuMission = {
         ] },
       },
       {
-        intitule: 'Titres des étapes (annexe 4).', documents: ['Document 5'], bareme: 3, reponse: 'Voir tableau.',
+        intitule: 'Titres des étapes (annexe 4).', documents: ['Document 5'], bareme: 1, reponse: 'Voir tableau.',
         tableau: { colonnes: ['Étape', 'Titre'], lignes: [
           ['Étape 1', 'Écouter et interagir avec ses clients'],
           ['Étape 2', 'Créer une communauté de clients'],
           ['Étape 3', 'Transformer ses clients en ambassadeurs'],
         ] },
       },
-      { intitule: 'Réponse à Trobairitz sur X (annexe 5a).', documents: ['Documents 6 et 8'], bareme: 4, reponse: "« Bonjour, nous vous remercions de nous alerter quant à la page d'erreur qui s'affiche lorsque vous essayez de vous connecter sur notre page. Notre équipe technique met tout en œuvre pour un retour à la normale dans les plus brefs délais. Bonne journée. » (problème non personnel : réponse directe rassurante.)" },
-      { intitule: 'Réponse à Anthony sur Facebook (annexe 6a).', documents: ['Documents 7 et 8'], bareme: 4, reponse: "« Bonjour, afin de pouvoir vous apporter une réponse précise, je vous invite à formuler votre demande en message privé, en précisant votre nom et votre prénom ou votre numéro de téléphone. Bonne journée. » (problème personnel : pas de réponse directe, passage en message privé.)" },
-      { intitule: 'Analyse de la Partie II (annexe 7).', documents: ['Documents 5 et 9'], bareme: 4, reponse: "Il s'agit de l'étape 3. La partie II du questionnaire sur Instagram correspond à cette étape car elle pose des questions sur le fait de recommander « Free » ou la « Freebox » : l'entreprise cherche à savoir si ses clients jouent les ambassadeurs." },
+      { intitule: 'Réponse à Trobairitz sur X (annexe 5a).', documents: ['Documents 6 et 8'], bareme: 2, reponse: "« Bonjour, nous vous remercions de nous alerter quant à la page d'erreur qui s'affiche lorsque vous essayez de vous connecter sur notre page. Notre équipe technique met tout en œuvre pour un retour à la normale dans les plus brefs délais. Bonne journée. » (problème non personnel : réponse directe rassurante.)" },
+      { intitule: 'Réponse à Anthony sur Facebook (annexe 6a).', documents: ['Documents 7 et 8'], bareme: 2, reponse: "« Bonjour, afin de pouvoir vous apporter une réponse précise, je vous invite à formuler votre demande en message privé, en précisant votre nom et votre prénom ou votre numéro de téléphone. Bonne journée. » (problème personnel : pas de réponse directe, passage en message privé.)" },
+      { intitule: 'Analyse de la Partie II (annexe 7).', documents: ['Documents 5 et 9'], bareme: 2, reponse: "Il s'agit de l'étape 3. La partie II du questionnaire sur Instagram correspond à cette étape car elle pose des questions sur le fait de recommander « Free » ou la « Freebox » : l'entreprise cherche à savoir si ses clients jouent les ambassadeurs." },
     ],
   },
   synthese: {
@@ -9444,28 +9445,28 @@ const LEROY_MERLIN_M1: ContenuMission = {
       {
         titre: "Activité 1 — Identification de l'entreprise",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Consulter le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Indiquez les partenaires de l'entreprise.", ressources: 'Consulter le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: "Réalisez le profil-type de la clientèle de l'entreprise.", ressources: 'Consulter le document 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: 'Consulter le document 1, compléter l\'annexe 1. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez les partenaires de l'entreprise.", ressources: 'Consulter le document 2, compléter l\'annexe 2. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Réalisez le profil-type de la clientèle de l'entreprise.", ressources: 'Consulter le document 3, compléter l\'annexe 3. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activité 2 — Les biens et les services de l'entreprise",
         questions: [
-          { numero: 4, consigne: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.", ressources: 'Consulter le document 4, compléter l\'annexe 4.', annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Listez tous les biens proposés par Leroy Merlin à sa clientèle.', ressources: 'Consulter le document 5, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 4, consigne: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.", ressources: 'Consulter le document 4, compléter l\'annexe 4. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Listez tous les biens proposés par Leroy Merlin à sa clientèle.', ressources: 'Consulter le document 5, compléter l\'annexe 5. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe5' },
         ],
       },
       {
         titre: 'Activité 3 — Les concurrents',
         questions: [
-          { numero: 6, consigne: "Listez les différents concurrents de l'entreprise.", ressources: 'Consulter les documents 6 et 8, compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 6, consigne: "Listez les différents concurrents de l'entreprise.", ressources: 'Consulter les documents 6 et 8, compléter l\'annexe 6. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe6' },
         ],
       },
       {
         titre: 'Activité 4 — Le marché',
         questions: [
-          { numero: 7, consigne: 'Étudier le marché du bricolage.', ressources: 'Consulter le document 7, compléter l\'annexe 7.', annexeId: 'annexe7' },
+          { numero: 7, consigne: 'Étudier le marché du bricolage.', ressources: 'Consulter le document 7, compléter l\'annexe 7. Compétence C1.1 — Rechercher, actualiser les informations sur l\'entreprise et son marché.', annexeId: 'annexe7' },
         ],
       },
     ],
@@ -9540,7 +9541,7 @@ const LEROY_MERLIN_M1: ContenuMission = {
       {
         intitule: "Complétez l'identité de l'entreprise.",
         documents: ['Document 1', 'Annexe 1'],
-        bareme: 4,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Élément', 'Réponse attendue'],
@@ -9558,14 +9559,14 @@ const LEROY_MERLIN_M1: ContenuMission = {
       {
         intitule: "Indiquez les partenaires de l'entreprise.",
         documents: ['Document 2', 'Annexe 2'],
-        bareme: 3,
+        bareme: 2,
         reponse:
           "ADEME – CEMS – Broca Living Lab – Max Weber – CERLIS – Forum Urbain – Mobile Lives FORUM Vie Mobile – Mixing Generations – Nova 7 – PAVE – Regards – Union Régionale SOLIHA – TASDA",
       },
       {
         intitule: "Réalisez le profil-type de la clientèle de l'entreprise.",
         documents: ['Document 3', 'Annexe 3'],
-        bareme: 5,
+        bareme: 3,
         reponse: '',
         tableau: {
           colonnes: ['Critère', 'Réponse', 'Pourcentage'],
@@ -9583,7 +9584,7 @@ const LEROY_MERLIN_M1: ContenuMission = {
       {
         intitule: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.",
         documents: ['Document 4', 'Annexe 4'],
-        bareme: 5,
+        bareme: 3,
         reponse: '',
         tableau: {
           colonnes: ['Les services', 'Marchand', 'Non marchand'],
@@ -9599,14 +9600,14 @@ const LEROY_MERLIN_M1: ContenuMission = {
       {
         intitule: 'Listez tous les biens proposés par Leroy Merlin à sa clientèle.',
         documents: ['Document 5', 'Annexe 5'],
-        bareme: 4,
+        bareme: 2,
         reponse:
           "Carrelage, parquet et sol souple ; Chauffage et plomberie ; Menuiserie ; Salle de bains ; Décoration et éclairage ; Peinture et droguerie ; Électricité et domotique ; Outillage ; Quincaillerie ; Cuisine ; Rangement / dressing ; Terrasse et jardin ; Matériaux de construction ; Meuble.",
       },
       {
         intitule: "Listez les différents concurrents de l'entreprise.",
         documents: ['Document 6', 'Document 8', 'Annexe 6'],
-        bareme: 7,
+        bareme: 4,
         reponse: '',
         tableau: {
           colonnes: ['Nom des concurrents', 'Concurrent', 'Justification'],
@@ -9631,7 +9632,7 @@ const LEROY_MERLIN_M1: ContenuMission = {
       {
         intitule: 'Étudier le marché du bricolage.',
         documents: ['Document 7', 'Annexe 7'],
-        bareme: 6,
+        bareme: 4,
         reponse: '',
         tableau: {
           colonnes: ['Questions', 'Réponses'],
@@ -9965,23 +9966,23 @@ const LEROY_MERLIN_M2: ContenuMission = {
       {
         titre: "Activité 1 — Les mobiles, motivations et freins à l'achat des prospects",
         questions: [
-          { numero: 1, consigne: "Retrouvez les mobiles d'achat du couple en indiquant à chaque fois le mot ou le groupe de mots permettant de justifier votre choix.", ressources: 'Consulter les documents 1 et 2, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Cochez la motivation d'achat du couple puis justifiez la en citant le texte.", ressources: 'Consulter les documents 1 et 3, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: "Relevez dans l'intervention du couple, les deux freins liés à l'achat puis cochez le type de frein.", ressources: 'Consulter les documents 1 et 4, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 1, consigne: "Retrouvez les mobiles d'achat du couple en indiquant à chaque fois le mot ou le groupe de mots permettant de justifier votre choix.", ressources: 'Consulter les documents 1 et 2, compléter l\'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Cochez la motivation d'achat du couple puis justifiez la en citant le texte.", ressources: 'Consulter les documents 1 et 3, compléter l\'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Relevez dans l'intervention du couple, les deux freins liés à l'achat puis cochez le type de frein.", ressources: 'Consulter les documents 1 et 4, compléter l\'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 2 — La reformulation',
         questions: [
-          { numero: 4, consigne: "Reformulez les besoins du client en utilisant la « reformulation synthèse ».", ressources: 'Consulter le document 5, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 4, consigne: "Reformulez les besoins du client en utilisant la « reformulation synthèse ».", ressources: 'Consulter le document 5, compléter l\'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: "Activité 3 — La proposition d'une solution adaptée",
         questions: [
-          { numero: 5, consigne: "Préparez la présentation du produit en utilisant la méthode « QQCCP ». Pour chaque lettre, choisissez la caractéristique qui s'applique le mieux au cas de vos clients.", ressources: 'Consulter le document 6, compléter l\'annexe 5.', annexeId: 'annexe5' },
-          { numero: 6, consigne: 'Après avoir lu les réponses du couple, complétez le logiciel qui permettra de proposer le dressing leur correspondant.', ressources: 'Consulter le document 7, compléter l\'annexe 6.', annexeId: 'annexe6' },
-          { numero: 7, consigne: 'Indiquez les caractéristiques du produit proposé au couple.', ressources: 'Relire l\'annexe 6, compléter l\'annexe 7.', annexeId: 'annexe7' },
+          { numero: 5, consigne: "Préparez la présentation du produit en utilisant la méthode « QQCCP ». Pour chaque lettre, choisissez la caractéristique qui s'applique le mieux au cas de vos clients.", ressources: 'Consulter le document 6, compléter l\'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Après avoir lu les réponses du couple, complétez le logiciel qui permettra de proposer le dressing leur correspondant.', ressources: 'Consulter le document 7, compléter l\'annexe 6. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Indiquez les caractéristiques du produit proposé au couple.', ressources: 'Relire l\'annexe 6, compléter l\'annexe 7. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe7' },
         ],
       },
     ],
@@ -10153,7 +10154,7 @@ const LEROY_MERLIN_M2: ContenuMission = {
       {
         intitule: "Cochez la motivation d'achat du couple puis justifiez la en citant le texte.",
         documents: ['Document 1', 'Document 3', 'Annexe 2'],
-        bareme: 3,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Typologie', 'Coché', 'Justification'],
@@ -10173,13 +10174,13 @@ const LEROY_MERLIN_M2: ContenuMission = {
       {
         intitule: "Reformulez les besoins du client en utilisant la « reformulation synthèse ».",
         documents: ['Document 5', 'Annexe 4'],
-        bareme: 3,
+        bareme: 2,
         reponse: "« Si j'ai bien compris, vous souhaitez faire un dressing, contemporain, en bois recyclé, spacieux, avec une belle couleur naturelle et garantie, c'est bien cela ? »",
       },
       {
         intitule: "Préparez la présentation du produit en utilisant la méthode « QQCCP ».",
         documents: ['Document 6', 'Annexe 5'],
-        bareme: 5,
+        bareme: 4,
         reponse: '',
         tableau: {
           colonnes: ['QQCCP', 'Réponse attendue'],
@@ -10195,13 +10196,13 @@ const LEROY_MERLIN_M2: ContenuMission = {
       {
         intitule: 'Après avoir lu les réponses du couple, complétez le logiciel qui permettra de proposer le dressing leur correspondant.',
         documents: ['Document 7', 'Annexe 6'],
-        bareme: 4,
+        bareme: 3,
         reponse: "Configuration : décor effet chêne naturel, profondeur 45 cm, hauteur 200 cm, largeur 220 cm, caissons standards, 2 tiroirs, poignées standard (métal), porte H100 x L40. Produit obtenu : Dressing chêne H.200 x L.240 x P.45cm — Référence 83299641 — 1492.86 €.",
       },
       {
         intitule: 'Indiquez les caractéristiques du produit proposé au couple.',
         documents: ['Annexe 6', 'Annexe 7'],
-        bareme: 3,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Référence du produit', 'Libellé produit', 'Taille', 'Prix'],
@@ -10499,31 +10500,31 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         titre: 'Activité 1 — La disponibilité du produit et la fiche client',
         questions: [
-          { numero: 1, consigne: "Consultez le logiciel de l'entreprise afin de pouvoir indiquer au couple si le dressing qu'il a choisi est en stock.", ressources: 'Compléter les annexes 1a et 1b.', annexeId: 'annexe1a', annexeId2: 'annexe1b' },
-          { numero: 2, consigne: "Afin de pouvoir lancer la commande du dressing, complétez la fiche client à l'aide des réponses données par le couple.", ressources: 'Consulter le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 1, consigne: "Consultez le logiciel de l'entreprise afin de pouvoir indiquer au couple si le dressing qu'il a choisi est en stock.", ressources: 'Compléter les annexes 1a et 1b. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe1a', annexeId2: 'annexe1b' },
+          { numero: 2, consigne: "Afin de pouvoir lancer la commande du dressing, complétez la fiche client à l'aide des réponses données par le couple.", ressources: 'Consulter le document 1, compléter l\'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe2' },
         ],
       },
       {
         titre: 'Activité 2 — Vente additionnelle : différencier la vente complémentaire et la vente supplémentaire',
         questions: [
-          { numero: 3, consigne: 'Répondez aux questions de votre tutrice.', ressources: 'Consulter le document 2, compléter l\'annexe 3.', annexeId: 'annexe3' },
-          { numero: 4, consigne: "À l'aide de vos connaissances personnelles, donnez des exemples de produits complémentaires ou supplémentaires possibles en fonction du produit principal proposé.", ressources: 'Compléter l\'annexe 4.', annexeId: 'annexe4' },
-          { numero: 5, consigne: "À l'aide de vos connaissances personnelles, retrouvez quel est le produit principal en fonction des exemples de produits complémentaire ou supplémentaire indiqué.", ressources: 'Compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 3, consigne: 'Répondez aux questions de votre tutrice.', ressources: 'Consulter le document 2, compléter l\'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "À l'aide de vos connaissances personnelles, donnez des exemples de produits complémentaires ou supplémentaires possibles en fonction du produit principal proposé.", ressources: 'Compléter l\'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "À l'aide de vos connaissances personnelles, retrouvez quel est le produit principal en fonction des exemples de produits complémentaire ou supplémentaire indiqué.", ressources: 'Compléter l\'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe5' },
         ],
       },
       {
         titre: 'Activité 3 — Les notions de « up-selling » et de « down-selling »',
         contexte: "Après votre travail concluant sur la vente additionnelle, votre tutrice vous explique ce que sont les techniques de « up-selling » et de « down-selling ».",
         questions: [
-          { numero: 6, consigne: 'Analysez les notions de « up et de down selling » en répondant aux questions.', ressources: 'Consulter le document 3, compléter l\'annexe 6.', annexeId: 'annexe6' },
-          { numero: 7, consigne: "Indiquez le produit en « up-selling » que vous pourriez proposer au couple ; justifiez votre réponse.", ressources: 'Consulter le document 4, compléter l\'annexe 7.', annexeId: 'annexe7' },
+          { numero: 6, consigne: 'Analysez les notions de « up et de down selling » en répondant aux questions.', ressources: 'Consulter le document 3, compléter l\'annexe 6. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe6' },
+          { numero: 7, consigne: "Indiquez le produit en « up-selling » que vous pourriez proposer au couple ; justifiez votre réponse.", ressources: 'Consulter le document 4, compléter l\'annexe 7. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe7' },
         ],
       },
       {
         titre: "Activité 4 — La proposition d'un produit additionnel",
         questions: [
-          { numero: 8, consigne: "Relisez la Mission 2, document 1 et retrouvez la phrase énoncée par le couple qui peut faire l'objet d'une vente additionnelle.", ressources: 'Compléter l\'annexe 8.', annexeId: 'annexe8' },
-          { numero: 9, consigne: "Indiquez le bien ou le service que vous proposerez au couple ainsi que le prix de ce dernier par rapport à la phrase qu'il a prononcé.", ressources: 'Consulter le document 5, compléter l\'annexe 9.', annexeId: 'annexe9' },
+          { numero: 8, consigne: "Relisez la Mission 2, document 1 et retrouvez la phrase énoncée par le couple qui peut faire l'objet d'une vente additionnelle.", ressources: 'Compléter l\'annexe 8. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe8' },
+          { numero: 9, consigne: "Indiquez le bien ou le service que vous proposerez au couple ainsi que le prix de ce dernier par rapport à la phrase qu'il a prononcé.", ressources: 'Consulter le document 5, compléter l\'annexe 9. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe9' },
         ],
       },
     ],
@@ -10659,7 +10660,7 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: "Consultez le logiciel de l'entreprise afin de pouvoir indiquer au couple si le dressing qu'il a choisi est en stock.",
         documents: ['Annexe 1a', 'Annexe 1b'],
-        bareme: 3,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Question', 'Réponse'],
@@ -10672,7 +10673,7 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: "Afin de pouvoir lancer la commande du dressing, complétez la fiche client.",
         documents: ['Document 1', 'Annexe 2'],
-        bareme: 5,
+        bareme: 3,
         reponse: '',
         tableau: {
           colonnes: ['Champ', 'Réponse attendue'],
@@ -10694,7 +10695,7 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: 'Répondez aux questions de votre tutrice.',
         documents: ['Document 2', 'Annexe 3'],
-        bareme: 6,
+        bareme: 3,
         reponse: '',
         tableau: {
           colonnes: ['Questions', 'Réponses'],
@@ -10711,7 +10712,7 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: 'Donnez des exemples de produits complémentaires ou supplémentaires en fonction du produit principal.',
         documents: ['Annexe 4'],
-        bareme: 4,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Produit principal', 'Complémentaire', 'Supplémentaire'],
@@ -10726,7 +10727,7 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: 'Retrouvez quel est le produit principal en fonction des exemples donnés.',
         documents: ['Annexe 5'],
-        bareme: 4,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Complémentaire', 'Supplémentaire', 'Produit principal'],
@@ -10741,7 +10742,7 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: 'Analysez les notions de « up-selling » et de « down-selling ».',
         documents: ['Document 3', 'Annexe 6'],
-        bareme: 6,
+        bareme: 3,
         reponse: '',
         tableau: {
           colonnes: ['Questions', 'Réponses'],
@@ -10758,19 +10759,19 @@ const LEROY_MERLIN_M3: ContenuMission = {
       {
         intitule: 'Indiquez le produit en « up-selling » que vous pourriez proposer au couple ; justifiez.',
         documents: ['Document 4', 'Annexe 7'],
-        bareme: 3,
+        bareme: 2,
         reponse: "On proposera la référence 83013042, Dressing semi-fermé avec lumière, H 200cm – L 240cm – P 45 cm, couleur chêne, car il a de la lumière ce que n'a pas l'autre et il est plus cher.",
       },
       {
         intitule: "Retrouvez la phrase énoncée par le couple qui peut faire l'objet d'une vente additionnelle.",
         documents: ['Mission 2 — Document 1', 'Annexe 8'],
-        bareme: 2,
+        bareme: 1,
         reponse: "« Plus jamais ! J'ai pas les compétences pour faire du montage ! Je préfère payer pour le faire. »",
       },
       {
         intitule: 'Indiquez le bien ou le service additionnel proposé au couple ainsi que son prix.',
         documents: ['Document 5', 'Annexe 9'],
-        bareme: 3,
+        bareme: 2,
         reponse: "Le service à proposer au couple : POSE ET INSTALLATION À DOMICILE — Rangement / dressing — À partir de 149.00 €.",
       },
     ],
@@ -11040,27 +11041,27 @@ const LEROY_MERLIN_M4: ContenuMission = {
         titre: "Activité 1 — L'accord du client",
         contexte: "Maintenant que vous avez informé le couple de la disponibilité du dressing et du nombre de produits restants en stock, vous mettez tout en œuvre pour obtenir leur accord sur le bon de commande.",
         questions: [
-          { numero: 1, consigne: "Utilisez la technique de la « peau de l'ours » pour rédiger la phrase que vous allez prononcer face aux clients pour obtenir leur accord.", ressources: 'Consulter le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Analysez l'article qui vous a été remis par votre tutrice, sur la formalisation de l'accord du client.", ressources: 'Consulter le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Grâce à toutes les informations recueillies dans la Mission 3 (document 1 et annexe 1a), complétez le bon de commande.', ressources: 'Compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 1, consigne: "Utilisez la technique de la « peau de l'ours » pour rédiger la phrase que vous allez prononcer face aux clients pour obtenir leur accord.", ressources: 'Consulter le document 1, compléter l\'annexe 1. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Analysez l'article qui vous a été remis par votre tutrice, sur la formalisation de l'accord du client.", ressources: 'Consulter le document 2, compléter l\'annexe 2. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Grâce à toutes les informations recueillies dans la Mission 3 (document 1 et annexe 1a), complétez le bon de commande.', ressources: 'Compléter l\'annexe 3. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 2 — Les modalités et le suivi de la livraison',
         contexte: "Nous sommes le 8 avril 202N et Mme et M. Sankouraga ont formalisé leur accord en s'engageant sur le bon de commande que vous leur avez proposé. Vous leur expliquez comment suivre l'évolution de la livraison et comment celle-ci se passera.",
         questions: [
-          { numero: 4, consigne: "Consultez le planning d'intervention du magasin et complétez-le en indiquant, sur le jour que vous aurez choisi, le nom du client et le type d'intervention.", ressources: 'Consulter le document 3, compléter l\'annexe 4.', annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Reconstituez les différentes étapes entre la signature du bon de commande et la livraison.', ressources: 'Consulter le document 4, compléter l\'annexe 5.', annexeId: 'annexe5' },
-          { numero: 6, consigne: 'Faites une phrase pour indiquer au couple les délais et les différentes étapes de la livraison.', ressources: 'Compléter l\'annexe 6.', annexeId: 'annexe6' },
-          { numero: 7, consigne: 'Rédigez le SMS qui sera envoyé la veille pour rappeler la livraison.', ressources: 'Consulter le document 5, compléter l\'annexe 7.', annexeId: 'annexe7' },
+          { numero: 4, consigne: "Consultez le planning d'intervention du magasin et complétez-le en indiquant, sur le jour que vous aurez choisi, le nom du client et le type d'intervention.", ressources: 'Consulter le document 3, compléter l\'annexe 4. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Reconstituez les différentes étapes entre la signature du bon de commande et la livraison.', ressources: 'Consulter le document 4, compléter l\'annexe 5. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe5' },
+          { numero: 6, consigne: 'Faites une phrase pour indiquer au couple les délais et les différentes étapes de la livraison.', ressources: 'Compléter l\'annexe 6. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe6' },
+          { numero: 7, consigne: 'Rédigez le SMS qui sera envoyé la veille pour rappeler la livraison.', ressources: 'Consulter le document 5, compléter l\'annexe 7. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe7' },
         ],
       },
       {
         titre: 'Activité 3 — La prise de congé',
         contexte: "Le couple est satisfait de son achat. Il est prêt à s'en aller. Vous soignez donc la prise de congé.",
         questions: [
-          { numero: 8, consigne: 'Votre tutrice souhaite vérifier que vous maîtrisez la prise de congé et vous interroge sur les documents qu\'elle vous a remis.', ressources: 'Consulter le document 6, compléter l\'annexe 8.', annexeId: 'annexe8' },
-          { numero: 9, consigne: 'Rédigez la phrase de la prise de congé pour le couple en respectant les 4 R.', ressources: 'Compléter l\'annexe 9.', annexeId: 'annexe9' },
+          { numero: 8, consigne: 'Votre tutrice souhaite vérifier que vous maîtrisez la prise de congé et vous interroge sur les documents qu\'elle vous a remis.', ressources: 'Consulter le document 6, compléter l\'annexe 8. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe8' },
+          { numero: 9, consigne: 'Rédigez la phrase de la prise de congé pour le couple en respectant les 4 R.', ressources: 'Compléter l\'annexe 9. Compétence C1.3 — S\'assurer de l\'exécution de la vente.', annexeId: 'annexe9' },
         ],
       },
     ],
@@ -11232,13 +11233,13 @@ const LEROY_MERLIN_M4: ContenuMission = {
       {
         intitule: "Utilisez la technique de la « peau de l'ours » pour rédiger la phrase d'accord.",
         documents: ['Document 1', 'Annexe 1'],
-        bareme: 2,
+        bareme: 1,
         reponse: "« Alors quand seriez-vous disponible pour la pose de votre dressing ? »",
       },
       {
         intitule: "Analysez l'article sur la formalisation de l'accord du client.",
         documents: ['Document 2', 'Annexe 2'],
-        bareme: 3,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Questions', 'Réponses'],
@@ -11252,7 +11253,7 @@ const LEROY_MERLIN_M4: ContenuMission = {
       {
         intitule: 'Complétez le bon de commande.',
         documents: ['Mission 3 — Document 1 et annexe 1a', 'Annexe 3'],
-        bareme: 6,
+        bareme: 4,
         reponse: '',
         tableau: {
           colonnes: ['Champ', 'Réponse attendue'],
@@ -11274,31 +11275,31 @@ const LEROY_MERLIN_M4: ContenuMission = {
       {
         intitule: "Complétez le planning d'intervention.",
         documents: ['Document 3', 'Annexe 4'],
-        bareme: 4,
+        bareme: 2,
         reponse: "Délai de 30 jours à compter du jour suivant la signature (02 avril 202N), hors dimanches et jours fériés. Le créneau retenu est le mardi 2 mai 202N (après-midi) : « Mme Sankouraga - Installation et aménagement de dressing ».",
       },
       {
         intitule: 'Reconstituez les étapes de la livraison.',
         documents: ['Document 4', 'Annexe 5'],
-        bareme: 6,
+        bareme: 3,
         reponse: "1. Signature du bon de commande ; 2. Préparation du produit ; 3. Une semaine avant, appel pour le choix de l'heure du créneau de livraison ; 4. SMS de rappel la veille de la livraison ; 5. Livraison à votre domicile des articles ; 6. Évaluez la livraison sur votre smartphone.",
       },
       {
         intitule: 'Faites une phrase indiquant les délais et étapes de la livraison.',
         documents: ['Annexe 6'],
-        bareme: 4,
+        bareme: 2,
         reponse: "« Maintenant que vous avez signé le bon de commande, je vais vous expliquer comment va se passer la suite. Votre dressing va être préparé et sera livré d'ici 30 jours. Une semaine avant la livraison, vous recevrez un appel du service client pour convenir d'un créneau (matin ou après-midi). Ensuite la veille, vous recevrez un SMS qui vous rappellera le créneau de livraison. Enfin, le lendemain, votre dressing sera livré à votre domicile et, une fois que cela sera fait, vous recevrez un SMS pour évaluer la livraison. »",
       },
       {
         intitule: 'Rédigez le SMS de rappel envoyé la veille.',
         documents: ['Document 5', 'Annexe 7'],
-        bareme: 3,
+        bareme: 2,
         reponse: "« Bonjour Mme Sankouraga, votre dressing sera livré demain entre 9h et 11h. Merci et à bientôt sur www.leroymerlin.fr »",
       },
       {
         intitule: 'Répondez aux questions de votre tutrice sur les 4 R.',
         documents: ['Document 6', 'Annexe 8'],
-        bareme: 4,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['Questions', 'Réponses'],
@@ -11313,7 +11314,7 @@ const LEROY_MERLIN_M4: ContenuMission = {
       {
         intitule: 'Rédigez la phrase de prise de congé (4 R).',
         documents: ['Annexe 9'],
-        bareme: 4,
+        bareme: 2,
         reponse: "« Vous avez vraiment fait un excellent choix. C'est un très beau dressing que vous avez choisi (Rassurer) et je vous remercie d'être venu chez Leroy Merlin (Remercier). Allez-y ! Je vous raccompagne (Raccompagner). Après l'installation, je vous passerai un petit coup de fil pour savoir si tout s'est bien passé (Revoir). »",
       },
     ],
@@ -11680,19 +11681,19 @@ const LEROY_MERLIN_M5: ContenuMission = {
         titre: 'Activité 1 — La sélection du prestataire le plus adapté',
         contexte: "Avant de vous lancer dans la sélection de l'artisan qui installera le dressing chez les clients, vous étudiez les différents forfaits qui sont proposés par l'enseigne.",
         questions: [
-          { numero: 1, consigne: "Trois forfaits de pose sont proposés chez Leroy Merlin. Pour chacun d'eux, indiquez quels sont les détails de l'offre.", ressources: 'Consulter le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Relisez la Mission 2 annexe 5, puis indiquez parmi les 3 prestations laquelle choisir pour le montage et l'installation du dressing de Mme et M. Sankouraga. Justifiez.", ressources: 'Consulter le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: "Retrouvez l'adresse des clients et écrivez-la.", ressources: 'Consulter la Mission 3 document 1, compléter l\'annexe 3.', annexeId: 'annexe3', contexteAvant: "Nous sommes 7 jours après la signature du bon de commande et votre tutrice, Mme Annie Mâle, vous demande de sélectionner sur la liste des artisans travaillant avec Leroy Merlin, celui qui réalisera la prestation." },
-          { numero: 4, consigne: "À partir de l'adresse des clients, calculez la distance en voiture entre l'adresse de l'entreprise et le domicile des clients.", ressources: 'Consulter les documents 3a et 3b, compléter l\'annexe 4.', annexeId: 'annexe4', boutonLien: 'https://www.google.fr/maps/@46.2192649,2.0517,6z', boutonLibelle: 'Ouvrir Google Maps' },
-          { numero: 5, consigne: "Identifiez l'artisan qui ira installer le dressing chez le couple. Justifiez votre réponse en reprenant chaque critère.", ressources: 'Consulter le document 2, le document 3a et l\'annexe 4, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 1, consigne: "Trois forfaits de pose sont proposés chez Leroy Merlin. Pour chacun d'eux, indiquez quels sont les détails de l'offre.", ressources: 'Consulter le document 1, compléter l\'annexe 1. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Relisez la Mission 2 annexe 5, puis indiquez parmi les 3 prestations laquelle choisir pour le montage et l'installation du dressing de Mme et M. Sankouraga. Justifiez.", ressources: 'Consulter le document 1, compléter l\'annexe 2. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Retrouvez l'adresse des clients et écrivez-la.", ressources: 'Consulter la Mission 3 document 1, compléter l\'annexe 3. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe3', contexteAvant: "Nous sommes 7 jours après la signature du bon de commande et votre tutrice, Mme Annie Mâle, vous demande de sélectionner sur la liste des artisans travaillant avec Leroy Merlin, celui qui réalisera la prestation." },
+          { numero: 4, consigne: "À partir de l'adresse des clients, calculez la distance en voiture entre l'adresse de l'entreprise et le domicile des clients.", ressources: 'Consulter les documents 3a et 3b, compléter l\'annexe 4. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe4', boutonLien: 'https://www.google.fr/maps/@46.2192649,2.0517,6z', boutonLibelle: 'Ouvrir Google Maps' },
+          { numero: 5, consigne: "Identifiez l'artisan qui ira installer le dressing chez le couple. Justifiez votre réponse en reprenant chaque critère.", ressources: 'Consulter le document 2, le document 3a et l\'annexe 4, compléter l\'annexe 5. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe5' },
         ],
       },
       {
         titre: "Activité 2 — Suivre l'exécution du service et rendre compte",
         contexte: "Le dressing a été installé depuis quelques jours et votre responsable vous demande de contacter Mme et M. Sankouraga par téléphone pour savoir comment s'est passée la prestation.",
         questions: [
-          { numero: 6, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: 'Consulter le document 4, compléter l\'annexe 6.', annexeId: 'annexe6' },
-          { numero: 7, consigne: "À partir de la réponse envoyée par Mme Sankouraga, faites un compte rendu par mail à votre responsable (annie.male@leroymerlin.fr) pour la tenir au courant.", ressources: 'Consulter le document 5, compléter l\'annexe 7.', annexeId: 'annexe7', contexteAvant: "Vous n'avez pas réussi à joindre directement le couple par téléphone. Vous avez laissé un message à Mme Sankouraga sur son smartphone et elle vous a répondu sur votre mail dont l'adresse est (conseillerventestagiaire@leroymerlin.fr)." },
+          { numero: 6, consigne: 'Préparez votre appel téléphonique en utilisant la méthode CROC.', ressources: 'Consulter le document 4, compléter l\'annexe 6. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe6' },
+          { numero: 7, consigne: "À partir de la réponse envoyée par Mme Sankouraga, faites un compte rendu par mail à votre responsable (annie.male@leroymerlin.fr) pour la tenir au courant.", ressources: 'Consulter le document 5, compléter l\'annexe 7. Compétence C2.2 — Mettre en œuvre le ou les service(s) associé(s).', annexeId: 'annexe7', contexteAvant: "Vous n'avez pas réussi à joindre directement le couple par téléphone. Vous avez laissé un message à Mme Sankouraga sur son smartphone et elle vous a répondu sur votre mail dont l'adresse est (conseillerventestagiaire@leroymerlin.fr)." },
         ],
       },
     ],
@@ -11783,7 +11784,7 @@ const LEROY_MERLIN_M5: ContenuMission = {
       {
         intitule: "Pour chaque forfait, indiquez les détails de l'offre.",
         documents: ['Document 1', 'Annexe 1'],
-        bareme: 9,
+        bareme: 5,
         reponse: '',
         tableau: {
           colonnes: ['Nom de la prestation', "Détails de l'offre", "Conditions d'application"],
@@ -11797,7 +11798,7 @@ const LEROY_MERLIN_M5: ContenuMission = {
       {
         intitule: 'Indiquez la prestation à retenir et justifiez.',
         documents: ['Mission 2 annexe 5', 'Document 1', 'Annexe 2'],
-        bareme: 2,
+        bareme: 1,
         reponse: "Installation et aménagement de rangement Spaceo Home, 4 caissons et accessoires. Cette prestation comprend le montage du dressing, des tiroirs, des portes et des accessoires contrairement aux 2 autres.",
       },
       {
@@ -11809,7 +11810,7 @@ const LEROY_MERLIN_M5: ContenuMission = {
       {
         intitule: "Calculez la distance entre l'entreprise et le domicile du couple.",
         documents: ['Documents 3a et 3b', 'Annexe 4'],
-        bareme: 6,
+        bareme: 4,
         reponse: '',
         tableau: {
           colonnes: ['Entreprises', 'Distance', 'Entreprises', 'Distance'],
@@ -11826,7 +11827,7 @@ const LEROY_MERLIN_M5: ContenuMission = {
       {
         intitule: "Identifiez l'artisan retenu et justifiez par chaque critère.",
         documents: ['Document 2', 'Document 3a', 'Annexe 4', 'Annexe 5'],
-        bareme: 6,
+        bareme: 4,
         reponse: '',
         tableau: {
           colonnes: ['Critère', 'Justification'],
@@ -11844,7 +11845,7 @@ const LEROY_MERLIN_M5: ContenuMission = {
       {
         intitule: "Préparez l'appel téléphonique avec la méthode CROC.",
         documents: ['Document 4', 'Annexe 6'],
-        bareme: 4,
+        bareme: 2,
         reponse: '',
         tableau: {
           colonnes: ['CROC', 'Réponse attendue'],
@@ -11859,7 +11860,7 @@ const LEROY_MERLIN_M5: ContenuMission = {
       {
         intitule: 'Rédigez le compte rendu par mail à votre responsable.',
         documents: ['Document 5', 'Annexe 7'],
-        bareme: 5,
+        bareme: 3,
         reponse: "De : conseillerdeventestagiaire@leroymerlin.fr — À : annie.male@leroymerlin.fr — Objet : Compte rendu de l'appel à Mme Sankouraga. « Bonjour Madame Mâle, comme convenu, j'ai contacté il y a quelques jours Mme Sankouraga pour savoir comment s'était déroulée la pose de son dressing. Je n'ai pas réussi à la joindre directement car elle est en vacances à l'étranger, donc je lui ai laissé un message. Elle m'a répondu par mail. Dans son message, elle explique que si globalement tout s'est bien passé, elle a rencontré deux problèmes : tout d'abord, l'équipe de montage est arrivée avec 1h30 de retard, ce qui a été problématique car elle avait un rendez-vous après qu'elle a dû annuler. Enfin, l'une des portes du dressing n'a pas été correctement montée puisque le soir même, en la manipulant, la charnière du haut s'est décrochée ; c'est son mari qui a été obligé de tout remettre. Cordialement, Conseiller de vente. »",
       },
     ],
@@ -12126,15 +12127,15 @@ const PEUGEOT_M1: ContenuMission = {
         titre: 'Activité 1 — Le marché des concessions automobiles en France',
         contexte: "C'est votre premier jour de PFMP à la concession et vous le passez avec le directeur, M. Collet.",
         questions: [
-          { numero: 1, consigne: 'Répondez aux questions de votre tuteur.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 1, consigne: 'Répondez aux questions de votre tuteur.', ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 — Qu'est-ce qu'une concession automobile ?",
         contexte: "C'est à votre tour de poser des questions à votre tuteur pour comprendre tout ce que recouvre le terme concession automobile.",
         questions: [
-          { numero: 2, consigne: "Expliquez avec vos propres mots ce qu'est une concession automobile.", ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Citez les 3 particularités (caractéristiques) du contrat de concession.', ressources: 'Lire le document 2, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 2, consigne: "Expliquez avec vos propres mots ce qu'est une concession automobile.", ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Citez les 3 particularités (caractéristiques) du contrat de concession.', ressources: 'Lire le document 2, compléter l\'annexe 3. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe3' },
         ],
       },
     ],
@@ -12440,7 +12441,7 @@ const PEUGEOT_M2: ContenuMission = {
         titre: 'Activité — Comprendre la réglementation en matière de concession automobile',
         contexte: "Élise, l'employée qui s'occupe de vous dans le service juridique, vous interroge pour savoir ce que vous avez compris du document.",
         questions: [
-          { numero: 1, consigne: "Répondez aux questions d'Élise.", ressources: 'Lire le document, compléter l\'annexe.', annexeId: 'annexe1' },
+          { numero: 1, consigne: "Répondez aux questions d'Élise.", ressources: 'Lire le document, compléter l\'annexe. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
         ],
       },
     ],
@@ -12639,27 +12640,27 @@ const PEUGEOT_M3: ContenuMission = {
         titre: 'Activité 1 — Le directeur de concession',
         contexte: "Afin de créer la fiche métier du directeur de concession, vous vous rendez dans le bureau de M. Collet pour lui demander de vous expliquer sa fonction.",
         questions: [
-          { numero: 1, consigne: 'Présentez le poste de directeur de concession.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: 'Indiquez sa formation.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 3, consigne: 'Énumérez ses différentes missions.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 4, consigne: 'Repérez les compétences nécessaires pour exercer ce métier.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 1, consigne: 'Présentez le poste de directeur de concession.', ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
+          { numero: 2, consigne: 'Indiquez sa formation.', ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
+          { numero: 3, consigne: 'Énumérez ses différentes missions.', ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
+          { numero: 4, consigne: 'Repérez les compétences nécessaires pour exercer ce métier.', ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — Le chef des ventes',
         contexte: "Puis, vous vous rendez dans le bureau de Mathieu, le chef des ventes, pour qu'il vous explique à son tour son métier.",
         questions: [
-          { numero: 1, consigne: 'Présentez le poste de chef des ventes.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 2, consigne: 'Indiquez sa formation.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Énumérez ses différentes missions.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 4, consigne: 'Repérez les compétences nécessaires pour exercer ce métier.', ressources: 'Lire le document 2, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 1, consigne: 'Présentez le poste de chef des ventes.', ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 2, consigne: 'Indiquez sa formation.', ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Énumérez ses différentes missions.', ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 4, consigne: 'Repérez les compétences nécessaires pour exercer ce métier.', ressources: 'Lire le document 2, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
         ],
       },
       {
         titre: 'Activité 3 — Le commercial automobile',
         contexte: "Enfin, vous croisez Paul, votre tuteur, dans le showroom de la concession. Il a très peu de temps à vous consacrer mais vous en profitez tout de même pour lui demander les avantages et les inconvénients du métier de commercial automobile.",
         questions: [
-          { numero: 1, consigne: 'Indiquez 2 avantages et 2 inconvénients du poste de commercial en concession automobile VN-VO.', ressources: 'Lire le document 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 1, consigne: 'Indiquez 2 avantages et 2 inconvénients du poste de commercial en concession automobile VN-VO.', ressources: 'Lire le document 3, compléter l\'annexe 3. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe3' },
         ],
       },
     ],
@@ -12908,8 +12909,8 @@ const PEUGEOT_M4: ContenuMission = {
         titre: 'Activité — Les différents aspects du métier de commercial automobile',
         contexte: "Vous posez des questions à Paul pour en savoir davantage sur le métier de commercial.",
         questions: [
-          { numero: 1, consigne: 'Expliquez en quoi consiste le métier de vendeur automobile et ses missions.', ressources: 'Lire le document, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Listez les qualités d'un bon commercial puis expliquez avec vos propres mots chacune d'elle.", ressources: 'Lire le document, compléter l\'annexe 2.', annexeId: 'annexe2' },
+          { numero: 1, consigne: 'Expliquez en quoi consiste le métier de vendeur automobile et ses missions.', ressources: 'Lire le document, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Listez les qualités d'un bon commercial puis expliquez avec vos propres mots chacune d'elle.", ressources: 'Lire le document, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
         ],
       },
     ],
@@ -13331,24 +13332,24 @@ const PEUGEOT_M5: ContenuMission = {
         titre: 'Activité 1 — Comparaison des profils des candidats',
         contexte: "Mathieu a reçu de nombreuses candidatures et en a sélectionné 3. Il vous demande de les étudier et de lui dire ce que vous en pensez.",
         questions: [
-          { numero: 1, consigne: "Selon vous, pourquoi le salarié du C.V. 2 doit certainement avoir une rémunération plus importante que celui du C.V. 1 ?", ressources: 'Lire les documents 1 et 2, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Indiquez quel centre d'intérêt du C.V. 1 montre que ce commercial travaille dans le secteur automobile de façon cohérente. Justifiez votre réponse.", ressources: 'Lire le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: "Expliquez en quoi le fait d'avoir un BTS NRC (= NDRC) pourrait permettre à Mme Marcia d'occuper le métier de commerciale automobile avec efficacité.", ressources: 'Lire le document 1, compléter l\'annexe 3.', annexeId: 'annexe3' },
+          { numero: 1, consigne: "Selon vous, pourquoi le salarié du C.V. 2 doit certainement avoir une rémunération plus importante que celui du C.V. 1 ?", ressources: 'Lire les documents 1 et 2, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez quel centre d'intérêt du C.V. 1 montre que ce commercial travaille dans le secteur automobile de façon cohérente. Justifiez votre réponse.", ressources: 'Lire le document 1, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Expliquez en quoi le fait d'avoir un BTS NRC (= NDRC) pourrait permettre à Mme Marcia d'occuper le métier de commerciale automobile avec efficacité.", ressources: 'Lire le document 1, compléter l\'annexe 3. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe3' },
         ],
       },
       {
         titre: 'Activité 2 — Étude d\u2019un profil atypique',
         contexte: "Parmi les 3 candidatures, Mathieu a sélectionné un C.V. un peu atypique par rapport aux deux autres et vous demande de l'étudier.",
         questions: [
-          { numero: 4, consigne: "Observez le C.V. 3, puis indiquez le métier actuel de cette candidate. Puis, selon vous, pourquoi Aurore Badi pourrait-elle tout de même être une bonne candidate malgré son parcours un peu différent ?", ressources: 'Lire le document 3, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 4, consigne: "Observez le C.V. 3, puis indiquez le métier actuel de cette candidate. Puis, selon vous, pourquoi Aurore Badi pourrait-elle tout de même être une bonne candidate malgré son parcours un peu différent ?", ressources: 'Lire le document 3, compléter l\'annexe 4. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 3 — La féminisation du secteur automobile',
         contexte: "Après avoir passé la matinée avec Mathieu, vous passez l'après-midi avec Marjorie, commerciale dans l'entreprise. Surpris par le fait qu'elle soit la seule femme, vous l'interrogez sur la place de ces dernières dans le milieu de la vente automobile. Elle vous transmet un article qu'elle a trouvé dernièrement sur le sujet mais qu'elle n'a pas eu le temps de lire.",
         questions: [
-          { numero: 5, consigne: 'Répondez aux questions de Marjorie.', ressources: 'Lire le document 4, compléter l\'annexe 5.', annexeId: 'annexe5' },
-          { numero: 6, consigne: "Rédigez à l'attention de Marjorie une note récapitulative sur l'état de féminisation du secteur commercial de l'automobile.", ressources: 'Lire le document 5, compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 5, consigne: 'Répondez aux questions de Marjorie.', ressources: 'Lire le document 4, compléter l\'annexe 5. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez à l'attention de Marjorie une note récapitulative sur l'état de féminisation du secteur commercial de l'automobile.", ressources: 'Lire le document 5, compléter l\'annexe 6. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe6' },
         ],
       },
     ],
@@ -13566,17 +13567,17 @@ const PEUGEOT_M6: ContenuMission = {
         titre: 'Activité 1 — Les composantes de la rémunération du commercial automobile',
         contexte: "Aujourd'hui, le planning indique que vous travaillerez pendant deux jours avec Michel qui est commercial depuis plus de 20 ans. Vous profitez de l'occasion pour l'interroger sur le salaire d'un commercial.",
         questions: [
-          { numero: 1, consigne: 'Michel répond à vos questions.', ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
+          { numero: 1, consigne: 'Michel répond à vos questions.', ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe1' },
         ],
       },
       {
         titre: 'Activité 2 — Le calcul de la rémunération',
         contexte: "Conscient des difficultés que vous avez à comprendre le système de rémunération, Michel, l'un des commerciaux, vous donne des exercices avec le cas concret d'un commercial débutant et vous demande de les résoudre.",
         questions: [
-          { numero: 2, consigne: 'Calculez la rémunération du commercial débutant avec le système fixe + commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système fixe + prime.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 3.', annexeId: 'annexe3' },
-          { numero: 4, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système uniquement de la commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 4.', annexeId: 'annexe4' },
-          { numero: 5, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système fixe + prime + commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 2, consigne: 'Calculez la rémunération du commercial débutant avec le système fixe + commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 2. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe2' },
+          { numero: 3, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système fixe + prime.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 3. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe3' },
+          { numero: 4, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système uniquement de la commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 4. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe4' },
+          { numero: 5, consigne: 'Calculez la rémunération du commercial débutant en utilisant le système fixe + prime + commission.', ressources: 'Lire les documents 2 et 3, compléter l\'annexe 5. Compétence C1.1 — Assurer la veille commerciale.', annexeId: 'annexe5' },
         ],
       },
     ],
@@ -13856,24 +13857,24 @@ const PEUGEOT_M7: ContenuMission = {
         titre: "Activité 1 — Véhicules neufs ou d'occasion",
         contexte: "Paul vous demande de connaître les avantages et les inconvénients de chacune des caractéristiques des différents types de véhicules.",
         questions: [
-          { numero: 1, consigne: "Retrouvez pour chaque caractéristique l'avantage qui lui correspond lors de l'achat d'un véhicule neuf.", ressources: 'Lire le document 1, compléter l\'annexe 1.', annexeId: 'annexe1' },
-          { numero: 2, consigne: "Indiquez pour chaque inconvénient les caractéristiques qui lui correspondent lorsque le client fait le choix d'acheter un véhicule neuf.", ressources: 'Lire le document 1, compléter l\'annexe 2.', annexeId: 'annexe2' },
-          { numero: 3, consigne: "Retrouvez les avantages et les caractéristiques d'acheter un véhicule d'occasion.", ressources: 'Lire le document 2, compléter l\'annexe 3.', annexeId: 'annexe3' },
-          { numero: 4, consigne: "Retrouvez les inconvénients et les caractéristiques qui lui correspondent d'acheter un véhicule d'occasion.", ressources: 'Lire le document 2, compléter l\'annexe 4.', annexeId: 'annexe4' },
+          { numero: 1, consigne: "Retrouvez pour chaque caractéristique l'avantage qui lui correspond lors de l'achat d'un véhicule neuf.", ressources: 'Lire le document 1, compléter l\'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez pour chaque inconvénient les caractéristiques qui lui correspondent lorsque le client fait le choix d'acheter un véhicule neuf.", ressources: 'Lire le document 1, compléter l\'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Retrouvez les avantages et les caractéristiques d'acheter un véhicule d'occasion.", ressources: 'Lire le document 2, compléter l\'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Retrouvez les inconvénients et les caractéristiques qui lui correspondent d'acheter un véhicule d'occasion.", ressources: 'Lire le document 2, compléter l\'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe4' },
         ],
       },
       {
         titre: 'Activité 2 — Les motorisations : essence, diésel, électrique ou hybride',
         contexte: "Puis, il vous demande d'étudier les différents types de motorisation.",
         questions: [
-          { numero: 5, consigne: 'Retrouvez 1 avantage et 1 inconvénient pour chaque type de motorisation.', ressources: 'Lire le document 3, compléter l\'annexe 5.', annexeId: 'annexe5' },
+          { numero: 5, consigne: 'Retrouvez 1 avantage et 1 inconvénient pour chaque type de motorisation.', ressources: 'Lire le document 3, compléter l\'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe5' },
         ],
       },
       {
         titre: 'Activité 3 — Les dernières innovations des marques automobiles',
         contexte: "Votre tuteur vous explique qu'un bon commercial automobile doit particulièrement connaître les innovations technologiques d'aujourd'hui et de demain car de plus en plus, les clients se renseignent sur internet et arrivent à la concession en sachant déjà beaucoup de choses.",
         questions: [
-          { numero: 6, consigne: "Citez quatre innovations du futur dans l'automobile en expliquant en quoi elles consistent.", ressources: 'Lire le document 4, compléter l\'annexe 6.', annexeId: 'annexe6' },
+          { numero: 6, consigne: "Citez quatre innovations du futur dans l'automobile en expliquant en quoi elles consistent.", ressources: 'Lire le document 4, compléter l\'annexe 6. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.', annexeId: 'annexe6' },
         ],
       },
     ],
@@ -14226,26 +14227,26 @@ const PEUGEOT_M8: ContenuMission = {
         titre: "Activite 1 - La réglementation pour le démarchage téléphonique",
         contexte: "Avant de lancer la campagne d'appels, M. Auchon veut s'assurer que vous connaissez les règles a respecter et que les outils fournis par la concession sont conformes.",
         questions: [
-          { numero: 1, consigne: "Indiquez les actes interdits par la nouvelle réglementation en matiere de démarchage téléphonique.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Au regard de la loi du 1er mars 2023, quel téléphone vaut-il mieux utiliser pour appeler les clients et prospects et pourquoi ? Justifiez votre reponse.", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Repertoriez toutes les anomalies contenues dans la liste de clients a appeler au regard de la loi du 1er mars 2023. Expliquez pourquoi.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 1, consigne: "Indiquez les actes interdits par la nouvelle réglementation en matiere de démarchage téléphonique.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Au regard de la loi du 1er mars 2023, quel téléphone vaut-il mieux utiliser pour appeler les clients et prospects et pourquoi ? Justifiez votre reponse.", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Repertoriez toutes les anomalies contenues dans la liste de clients a appeler au regard de la loi du 1er mars 2023. Expliquez pourquoi.", ressources: "Lire le document 3, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activite 2 - Le démarchage téléphonique",
         contexte: "M. Auchon vous demande de vérifier le suivi des appels deja passes et de preparer les prochains, en respectant la frequence et les horaires legaux.",
         questions: [
-          { numero: 4, consigne: "Comptez puis cochez le nombre de fois que Mme MOREAU aura ete contactee a la fin du mois d'AVRIL.", ressources: "Lire les documents 3 et 4, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Apres avoir relu la réglementation, indiquez s'il est possible de programmer un appel de Mme MOREAU le vendredi de la semaine 4. Justifiez la reponse.", ressources: "Lire le document 1, compléter l'annexe 5.", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Indiquez a quelle heure Mme LANGLOIS a ete contactee, rappelez ce que dit la loi du 1er mars 2023 concernant les horaires d'appel, puis indiquez ce que peut faire Mme LANGLOIS.", ressources: "Lire les documents 1 et 4, compléter l'annexe 6.", annexeId: 'annexe6' },
+          { numero: 4, consigne: "Comptez puis cochez le nombre de fois que Mme MOREAU aura ete contactee a la fin du mois d'AVRIL.", ressources: "Lire les documents 3 et 4, compléter l'annexe 4. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Apres avoir relu la réglementation, indiquez s'il est possible de programmer un appel de Mme MOREAU le vendredi de la semaine 4. Justifiez la reponse.", ressources: "Lire le document 1, compléter l'annexe 5. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Indiquez a quelle heure Mme LANGLOIS a ete contactee, rappelez ce que dit la loi du 1er mars 2023 concernant les horaires d'appel, puis indiquez ce que peut faire Mme LANGLOIS.", ressources: "Lire les documents 1 et 4, compléter l'annexe 6. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe6' },
         ],
       },
       {
         titre: "Activite 3 - Le démarchage par mail",
         contexte: "Enfin, M. Auchon vous confie le controle des supports numeriques de la concession : le site internet et un emailing recu par un client.",
         questions: [
-          { numero: 7, consigne: "Reperez ce qui est contraire a la loi sur le site. Justifiez votre reponse.", ressources: "Lire le document 6, observer le document 5, compléter l'annexe 7.", annexeId: 'annexe7' },
-          { numero: 8, consigne: "Indiquez si la page internet est conforme a la réglementation du 1er mars 2023 sur le démarchage par e-mail. Justifiez votre reponse.", ressources: "Lire le document 7, compléter l'annexe 8.", annexeId: 'annexe8' },
+          { numero: 7, consigne: "Reperez ce qui est contraire a la loi sur le site. Justifiez votre reponse.", ressources: "Lire le document 6, observer le document 5, compléter l'annexe 7. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe7' },
+          { numero: 8, consigne: "Indiquez si la page internet est conforme a la réglementation du 1er mars 2023 sur le démarchage par e-mail. Justifiez votre reponse.", ressources: "Lire le document 7, compléter l'annexe 8. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe8' },
         ],
       },
     ],
@@ -14508,15 +14509,15 @@ const PEUGEOT_M9: ContenuMission = {
         titre: "Activite 1 - SONCASE",
         contexte: "M. Auchon vous confie les témoignages de six clients. Vous devez identifier ce qui motive chacun d'eux a acheter.",
         questions: [
-          { numero: 1, consigne: "Retrouvez le mobile d'achat correspondant aux affirmations de chaque client.", ressources: "Lire les documents 1 et 2, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Indiquez le mot ou le groupe de mots justifiant votre choix pour chaque mobile d'achat.", ressources: "Lire le document 2, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Retrouvez le mobile d'achat correspondant aux affirmations de chaque client.", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez le mot ou le groupe de mots justifiant votre choix pour chaque mobile d'achat.", ressources: "Lire le document 2, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activite 2 - Argumentation",
         contexte: "Une fois les mobiles d'achat identifies, vous devez preparer votre argumentation pour convaincre la clientèle.",
         questions: [
-          { numero: 3, consigne: "Choisissez 3 mobiles d'achat parmi les 6, replacez-les dans le tableau puis construisez des arguments en utilisant la méthode C.A.P.", ressources: "Lire le document 3 et relire l'annexe 1, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Choisissez 3 mobiles d'achat parmi les 6, replacez-les dans le tableau puis construisez des arguments en utilisant la méthode C.A.P.", ressources: "Lire le document 3 et relire l'annexe 1, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
         ],
       },
     ],
@@ -14803,15 +14804,15 @@ const PEUGEOT_M11: ContenuMission = {
         titre: "Activite 1 - L'obligation d'affichage du commercial automobile",
         contexte: "Elise vous accompagne pour comprendre l'obligation d'affichage et vérifier les affichés presentes en concession.",
         questions: [
-          { numero: 1, consigne: "Répondez aux questions d'Elise.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Retrouvez les erreurs qui se sont glissees sur l'ensemble des affichés presentes pres des véhicules.", ressources: "Lire le document 1, observer le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 1, consigne: "Répondez aux questions d'Elise.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Retrouvez les erreurs qui se sont glissees sur l'ensemble des affichés presentes pres des véhicules.", ressources: "Lire le document 1, observer le document 2, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
         ],
       },
       {
         titre: "Activite 2 - L'obligation d'information du commercial automobile",
         contexte: "Votre tuteur Paul a recueilli deux témoignages de clients. Pour chaque cas, vous devez conseiller le client sur ce qu'il peut faire ou non.",
         questions: [
-          { numero: 3, consigne: "Pour chacun des cas exposes, conseillez les clients sur ce qu'ils peuvent faire ou pas.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 3, consigne: "Pour chacun des cas exposes, conseillez les clients sur ce qu'ils peuvent faire ou pas.", ressources: "Lire le document 3, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
         ],
       },
     ],
@@ -14994,8 +14995,8 @@ const PEUGEOT_M10: ContenuMission = {
         titre: "Activite - Essayer une voiture en concession, a quoi ca sert ?",
         contexte: "Avant de participer a l'essai de la citadine Peugeot e-308 Active, vous questionnez Marjorie.",
         questions: [
-          { numero: 1, consigne: "Completez les réponses que Marjorie apporte a vos questions.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Listez 7 avantages d'un essai automobile.", ressources: "Lire le document 1, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 1, consigne: "Completez les réponses que Marjorie apporte a vos questions.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Listez 7 avantages d'un essai automobile.", ressources: "Lire le document 1, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
         ],
       },
     ],
@@ -15315,18 +15316,18 @@ const PEUGEOT_M12: ContenuMission = {
         titre: "Activite 1 - La conclusion du bon de commande et le délai de livraison",
         contexte: "Elise vous confie l'etude d'un bon de commande et de ses règles de livraison.",
         questions: [
-          { numero: 1, consigne: "Expliquez l'utilité du bon de commande.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Retrouvez les 6 informations manquantes sur le bon de commande puis citez la règle qui aurait dû être respectée pour chacune.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Indiquez la solution pour le cas de chaque client qui vous est présente.", ressources: "Lire les documents 3 et 4, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 1, consigne: "Expliquez l'utilité du bon de commande.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Retrouvez les 6 informations manquantes sur le bon de commande puis citez la règle qui aurait dû être respectée pour chacune.", ressources: "Lire les documents 1 et 2, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez la solution pour le cas de chaque client qui vous est présente.", ressources: "Lire les documents 3 et 4, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activite 2 - Les pratiques commerciales illégales",
         contexte: "Votre tuteur vous confie des témoignages de clients pour reconnaître les pratiques interdites.",
         questions: [
-          { numero: 4, consigne: "Répondez aux questions d'Elise.", ressources: "Lire le document 5, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Expliquez avec vos propres mots ce qu'est une pratique commerciale agressive.", ressources: "Lire le document 6, compléter l'annexe 5.", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Apres avoir reporte le nom de chaque prospect, cochez selon que le témoignage s'apparente a une pratique commerciale trompeuse ou agressive, puis justifiez.", ressources: "Lire le document 7, compléter l'annexe 6.", annexeId: 'annexe6' },
+          { numero: 4, consigne: "Répondez aux questions d'Elise.", ressources: "Lire le document 5, compléter l'annexe 4. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Expliquez avec vos propres mots ce qu'est une pratique commerciale agressive.", ressources: "Lire le document 6, compléter l'annexe 5. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Apres avoir reporte le nom de chaque prospect, cochez selon que le témoignage s'apparente a une pratique commerciale trompeuse ou agressive, puis justifiez.", ressources: "Lire le document 7, compléter l'annexe 6. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe6' },
         ],
       },
     ],
@@ -15667,18 +15668,18 @@ const PEUGEOT_M13: ContenuMission = {
         titre: "Activite 1 - Les Journées Portes Ouvertes",
         contexte: "M. Collet prepare les JPO de la concession et vous confie plusieurs recherches.",
         questions: [
-          { numero: 1, consigne: "Répondez aux questions de M. Collet.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Par groupe de 2, selectionnez les 2 animations qui vous semblent les plus adaptees pour les futures JPO de la concession Collet et justifiez vos choix.", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Redigez a l'attention de M. Collet un compte rendu de vos recherches que vous lui enverrez depuis votre mail : stagiaire@concessionpeugeot.fr.", ressources: "Completer l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 1, consigne: "Répondez aux questions de M. Collet.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Par groupe de 2, selectionnez les 2 animations qui vous semblent les plus adaptees pour les futures JPO de la concession Collet et justifiez vos choix.", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Redigez a l'attention de M. Collet un compte rendu de vos recherches que vous lui enverrez depuis votre mail : stagiaire@concessionpeugeot.fr.", ressources: "Completer l'annexe 3. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activite 2 - La fidélisation de la clientèle",
         contexte: "M. Collet souhaite renforcer la fidélisation de sa clientèle et mesurer sa satisfaction.",
         questions: [
-          { numero: 4, consigne: "Expliquez avec vos propres mots ce qu'est la fidélisation.", ressources: "Lire le document 3, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Répondez aux questions du directeur.", ressources: "Lire le document 3, compléter l'annexe 5.", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Creez le questionnaire de satisfaction. L'annexe 6 comporte 9 pages : sur chaque page, redigez une question (une seule par page) en respectant le theme impose et choisissez le bon type de question. Utilisez les boutons Suivant et Retour pour passer d'une page a l'autre jusqu'à avoir cree vos 9 questions.", ressources: "Lire les documents 4 et 5, compléter l'annexe 6.", annexeId: 'annexe6' },
+          { numero: 4, consigne: "Expliquez avec vos propres mots ce qu'est la fidélisation.", ressources: "Lire le document 3, compléter l'annexe 4. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Répondez aux questions du directeur.", ressources: "Lire le document 3, compléter l'annexe 5. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Creez le questionnaire de satisfaction. L'annexe 6 comporte 9 pages : sur chaque page, redigez une question (une seule par page) en respectant le theme impose et choisissez le bon type de question. Utilisez les boutons Suivant et Retour pour passer d'une page a l'autre jusqu'à avoir cree vos 9 questions.", ressources: "Lire les documents 4 et 5, compléter l'annexe 6. Compétence C3.2 — Contribuer à des actions de fidélisation et de développement de la relation client.", annexeId: 'annexe6' },
         ],
       },
     ],
@@ -15970,23 +15971,23 @@ const MAMIE_CO_M1: ContenuMission = {
         titre: "Activité 1 - Identification de l'entreprise",
         contexte: "Votre tuteur vous demande de réaliser la carte d'identité de Mamie & Co.",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise puis cochez la bonne réponse pour chaque caractéristique.", ressources: "Lire les documents 1 et 3, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise puis cochez la bonne réponse pour chaque caractéristique.", ressources: "Lire les documents 1 et 3, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 - Realisation d'un organigramme",
         contexte: "Vous presentez le personnel de l'entreprise.",
         questions: [
-          { numero: 2, consigne: "Listez le prénom et la fonction du personnel de l'entreprise.", ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Réalisez l'organigramme de l'entreprise en précisant le prénom et la fonction de chaque personne.", ressources: "Consulter l'annexe 2, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 2, consigne: "Listez le prénom et la fonction du personnel de l'entreprise.", ressources: "Lire le document 3, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Réalisez l'organigramme de l'entreprise en précisant le prénom et la fonction de chaque personne.", ressources: "Consulter l'annexe 2, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activité 3 - Les caractéristiques de la clientèle",
         contexte: "Vous etablissez le profil-type du consommateur de produits bio, naturels et écologiques.",
         questions: [
-          { numero: 4, consigne: "Complétez le profil-type du consommateur de produits bio, naturels et écologiques.", ressources: "Lire le document 2, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Réalisez le profil des consommateurs sous forme d'histogramme.", ressources: "Consulter l'annexe 4, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 4, consigne: "Complétez le profil-type du consommateur de produits bio, naturels et écologiques.", ressources: "Lire le document 2, compléter l'annexe 4. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Réalisez le profil des consommateurs sous forme d'histogramme.", ressources: "Consulter l'annexe 4, compléter l'annexe 5. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe5' },
         ],
       },
     ],
@@ -16277,15 +16278,15 @@ const MAMIE_CO_M2: ContenuMission = {
         titre: "Activité 1 - La connaissance du produit",
         contexte: "Votre tuteur vous explique ce que sont les caractéristiques d'un produit avant la realisation de la fiche technique.",
         questions: [
-          { numero: 1, consigne: "Realisez la fiche produit du Kit DIY Lessive (caractéristiques techniques et commerciales).", ressources: "Lire les documents 1 et 3, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Completez les caractéristiques psychologiques des clients de la lessive.", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 1, consigne: "Realisez la fiche produit du Kit DIY Lessive (caractéristiques techniques et commerciales).", ressources: "Lire les documents 1 et 3, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Completez les caractéristiques psychologiques des clients de la lessive.", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
         ],
       },
       {
         titre: "Activité 2 - Les mobiles d'achat",
         contexte: "Vous identifiez ce qui motive les clients a acheter le Kit DIY Lessive.",
         questions: [
-          { numero: 3, consigne: "Donnez les mobiles d'achat des clients du Kit DIY Lessive puis justifiez chaque reponse.", ressources: "Lire les documents 2 et 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 3, consigne: "Donnez les mobiles d'achat des clients du Kit DIY Lessive puis justifiez chaque reponse.", ressources: "Lire les documents 2 et 3, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3' },
         ],
       },
     ],
@@ -16514,15 +16515,15 @@ const MAMIE_CO_M3: ContenuMission = {
         titre: "Activité 1 - Les differents outils d'aide a la vente du commercial",
         contexte: "Votre tuteur vous explique comment le metier s'est modernise.",
         questions: [
-          { numero: 1, consigne: "Pour chacun des outils utilises par votre tuteur il y a 15 ans, trouvez l'outil 2.0 (moderne) qui l'a remplace ou est en voie de le remplacer.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Pour chacun des outils utilises par votre tuteur il y a 15 ans, trouvez l'outil 2.0 (moderne) qui l'a remplace ou est en voie de le remplacer.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 - La carte de visite du commercial",
         contexte: "Votre tuteur vous remet un document indiquant les informations utiles a integrer dans votre carte de visite.",
         questions: [
-          { numero: 2, consigne: "Creez votre carte de visite classique aux couleurs de Mamie & Co en completant vos coordonnées (utilisez la regle de construction de l'e-mail du document 3).", ressources: "Lire les documents 2 et 3, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Creez votre e-carte de visite digitale : complétez vos coordonnées, le QR code se genere automatiquement.", ressources: "Lire le document 4, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 2, consigne: "Creez votre carte de visite classique aux couleurs de Mamie & Co en completant vos coordonnées (utilisez la regle de construction de l'e-mail du document 3).", ressources: "Lire les documents 2 et 3, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Creez votre e-carte de visite digitale : complétez vos coordonnées, le QR code se genere automatiquement.", ressources: "Lire le document 4, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3' },
         ],
       },
     ],
@@ -16723,17 +16724,17 @@ const MAMIE_CO_M4: ContenuMission = {
         titre: "Activité 1 — La tenue professionnelle du commercial",
         contexte: "Vous composez la tenue vestimentaire adequate du commercial.",
         questions: [
-          { numero: 1, consigne: "Choisissez chaque element qui correspond a la tenue vestimentaire adequate du commercial en cliquant la bonne photo dans chaque categorie.", ressources: "Lire et compléter le document 2.", annexeId: 'annexe0' },
-          { numero: 2, consigne: "Pour chacun des vêtements choisis pour composer la tenue idéale du commercial, justifiez votre réponse en citant le document 1.", ressources: "Consulter le document 2, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Choisissez chaque element qui correspond a la tenue vestimentaire adequate du commercial en cliquant la bonne photo dans chaque categorie.", ressources: "Lire et compléter le document 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe0' },
+          { numero: 2, consigne: "Pour chacun des vêtements choisis pour composer la tenue idéale du commercial, justifiez votre réponse en citant le document 1.", ressources: "Consulter le document 2, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 - La prise de contact verbale et non verbale",
         contexte: "A votre arrivee chez Mme Blondize, vous devez saluer votre hotesse puis le groupe d'invitees.",
         questions: [
-          { numero: 3, consigne: "Formulez la phrase d'accueil que vous allez prononcer face à Mme Christelle Blondize (verbale et non verbales).", ressources: "Lire le document 3, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 4, consigne: "Redigez, en des termes simples, la phrase de prise de contact face a l'ensemble des personnes presentes a la reunion.", ressources: "Compléter l'annexe 3.", annexeId: 'annexe3' },
-          { numero: 5, consigne: "Quelle différence faites-vous entre les deux phrases d'accueil que vous avez prononcees ? Justifiez votre reponse.", ressources: "Compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 3, consigne: "Formulez la phrase d'accueil que vous allez prononcer face à Mme Christelle Blondize (verbale et non verbales).", ressources: "Lire le document 3, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
+          { numero: 4, consigne: "Redigez, en des termes simples, la phrase de prise de contact face a l'ensemble des personnes presentes a la reunion.", ressources: "Compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3' },
+          { numero: 5, consigne: "Quelle différence faites-vous entre les deux phrases d'accueil que vous avez prononcees ? Justifiez votre reponse.", ressources: "Compléter l'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe4' },
         ],
       },
     ],
@@ -16998,29 +16999,29 @@ const MAMIE_CO_M5: ContenuMission = {
         titre: "Activité 1 - Les méthodes de vente",
         contexte: "Sur le chemin du domicile de la cliente, votre tuteur vous interroge sur les méthodes et techniques de vente.",
         questions: [
-          { numero: 1, consigne: "Indiquez la méthode et la technique de vente utilisees chez la cliente, puis un avantage et un inconvenient.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Indiquez la méthode et la technique de vente utilisees chez la cliente, puis un avantage et un inconvenient.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 - Le parcours omnicanal du client",
         contexte: "Avant votre presentation, vous faites un tour de table pour connaitre le parcours de chaque cliente.",
         questions: [
-          { numero: 2, consigne: "Decrivez le parcours de chaque cliente en indiquant les canaux utilises pour connaitre Mamie & Co.", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 2, consigne: "Decrivez le parcours de chaque cliente en indiquant les canaux utilises pour connaitre Mamie & Co.", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
         ],
       },
       {
         titre: "Activité 3 - La presentation du produit",
         contexte: "Vous preparez la demonstration du Kit de lessive.",
         questions: [
-          { numero: 3, consigne: "Pour chaque regle de demonstration, decrivez les actions à mener ou les phrases à prononcer face aux clientes pour le Kit de lessive.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 3, consigne: "Pour chaque regle de demonstration, decrivez les actions à mener ou les phrases à prononcer face aux clientes pour le Kit de lessive.", ressources: "Lire le document 3, compléter l'annexe 3. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activité 4 - L'argumentation",
         contexte: "La regle n°5 rappelle : argumenter, tu n'omettras pas. Pendant la demonstration, vous exposez 4 arguments.",
         questions: [
-          { numero: 4, consigne: "Construisez 4 arguments a exposer a la clientele selon les mobiles d'achat (caractéristiques psychologiques de la mission 2) et la méthode C.A.P.", ressources: "Mission 2 activité 2, document 4, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Formulez sous forme de phrases les arguments que vous allez prononcer face aux clientes.", ressources: "Compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 4, consigne: "Construisez 4 arguments a exposer a la clientele selon les mobiles d'achat (caractéristiques psychologiques de la mission 2) et la méthode C.A.P.", ressources: "Mission 2 activité 2, document 4, compléter l'annexe 4. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Formulez sous forme de phrases les arguments que vous allez prononcer face aux clientes.", ressources: "Compléter l'annexe 5. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe5' },
         ],
       },
     ],
@@ -17245,24 +17246,24 @@ const MAMIE_CO_M6: ContenuMission = {
         titre: "Activité 1 - Le bon de commande",
         contexte: "Chaque cliente remplit un bon de commande sous votre supervision.",
         questions: [
-          { numero: 1, consigne: "A l'aide du catalogue (document 1), reportez les references, designations, prix unitaires HT et quantites des produits commandes par Mme Diame, puis complétez les totaux, la TVA, le TTC, le total a payer et le paiement en 2 fois.", ressources: "Lire les documents 1 et 2, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Detaillez les calculs (montant de la TVA, montant TTC, paiement en 2 fois).", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 1, consigne: "A l'aide du catalogue (document 1), reportez les references, designations, prix unitaires HT et quantites des produits commandes par Mme Diame, puis complétez les totaux, la TVA, le TTC, le total a payer et le paiement en 2 fois.", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Detaillez les calculs (montant de la TVA, montant TTC, paiement en 2 fois).", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe2' },
         ],
       },
       {
         titre: "Activité 2 - Le règlement de la commande",
         contexte: "A la derniere page du catalogue sont listes les moyens de paiement acceptes.",
         questions: [
-          { numero: 3, consigne: "Pour chaque moyen de paiement utilise, indiquez un avantage et un inconvenient.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
-          { numero: 4, consigne: "Indiquez les montants a payer par Mme Diame pour le paiement en 2 fois.", ressources: "Lire le document 3, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Listez les quatre pièces justificatives exigees pour un paiement en plusieurs fois, puis expliquez l'interet de chacune.", ressources: "Lire le document 3, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 3, consigne: "Pour chaque moyen de paiement utilise, indiquez un avantage et un inconvenient.", ressources: "Lire le document 3, compléter l'annexe 3. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Indiquez les montants a payer par Mme Diame pour le paiement en 2 fois.", ressources: "Lire le document 3, compléter l'annexe 4. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Listez les quatre pièces justificatives exigees pour un paiement en plusieurs fois, puis expliquez l'interet de chacune.", ressources: "Lire le document 3, compléter l'annexe 5. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe5' },
         ],
       },
       {
         titre: "Activité 3 - Les modalites de livraison",
         contexte: "Mme Camay pose plusieurs questions sur la livraison.",
         questions: [
-          { numero: 6, consigne: "Pour chaque question posee par Mme Camay, apportez la reponse la plus appropriee.", ressources: "Lire le document 4, compléter l'annexe 6.", annexeId: 'annexe6' },
+          { numero: 6, consigne: "Pour chaque question posee par Mme Camay, apportez la reponse la plus appropriee.", ressources: "Lire le document 4, compléter l'annexe 6. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe6' },
         ],
       },
     ],
@@ -17530,11 +17531,11 @@ const MAMIE_CO_M7: ContenuMission = {
         titre: "Activite - La gestion des réclamations client",
         contexte: "Vous traitez la réclamation de Mme Diame sur les differents canaux.",
         questions: [
-          { numero: 1, consigne: "Comparez le bon de commande (mission 6) au mail de réclamation de Mme Diame, puis indiquez la raison du problème.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Que devez-vous faire la prochaine fois pour eviter que cela ne se reproduise ?", ressources: "Completer l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Redigez le mail de reponse a Mme Diame.", ressources: "Lire les documents 1 et 3, compléter l'annexe 3.", annexeId: 'annexe3' },
-          { numero: 4, consigne: "Redigez la reponse au tweet de Mme Gardy.", ressources: "Lire les documents 2 et 4, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Redigez la reponse a apporter a la cliente au telephone avec la méthode CROC. Faites apparaitre chaque etape de la méthode.", ressources: "Lire les documents 5 et 6, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 1, consigne: "Comparez le bon de commande (mission 6) au mail de réclamation de Mme Diame, puis indiquez la raison du problème.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Que devez-vous faire la prochaine fois pour eviter que cela ne se reproduise ?", ressources: "Completer l'annexe 2. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Redigez le mail de reponse a Mme Diame.", ressources: "Lire les documents 1 et 3, compléter l'annexe 3. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Redigez la reponse au tweet de Mme Gardy.", ressources: "Lire les documents 2 et 4, compléter l'annexe 4. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Redigez la reponse a apporter a la cliente au telephone avec la méthode CROC. Faites apparaitre chaque etape de la méthode.", ressources: "Lire les documents 5 et 6, compléter l'annexe 5. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe5' },
         ],
       },
     ],
@@ -17719,16 +17720,16 @@ const MAMIE_CO_M8: ContenuMission = {
         titre: "Activité 1 - La relance client pour recouvrer les impayés",
         contexte: "Vous consultez un extrait du fichier clients pour reperer le client a relancer.",
         questions: [
-          { numero: 1, consigne: "Cochez le client ayant des impayés dans le fichier clients (document 1).", ressources: "Consulter le document 1.", annexeId: 'annexe0' },
-          { numero: 2, consigne: "Redigez la lettre de relance impayés a adresser au client.", ressources: "Lire les documents 1 et 2, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Cochez le client ayant des impayés dans le fichier clients (document 1).", ressources: "Consulter le document 1. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe0' },
+          { numero: 2, consigne: "Redigez la lettre de relance impayés a adresser au client.", ressources: "Lire les documents 1 et 2, compléter l'annexe 1. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 - La relance client pour annoncer une offre commerciale",
         contexte: "Vous preparez l'envoi d'un SMS pour annoncer les nouveaux produits.",
         questions: [
-          { numero: 3, consigne: "Dans la derniere colonne, cochez tous les clients a qui vous enverrez le SMS commercial, puis justifiez votre reponse.", ressources: "Compléter les annexes 2 et 3.", annexeId: 'annexe2' },
-          { numero: 4, consigne: "Redigez le SMS commercial que vous enverrez a vos clients.", ressources: "Lire le document 3, compléter l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 3, consigne: "Dans la derniere colonne, cochez tous les clients a qui vous enverrez le SMS commercial, puis justifiez votre reponse.", ressources: "Compléter les annexes 2 et 3. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe2' },
+          { numero: 4, consigne: "Redigez le SMS commercial que vous enverrez a vos clients.", ressources: "Lire le document 3, compléter l'annexe 4. Compétence C2.4 — S'assurer de la satisfaction du client.", annexeId: 'annexe4' },
         ],
       },
     ],
@@ -17991,31 +17992,31 @@ const HYDRAO_M1: ContenuMission = {
         titre: "Activité 1 — Identification de l'entreprise",
         contexte: "Vous réalisez la carte d'identité d'Hydrao.",
         questions: [
-          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Lire le document 1, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Indiquez les partenaires de l'entreprise.", ressources: "Lire le document 2, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Indiquez les 2 types de clientèle visée par Hydrao.", ressources: "Lire le document 3, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 1, consigne: "Complétez l'identité de l'entreprise.", ressources: "Lire le document 1, compléter l'annexe 1. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez les partenaires de l'entreprise.", ressources: "Lire le document 2, compléter l'annexe 2. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Indiquez les 2 types de clientèle visée par Hydrao.", ressources: "Lire le document 3, compléter l'annexe 3. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe3' },
         ],
       },
       {
         titre: "Activité 2 — Les biens et les services de l'entreprise",
         contexte: "Vous distinguez les services et classez les biens vendus.",
         questions: [
-          { numero: 4, consigne: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.", ressources: "Lire le document 4, compléter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Parmi tous les produits proposés par Hydrao, classez-les en 3 types de biens.", ressources: "Lire le document 5, compléter l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 4, consigne: "Listez les différents services proposés par l'entreprise, puis cochez s'ils sont marchands ou non marchands.", ressources: "Lire le document 4, compléter l'annexe 4. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Parmi tous les produits proposés par Hydrao, classez-les en 3 types de biens.", ressources: "Lire le document 5, compléter l'annexe 5. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe5' },
         ],
       },
       {
         titre: "Activite 3 - Les concurrents",
         contexte: "Vous identifiez les concurrents d'Hydrao.",
         questions: [
-          { numero: 6, consigne: "Listez les differents concurrents de l'entreprise.", ressources: "Lire le document 6, compléter l'annexe 6.", annexeId: 'annexe6' },
+          { numero: 6, consigne: "Listez les differents concurrents de l'entreprise.", ressources: "Lire le document 6, compléter l'annexe 6. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe6' },
         ],
       },
       {
         titre: "Activité 4 — L'organigramme",
         contexte: "Vous réalisez l'organigramme d'Hydrao.",
         questions: [
-          { numero: 7, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction des personnes.", ressources: "Lire le document 7, compléter l'annexe 7.", annexeId: 'annexe7' },
+          { numero: 7, consigne: "Réalisez l'organigramme de l'entreprise en précisant le nom et la fonction des personnes.", ressources: "Lire le document 7, compléter l'annexe 7. Compétence C1.1 — Assurer la veille commerciale.", annexeId: 'annexe7' },
         ],
       },
     ],
@@ -18049,7 +18050,7 @@ const HYDRAO_M1: ContenuMission = {
   },
   corrige: {
     questions: [
-      { intitule: "Identité de l'entreprise (annexe 1).", documents: ['Site internet', 'Annexe 1'], bareme: 12,
+      { intitule: "Identité de l'entreprise (annexe 1).", documents: ['Site internet', 'Annexe 1'], bareme: 5,
         reponse: "Voir tableau.",
         tableau: { colonnes: ['Rubrique', 'Réponse'], lignes: [
           ['Raison sociale', 'SMART AND BLUE'],
@@ -18065,11 +18066,11 @@ const HYDRAO_M1: ContenuMission = {
           ['Dirigeant', 'DELLA-MONICA Gabriel'],
           ['Fonction', 'PRESIDENT DE SAS'],
         ] } },
-      { intitule: "Les partenaires (annexe 2).", documents: ['Site internet', 'Annexe 2'], bareme: 7,
+      { intitule: "Les partenaires (annexe 2).", documents: ['Site internet', 'Annexe 2'], bareme: 2,
         reponse: "Les partenaires d'Hydrao (\"Ils nous font confiance\") : because water ; eau de Paris ; EDF ; HOME FRIEND by VEOLIA ; PUB (Singapore National Water Agency) ; La Région Auvergne-Rhône-Alpes ; Schneider Electric." },
-      { intitule: "La clientèle (annexe 3).", documents: ['Document', 'Annexe 3'], bareme: 6,
+      { intitule: "La clientèle (annexe 3).", documents: ['Document', 'Annexe 3'], bareme: 2,
         reponse: "Les deux types de clientele : le B2C (Business to Consumer), c'est-a-dire les particuliers / le grand public ; et le B2B (Business to Business), c'est-a-dire les professionnels (de professionnels a professionnels)." },
-      { intitule: "Les services (annexe 4).", documents: ['Site internet', 'Annexe 4'], bareme: 8,
+      { intitule: "Les services (annexe 4).", documents: ['Site internet', 'Annexe 4'], bareme: 3,
         reponse: "Les 4 services sont non marchands (gratuits, inclus) : Livraison (gratuite) ; Garantie satisfait ou remboursé ; Service client français ; Paiement sécurisé.",
         tableau: { colonnes: ['Les services', 'Marchand', 'Non marchand'], lignes: [
           ['Livraison', '', 'X'],
@@ -18077,7 +18078,7 @@ const HYDRAO_M1: ContenuMission = {
           ['Service client français', '', 'X'],
           ['Paiement sécurisé', '', 'X'],
         ] } },
-      { intitule: "Les biens (annexe 5).", documents: ['Site internet', 'Annexe 5'], bareme: 10,
+      { intitule: "Les biens (annexe 5).", documents: ['Site internet', 'Annexe 5'], bareme: 3,
         reponse: "Classement des produits en 3 types de biens.",
         tableau: { colonnes: ['Pommeaux et pommes de douche', 'Flexibles', 'Colonne et accessoires'], lignes: [
           ['Pommeau de douche Aloé', 'Aloé + Flexible PVC 2.0 M', 'Colonne de douche HYDRAO'],
@@ -18086,9 +18087,9 @@ const HYDRAO_M1: ContenuMission = {
           ['Pomme de douche Céreus', 'Flexible PVC Argent 2 M', ''],
           ['', 'Flexible PVC Noir Mat 1.5 M', ''],
         ] } },
-      { intitule: "Les concurrents (annexe 6).", documents: ['Site internet', 'Annexe 6'], bareme: 7,
+      { intitule: "Les concurrents (annexe 6).", documents: ['Site internet', 'Annexe 6'], bareme: 2,
         reponse: "Les concurrents cites : SmartEmbed (start-up au Technopole de l'environnement Arbois-Mediterranee, innovation \"eddo.drop\", commande de douche connectee) et Inman (start-up alsacienne, mitigeur innovant \"In-Sens\" / \"InSens\", eau a la temperature souhaitee des la premiere goutte)." },
-      { intitule: "Organigramme d'Hydrao (annexe 7).", documents: ['Site internet', 'Annexe 7'], bareme: 10,
+      { intitule: "Organigramme d'Hydrao (annexe 7).", documents: ['Site internet', 'Annexe 7'], bareme: 3,
         reponse: "Gabriel Della-Monica (Fondateur & President) en tete. Sous sa direction : Helene Lacroute (Responsable developpement logiciel), Loic Brun (Ingenieur systemes embarques), Denis Messie (Ingenieur developpement full stack), Eric Burkel (Developpement international), Mathilde Trennert (Responsable E-commerce et communication B2C), Assia Suchier (Responsable Administrative), Sarah de Veron (Responsable de projets), Bertrand Eichinger (Directeur Commercial), Benoit Buys (Responsable Industrialisation et Qualite), Mathias Manteca (Charge marketing digital B2B), Aina Foz (Chargee Sav et Logistique), Joris Saladin (Ingenieur en alternance), Ricardo Coppel-Vizcarra (Ingenieur de recherche et developpement), Corentin Le Saint (Commercial en alternance)." },
     ],
   },
@@ -18337,22 +18338,22 @@ const HYDRAO_M2: ContenuMission = {
         titre: "Activite 1 - La participation a un salon",
         contexte: "Vous vous occupez de la location du stand pour la Foire de Paris.",
         questions: [
-          { numero: 1, consigne: "Calculez le cout de la location d'un stand pour la participation a la Foire de Paris.", ressources: "Lire les documents 1, 2 et 3, completer l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Calculez le cout de la location d'un stand pour la participation a la Foire de Paris.", ressources: "Lire les documents 1, 2 et 3, completer l'annexe 1. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activite 2 - Les frais lies a la participation des commerciaux au salon",
         contexte: "Votre tuteur vous laisse une note pour calculer les frais de la force de vente.",
         questions: [
-          { numero: 2, consigne: "Calculez les frais a prevoir pour la participation a la Foire de Paris.", ressources: "Lire les documents 4, 5, 6, 7, 8, completer l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Completez votre etat de frais sur le logiciel de l'entreprise.", ressources: "Consulter l'annexe 2, completer le document 9.", annexeId: 'annexe0doc9' },
+          { numero: 2, consigne: "Calculez les frais a prevoir pour la participation a la Foire de Paris.", ressources: "Lire les documents 4, 5, 6, 7, 8, completer l'annexe 2. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Completez votre etat de frais sur le logiciel de l'entreprise.", ressources: "Consulter l'annexe 2, completer le document 9. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe0doc9' },
         ],
       },
       {
         titre: "Activite 3 - Rendre compte",
         contexte: "Vous avez calcule tous les couts de la participation et vous rendez compte a votre tuteur.",
         questions: [
-          { numero: 4, consigne: "Redigez l'e-mail a votre tuteur M. Della Monica pour lui rendre compte des couts (cout du stand, frais des commerciaux et budget total).", ressources: "Completer l'annexe 3 (ou l'annexe 4 via le lien).", annexeId: 'annexe3' },
+          { numero: 4, consigne: "Redigez l'e-mail a votre tuteur M. Della Monica pour lui rendre compte des couts (cout du stand, frais des commerciaux et budget total).", ressources: "Completer l'annexe 3 (ou l'annexe 4 via le lien). Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe3' },
         ],
       },
     ],
@@ -18386,7 +18387,7 @@ const HYDRAO_M2: ContenuMission = {
   },
   corrige: {
     questions: [
-      { intitule: "Calcul du coût de la participation au salon (annexe 1).", documents: ['Documents 1, 2 et 3', 'Annexe 1'], bareme: 14,
+      { intitule: "Calcul du coût de la participation au salon (annexe 1).", documents: ['Documents 1, 2 et 3', 'Annexe 1'], bareme: 7,
         reponse: "TOTAL = 8062 €.",
         tableau: { colonnes: ['Éléments', 'Calculs', 'Résultats'], lignes: [
           ['Stand parapluie 12 m2 (sur mesure)', '12 x 300', '3600'],
@@ -18402,7 +18403,7 @@ const HYDRAO_M2: ContenuMission = {
           ['Internet (du 17 au 24, v. doc 2)', '22 x 8', '176'],
           ['TOTAL', '', '8062 €'],
         ] } },
-      { intitule: "Prévision des frais (annexe 2).", documents: ['Documents 4 à 8', 'Annexe 2'], bareme: 14,
+      { intitule: "Prévision des frais (annexe 2).", documents: ['Documents 4 à 8', 'Annexe 2'], bareme: 7,
         reponse: "Montant des frais à prévoir = 5964,60 €. Hôtel 190,95 €/nuit ; repas 15 € midi et 25 € soir ; indemnité kilométrique 0,15 €/km ; trajet Grenoble-Paris 571 km ; billet de train d'Hélène 61,30 € (aller).",
         tableau: { colonnes: ['Nom', 'Présence', 'Nuitées', 'Coût hôtel', 'Déjeuner', 'Dîner', 'Km', 'Aller', 'Retour'], lignes: [
           ['Bernard', 'Du 17 au 24', 'Du 16 au 25 donc 9', '190,95 x 9 = 1718,55', '15 x 9 = 135', '25 x 9 = 225', '571', '571 x 0,15 = 85,65', '571 x 0,15 = 85,65'],
@@ -18411,9 +18412,9 @@ const HYDRAO_M2: ContenuMission = {
           ['Sous-total', '', '', '4772', '360', '600', '', '146,95', '85,65'],
           ['Total', '', '', 'Le montant des frais à prévoir est de : 5964,60 €', '', '', '', '', ''],
         ] } },
-      { intitule: "État des frais professionnels (document 9).", documents: ['Annexe 2', 'Document 9'], bareme: 6,
+      { intitule: "État des frais professionnels (document 9).", documents: ['Annexe 2', 'Document 9'], bareme: 2,
         reponse: "L'élève reporte ses propres frais dans le formulaire (dates de départ/retour, nuits d'hôtel 190,95 € x nombre de nuits, repas 15 €/25 €, transport en voiture avec les noms des passagers et le nombre de km, ou en train avec le prix aller-retour)." },
-      { intitule: "L'e-mail à M. Della Monica (annexe 3).", documents: ['Annexe 3'], bareme: 8,
+      { intitule: "L'e-mail à M. Della Monica (annexe 3).", documents: ['Annexe 3'], bareme: 4,
         reponse: "Objet : Participation à la Foire de Paris.\n\nBonjour M. Della Monica,\nSuite à votre demande, j'ai fait le calcul de ce que coûtera à l'entreprise l'ensemble de sa participation à la Foire de Paris qui se tiendra du 17 au 24 avril 202N.\nPar rapport aux consignes que vous m'avez données, la participation à la Foire de Paris s'élève à : 8062 €.\nPour ce qui concerne les frais professionnels, ceux-ci s'élèvent à : 5964,60 €.\nAu total, il faudra donc prévoir un budget de : 14026,60 € TTC.\nCordialement,\nPrénom NOM de l'élève." },
     ],
   },
@@ -18673,21 +18674,21 @@ const HYDRAO_M3: ContenuMission = {
         titre: "Activite 1 - La fiche produit",
         contexte: "Vous realisez la fiche produit du pommeau HYDRAO Aloe pour la Foire de Paris.",
         questions: [
-          { numero: 1, consigne: "Réalisez la fiche produit du pommeau HYDRAO Aloé : relevez les caractéristiques techniques, commerciales et psychologiques (SONCAS) en complétant les trois onglets de l'annexe 1.", ressources: "Consulter le document 1 (fiche produit), compléter les 3 onglets de l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Réalisez la fiche produit du pommeau HYDRAO Aloé : relevez les caractéristiques techniques, commerciales et psychologiques (SONCAS) en complétant les trois onglets de l'annexe 1.", ressources: "Consulter le document 1 (fiche produit), compléter les 3 onglets de l'annexe 1. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activite 2 - Les mobiles d'achat",
         contexte: "Vous etudiez l'image de marque et les mobiles d'achat mis en avant par Hydrao.",
         questions: [
-          { numero: 2, consigne: "Dites, selon vous, quelle image renvoie aux clients la marque HYDRAO (image de vieux, jeune...), puis retrouvez les mobiles d'achat mis en avant par Hydrao.", ressources: "Lire les documents 2 et 3, completer l'annexe 4.", annexeId: 'annexe4' },
+          { numero: 2, consigne: "Dites, selon vous, quelle image renvoie aux clients la marque HYDRAO (image de vieux, jeune...), puis retrouvez les mobiles d'achat mis en avant par Hydrao.", ressources: "Lire les documents 2 et 3, completer l'annexe 4. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe4' },
         ],
       },
       {
         titre: "Activite 3 - L'argumentation",
         contexte: "Vous preparez les arguments a presenter aux prospects sur le stand.",
         questions: [
-          { numero: 3, consigne: "Construisez les arguments pour chaque mobile. Replacez tous les mobiles d'achat dans le tableau, trouvez dans l'annexe 1 la caracteristique qui lui correspond, puis l'avantage et la preuve qui s'y rapporte.", ressources: "Lire le document 4, completer l'annexe 5.", annexeId: 'annexe5' },
+          { numero: 3, consigne: "Construisez les arguments pour chaque mobile. Replacez tous les mobiles d'achat dans le tableau, trouvez dans l'annexe 1 la caracteristique qui lui correspond, puis l'avantage et la preuve qui s'y rapporte.", ressources: "Lire le document 4, completer l'annexe 5. Compétence C4B.3 — Mettre en œuvre une opération de prospection.", annexeId: 'annexe5' },
         ],
       },
     ],
@@ -18739,7 +18740,7 @@ const HYDRAO_M3: ContenuMission = {
   },
   corrige: {
     questions: [
-      { intitule: "Caractéristiques techniques (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 10,
+      { intitule: "Caractéristiques techniques (annexe 1).", documents: ['Document 1', 'Annexe 1'], bareme: 6,
         reponse: "Voir tableau.",
         tableau: { colonnes: ['Caractéristique', 'Réponse'], lignes: [
           ['Débit', '6,6 L/min avec accessoire limiteur ET 9 L/min sans accessoire limiteur'],
@@ -18753,7 +18754,7 @@ const HYDRAO_M3: ContenuMission = {
           ['Entretien anticalcaire', "Nettoyage avec du vinaigre blanc 2 à 4 fois par an selon la dureté de l'eau"],
           ['Type de connexion', 'Bluetooth Low Energy'],
         ] } },
-      { intitule: "Caractéristiques commerciales (annexe 2).", documents: ['Document 1', 'Annexe 2'], bareme: 5,
+      { intitule: "Caractéristiques commerciales (annexe 2).", documents: ['Document 1', 'Annexe 2'], bareme: 2,
         reponse: "Voir tableau.",
         tableau: { colonnes: ['Caractéristique', 'Réponse'], lignes: [
           ['Prix', '69,90 € TTC'],
@@ -18762,7 +18763,7 @@ const HYDRAO_M3: ContenuMission = {
           ['Garantie pour le client', 'Satisfait ou remboursé'],
           ['Livraison', 'Partout en France sous 4 jours ouvrés'],
         ] } },
-      { intitule: "Techniques psychologiques (annexe 3).", documents: ['Document 1', 'Annexe 3'], bareme: 5,
+      { intitule: "Techniques psychologiques (annexe 3).", documents: ['Document 1', 'Annexe 3'], bareme: 3,
         reponse: "Voir tableau.",
         tableau: { colonnes: ['Affirmation', 'SONCAS'], lignes: [
           ["« ...diminuez votre consommation d'eau chaude jusqu'à 70%. »", 'Environnement'],
@@ -18771,9 +18772,9 @@ const HYDRAO_M3: ContenuMission = {
           ["« HYDRAO a eu les certifications Watersense – ACS – FCC – CE »", 'Sécurité'],
           ["« ...le premier pommeau de douche connecté en Bluetooth... »", 'Nouveauté'],
         ] } },
-      { intitule: "Image de marque et mobiles d'achat (annexe 4).", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 6,
+      { intitule: "Image de marque et mobiles d'achat (annexe 4).", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 3,
         reponse: "Image de marque : entreprise dynamique. Mobiles d'achat mis en avant (sans justification demandée) : Sécurité (les certifications) ; Nouveauté (« Connecté (bluetooth) ») ; Confort (« Simple et intuitif ») ; Argent (« Achat rentabilisé en 6 mois », « 130€ d'économie », « 0,37cts d'économie par douche ») ; Environnement (« Économiser eau et énergie »)." },
-      { intitule: "Construction des arguments (annexe 5).", documents: ['Document 4', 'Annexe 5'], bareme: 10,
+      { intitule: "Construction des arguments (annexe 5).", documents: ['Document 4', 'Annexe 5'], bareme: 6,
         reponse: "Voir tableau.",
         tableau: { colonnes: ['Mobile', 'Caractéristiques', 'Avantages', 'Preuves'], lignes: [
           ['Environnement', 'Pommeau HYDRAO', "Diminution d'eau jusqu'à 70%", 'Voir histogramme (4e lien)'],
@@ -18987,14 +18988,14 @@ const HYDRAO_M4: ContenuMission = {
         titre: "Activité 1 - Les questions de M. Della-Monica",
         contexte: "Votre tuteur veut vérifier que vous maîtrisez la notion de garantie et vous interroge sur les documents qu'il vous a remis.",
         questions: [
-          { numero: 1, consigne: "Votre tuteur veut vérifier que vous maîtrisez la notion de garantie et vous interroge sur les documents qu'il vous a remis.", ressources: "Lire les documents 1, 2, 3 et 4, compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Votre tuteur veut vérifier que vous maîtrisez la notion de garantie et vous interroge sur les documents qu'il vous a remis.", ressources: "Lire les documents 1, 2, 3 et 4, compléter l'annexe 1. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe1' },
         ],
       },
       {
         titre: "Activité 2 - Vrai ou faux",
         contexte: "Vous vous préparez aux affirmations des prospects sur la garantie.",
         questions: [
-          { numero: 2, consigne: "Pour chaque affirmation, cochez si elle est vraie ou fausse puis justifiez votre réponse.", ressources: "Lire les documents 1, 2, 3 et 4, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 2, consigne: "Pour chaque affirmation, cochez si elle est vraie ou fausse puis justifiez votre réponse.", ressources: "Lire les documents 1, 2, 3 et 4, compléter l'annexe 2. Compétence C1.2 — Réaliser la vente dans un cadre omnicanal.", annexeId: 'annexe2' },
         ],
       },
     ],
@@ -19298,7 +19299,7 @@ const HYDRAO_M5: ContenuMission = {
         titre: "Activité - La réponse aux objections sur le produit et sur le prix",
         contexte: "Sur le stand de la Foire de Paris, vous devez répondre aux objections des prospects en appliquant la technique imposée.",
         questions: [
-          { numero: 1, consigne: "Traitez les objections des prospects en appliquant la technique de réponse imposée pour chacun.", ressources: "Lire les documents 1 à 10, compléter l'annexe.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Traitez les objections des prospects en appliquant la technique de réponse imposée pour chacun.", ressources: "Lire les documents 1 à 10, compléter l'annexe. Compétence C4B.5 — Valoriser les produits et/ou les services.", annexeId: 'annexe1' },
         ],
       },
     ],
@@ -19588,21 +19589,21 @@ const HYDRAO_M7: ContenuMission = {
       { titre: "Activité 1 - La collecte d'informations de la satisfaction client",
         contexte: "Votre tuteur Bernard vous donne des indications pour la création du questionnaire, puis Mathilde vous demande de concevoir le mail d'invitation.",
         questions: [
-          { numero: 1, consigne: "Créez le questionnaire en suivant la procédure.", ressources: "Consulter les documents 1 à 3, lire le document 4, compléter l'annexe 1.", annexeId: 'annexe1' },
-          { numero: 2, consigne: "Rédigez le mail incitant les clients à répondre à l'enquête de satisfaction.", ressources: "Lire le document 5, compléter l'annexe 2.", annexeId: 'annexe2' },
+          { numero: 1, consigne: "Créez le questionnaire en suivant la procédure.", ressources: "Consulter les documents 1 à 3, lire le document 4, compléter l'annexe 1. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Rédigez le mail incitant les clients à répondre à l'enquête de satisfaction.", ressources: "Lire le document 5, compléter l'annexe 2. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe2' },
         ] },
       { titre: "Activité 2 - La mesure de la satisfaction du client",
         contexte: "Mathilde vous convoque dans son bureau afin de vous soumettre les résultats de l'enquête.",
         questions: [
-          { numero: 3, consigne: "Transformez les résultats de l'enquête en pourcentage.", ressources: "Lire le document 6, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 3, consigne: "Transformez les résultats de l'enquête en pourcentage.", ressources: "Lire le document 6, compléter l'annexe 3. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe3' },
         ] },
       { titre: "Activité 3 - L'analyse de la satisfaction du client",
         contexte: "Mathilde vous demande d'analyser les résultats puis de rédiger le compte rendu.",
         questions: [
-          { numero: 4, consigne: "Indiquez le profil de la clientèle qui achète des produits Hydrao. Justifiez votre réponse en citant les pourcentages pertinents.", ressources: "Consulter l'annexe 4.", annexeId: 'annexe4' },
-          { numero: 5, consigne: "Analysez l'enquête de satisfaction.", ressources: "Lire le document 7, compléter l'annexe 5.", annexeId: 'annexe5' },
-          { numero: 6, consigne: "Pourquoi selon vous, à la question du temps que le client possède le produit, 100% d'entre eux répondent depuis moins d'un mois ?", ressources: "Compléter l'annexe 6.", annexeId: 'annexe6' },
-          { numero: 7, consigne: "Rédigez le compte rendu d'enquête.", ressources: "Lire le document 8, compléter l'annexe 7.", annexeId: 'annexe7' },
+          { numero: 4, consigne: "Indiquez le profil de la clientèle qui achète des produits Hydrao. Justifiez votre réponse en citant les pourcentages pertinents.", ressources: "Consulter l'annexe 4. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe4' },
+          { numero: 5, consigne: "Analysez l'enquête de satisfaction.", ressources: "Lire le document 7, compléter l'annexe 5. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe5' },
+          { numero: 6, consigne: "Pourquoi selon vous, à la question du temps que le client possède le produit, 100% d'entre eux répondent depuis moins d'un mois ?", ressources: "Compléter l'annexe 6. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe6' },
+          { numero: 7, consigne: "Rédigez le compte rendu d'enquête.", ressources: "Lire le document 8, compléter l'annexe 7. Compétence C4B.4 — Suivre et évaluer l'action de prospection.", annexeId: 'annexe7' },
         ] },
     ],
     annexes: [
@@ -19924,13 +19925,13 @@ const HYDRAO_M6: ContenuMission = {
       { titre: "Activité 1 - Le traitement des réclamations",
         contexte: "Des clients ont souscrit une garantie pour bénéficier d'une assistance téléphonique. Vous devez répondre à leurs questions à l'aide de la FAQ du site Hydrao.",
         questions: [
-          { numero: 1, consigne: "Pour répondre aux questions des clients, indiquez la rubrique dans laquelle se trouve la réponse puis écrivez la réponse à lui donner.", ressources: "Lire le document 1, consulter la FAQ (document 2), compléter l'annexe 1.", annexeId: 'annexe1' },
+          { numero: 1, consigne: "Pour répondre aux questions des clients, indiquez la rubrique dans laquelle se trouve la réponse puis écrivez la réponse à lui donner.", ressources: "Lire le document 1, consulter la FAQ (document 2), compléter l'annexe 1. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe1' },
         ] },
       { titre: "Activité 2 - Le service après-vente",
         contexte: "Nous sommes lundi et vous traitez le problème qu'un client vous a soumis jeudi sur le site d'Hydrao.",
         questions: [
-          { numero: 2, consigne: "Complétez le document de prise en charge en relisant la Mission 4 (document 1 : la garantie) puis en lisant les documents 3 et 4.", ressources: "Documents 3 et 4, compléter l'annexe 2.", annexeId: 'annexe2' },
-          { numero: 3, consigne: "Traitez le problème du client en répondant à son message par mail.", ressources: "Lire le document 5, compléter l'annexe 3.", annexeId: 'annexe3' },
+          { numero: 2, consigne: "Complétez le document de prise en charge en relisant la Mission 4 (document 1 : la garantie) puis en lisant les documents 3 et 4.", ressources: "Documents 3 et 4, compléter l'annexe 2. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe2' },
+          { numero: 3, consigne: "Traitez le problème du client en répondant à son message par mail.", ressources: "Lire le document 5, compléter l'annexe 3. Compétence C2.1 — Assurer le suivi de la commande du produit et/ou du service.", annexeId: 'annexe3' },
         ] },
     ],
     annexes: [
@@ -25532,7 +25533,3656 @@ const KILOUTOU_M8: ContenuMission = {
   },
 }
 
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 2 - Preparer la vente et l'argumentaire CAP
+// Bloc 1 : conseiller et vendre. Classe de Première.
+
+const ENCHANTED_M1: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des documents, découvrez l'entreprise Enchanted Tools, son organisation, son robot Mirokaï et son marché, puis préparez une présentation orale.",
+    contexte:
+      "Vous débutez votre période de formation en milieu professionnel (PFMP) au service commercial d'Enchanted Tools, une start-up française de robotique installée à Paris. L'entreprise conçoit et vend les robots Mirokaï, des humanoïdes de service au design de personnage d'animation. Votre tuteur, Karim Haddad, vous accueille : « Avant de te confier un vrai dossier de vente, je veux que tu connaisses la maison, notre robot et nos clients. Lis bien tous les documents : tu n'auras pas les réponses toutes prêtes, il faudra chercher, comparer, et parfois réfléchir pour déduire. C'est ça, le travail d'un commercial qui prépare un rendez-vous. » Tout au long de votre PFMP, vous suivrez une vraie affaire : la vente de plusieurs robots à un grand hôtel parisien, l'hôtel Le Grand Siècle.",
+    competence: {
+      groupe: 'Bloc de compétences 1 — Conseiller et vendre',
+      intitule: "C1.1 — Préparer la vente et maîtriser l'offre",
+      detail: "C1.1.1 Identifier l'entreprise, son organisation et son offre. C1.1.2 Situer le produit sur son marché et cerner la clientèle cible.",
+    },
+    documents: [
+      { numero: 1, titre: "Le site internet d'Enchanted Tools (page « L'entreprise »)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'enchanted.tools',
+          marque: 'Enchanted Tools',
+          couleurHeader: '#F28C1E',
+          sections: [
+            { type: 'titre', texte: 'Réenchanter le monde avec des robots au grand cœur' },
+            { type: 'paragraphe', texte: "Enchanted Tools est une start-up française de robotique humanoïde. Notre mission : créer des robots utiles qui allient l'utile et le merveilleux, pour assister les professionnels dans les hôpitaux, les hôtels, les aéroports, les commerces et les lieux culturels. Nos robots ne remplacent pas les humains : ils les assistent et réduisent leur charge de travail." },
+            { type: 'sousTitre', texte: 'Notre histoire' },
+            { type: 'paragraphe', texte: "L'entreprise a été fondée en 2021 à Paris par deux dirigeants. Jérôme Monceaux, notre PDG, est un entrepreneur reconnu : il a cofondé Aldebaran Robotics et co-créé les célèbres robots Nao et Pepper. Il s'est associé à Samuel Benveniste, docteur en sciences et ancien directeur d'un centre national d'expertise en stimulation cognitive. Dès son lancement, Enchanted Tools a réalisé la plus importante levée de fonds d'amorçage de l'histoire de la robotique française : 15 millions d'euros, qui ont permis de réunir une équipe de 50 experts en un an." },
+            { type: 'sousTitre', texte: 'Nos reconnaissances' },
+            { type: 'paragraphe', texte: "Enchanted Tools a obtenu le label Deeptech de la BPI (Banque publique d'investissement), qui distingue les entreprises fondées sur une innovation technologique de rupture. Nous faisons partie des 125 start-up sélectionnées par le programme national French Tech 2030. En 2025, nous avons ouvert notre Urban Factory, une usine en plein cœur de Paris, et présenté nos robots au CES de Las Vegas, le plus grand salon mondial de la technologie." },
+            { type: 'citation', texte: "Nos robots ont vocation à arriver rapidement dans la vie des gens, sans fausse promesse.", auteur: 'Jérôme Monceaux, PDG et cofondateur' },
+          ],
+        } },
+        { chiffresCles: { items: [
+          { valeur: '2021', libelle: "année de création de l'entreprise, à Paris" },
+          { valeur: '15 M€', libelle: "levée de fonds d'amorçage (record français en robotique)" },
+          { valeur: '50', libelle: "experts réunis en un an pour créer le robot" },
+          { valeur: '100 000', libelle: "robots à produire d'ici 10 ans (objectif)" },
+        ] } },
+      ] },
+
+      { numero: 2, titre: "L'organisation du service commercial", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Trombinoscope et organisation' },
+        { paragraphes: [
+          "Voici comment est organisé le service dans lequel vous effectuez votre PFMP. Vous êtes rattaché au responsable commercial, Karim Haddad, qui est votre tuteur. Repérez bien qui fait quoi : vous devrez situer votre place et savoir vers qui vous tourner selon les situations.",
+        ] },
+        { organigramme: { tete: {
+          libelle: 'Direction générale',
+          sousTitre: 'Jérôme Monceaux (PDG) et Samuel Benveniste',
+          teinte: 'tete',
+          enfants: [
+            { libelle: 'Responsable commercial', sousTitre: 'Karim Haddad (votre tuteur)', teinte: 'bleu',
+              enfants: [
+                { libelle: 'Commercial grands comptes', sousTitre: 'Léa Fontaine' },
+                { libelle: 'Commercial secteur hôtellerie', sousTitre: 'Thomas Berger' },
+                { libelle: 'Stagiaire PFMP', sousTitre: 'Vous', teinte: 'jaune' },
+              ] },
+            { libelle: 'Service après-vente et maintenance', sousTitre: 'Nadia Cherif', teinte: 'vert',
+              enfants: [
+                { libelle: 'Technicien de maintenance', sousTitre: 'Marc Lefèvre' },
+              ] },
+            { libelle: 'Service technique et production', sousTitre: 'Hélène Dubois', teinte: 'rose',
+              enfants: [
+                { libelle: 'Ingénieur robotique', sousTitre: 'Yanis Moreau' },
+              ] },
+          ],
+        } } },
+        { bulleConseil: { texte: ["Un organigramme se lit de haut en bas : la direction est en haut, les équipes en dessous. Les traits montrent qui dépend de qui."] } },
+      ] },
+
+      { numero: 3, titre: "La vidéo de présentation du robot (site officiel)", texte: [
+        { paragraphes: [
+          "Sur la page d'accueil du site, Enchanted Tools présente le Mirokaï en vidéo. Regardez-la attentivement : vous devrez répondre à des questions d'observation. Notez ce que fait le robot, comment il bouge, comment il interagit avec les gens autour de lui.",
+        ] },
+        { bulle: { nom: 'Enchanted Tools', role: 'Vidéo de présentation du Mirokaï', initiale: 'E', couleurAvatar: '#F28C1E', videoLocale: '/docs/enchanted/mirokai-presentation.mp4', lignes: ['Cliquez sur le bouton pour regarder la vidéo officielle de présentation du robot Mirokaï, puis répondez aux questions d’observation.'] } },
+        { encadresListes: [
+          { titre: 'À observer pendant la vidéo', lignes: [
+            "L'allure générale du robot",
+            "Comment il se déplace",
+            "Ce qu'il fait avec ses mains",
+            "Comment les gens réagissent",
+            "L'expression de son visage",
+          ] },
+        ] },
+      ] },
+
+      { numero: 4, titre: "Fiche technique du robot Mirokaï", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche technique Mirokaï' },
+        { image: { src: '/docs/enchanted/mirokai.png', alt: 'Le robot Mirokaï', legende: 'Le robot Mirokaï : 1 m, 28 kg, oreilles orange expressives et yeux bleus.', largeur: 240 } },
+        { intertitre: 'Caractéristiques détaillées' },
+        { tableau: { colonnes: ['Caractéristique', 'Valeur'], lignes: [
+          ['Famille de robots', 'Mirokaï (deux personnages : Miroki et Miroka)'],
+          ['Taille', '1 mètre environ'],
+          ['Poids', '28 kg'],
+          ['Déplacement', 'Globe roulant (se déplace dans toutes les directions)'],
+          ['Membres', 'Deux bras, deux mains à pouces opposables'],
+          ['Préhension', "Taux de réussite de 97 % pour saisir un objet"],
+          ['Langues parlées', 'Plus de 50 langues'],
+          ['Intelligence artificielle', 'IA générative et modèles de langage (LLM) embarqués'],
+          ['Processeur', 'GPU NVIDIA de dernière génération'],
+          ['Batterie', 'Haute capacité, fabriquée en France par Saft'],
+          ['Reconnaissance', 'Reconnaît les visages et les voix'],
+          ['Prix indicatif', 'Environ 30 000 € l’unité'],
+        ] } },
+        { intertitre: 'Le langage des oreilles' },
+        { paragraphes: [
+          "Le Mirokaï exprime son état grâce à ses oreilles, comme un petit animal. Ce comportement est géré par son intelligence artificielle.",
+          "Si le robot traverse un couloir les oreilles baissées, cela signifie qu'il est concentré sur sa tâche et qu'il ne faut pas le déranger. Si vous l'appelez et qu'il lève une ou deux oreilles, c'est qu'il est à l'écoute : vous pouvez alors lui donner une consigne.",
+        ] },
+        { bulleConseil: { texte: ["Attention : toutes les informations de cette fiche ne vous serviront pas pour chaque question. À vous de repérer celles dont vous avez besoin."] } },
+      ] },
+
+      { numero: 5, titre: "Article de presse — « Où travaillent déjà les Mirokaï ? »", texte: [
+        { articleEtapes: { etapes: [
+          { numero: 'Santé', texte: [
+            "Les robots Mirokaï ont d'abord été testés dans les hôpitaux parisiens de l'AP-HP (Assistance Publique-Hôpitaux de Paris), notamment à l'hôpital Broca, spécialisé en gériatrie. Ils y assurent du soutien logistique : livraison et transport de fournitures, accueil et accompagnement des patients.",
+          ] },
+          { numero: 'Recherche', texte: [
+            "Enchanted Tools a livré des robots à l'ISIR, un laboratoire de robotique de Sorbonne Université, pour faire progresser la recherche sur la manipulation d'objets et l'interaction avec des personnes non formées.",
+          ] },
+          { numero: 'Accueil', texte: [
+            "Grâce à leurs 50 langues et à leur design attachant, les Mirokaï sont désormais proposés aux hôtels, aux aéroports et aux commerces pour accueillir, orienter et renseigner le public. C'est ce marché de l'accueil qui intéresse notre client, l'hôtel Le Grand Siècle.",
+          ] },
+        ] } },
+        { paragraphes: [
+          "La clientèle d'Enchanted Tools est composée uniquement de professionnels : hôpitaux, laboratoires, hôtels, aéroports, commerces. L'entreprise ne vend pas aux particuliers. On parle alors de vente B to B (business to business), c'est-à-dire d'une entreprise à une autre entreprise.",
+        ] },
+        { image: { src: '/docs/enchanted/hotel.png', alt: 'Hôtel Le Grand Siècle', legende: 'Le client fil rouge du scénario : l’hôtel Le Grand Siècle, à Paris.', largeur: 300 } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — L'entreprise et son organisation",
+        contexte: "On commence par bien connaître la maison : son histoire, ses dirigeants, ses chiffres, et qui y travaille.",
+        questions: [
+          { numero: 1, consigne: "Complétez la carte d'identité de l'entreprise en cherchant les informations dans le document 1 (texte et chiffres clés).", ressources: "Document 1. Compétence C1.1.1. Attention : certaines informations sont dans le texte, d'autres dans les chiffres clés.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Les deux fondateurs n'ont pas le même parcours. Relevez ce qui distingue Jérôme Monceaux de Samuel Benveniste.", ressources: 'Document 1, partie « Notre histoire ». Compétence C1.1.1. Vous devez comparer deux personnes.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "À l'aide de l'organigramme, répondez aux questions sur l'organisation du service. Certaines réponses demandent de bien suivre les traits.", ressources: 'Document 2. Compétence C1.1.1. Situez votre place et celle des autres.', annexeId: 'annexe3' },
+        ] },
+      { titre: "Activité 2 — Observer et décrire le robot",
+        contexte: "Place au produit. On l'observe en vidéo, puis on relève ses caractéristiques dans la fiche technique.",
+        questions: [
+          { numero: 4, consigne: "Après avoir regardé la vidéo (document 3), répondez aux questions d'observation.", ressources: 'Document 3. Compétence C1.1.1. Décrivez ce que vous avez réellement vu.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Complétez la fiche des caractéristiques du Mirokaï. Attention : la fiche technique (document 4) contient plus d'informations que demandé, ne recopiez que ce qui est utile.", ressources: 'Document 4. Compétence C1.1.1. Triez les informations.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Un employé de l'hôtel voit le robot passer dans le couloir, les oreilles baissées. Peut-il lui donner une consigne à ce moment-là ? Justifiez votre réponse.", ressources: 'Document 4, « Le langage des oreilles ». Compétence C1.1.1. Cette réponse demande de déduire à partir du texte.', annexeId: 'annexe6' },
+        ] },
+      { titre: "Activité 3 — Le marché et la présentation",
+        contexte: "On termine par les clients et par une présentation orale, comme un vrai commercial.",
+        questions: [
+          { numero: 7, consigne: "Identifiez les trois grands domaines où travaillent déjà les Mirokaï, et le type de vente pratiqué par l'entreprise.", ressources: "Document 5. Compétence C1.1.2. Repérez les intertitres de l'article.", annexeId: 'annexe7' },
+          { numero: 8, consigne: "Rédigez une présentation orale (6 à 8 phrases) pour présenter Enchanted Tools et le Mirokaï à un client. Utilisez les informations les plus valorisantes trouvées dans les documents.", ressources: 'Tous les documents. Compétence C1.1.2. Choisissez vous-même les meilleurs arguments.', annexeId: 'annexe8' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: "Annexe 1 — Carte d'identité d'Enchanted Tools", colonnes: ['Élément', 'Réponse'], nbLignes: 7, largeurs: ['45%', '55%'], prerempli: [
+        ['Raison sociale', ''],
+        ['Année et ville de création', ''],
+        ['Activité', ''],
+        ['Les deux fondateurs', ''],
+        ['Montant de la levée de fonds', ''],
+        ['Objectif de production', ''],
+        ['Un label ou une reconnaissance', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe2', titre: "Annexe 2 — Comparer les deux fondateurs", colonnes: ['Fondateur', 'Son parcours avant Enchanted Tools'], nbLignes: 2, largeurs: ['35%', '65%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Jérôme Monceaux', ''],
+        ['Samuel Benveniste', ''],
+      ] },
+
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Lire l'organigramme", colonnes: ['Question', 'Réponse'], nbLignes: 4, largeurs: ['60%', '40%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ["Qui dirige toute l'entreprise ?", ''],
+        ['Qui est votre tuteur et quel est son poste ?', ''],
+        ['Combien de commerciaux dépendent du responsable commercial (hors stagiaire) ?', ''],
+        ['Si un robot tombe en panne, quel service faut-il contacter ?', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Vos observations sur la vidéo", lignes: 5 },
+
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Caractéristiques utiles du Mirokaï', colonnes: ['Caractéristique', 'Valeur'], nbLignes: 6, largeurs: ['45%', '55%'], prerempli: [
+        ['Taille', ''],
+        ['Poids', ''],
+        ['Mode de déplacement', ''],
+        ['Nombre de langues', ''],
+        ['Taux de réussite pour saisir un objet', ''],
+        ['Prix indicatif', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Le langage des oreilles (déduction)", lignes: 4 },
+
+      { type: 'grille', id: 'annexe7', titre: 'Annexe 7 — Domaines et type de vente', colonnes: ['Question', 'Réponse'], nbLignes: 4, largeurs: ['55%', '45%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ["1er domaine d'utilisation", ''],
+        ["2e domaine d'utilisation", ''],
+        ["3e domaine d'utilisation", ''],
+        ['Type de vente (sigle et signification)', ''],
+      ] },
+
+      { type: 'texte', id: 'annexe8', titre: "Annexe 8 — Présentation orale de l'offre", lignes: 8 },
+    ],
+
+    objectifs: [
+      "Identifier une entreprise, son histoire et ses chiffres clés",
+      "Lire et exploiter un organigramme",
+      "Observer une vidéo et décrire un produit",
+      "Trier des informations et déduire une réponse",
+      "Situer un produit sur son marché et préparer une présentation",
+    ],
+  },
+
+  synthese: {
+    titre: "Connaître l'entreprise et l'offre",
+    proposition: [
+      'Enchanted Tools',
+      'Robotique de service',
+      'Jérôme Monceaux',
+      'Le Mirokaï',
+      '50 langues',
+      '30 000 € l’unité',
+      'Hôpitaux',
+      'Hôtels et aéroports',
+      'Vente B to B',
+      '100 000 robots en 10 ans',
+    ],
+    racine: {
+      id: 'racine',
+      texte: "L'offre d'Enchanted Tools",
+      enfants: [
+        { id: 'ent', texte: "L'entreprise", enfants: [
+          { id: 'e1', texte: null, reponse: 'Enchanted Tools' },
+          { id: 'e2', texte: null, reponse: 'Robotique de service' },
+          { id: 'e3', texte: null, reponse: 'Jérôme Monceaux' },
+          { id: 'e4', texte: null, reponse: '100 000 robots en 10 ans' },
+        ] },
+        { id: 'pro', texte: 'Le produit', enfants: [
+          { id: 'p1', texte: null, reponse: 'Le Mirokaï' },
+          { id: 'p2', texte: null, reponse: '50 langues' },
+          { id: 'p3', texte: null, reponse: '30 000 € l’unité' },
+        ] },
+        { id: 'cli', texte: 'Les clients (B to B)', enfants: [
+          { id: 'c1', texte: null, reponse: 'Hôpitaux' },
+          { id: 'c2', texte: null, reponse: 'Hôtels et aéroports' },
+          { id: 'c3', texte: null, reponse: 'Vente B to B' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Identifier une entreprise", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas où chercher les informations." },
+        { niveau: 'debrouille', description: "Je trouve les informations données en clair." },
+        { niveau: 'averti', description: "Je recoupe le texte et les chiffres clés pour répondre." },
+        { niveau: 'expert', description: "Je présente l'entreprise avec ses chiffres et ses atouts." },
+      ] },
+      { id: 'c2', intitule: "Lire un organigramme", indicateurs: [
+        { niveau: 'novice', description: "Je ne comprends pas les liens de l'organigramme." },
+        { niveau: 'debrouille', description: "Je repère la direction et ma place." },
+        { niveau: 'averti', description: "Je suis les traits pour savoir qui dépend de qui." },
+        { niveau: 'expert', description: "Je sais vers quel service me tourner selon la situation." },
+      ] },
+      { id: 'c3', intitule: "Trier et déduire", indicateurs: [
+        { niveau: 'novice', description: "Je recopie tout sans trier." },
+        { niveau: 'debrouille', description: "Je sélectionne les bonnes informations." },
+        { niveau: 'averti', description: "Je ne garde que ce qui est utile à la question." },
+        { niveau: 'expert', description: "Je déduis une réponse qui n'est pas écrite en toutes lettres." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Enchanted Tools', definition: "Start-up française de robotique, créée en 2021 à Paris par Jérôme Monceaux et Samuel Benveniste." },
+      { terme: 'Mirokaï', definition: "Famille de robots humanoïdes de service d'Enchanted Tools, composée de deux personnages : Miroki et Miroka." },
+      { terme: 'Robot de service', definition: "Robot conçu pour aider les humains dans des tâches d'accueil, d'orientation ou de logistique." },
+      { terme: 'Humanoïde', definition: "Qui a une forme rappelant celle d'un être humain (tête, bras, mains)." },
+      { terme: 'Levée de fonds', definition: "Argent récolté par une entreprise auprès d'investisseurs pour se développer." },
+      { terme: 'Deeptech', definition: "Entreprise fondée sur une innovation technologique de rupture." },
+      { terme: 'Organigramme', definition: "Schéma qui montre l'organisation d'une entreprise et les liens entre les postes." },
+      { terme: 'Clientèle cible', definition: "Ensemble des clients auxquels un produit est destiné." },
+      { terme: 'Vente B to B', definition: "Vente d'une entreprise à une autre entreprise (business to business)." },
+      { terme: 'Vente B to C', definition: "Vente d'une entreprise à un particulier (business to consumer)." },
+      { terme: 'Préhension', definition: "Action de saisir un objet avec une main ou une pince." },
+      { terme: 'IA générative', definition: "Intelligence artificielle capable de produire du texte ou des réponses adaptées à la situation." },
+    ],
+    flashcards: [
+      { recto: "Qui a fondé Enchanted Tools et en quelle année ?", verso: 'Jérôme Monceaux et Samuel Benveniste, en 2021, à Paris.' },
+      { recto: "Quel est le montant de la levée de fonds d'amorçage ?", verso: "15 millions d'euros, un record français en robotique." },
+      { recto: "Quels robots célèbres Jérôme Monceaux a-t-il co-créés avant ?", verso: 'Les robots Nao et Pepper (chez Aldebaran).' },
+      { recto: "Comment s'appellent les deux personnages de la famille Mirokaï ?", verso: 'Miroki et Miroka.' },
+      { recto: "Combien pèse et mesure le Mirokaï ?", verso: 'Environ 28 kg pour 1 mètre.' },
+      { recto: "Quel est le taux de réussite du robot pour saisir un objet ?", verso: '97 %.' },
+      { recto: "Que signifient les oreilles baissées du robot ?", verso: "Qu'il est concentré sur sa tâche : il ne faut pas le déranger." },
+      { recto: "Dans quels hôpitaux le Mirokaï a-t-il été testé ?", verso: "Les hôpitaux de l'AP-HP, dont l'hôpital Broca (gériatrie)." },
+      { recto: "Enchanted Tools vend-elle aux particuliers ?", verso: 'Non, uniquement aux professionnels : vente B to B.' },
+      { recto: "Quel est l'objectif de production de l'entreprise ?", verso: '100 000 robots en 10 ans.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Enchanted Tools a été créée en :', options: ['2021', '2015', '2024'], bonne: 0 },
+      { type: 'unique', question: 'Les deux fondateurs sont :', options: ['Jérôme Monceaux et Samuel Benveniste', 'Jérôme Monceaux seul', 'Jensen Huang et Samuel Benveniste'], bonne: 0 },
+      { type: 'unique', question: 'La levée de fonds d’amorçage était de :', options: ['15 millions d’euros', '15 000 euros', '100 millions d’euros'], bonne: 0 },
+      { type: 'unique', question: 'Les deux personnages Mirokaï s’appellent :', options: ['Miroki et Miroka', 'Nao et Pepper', 'Miroki et Pepper'], bonne: 0 },
+      { type: 'unique', question: 'Le Mirokaï pèse environ :', options: ['28 kg', '5 kg', '90 kg'], bonne: 0 },
+      { type: 'unique', question: 'Le taux de réussite pour saisir un objet est de :', options: ['97 %', '50 %', '75 %'], bonne: 0 },
+      { type: 'unique', question: 'Oreilles baissées, le robot est :', options: ['concentré, ne pas déranger', 'à l’écoute', 'en panne'], bonne: 0 },
+      { type: 'unique', question: 'Le Mirokaï a d’abord été testé dans :', options: ['des hôpitaux (AP-HP)', 'des écoles', 'des stades'], bonne: 0 },
+      { type: 'unique', question: 'Enchanted Tools pratique la vente :', options: ['B to B (aux professionnels)', 'B to C (aux particuliers)', 'aux enfants'], bonne: 0 },
+      { type: 'unique', question: 'L’objectif de l’entreprise est de produire :', options: ['100 000 robots en 10 ans', '1 000 robots en 1 an', '10 robots par jour'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ["L'entreprise", 'Le produit', 'Les clients'],
+      zones: [
+        { libelle: 'Créée en 2021 par deux fondateurs', etiquetteIndex: 0 },
+        { libelle: 'Levée de fonds de 15 millions d’euros', etiquetteIndex: 0 },
+        { libelle: 'Objectif : 100 000 robots en 10 ans', etiquetteIndex: 0 },
+        { libelle: 'Pèse 28 kg et mesure 1 mètre', etiquetteIndex: 1 },
+        { libelle: 'Parle plus de 50 langues', etiquetteIndex: 1 },
+        { libelle: 'Saisit un objet avec 97 % de réussite', etiquetteIndex: 1 },
+        { libelle: 'Les hôpitaux de l’AP-HP', etiquetteIndex: 2 },
+        { libelle: 'Les hôtels et les aéroports', etiquetteIndex: 2 },
+        { libelle: 'Uniquement des professionnels (B to B)', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez la carte d'identité de l'entreprise.", documents: ['Document 1 (texte et chiffres clés)'], bareme: 3,
+        reponse: "Les réponses se trouvent en partie dans le texte, en partie dans les chiffres clés : l'élève doit combiner les deux.",
+        tableau: { colonnes: ['Élément', 'Réponse'], lignes: [
+          ['Raison sociale', 'Enchanted Tools'],
+          ['Année et ville de création', '2021, à Paris'],
+          ['Activité', 'Robotique humanoïde de service'],
+          ['Les deux fondateurs', 'Jérôme Monceaux et Samuel Benveniste'],
+          ['Montant de la levée de fonds', '15 millions d’euros'],
+          ['Objectif de production', '100 000 robots en 10 ans'],
+          ['Un label ou une reconnaissance', 'Label Deeptech BPI (ou French Tech 2030)'],
+        ] },
+        complement: "Environ 0,4 point par ligne correcte (7 lignes). Le point pédagogique : certaines infos (année, activité, fondateurs) sont dans le texte, d'autres (montant, objectif) sont dans les chiffres clés. L'élève doit chercher aux deux endroits. Ne pas pénaliser l'orthographe des noms propres." },
+
+      { intitule: "Relevez ce qui distingue les deux fondateurs.", documents: ['Document 1, « Notre histoire »'], bareme: 2,
+        reponse: "Il faut comparer les deux parcours décrits dans le texte.",
+        tableau: { colonnes: ['Fondateur', 'Son parcours avant Enchanted Tools'], lignes: [
+          ['Jérôme Monceaux', 'A cofondé Aldebaran Robotics et co-créé les robots Nao et Pepper ; il est PDG.'],
+          ['Samuel Benveniste', "Docteur en sciences, ancien directeur d'un centre national d'expertise en stimulation cognitive."],
+        ] },
+        complement: "1 point par fondateur correctement décrit. L'exercice travaille la lecture comparative : l'élève ne doit pas confondre les deux parcours. Accepter une reformulation." },
+
+      { intitule: "Répondez aux questions sur l'organigramme.", documents: ['Document 2'], bareme: 3,
+        reponse: "L'élève doit suivre les liens de l'organigramme, pas deviner.",
+        tableau: { colonnes: ['Question', 'Réponse'], lignes: [
+          ['Qui dirige toute l’entreprise ?', 'Jérôme Monceaux (PDG) et Samuel Benveniste'],
+          ['Votre tuteur et son poste ?', 'Karim Haddad, responsable commercial'],
+          ['Combien de commerciaux (hors stagiaire) ?', 'Deux (Léa Fontaine et Thomas Berger)'],
+          ['Panne d’un robot : quel service ?', 'Le service après-vente et maintenance'],
+        ] },
+        complement: "0,75 point par réponse. La 3e question demande de compter en excluant le stagiaire (déduction). La 4e demande de comprendre la fonction de chaque service (le SAV/maintenance gère les pannes), pas seulement de lire un nom. C'est un vrai travail de lecture d'organigramme." },
+
+      { intitule: "Répondez aux questions d'observation sur la vidéo.", documents: ['Document 3'], bareme: 2,
+        reponse: "Réponses variables selon l'observation de l'élève. Éléments attendus : le robot a une allure de personnage attachant (oreilles, visage expressif) ; il se déplace en glissant dans toutes les directions grâce à son globe roulant ; il peut saisir et porter des objets avec ses mains ; les gens autour réagissent avec curiosité et sympathie ; son visage change d'expression.",
+        complement: "2 points pour une observation sérieuse et cohérente (au moins 3 éléments corrects parmi : allure, déplacement, mains, réactions des gens, visage). Cet exercice développe l'observation d'un support audiovisuel, comme à l'examen. Accepter toute réponse fidèle à la vidéo." },
+
+      { intitule: "Complétez la fiche des caractéristiques utiles.", documents: ['Document 4'], bareme: 4,
+        reponse: "La fiche technique contient beaucoup d'informations : l'élève ne doit garder que celles demandées.",
+        tableau: { colonnes: ['Caractéristique', 'Valeur'], lignes: [
+          ['Taille', '1 mètre environ'],
+          ['Poids', '28 kg'],
+          ['Mode de déplacement', 'Globe roulant (toutes directions)'],
+          ['Nombre de langues', 'Plus de 50'],
+          ['Taux de réussite pour saisir un objet', '97 %'],
+          ['Prix indicatif', 'Environ 30 000 €'],
+        ] },
+        complement: "0,6 point par valeur correcte (6 valeurs) + 0,4 pour l'ensemble. Le piège volontaire : la fiche contient aussi le GPU, la batterie Saft, l'IA, etc., qui ne sont PAS demandés. Valoriser l'élève qui a su trier et n'a pas tout recopié." },
+
+      { intitule: "L'employé peut-il donner une consigne au robot aux oreilles baissées ?", documents: ['Document 4, « Le langage des oreilles »'], bareme: 3,
+        reponse: "Non. D'après le document, les oreilles baissées signifient que le robot est concentré sur sa tâche et qu'il ne faut pas le déranger. Pour lui donner une consigne, il faudrait l'appeler et attendre qu'il lève une ou deux oreilles, signe qu'il est à l'écoute.",
+        complement: "1 point pour « non », 2 points pour la justification correcte (oreilles baissées = concentré, il faut attendre les oreilles levées). C'est une question de DÉDUCTION : la réponse « non » n'est pas écrite telle quelle, l'élève doit la construire à partir de la règle donnée. Refuser un simple « non » sans justification." },
+
+      { intitule: "Identifiez les trois domaines et le type de vente.", documents: ['Document 5'], bareme: 2,
+        reponse: "Les trois domaines correspondent aux trois intertitres de l'article.",
+        tableau: { colonnes: ['Question', 'Réponse'], lignes: [
+          ['1er domaine', 'La santé (hôpitaux, AP-HP)'],
+          ['2e domaine', 'La recherche (laboratoire ISIR)'],
+          ['3e domaine', "L'accueil (hôtels, aéroports, commerces)"],
+          ['Type de vente', 'B to B : business to business (d’une entreprise à une autre)'],
+        ] },
+        complement: "0,5 point par réponse. L'élève doit repérer que les intertitres de l'article (Santé, Recherche, Accueil) structurent la réponse. Le sigle B to B doit être explicité." },
+
+      { intitule: "Rédigez une présentation orale de 6 à 8 phrases.", documents: ['Tous les documents'], bareme: 1,
+        reponse: "La présentation doit piocher les informations les plus valorisantes dans l'ensemble des documents.",
+        complement: "Proposition : « Enchanted Tools est une start-up française de robotique, créée en 2021 à Paris par Jérôme Monceaux, co-créateur des robots Nao et Pepper. Elle a réalisé la plus grosse levée de fonds de la robotique française. Elle fabrique le Mirokaï, un robot humanoïde de 1 mètre au design attachant, qui parle plus de 50 langues et saisit des objets avec 97 % de réussite. Il a déjà fait ses preuves dans les hôpitaux de l'AP-HP. Aujourd'hui, il accueille et oriente le public dans les hôtels, aéroports et commerces. Il coûte environ 30 000 € et s'adresse aux professionnels. » Barème : 1 point pour une présentation fluide, valorisante et exacte, mobilisant plusieurs documents. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 2 - Preparer la vente et l'argumentaire CAP
+// Bloc 1 : conseiller et vendre. Classe de Premiere. VERSION ENRICHIE.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M2: ContenuMission = {
+  travaux: {
+    consigne:
+      "À partir des documents, préparez l'argumentaire de vente du Mirokaï pour l'hôtel Le Grand Siècle en utilisant la méthode C.A.P.",
+    contexte:
+      "L'hôtel Le Grand Siècle, un établissement parisien haut de gamme, a pris contact avec Enchanted Tools : il envisage d'installer des robots Mirokaï dans son hall pour accueillir sa clientèle internationale. Votre tuteur, Karim Haddad, prépare le premier rendez-vous. Il vous confie une mission clé : « Un client n'achète jamais une fiche technique. Il achète ce que le produit va lui apporter. Ton travail, c'est de transformer chaque caractéristique du robot en un vrai argument, avec la méthode C.A.P. Lis bien les documents : tu y trouveras la méthode, un exemple complet sur un autre produit, les attentes précises de l'hôtel et les caractéristiques du robot. À toi de faire le lien. » Cet argumentaire servira lors du rendez-vous de vente des prochaines missions.",
+    competence: {
+      groupe: 'Bloc de compétences 1 — Conseiller et vendre',
+      intitule: "C1.2 — Construire et préparer l'argumentation commerciale",
+      detail: "C1.2.1 Distinguer caractéristique, avantage et preuve. C1.2.2 Construire un argumentaire adapté aux besoins du client.",
+    },
+    documents: [
+      { numero: 1, titre: "Fiche méthode — L'argumentaire C.A.P.", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode commerciale' },
+        { intertitre: 'Transformer une caractéristique en argument' },
+        { paragraphes: [
+          "Un bon commercial ne se contente pas de décrire son produit. Il montre au client en quoi chaque caractéristique lui sera utile, puis il le prouve. C'est la méthode C.A.P., utilisée dans toutes les entreprises.",
+        ] },
+        { tableau: { colonnes: ['Lettre', 'Signification', 'Rôle dans la vente'], lignes: [
+          ['C — Caractéristique', 'Un fait technique, objectif, sur le produit', 'Décrire le produit tel qu’il est'],
+          ['A — Avantage', 'Ce que la caractéristique apporte concrètement au client', "Montrer l'intérêt pour LE client"],
+          ['P — Preuve', 'Un élément qui rend l’argument crédible', 'Rassurer, prouver ce qu’on affirme'],
+        ] } },
+        { intertitre: 'Les mots de liaison' },
+        { paragraphes: [
+          "Pour passer de la caractéristique à l'avantage, on emploie une formule de liaison : « ce qui vous permet de… », « ce qui signifie pour vous que… », « donc vous… ».",
+          "Pour introduire la preuve : « la preuve, c'est que… », « vous pouvez le vérifier… ».",
+        ] },
+        { bulleConseil: { texte: ["La règle d'or : ne jamais s'arrêter à la caractéristique. Une caractéristique seule ne convainc personne : c'est l'avantage pour le client qui déclenche l'achat."] } },
+      ] },
+
+      { numero: 2, titre: "Exemple entièrement construit (sur un autre produit)", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'enchanted.tools',
+          marque: 'Enchanted Tools',
+          couleurHeader: '#F28C1E',
+          sections: [
+            { type: 'titre', texte: 'Comprendre la méthode avec un exemple : un aspirateur' },
+            { type: 'paragraphe', texte: "Pour bien assimiler la méthode, voici un exemple complet sur un produit courant, l'aspirateur. Observez comment on passe de la caractéristique à l'avantage, puis à la preuve. Vous ferez ensuite le même travail sur le Mirokaï." },
+            { type: 'tableau', entetes: ['Étape', 'Formulation'], lignes: [
+              ['Caractéristique', "Cet aspirateur a une batterie de 60 minutes d'autonomie."],
+              ['Avantage', "Ce qui vous permet de nettoyer toute la maison sans vous arrêter pour recharger : vous gagnez du temps."],
+              ['Preuve', "La preuve, c'est que la notice indique 60 minutes, et l'appareil est garanti 2 ans."],
+            ] },
+            { type: 'citation', texte: "Caractéristique + « ce qui vous permet de » + Avantage + « la preuve, c'est que » + Preuve.", auteur: 'La formule à retenir' },
+          ],
+        } },
+      ] },
+
+      { numero: 3, titre: "Les attentes de l'hôtel Le Grand Siècle (courriel du client)", texte: [
+        { mailLecture: {
+          de: 'accueil@legrandsiecle-paris.fr',
+          a: 'k.haddad@enchanted.tools',
+          objet: "Nos attentes pour les robots d'accueil",
+          corps: [
+            "Bonjour,",
+            "Avant notre rendez-vous, je vous précise nos attentes. Notre hôtel accueille une clientèle très internationale : près de 70 % de nos clients ne parlent pas français. La barrière de la langue est notre principale difficulté à la réception.",
+            "Nous tenons aussi énormément à notre image : un accueil moderne et chaleureux, jamais froid ni impersonnel. Nos clients doivent se sentir bien dès leur arrivée.",
+            "Enfin, notre réception est parfois débordée en soirée, aux heures d'arrivée. Il nous arrive de faire attendre les clients, ce qui nuit à notre réputation.",
+            "Au plaisir d'échanger,",
+            "Camille Rousseau, directrice de l'accueil",
+          ],
+        } },
+        { bulleConseil: { texte: ["Un bon argumentaire répond aux attentes RÉELLES du client. Repérez dans ce courriel les trois préoccupations de l'hôtel : elles vous guideront pour choisir vos arguments."] } },
+      ] },
+
+      { numero: 4, titre: "Les caractéristiques du Mirokaï à argumenter", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Caractéristiques exploitables' },
+        { tableau: { colonnes: ['Caractéristique', 'Détail technique'], lignes: [
+          ['Parle plus de 50 langues', 'Le robot détecte la langue du visiteur et lui répond'],
+          ['Design attachant', 'Oreilles orange, yeux bleus expressifs, allure de personnage'],
+          ['Disponible en continu', 'Ne se fatigue pas, présent 24 h/24 sans pause'],
+          ['Se déplace dans toutes les directions', 'Globe roulant, se faufile facilement dans un hall'],
+          ['Reconnaît les visages et les voix', 'Peut accueillir un client habitué par son nom'],
+          ['Fabriqué en France', 'Service et maintenance assurés localement'],
+        ] } },
+        { bulleConseil: { texte: ["Toutes les caractéristiques ne répondent pas aux attentes de l'hôtel. À vous de choisir les plus pertinentes pour CE client."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Comprendre la méthode C.A.P.",
+        contexte: "On s'assure d'abord de bien maîtriser la méthode avant de l'appliquer.",
+        questions: [
+          { numero: 1, consigne: "Indiquez ce que signifie chaque lettre de la méthode C.A.P. et son rôle dans la vente.", ressources: "Document 1, annexe 1. Compétence C1.2.1.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Dans l'exemple de l'aspirateur, retrouvez la caractéristique, l'avantage et la preuve.", ressources: 'Document 2, annexe 2. Compétence C1.2.1.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Analyser les besoins du client",
+        contexte: "Avant d'argumenter, il faut comprendre ce que le client attend vraiment.",
+        questions: [
+          { numero: 3, consigne: "Relevez, dans le courriel de l'hôtel, les trois préoccupations principales de la directrice de l'accueil.", ressources: 'Document 3, annexe 3. Compétence C1.2.2. Lisez attentivement le courriel.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Pour chaque préoccupation de l'hôtel, indiquez quelle caractéristique du Mirokaï y répond le mieux.", ressources: 'Documents 3 et 4, annexe 4. Compétence C1.2.2. Faites le lien entre les besoins et les caractéristiques.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Construire l'argumentaire",
+        contexte: "Place à la construction : on transforme les caractéristiques en vrais arguments pour l'hôtel.",
+        questions: [
+          { numero: 5, consigne: "Construisez un argument C.A.P. complet à partir de la caractéristique « parle plus de 50 langues », en pensant aux attentes de l'hôtel.", ressources: 'Documents 1, 3 et 4, annexe 5. Compétence C1.2.2.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Construisez un second argument C.A.P. complet à partir d'une autre caractéristique de votre choix, adaptée à un besoin de l'hôtel.", ressources: 'Documents 1, 3 et 4, annexe 6. Compétence C1.2.2.', annexeId: 'annexe6' },
+          { numero: 7, consigne: "Rédigez une phrase d'argumentation orale fluide (avec les mots de liaison) que vous pourriez dire au client pendant le rendez-vous.", ressources: 'Documents 1 et 2, annexe 7. Compétence C1.2.2.', annexeId: 'annexe7' },
+          { numero: 8, consigne: "Expliquez pourquoi il ne faut jamais s'arrêter à la caractéristique face à un client.", ressources: 'Document 1, annexe 8. Compétence C1.2.1. Réponse à déduire de la règle d\'or.', annexeId: 'annexe8' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les trois lettres de C.A.P.', colonnes: ['Lettre', 'Signification', 'Rôle dans la vente'], nbLignes: 3, largeurs: ['22%', '40%', '38%'], prerempli: [
+        ['C', 'Caractéristique', ''],
+        ['A', '', ''],
+        ['P', '', ''],
+      ] },
+      { type: 'cap', id: 'annexe2', titre: "Annexe 2 — L'exemple de l'aspirateur", nbLignes: 3 },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Les trois préoccupations de l'hôtel", colonnes: ['N°', 'Préoccupation de l’hôtel'], nbLignes: 3, largeurs: ['15%', '85%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['1', ''],
+        ['2', ''],
+        ['3', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Relier besoins et caractéristiques', colonnes: ["Préoccupation de l'hôtel", 'Caractéristique du Mirokaï qui y répond'], nbLignes: 3, largeurs: ['50%', '50%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['La barrière de la langue', ''],
+        ["L'image d'un accueil chaleureux", ''],
+        ['La réception débordée en soirée', ''],
+      ] },
+      { type: 'cap', id: 'annexe5', titre: 'Annexe 5 — Argument C.A.P. : les 50 langues', nbLignes: 3 },
+      { type: 'cap', id: 'annexe6', titre: 'Annexe 6 — Second argument C.A.P.', nbLignes: 3 },
+      { type: 'texte', id: 'annexe7', titre: "Annexe 7 — Phrase d'argumentation orale", lignes: 4 },
+      { type: 'texte', id: 'annexe8', titre: "Annexe 8 — Pourquoi dépasser la caractéristique", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Distinguer caractéristique, avantage et preuve",
+      "Analyser les besoins réels d'un client",
+      "Relier les caractéristiques d'un produit aux besoins",
+      "Construire un argumentaire C.A.P. adapté au client",
+      "Rédiger une argumentation orale fluide",
+    ],
+  },
+
+  synthese: {
+    titre: "L'argumentaire C.A.P.",
+    proposition: [
+      'Caractéristique', 'Avantage', 'Preuve',
+      'Un fait technique', "L'utilité pour le client", 'Un élément qui rassure',
+      'Ce qui vous permet de', 'La preuve, c’est que',
+      'Analyser les besoins', 'Penser au client',
+    ],
+    racine: {
+      id: 'racine', texte: 'La méthode C.A.P.',
+      enfants: [
+        { id: 'les3', texte: 'Les trois lettres', enfants: [
+          { id: 'a', texte: null, reponse: 'Caractéristique' },
+          { id: 'b', texte: null, reponse: 'Avantage' },
+          { id: 'c', texte: null, reponse: 'Preuve' },
+        ] },
+        { id: 'def', texte: 'Ce que chacune est', enfants: [
+          { id: 'd1', texte: null, reponse: 'Un fait technique' },
+          { id: 'd2', texte: null, reponse: "L'utilité pour le client" },
+          { id: 'd3', texte: null, reponse: 'Un élément qui rassure' },
+        ] },
+        { id: 'lia', texte: 'Les mots de liaison', enfants: [
+          { id: 'l1', texte: null, reponse: 'Ce qui vous permet de' },
+          { id: 'l2', texte: null, reponse: 'La preuve, c’est que' },
+        ] },
+        { id: 'cle', texte: 'La clé', enfants: [
+          { id: 'k1', texte: null, reponse: 'Analyser les besoins' },
+          { id: 'k2', texte: null, reponse: 'Penser au client' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Distinguer C, A et P", indicateurs: [
+        { niveau: 'novice', description: "Je confonds caractéristique et avantage." },
+        { niveau: 'debrouille', description: "Je sais ce que signifie chaque lettre." },
+        { niveau: 'averti', description: "Je retrouve C, A et P dans un exemple." },
+        { niveau: 'expert', description: "J'explique le rôle de chacune dans la vente." },
+      ] },
+      { id: 'c2', intitule: "Analyser les besoins", indicateurs: [
+        { niveau: 'novice', description: "Je ne repère pas ce que veut le client." },
+        { niveau: 'debrouille', description: "Je relève une attente du client." },
+        { niveau: 'averti', description: "Je relève toutes les attentes du client." },
+        { niveau: 'expert', description: "Je relie chaque besoin à la bonne caractéristique." },
+      ] },
+      { id: 'c3', intitule: "Construire un argument", indicateurs: [
+        { niveau: 'novice', description: "Je m'arrête à la caractéristique." },
+        { niveau: 'debrouille', description: "J'ajoute un avantage général." },
+        { niveau: 'averti', description: "Je construis un argument C.A.P. complet." },
+        { niveau: 'expert', description: "J'adapte mes arguments aux besoins du client." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Argumentaire', definition: "Ensemble des arguments préparés pour convaincre un client d'acheter." },
+      { terme: 'Méthode C.A.P.', definition: "Technique qui transforme une caractéristique en argument : Caractéristique, Avantage, Preuve." },
+      { terme: 'Caractéristique', definition: "Fait technique objectif sur le produit (taille, prix, fonction)." },
+      { terme: 'Avantage', definition: "Ce que la caractéristique apporte concrètement au client." },
+      { terme: 'Preuve', definition: "Élément qui rend l'argument crédible (garantie, test, chiffre, démonstration)." },
+      { terme: 'Mot de liaison', definition: "Formule qui relie la caractéristique à l'avantage (« ce qui vous permet de »)." },
+      { terme: 'Besoin', definition: "Attente ou préoccupation exprimée par le client." },
+      { terme: 'Bénéfice client', definition: "Le gain réel que le client retire du produit." },
+      { terme: 'Découverte des besoins', definition: "Étape où le commercial identifie ce que le client attend vraiment." },
+      { terme: 'Objection', definition: "Réserve ou frein exprimé par le client face à une offre." },
+      { terme: 'Argument adapté', definition: "Argument choisi en fonction des besoins précis du client." },
+      { terme: 'Clientèle internationale', definition: "Clients venant de nombreux pays, parlant différentes langues." },
+    ],
+    flashcards: [
+      { recto: "Que signifie C.A.P. ?", verso: 'Caractéristique, Avantage, Preuve.' },
+      { recto: "Qu'est-ce qu'une caractéristique ?", verso: 'Un fait technique objectif sur le produit.' },
+      { recto: "Qu'est-ce qu'un avantage ?", verso: 'Ce que la caractéristique apporte au client.' },
+      { recto: "Qu'est-ce qu'une preuve ?", verso: 'Un élément qui rend l’argument crédible.' },
+      { recto: "Quelle est la principale difficulté de l'hôtel ?", verso: 'La barrière de la langue (70 % de clients étrangers).' },
+      { recto: "Quelle caractéristique répond à la barrière de la langue ?", verso: 'Le robot parle plus de 50 langues.' },
+      { recto: "Cite un mot de liaison C vers A.", verso: '« Ce qui vous permet de… ».' },
+      { recto: "Faut-il s'arrêter à la caractéristique ?", verso: "Non, jamais : on donne l'avantage pour le client, puis la preuve." },
+      { recto: "Pourquoi analyser les besoins avant d'argumenter ?", verso: 'Pour choisir les arguments qui intéressent vraiment ce client.' },
+      { recto: "Un bon argument pense d'abord à quoi ?", verso: 'Au client et à ce qui lui est utile.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'C.A.P. signifie :', options: ['Caractéristique, Avantage, Preuve', 'Client, Achat, Prix', 'Contact, Argument, Paiement'], bonne: 0 },
+      { type: 'unique', question: 'Une caractéristique est :', options: ['un fait technique', 'une émotion', 'un prix négocié'], bonne: 0 },
+      { type: 'unique', question: 'L’avantage, c’est :', options: ['ce que la caractéristique apporte au client', 'le poids du produit', 'la marque'], bonne: 0 },
+      { type: 'unique', question: 'La preuve sert à :', options: ['rendre l’argument crédible', 'baisser le prix', 'accueillir le client'], bonne: 0 },
+      { type: 'unique', question: 'La principale difficulté de l’hôtel est :', options: ['la barrière de la langue', 'le prix de l’électricité', 'le manque de chambres'], bonne: 0 },
+      { type: 'unique', question: 'Face au client, on :', options: ['ne s’arrête jamais à la caractéristique', 'récite la fiche technique', 'parle surtout du prix'], bonne: 0 },
+      { type: 'unique', question: 'Un mot de liaison C vers A est :', options: ['« ce qui vous permet de »', '« au revoir »', '« combien »'], bonne: 0 },
+      { type: 'unique', question: 'Avant d’argumenter, il faut :', options: ['analyser les besoins du client', 'fixer le prix', 'signer le contrat'], bonne: 0 },
+      { type: 'unique', question: 'Pour l’hôtel, « 50 langues » permet :', options: ['d’accueillir chaque client dans sa langue', 'de porter les valises', 'de baisser le prix'], bonne: 0 },
+      { type: 'unique', question: 'Un bon argument pense d’abord :', options: ['au client', 'au concurrent', 'au fournisseur'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à la bonne catégorie.',
+      etiquettes: ['Caractéristique', 'Avantage', 'Preuve'],
+      zones: [
+        { libelle: 'Le robot parle plus de 50 langues', etiquetteIndex: 0 },
+        { libelle: 'Il est disponible 24 h/24', etiquetteIndex: 0 },
+        { libelle: 'Il reconnaît les visages', etiquetteIndex: 0 },
+        { libelle: 'Chaque client est accueilli dans sa langue', etiquetteIndex: 1 },
+        { libelle: "Vos clients ne patientent plus à la réception", etiquetteIndex: 1 },
+        { libelle: 'Vous offrez un accueil personnalisé et chaleureux', etiquetteIndex: 1 },
+        { libelle: 'La fiche technique le confirme', etiquetteIndex: 2 },
+        { libelle: 'Une démonstration en direct', etiquetteIndex: 2 },
+        { libelle: "Les tests à l'AP-HP le prouvent", etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Indiquez ce que signifie chaque lettre de C.A.P. et son rôle.", documents: ['Document 1', 'Annexe 1'], bareme: 2,
+        reponse: "Chaque lettre a un rôle précis dans la construction de l'argument.",
+        tableau: { colonnes: ['Lettre', 'Signification', 'Rôle'], lignes: [
+          ['C', 'Caractéristique', 'Décrire le produit tel qu’il est'],
+          ['A', 'Avantage', 'Montrer l’intérêt pour le client'],
+          ['P', 'Preuve', 'Rassurer, rendre crédible'],
+        ] },
+        complement: "≈ 0,66 point par ligne. La distinction essentielle : la caractéristique parle du produit, l'avantage parle du client. Un élève qui définit l'avantage comme « une autre caractéristique » n'a pas compris le passage produit → client." },
+
+      { intitule: "Retrouvez C, A et P dans l'exemple de l'aspirateur.", documents: ['Document 2', 'Annexe 2'], bareme: 2,
+        reponse: "L'exemple du document 2 se décompose clairement.",
+        tableau: { colonnes: ['Étape', 'Formulation'], lignes: [
+          ['Caractéristique', 'Une batterie de 60 minutes d’autonomie'],
+          ['Avantage', 'Nettoyer toute la maison sans recharger, gagner du temps'],
+          ['Preuve', 'La notice indique 60 minutes, garanti 2 ans'],
+        ] },
+        complement: "≈ 0,66 point par ligne. Cet exercice vérifie que l'élève sait repérer les trois étapes avant de les produire lui-même. Un élève qui met « gagner du temps » en caractéristique confond avantage et fait technique." },
+
+      { intitule: "Relevez les trois préoccupations de l'hôtel.", documents: ['Document 3', 'Annexe 3'], bareme: 3,
+        reponse: "Les trois préoccupations sont exprimées dans le courriel de la directrice.",
+        tableau: { colonnes: ['N°', 'Préoccupation'], lignes: [
+          ['1', 'La barrière de la langue (70 % de clients étrangers)'],
+          ['2', "L'image : un accueil moderne et chaleureux, jamais froid"],
+          ['3', 'La réception débordée en soirée, clients qui attendent'],
+        ] },
+        complement: "1 point par préoccupation correctement identifiée. Exercice de lecture et de compréhension d'un courriel professionnel : l'élève doit repérer les vrais besoins, pas paraphraser tout le message. C'est la base de la découverte des besoins." },
+
+      { intitule: "Reliez chaque préoccupation à la bonne caractéristique.", documents: ['Documents 3 et 4', 'Annexe 4'], bareme: 3,
+        reponse: "L'élève doit faire le lien entre les besoins de l'hôtel et les caractéristiques du robot.",
+        tableau: { colonnes: ['Préoccupation', 'Caractéristique qui répond'], lignes: [
+          ['La barrière de la langue', 'Le robot parle plus de 50 langues'],
+          ["L'image d'un accueil chaleureux", 'Le design attachant (personnage sympathique)'],
+          ['La réception débordée en soirée', 'La disponibilité en continu (24 h/24)'],
+        ] },
+        complement: "1 point par lien correct. C'est le cœur de la mission : relier un BESOIN à une CARACTÉRISTIQUE. L'élève qui relie « barrière de la langue » aux « 50 langues » a compris la logique commerciale. Accepter « reconnaît les visages » pour l'image (accueil personnalisé)." },
+
+      { intitule: "Construisez un argument C.A.P. sur les 50 langues.", documents: ['Documents 1, 3 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "L'élève construit un argument complet, tourné vers le besoin n°1 de l'hôtel.",
+        tableau: { colonnes: ['Étape', 'Formulation attendue'], lignes: [
+          ['Caractéristique', 'Le Mirokaï parle plus de 50 langues.'],
+          ['Avantage', "Ce qui vous permet d'accueillir vos clients étrangers dans leur langue et de supprimer la barrière de la langue à la réception."],
+          ['Preuve', "La preuve, c'est indiqué sur la fiche technique, et nous pouvons faire une démonstration en direct."],
+        ] },
+        complement: "1 point pour la caractéristique, 2 points pour un avantage tourné vers le besoin de l'hôtel (barrière de la langue, clientèle internationale), 1 point pour une preuve pertinente. Refuser un avantage qui reste une caractéristique. Valoriser le lien avec le courriel du client." },
+
+      { intitule: "Construisez un second argument C.A.P.", documents: ['Documents 1, 3 et 4', 'Annexe 6'], bareme: 2,
+        reponse: "Un second argument complet, sur une autre caractéristique adaptée à un besoin.",
+        complement: "Exemple attendu (disponibilité continue) : C = le robot est disponible 24 h/24 sans se fatiguer ; A = ce qui vous permet d'accueillir vos clients même quand la réception est débordée en soirée, sans les faire attendre ; P = il ne fait jamais de pause, contrairement à un employé. Barème : 0,5 caractéristique + 1 avantage tourné client + 0,5 preuve. Valoriser un argument qui répond à un besoin réel de l'hôtel." },
+
+      { intitule: "Rédigez une phrase d'argumentation orale fluide.", documents: ['Documents 1 et 2', 'Annexe 7'], bareme: 3,
+        reponse: "La phrase doit être fluide, avec les mots de liaison, comme à l'oral.",
+        complement: "Exemple : « Le Mirokaï parle plus de 50 langues, ce qui vous permet d'accueillir chaque client dans sa langue et de supprimer la barrière de la langue ; la preuve, c'est que vous pouvez le tester en direct dès aujourd'hui. » Barème : 1 point pour les mots de liaison, 1 point pour l'enchaînement fluide C → A → P, 1 point pour un ton commercial adapté. Refuser une simple liste. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Pourquoi ne jamais s'arrêter à la caractéristique ?", documents: ['Document 1', 'Annexe 8'], bareme: 1,
+        reponse: "Une caractéristique seule ne dit rien au client sur ce qu'il va y gagner. Le client n'achète pas un fait technique, il achète l'avantage que ce fait lui apporte. Sans l'avantage, il ne voit pas l'intérêt et n'est pas convaincu.",
+        complement: "1 point pour l'idée que le client achète un bénéfice, pas une caractéristique. Réponse à DÉDUIRE de la règle d'or du document 1. Accepter toute formulation exacte. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 3 - Accueillir le client et decouvrir ses besoins
+// Bloc 1 : conseiller et vendre. Classe de Premiere. VERSION ENRICHIE.
+// Documents denses + video a trier. Exercices : recherche, tri, deduction.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M3: ContenuMission = {
+  travaux: {
+    consigne:
+      "Préparez et menez le rendez-vous avec l'hôtel : accueillez la cliente, découvrez ses besoins par un questionnement adapté, et analysez ses motivations d'achat avec la méthode SONCAS.",
+    contexte:
+      "Le rendez-vous tant attendu avec l'hôtel Le Grand Siècle a lieu aujourd'hui. Votre tuteur, Karim Haddad, vous emmène et vous confie un rôle actif : « Tu vas m'assister pendant l'entretien. Ton travail : bien accueillir la directrice, la faire parler pour découvrir ses vrais besoins, et repérer ce qui la motive. Attention : un client dit beaucoup de choses, mais tout n'est pas important. Certaines informations sont utiles pour la vente, d'autres non. À toi de faire le tri, comme un vrai commercial. » La directrice, Camille Rousseau, va vous recevoir et vous parler longuement de son établissement.",
+    competence: {
+      groupe: 'Bloc de compétences 1 — Conseiller et vendre',
+      intitule: "C1.3 — Accueillir le client et découvrir ses besoins",
+      detail: "C1.3.1 Adopter les techniques d'accueil. C1.3.2 Questionner et pratiquer l'écoute active. C1.3.3 Analyser les motivations d'achat (SONCAS).",
+    },
+    documents: [
+      { numero: 1, titre: "Vidéo : le rendez-vous à l'hôtel", texte: [
+        { paragraphes: [
+          "Regardez la vidéo du rendez-vous. La directrice donne beaucoup d'informations sur son hôtel : certaines vous serviront pour la vente, d'autres non. Prenez des notes et faites le tri. Vous pouvez la revoir autant de fois que nécessaire.",
+        ] },
+        { bulle: { nom: 'Enchanted Tools', role: 'Le rendez-vous avec la directrice de l’hôtel', initiale: 'E', couleurAvatar: '#F28C1E', videoLocale: '/docs/enchanted/m3-decouverte.mp4', lignes: ["Cliquez sur lecture. Écoutez bien la directrice : toutes ses informations ne sont pas utiles pour préparer la vente."] } },
+      ] },
+
+      { numero: 2, titre: "Compte rendu écrit de l'entretien (notes prises pendant le rendez-vous)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Notes de rendez-vous' },
+        { paragraphes: [
+          "Voici les notes prises pendant l'entretien. Elles reprennent, en vrac, ce qu'a dit Camille Rousseau. À vous d'y retrouver les informations utiles.",
+        ] },
+        { dialogue: [
+          { locuteur: 'Camille Rousseau', texte: "Bienvenue au Grand Siècle. Notre hôtel a ouvert ses portes en 1889, c'est un établissement chargé d'histoire." },
+          { locuteur: 'Camille Rousseau', texte: "Nous avons 120 chambres réparties sur 6 étages, et un restaurant qui a décroché une étoile en 2019." },
+          { locuteur: 'Camille Rousseau', texte: "Mais voilà mon vrai souci : 70 % de nos clients viennent de l'étranger, et à la réception, la barrière de la langue nous pose de gros problèmes au quotidien." },
+          { locuteur: 'Karim Haddad', texte: "Je comprends. Comment cela se passe-t-il concrètement à l'accueil aujourd'hui ?" },
+          { locuteur: 'Camille Rousseau', texte: "Mal, parfois. Le soir, aux heures d'arrivée, la réception est débordée et les clients attendent. Or je veux un accueil MODERNE, qui impressionne, à la hauteur de notre image." },
+          { locuteur: 'Camille Rousseau', texte: "Le hall est décoré dans un pur style Belle Époque, nous y tenons beaucoup. Mais surtout, je veux que chaque client se sente BIEN dès son arrivée, quelle que soit sa langue." },
+          { locuteur: 'Karim Haddad', texte: "Avez-vous déjà un budget défini pour ce projet ?" },
+          { locuteur: 'Camille Rousseau', texte: "Oui, nous avons prévu une enveloppe. Mais je veux surtout quelque chose d'innovant : être le premier hôtel de Paris avec des robots, ce serait une fierté." },
+        ] },
+        { bulleConseil: { texte: ["Toutes ces phrases ne sont pas des « besoins ». Certaines décrivent l'hôtel (son âge, ses chambres, son restaurant) sans être utiles à la vente. Repérez les vraies attentes."] } },
+      ] },
+
+      { numero: 3, titre: "Fiche méthode — Accueillir et questionner", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { intertitre: "Les règles d'un bon accueil" },
+        { paragraphes: [
+          "Un bon accueil repose sur la règle des 4 x 20 : les 20 premières secondes, les 20 premiers gestes, les 20 premiers mots, et les 20 centimètres du visage (le regard, le sourire). Un client se fait une opinion en quelques secondes.",
+        ] },
+        { intertitre: 'Deux types de questions' },
+        { tableau: { colonnes: ['Type', 'À quoi ça sert', 'Comment ça commence'], lignes: [
+          ['Question ouverte', 'Faire parler le client, découvrir ses besoins', 'Que, Comment, Pourquoi, Qu’est-ce que…'],
+          ['Question fermée', 'Vérifier un point précis, obtenir un oui/non', 'Avez-vous, Est-ce que, Combien…'],
+        ] } },
+        { bulleConseil: { texte: ["Pour découvrir les besoins, on privilégie les questions ouvertes : elles font parler. Les questions fermées servent à préciser ou confirmer."] } },
+      ] },
+
+      { numero: 4, titre: "Fiche méthode — La méthode SONCAS", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { intertitre: 'Comprendre pourquoi un client achète' },
+        { paragraphes: [
+          "Chaque client a des motivations d'achat. La méthode SONCAS en distingue six. Un même client peut en avoir plusieurs. Le commercial repère ces motivations pour adapter ses arguments.",
+        ] },
+        { tableau: { colonnes: ['Lettre', 'Motivation', 'Le client…'], lignes: [
+          ['S', 'Sécurité', 'veut être rassuré, éviter les risques'],
+          ['O', 'Orgueil', 'veut se distinguer, être valorisé, être le premier'],
+          ['N', 'Nouveauté', 'aime l’innovation, la modernité, la technologie'],
+          ['C', 'Confort', 'recherche la simplicité, le bien-être, la facilité'],
+          ['A', 'Argent', 'veut faire une bonne affaire, un bon investissement'],
+          ['S', 'Sympathie', 'achète par relation, par plaisir, par confiance'],
+        ] } },
+        { bulleConseil: { texte: ["Pour trouver les motivations d'un client, écoutez ses mots : « moderne », « le premier » (Orgueil, Nouveauté) ; « se sentir bien » (Confort) ; « rassuré » (Sécurité)…"] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Accueillir le client",
+        contexte: "Le rendez-vous commence. On révise d'abord les règles d'un bon accueil.",
+        questions: [
+          { numero: 1, consigne: "Expliquez en quoi consiste la règle des 4 x 20 et pourquoi elle est importante pour un premier rendez-vous.", ressources: "Document 3. Compétence C1.3.1. Reformulez avec vos mots.", annexeId: 'annexe1' },
+        ] },
+      { titre: "Activité 2 — Trier les informations et découvrir les besoins",
+        contexte: "La directrice a beaucoup parlé. À vous de faire le tri entre ce qui est utile pour la vente et ce qui ne l'est pas.",
+        questions: [
+          { numero: 2, consigne: "Parmi toutes les informations données par la directrice (vidéo et document 2), classez-les en deux colonnes : celles qui sont UTILES pour préparer la vente, et celles qui ne le sont PAS.", ressources: 'Documents 1 et 2, annexe 2. Compétence C1.3.2. Attention : plusieurs informations sont là pour vous piéger.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "À partir des informations utiles, formulez les TROIS besoins principaux de l'hôtel.", ressources: 'Document 2, annexe 3. Compétence C1.3.2. Un besoin, ce n’est pas une description : c’est une attente à satisfaire.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Rédigez deux questions OUVERTES et une question FERMÉE que vous pourriez poser à la directrice pour approfondir ses besoins.", ressources: 'Document 3, annexe 4. Compétence C1.3.2. Respectez bien la différence entre les deux types.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Analyser les motivations (SONCAS)",
+        contexte: "Dernière étape : comprendre ce qui motive vraiment la cliente pour préparer les arguments.",
+        questions: [
+          { numero: 5, consigne: "Relevez, dans les propos de la directrice, deux phrases qui révèlent ses motivations, et associez chacune à une lettre de SONCAS. Justifiez.", ressources: 'Documents 2 et 4, annexe 5. Compétence C1.3.3. Il faut déduire la motivation à partir des mots employés.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Selon vous, quelle est la motivation DOMINANTE de la directrice ? Justifiez votre choix en vous appuyant sur plusieurs de ses propos.", ressources: 'Documents 2 et 4, annexe 6. Compétence C1.3.3. Cette réponse demande de raisonner, il n’y a pas qu’une seule bonne réponse si elle est justifiée.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'texte', id: 'annexe1', titre: "Annexe 1 — La règle des 4 x 20", lignes: 5 },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Trier les informations', colonnes: ['Informations UTILES pour la vente', 'Informations INUTILES pour la vente'], nbLignes: 5, largeurs: ['50%', '50%'], reponseMultiligne: false },
+      { type: 'grille', id: 'annexe3', titre: "Annexe 3 — Les trois besoins de l'hôtel", colonnes: ['N°', 'Besoin exprimé'], nbLignes: 3, largeurs: ['12%', '88%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [['1', ''], ['2', ''], ['3', '']] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Vos questions', colonnes: ['Type', 'Votre question'], nbLignes: 3, largeurs: ['30%', '70%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [['Question ouverte 1', ''], ['Question ouverte 2', ''], ['Question fermée', '']] },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Motivations SONCAS', colonnes: ['Phrase de la directrice', 'Lettre SONCAS', 'Justification'], nbLignes: 2, largeurs: ['45%', '18%', '37%'], reponseMultiligne: true, lignesReponse: 1 },
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — La motivation dominante", lignes: 5 },
+    ],
+
+    objectifs: [
+      "Appliquer les règles d'un bon accueil",
+      "Trier les informations utiles et inutiles",
+      "Formuler les besoins réels d'un client",
+      "Distinguer questions ouvertes et fermées",
+      "Analyser les motivations d'achat avec SONCAS",
+    ],
+  },
+
+  synthese: {
+    titre: "Accueillir et découvrir les besoins",
+    proposition: [
+      'La règle des 4 x 20', 'Questions ouvertes', 'Questions fermées',
+      'Découvrir les besoins', 'La barrière de la langue', 'Un accueil rapide',
+      'SONCAS', 'Nouveauté', 'Confort', 'Orgueil',
+    ],
+    racine: {
+      id: 'racine', texte: 'La découverte du client',
+      enfants: [
+        { id: 'acc', texte: "L'accueil", enfants: [
+          { id: 'a1', texte: null, reponse: 'La règle des 4 x 20' },
+        ] },
+        { id: 'que', texte: 'Le questionnement', enfants: [
+          { id: 'q1', texte: null, reponse: 'Questions ouvertes' },
+          { id: 'q2', texte: null, reponse: 'Questions fermées' },
+        ] },
+        { id: 'bes', texte: "Les besoins de l'hôtel", enfants: [
+          { id: 'b1', texte: null, reponse: 'La barrière de la langue' },
+          { id: 'b2', texte: null, reponse: 'Un accueil rapide' },
+        ] },
+        { id: 'mot', texte: 'Les motivations (SONCAS)', enfants: [
+          { id: 'm1', texte: null, reponse: 'Nouveauté' },
+          { id: 'm2', texte: null, reponse: 'Confort' },
+          { id: 'm3', texte: null, reponse: 'Orgueil' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Accueillir un client", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les règles d'accueil." },
+        { niveau: 'debrouille', description: "Je cite la règle des 4 x 20." },
+        { niveau: 'averti', description: "J'explique pourquoi l'accueil est décisif." },
+        { niveau: 'expert', description: "Je sais soigner concrètement mes premiers instants." },
+      ] },
+      { id: 'c2', intitule: "Trier et découvrir les besoins", indicateurs: [
+        { niveau: 'novice', description: "Je prends tout ce que dit le client pour un besoin." },
+        { niveau: 'debrouille', description: "Je repère quelques informations utiles." },
+        { niveau: 'averti', description: "Je trie l'utile de l'inutile." },
+        { niveau: 'expert', description: "Je formule clairement les vrais besoins du client." },
+      ] },
+      { id: 'c3', intitule: "Analyser les motivations", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas SONCAS." },
+        { niveau: 'debrouille', description: "Je cite les motivations SONCAS." },
+        { niveau: 'averti', description: "J'associe une phrase à une motivation." },
+        { niveau: 'expert', description: "Je déduis la motivation dominante et la justifie." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Découverte des besoins', definition: "Étape où le commercial identifie ce que le client attend vraiment." },
+      { terme: 'Besoin', definition: "Attente ou manque que le client cherche à satisfaire." },
+      { terme: 'Règle des 4 x 20', definition: "Règle d'accueil : 20 premières secondes, 20 premiers gestes, 20 premiers mots, 20 cm du visage." },
+      { terme: 'Question ouverte', definition: "Question qui fait parler le client (Que, Comment, Pourquoi…)." },
+      { terme: 'Question fermée', definition: "Question à réponse courte, oui ou non." },
+      { terme: 'Écoute active', definition: "Écouter vraiment le client, reformuler, montrer de l'intérêt." },
+      { terme: 'SONCAS', definition: "Méthode d'analyse des motivations d'achat : Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie." },
+      { terme: 'Motivation d’achat', definition: "Raison profonde qui pousse un client à acheter." },
+      { terme: 'Orgueil', definition: "Motivation : le client veut se distinguer, être valorisé, être le premier." },
+      { terme: 'Nouveauté', definition: "Motivation : le client aime l'innovation et la modernité." },
+      { terme: 'Confort', definition: "Motivation : le client recherche la simplicité et le bien-être." },
+      { terme: 'Reformulation', definition: "Répéter avec ses mots ce qu'a dit le client pour vérifier qu'on a compris." },
+    ],
+    flashcards: [
+      { recto: "Que veut dire la règle des 4 x 20 ?", verso: '20 premières secondes, 20 gestes, 20 mots, 20 cm du visage.' },
+      { recto: "À quoi sert une question ouverte ?", verso: 'À faire parler le client pour découvrir ses besoins.' },
+      { recto: "À quoi sert une question fermée ?", verso: 'À vérifier un point précis (réponse oui/non).' },
+      { recto: "Que signifie SONCAS ?", verso: 'Sécurité, Orgueil, Nouveauté, Confort, Argent, Sympathie.' },
+      { recto: "Quel est le principal besoin de l'hôtel ?", verso: 'Résoudre la barrière de la langue à la réception.' },
+      { recto: "« Je veux être le premier hôtel avec des robots » : quelle motivation ?", verso: 'Orgueil (et Nouveauté).' },
+      { recto: "« Je veux que mes clients se sentent bien » : quelle motivation ?", verso: 'Confort (et Sympathie).' },
+      { recto: "Un besoin, est-ce la même chose qu'une description ?", verso: "Non : un besoin est une attente à satisfaire, pas un simple fait." },
+      { recto: "Faut-il retenir tout ce que dit un client ?", verso: 'Non : il faut trier l’utile de l’inutile.' },
+      { recto: "Pourquoi analyser les motivations ?", verso: 'Pour adapter ses arguments à ce qui motive le client.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La règle des 4 x 20 concerne :', options: ["l'accueil du client", 'le calcul du prix', 'la livraison'], bonne: 0 },
+      { type: 'unique', question: 'Une question ouverte sert à :', options: ['faire parler le client', 'obtenir un oui/non', 'conclure la vente'], bonne: 0 },
+      { type: 'unique', question: 'Une question fermée appelle :', options: ['une réponse courte (oui/non)', 'un long discours', 'un calcul'], bonne: 0 },
+      { type: 'unique', question: 'SONCAS sert à analyser :', options: ["les motivations d'achat", 'le prix', 'le stock'], bonne: 0 },
+      { type: 'unique', question: 'Le vrai besoin de l’hôtel est :', options: ['résoudre la barrière de la langue', 'refaire le restaurant', 'ajouter des étages'], bonne: 0 },
+      { type: 'unique', question: '« Être le premier hôtel avec des robots » relève de :', options: ['l’Orgueil', 'l’Argent', 'la Sécurité'], bonne: 0 },
+      { type: 'unique', question: '« Que mes clients se sentent bien » relève du :', options: ['Confort', 'l’Argent', 'l’Orgueil'], bonne: 0 },
+      { type: 'unique', question: "L'année d'ouverture de l'hôtel (1889) est une info :", options: ['inutile pour la vente', 'essentielle', 'un besoin'], bonne: 0 },
+      { type: 'unique', question: 'Un besoin est :', options: ['une attente à satisfaire', 'une simple description', 'un prix'], bonne: 0 },
+      { type: 'unique', question: 'Pour découvrir les besoins, on privilégie :', options: ['les questions ouvertes', 'les questions fermées', 'le silence'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque phrase : information UTILE pour la vente, ou INUTILE.',
+      etiquettes: ['Information UTILE', 'Information INUTILE'],
+      zones: [
+        { libelle: '70 % des clients viennent de l’étranger', etiquetteIndex: 0 },
+        { libelle: 'La barrière de la langue pose problème', etiquetteIndex: 0 },
+        { libelle: 'La réception est débordée le soir', etiquetteIndex: 0 },
+        { libelle: 'La directrice veut un accueil moderne', etiquetteIndex: 0 },
+        { libelle: "L'hôtel a ouvert en 1889", etiquetteIndex: 1 },
+        { libelle: 'Il y a 120 chambres sur 6 étages', etiquetteIndex: 1 },
+        { libelle: 'Le restaurant a une étoile depuis 2019', etiquetteIndex: 1 },
+        { libelle: 'Le hall est de style Belle Époque', etiquetteIndex: 1 },
+        { libelle: 'Elle veut que ses clients se sentent bien', etiquetteIndex: 0 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Expliquez la règle des 4 x 20.", documents: ['Document 3', 'Annexe 1'], bareme: 2,
+        reponse: "La règle des 4 x 20 dit qu'un client se fait une opinion en très peu de temps : les 20 premières secondes, les 20 premiers gestes, les 20 premiers mots, et les 20 centimètres du visage (le regard, le sourire). Elle est importante parce que la première impression est décisive : un mauvais accueil peut ruiner la vente avant même qu'elle commence.",
+        complement: "1 point pour l'explication des quatre « 20 », 1 point pour l'importance (la première impression décide de la suite). Accepter une reformulation. La réponse ne doit pas être un simple recopiage." },
+
+      { intitule: "Triez les informations : utiles / inutiles pour la vente.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 4,
+        reponse: "L'élève doit distinguer ce qui aide à préparer la vente de ce qui ne fait que décrire l'hôtel.",
+        tableau: { colonnes: ['UTILES', 'INUTILES'], lignes: [
+          ['70 % de clients étrangers', "Ouverture en 1889"],
+          ['Barrière de la langue à la réception', '120 chambres sur 6 étages'],
+          ['Réception débordée le soir', 'Restaurant étoilé en 2019'],
+          ['Veut un accueil moderne / innovant', 'Hall de style Belle Époque'],
+          ['Veut que les clients se sentent bien', ''],
+        ] },
+        complement: "0,4 point par bon classement (les 9 informations). Le cœur de l'exercice : l'élève doit résister au piège des informations « impressionnantes mais inutiles » (l'âge de l'hôtel, l'étoile, le style du hall). Ce sont des faits vrais, mais qui n'aident pas à vendre des robots d'accueil. Pénaliser l'élève qui met tout dans « utile »." },
+
+      { intitule: "Formulez les trois besoins principaux de l'hôtel.", documents: ['Document 2', 'Annexe 3'], bareme: 3,
+        reponse: "Un besoin est une attente à satisfaire, formulée comme un manque à combler.",
+        tableau: { colonnes: ['N°', 'Besoin'], lignes: [
+          ['1', 'Communiquer avec une clientèle étrangère (supprimer la barrière de la langue)'],
+          ['2', "Accueillir les clients rapidement, même quand la réception est débordée"],
+          ['3', 'Offrir un accueil moderne et valorisant pour l’image de l’hôtel'],
+        ] },
+        complement: "1 point par besoin bien formulé. Attention : un besoin n'est pas une phrase recopiée. « 70 % de clients étrangers » est un fait ; le BESOIN est « pouvoir communiquer avec eux ». Valoriser l'élève qui transforme le fait en attente. C'est un vrai travail de reformulation." },
+
+      { intitule: "Rédigez deux questions ouvertes et une question fermée.", documents: ['Document 3', 'Annexe 4'], bareme: 4,
+        reponse: "Les questions doivent respecter la distinction ouverte/fermée et servir à approfondir les besoins.",
+        complement: "Exemples. Ouvertes : « Comment gérez-vous aujourd'hui les clients qui ne parlent pas français ? », « Qu'attendez-vous précisément d'un robot d'accueil ? ». Fermée : « Avez-vous déjà défini un budget pour ce projet ? ». Barème : 1,5 point par question ouverte correcte (commence par Que/Comment/Pourquoi et fait parler), 1 point pour la fermée (réponse oui/non). Pénaliser une « fausse » question ouverte qui appelle un oui/non. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Reliez deux phrases de la directrice à des motivations SONCAS.", documents: ['Documents 2 et 4', 'Annexe 5'], bareme: 4,
+        reponse: "L'élève doit déduire la motivation à partir des mots employés par la cliente.",
+        tableau: { colonnes: ['Phrase', 'SONCAS', 'Justification'], lignes: [
+          ['« Je veux être le premier hôtel de Paris avec des robots »', 'O (Orgueil) / N (Nouveauté)', 'Elle veut se distinguer, être en avance, moderne'],
+          ['« Je veux que chaque client se sente bien dès son arrivée »', 'C (Confort) / S (Sympathie)', 'Elle pense au bien-être et à la relation client'],
+        ] },
+        complement: "2 points par ligne (0,5 phrase pertinente + 0,5 bonne lettre + 1 justification). C'est une question de DÉDUCTION : la motivation n'est jamais écrite noir sur blanc, l'élève l'infère des mots (« premier », « moderne » → Orgueil/Nouveauté ; « se sentir bien » → Confort). Accepter les rapprochements proches s'ils sont justifiés." },
+
+      { intitule: "Quelle est la motivation dominante de la directrice ?", documents: ['Documents 2 et 4', 'Annexe 6'], bareme: 3,
+        reponse: "Il n'y a pas une seule bonne réponse : ce qui compte, c'est la justification.",
+        complement: "Réponse attendue la plus solide : la NOUVEAUTÉ / l'ORGUEIL dominent. La directrice répète vouloir un accueil « moderne », « innovant », être « le premier hôtel de Paris avec des robots » : ces mots reviennent plusieurs fois et montrent une motivation forte de distinction et d'innovation. Barème : 1 point pour une motivation dominante clairement nommée, 2 points pour une justification qui s'appuie sur PLUSIEURS propos de la cliente. Accepter Confort si l'élève l'argumente bien (« se sentir bien », résoudre l'attente). On valorise le raisonnement, pas une réponse unique. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 4 - Argumenter et traiter les objections
+// Bloc 1 : conseiller et vendre. Classe de Premiere. VERSION RICHE.
+// 6 documents authentiques et denses (livret stagiaire, dialogues, plaquette,
+// courriel, tableau comparatif). Exercices exigeants : tri, deduction, redaction.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M4: ContenuMission = {
+  travaux: {
+    consigne:
+      "Présentez votre argumentation à l'hôtel, identifiez la nature des objections de la directrice, puis traitez-les avec la méthode CRAC pour faire avancer la vente.",
+    contexte:
+      "Le rendez-vous avec l'hôtel Le Grand Siècle se poursuit. Vous avez découvert les besoins (mission 3) et préparé vos arguments CAP (mission 2). À présent, la directrice Camille Rousseau réagit à votre présentation : elle s'enthousiasme parfois, mais elle exprime aussi des doutes, hésite sur le prix, s'inquiète des pannes. Ce sont des objections. Votre tuteur, Karim Haddad, vous prévient : « Une objection n'est pas un refus, c'est une porte entrouverte. Écoute-la, comprends-la, réponds-y avec méthode. Mais méfie-toi : toutes les objections ne se valent pas. Certaines sont sincères et méritent une vraie réponse ; d'autres ne sont que des prétextes pour gagner du temps. Ton livret de stagiaire et la plaquette commerciale te donneront tout ce qu'il faut. À toi de piocher les bons arguments. »",
+    competence: {
+      groupe: 'Bloc de compétences 1 — Conseiller et vendre',
+      intitule: "C1.4 — Argumenter et traiter les objections",
+      detail: "C1.4.1 Présenter une argumentation. C1.4.2 Identifier la nature d'une objection (sincère / prétexte). C1.4.3 Traiter l'objection avec la méthode CRAC.",
+    },
+    documents: [
+      // DOC 1 : livret stagiaire - qu'est-ce qu'une objection (page web riche + tableau dense)
+      { numero: 1, titre: "Le livret du stagiaire — Comprendre les objections", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 9. Les objections du client' },
+        { paragraphes: [
+          "Une objection est une réserve, un doute ou un frein exprimé par le client face à votre offre. Beaucoup de vendeurs débutants la redoutent, à tort : une objection est presque toujours un bon signe. Un client qui objecte est un client qui réfléchit, qui se projette, qui cherche à se rassurer avant de dire oui. Un client réellement indifférent ne discute pas : il écourte l'entretien et s'en va.",
+          "Votre rôle n'est jamais de contredire brutalement le client ni de balayer sa remarque. Vous devez l'accueillir avec calme, la comprendre, puis y répondre. Une objection bien traitée fait avancer la vente ; une objection mal traitée la fait échouer.",
+        ] },
+        { intertitre: 'Savoir distinguer deux natures d’objection' },
+        { tableau: { colonnes: ['Nature', 'Ce que c’est', 'Comment la reconnaître', 'Comment réagir'], lignes: [
+          ['Objection SINCÈRE', "Un vrai doute, une vraie inquiétude que le client cherche à lever", "Elle porte sur un point précis et vérifiable (prix, fiabilité, usage, garantie)", "On y répond avec une preuve, un chiffre, une explication concrète"],
+          ['Objection PRÉTEXTE', "Une fausse raison, une excuse pour ne pas s’engager tout de suite", "Elle reste vague, repousse la décision, n’attend pas vraiment de réponse (« je verrai », « je vous rappellerai »)", "On ne répond pas par une preuve : on cherche avec tact la vraie raison cachée derrière"],
+        ] } },
+        { bulleConseil: { texte: ["Le piège classique : traiter un prétexte comme une objection sincère. Vous sortez alors une belle preuve… qui ne sert à rien, car le vrai frein est ailleurs. D'où l'importance de bien identifier la nature avant de répondre."] } },
+      ] },
+
+      // DOC 2 : livret stagiaire - la méthode CRAC (page web + tableau + exemple guidé)
+      { numero: 2, titre: "Le livret du stagiaire — La méthode CRAC", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 10. Traiter une objection : la méthode CRAC' },
+        { paragraphes: [
+          "Pour traiter une objection sincère, on suit quatre étapes, dans l'ordre. Elles forment le mot CRAC. Ne sautez jamais la première : c'est elle qui évite de répondre à côté.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Nom', 'Ce que vous faites', 'Exemple de formule'], lignes: [
+          ['C', 'Creuser', "Poser une question pour comprendre la vraie raison de l'objection", "« Qu'est-ce qui vous fait dire cela ? », « Qu'entendez-vous par… ? »"],
+          ['R', 'Reformuler', "Répéter l'objection avec vos mots pour montrer que vous avez compris", "« Si je comprends bien, vous craignez que… »"],
+          ['A', 'Argumenter', "Répondre avec un argument ou une preuve adaptés au vrai besoin", "« Justement, sachez que… », « La preuve, c'est que… »"],
+          ['C', 'Contrôler', "Vérifier que le client est rassuré avant de continuer", "« Est-ce que cela répond à votre inquiétude ? »"],
+        ] } },
+        { intertitre: 'Un exemple entièrement traité (sur un autre produit)' },
+        { paragraphes: [
+          "Un client hésite à acheter un lave-vaisselle : « Il est sûrement très bruyant. »",
+          "Creuser : « Qu'est-ce qui vous fait penser cela ? Avez-vous déjà été gêné par un appareil bruyant ? » — Reformuler : « Si je comprends bien, vous craignez d'être dérangé le soir. » — Argumenter : « Ce modèle est à 42 décibels, soit le niveau d'un chuchotement ; c'est écrit sur l'étiquette énergie, et il est garanti 5 ans. » — Contrôler : « Est-ce que ce niveau sonore vous convient ? »",
+        ] },
+        { bulleConseil: { texte: ["Remarquez : l'argument (42 décibels) n'arrive qu'en 3ᵉ position, une fois la vraie inquiétude comprise. C'est tout l'intérêt de la méthode."] } },
+      ] },
+
+      // DOC 3 : dialogue riche du rendez-vous (les 5 objections)
+      { numero: 3, titre: "Compte rendu du rendez-vous — les réactions de la directrice", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Notes prises pendant l’entretien' },
+        { paragraphes: [
+          "Voici, dans l'ordre, ce qu'a dit Camille Rousseau après votre présentation. Lisez attentivement : chaque réaction n'a pas la même nature.",
+        ] },
+        { dialogue: [
+          { locuteur: 'C. Rousseau', texte: "Votre robot est vraiment séduisant, il correspond à l'image moderne que je veux donner. Mais 30 000 euros l'unité, et il m'en faudrait plusieurs… c'est un budget énorme pour nous." },
+          { locuteur: 'Vous', texte: "Je comprends. Puis-je vous demander ce qui vous paraît le plus lourd : l'investissement de départ, ou le coût sur la durée ?" },
+          { locuteur: 'C. Rousseau', texte: "Surtout le départ. Et puis, franchement, j'ai une autre crainte : et s'il tombe en panne un soir de grande affluence ? On serait totalement bloqués à la réception." },
+          { locuteur: 'C. Rousseau', texte: "Il y a aussi ma clientèle. Une partie de nos habitués sont âgés. J'ai peur qu'ils soient déroutés, voire agacés, par un robot à l'accueil." },
+          { locuteur: 'C. Rousseau', texte: "Écoutez… c'est un projet important. Il faudrait vraiment que j'en discute avec mon associé. Laissez-moi vos coordonnées, je vous recontacterai un de ces jours." },
+          { locuteur: 'C. Rousseau', texte: "Ah, et une question technique : vous annoncez plus de 50 langues. C'est réel, ça, ou c'est de la publicité ? Parce que pour nous, c'est LE point essentiel." },
+        ] },
+        { bulleConseil: { texte: ["Cinq objections apparaissent ici. Quatre portent sur des points concrets ; une seule sert surtout à repousser la décision. Sachez la repérer."] } },
+      ] },
+
+      // DOC 4 : plaquette commerciale (les preuves et garanties, façon vraie plaquette)
+      { numero: 4, titre: "Plaquette commerciale — Nos garanties et nos preuves", texte: [
+        { pageWeb: true },
+        { docRiche: {
+          site: 'enchanted.tools',
+          marque: 'Enchanted Tools',
+          couleurHeader: '#F28C1E',
+          sections: [
+            { type: 'titre', texte: 'Investir sereinement dans un robot Mirokaï' },
+            { type: 'paragraphe', texte: "Nous savons qu'un robot représente un investissement important. C'est pourquoi nous entourons chaque vente de garanties solides et d'un accompagnement complet. Voici, point par point, ce que nous vous apportons." },
+            { type: 'sousTitre', texte: 'Fiabilité et service' },
+            { type: 'tableau', entetes: ['Engagement', 'Détail'], lignes: [
+              ['Garantie constructeur', '2 ans, pièces et main-d’œuvre incluses'],
+              ['Contrat de maintenance', 'Intervention d’un technicien sous 24 h, partout en France'],
+              ['Taux de panne', 'Moins de 1 % sur l’ensemble du parc déployé'],
+              ['Références', 'Déjà en service, sans interruption, dans les hôpitaux de l’AP-HP'],
+            ] },
+            { type: 'sousTitre', texte: 'Rentabilité' },
+            { type: 'paragraphe', texte: "Un Mirokaï fonctionne en continu, sans pause ni congés, 7 jours sur 7. Il prend en charge l'accueil aux heures de pointe et soulage votre personnel, qui se concentre sur les tâches à forte valeur. Beaucoup d'établissements amortissent le robot en réaffectant le temps gagné." },
+            { type: 'sousTitre', texte: 'Acceptation et accompagnement' },
+            { type: 'tableau', entetes: ['Atout', 'Détail'], lignes: [
+              ['Design attachant', 'Allure de personnage, pensée pour être acceptée par tous les publics, y compris les personnes âgées'],
+              ['Formation incluse', 'Votre personnel est formé à l’utilisation, sans surcoût'],
+              ['Essai possible', 'Test du robot dans votre établissement avant tout engagement'],
+              ['50 langues', 'Caractéristique réelle, vérifiable par une démonstration en direct'],
+            ] },
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette plaquette contient plus d'éléments que vous n'en utiliserez. Pour chaque objection, choisissez UNIQUEMENT la ou les preuves réellement adaptées."] } },
+      ] },
+
+      // DOC 5 : courriel interne du tuteur (consignes + rappel prix ferme)
+      { numero: 5, titre: "Courriel de votre tuteur (consignes internes)", texte: [
+        { mailLecture: {
+          de: 'k.haddad@enchanted.tools',
+          a: 'stagiaire@enchanted.tools',
+          objet: 'Avant de répondre aux objections de Mme Rousseau',
+          corps: [
+            "Bonjour,",
+            "Trois consignes avant que tu répondes à la directrice.",
+            "1) Sur le prix : notre tarif est ferme, on ne casse pas les prix. On défend la VALEUR (fiabilité, temps gagné, image), jamais une remise sauvage. La seule remise possible est celle prévue pour une commande de plusieurs robots, et c'est moi qui la négocie.",
+            "2) Sur les pannes : appuie-toi sur du concret (garantie, maintenance 24 h, références AP-HP). Pas de promesses en l'air.",
+            "3) Si elle te sort « je dois en parler à mon associé, je vous rappellerai » : attention, c'est souvent une façon polie de botter en touche. Ne la lâche pas sans avoir cherché, avec tact, ce qui la retient vraiment.",
+            "Bon courage, tu gères.",
+            "Karim",
+          ],
+        } },
+      ] },
+
+      // DOC 6 : fiche outil - reformulations types (aide a la redaction)
+      { numero: 6, titre: "Fiche outil — Des formules pour répondre sans braquer", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Boîte à formules' },
+        { paragraphes: [
+          "Pour bien traiter une objection, les mots comptent. Voici des formules utiles, à adapter à chaque situation. Elles vous aideront à rédiger vos réponses.",
+        ] },
+        { tableau: { colonnes: ['Pour…', 'Formule type'], lignes: [
+          ['Accueillir l’objection', '« Je comprends votre point de vue », « C’est une question légitime »'],
+          ['Creuser', '« Qu’est-ce qui vous fait dire cela ? », « Qu’est-ce qui vous retient exactement ? »'],
+          ['Reformuler', '« Si je comprends bien, vous craignez que… »'],
+          ['Introduire une preuve', '« Justement, sachez que… », « La preuve, c’est que… »'],
+          ['Contrôler', '« Est-ce que cela répond à votre inquiétude ? »'],
+          ['Traiter un prétexte avec tact', '« Bien sûr, c’est une décision importante. Puis-je vous demander s’il reste un point précis qui vous fait hésiter ? »'],
+        ] } },
+        { bulleConseil: { texte: ["Ces formules sont des points de départ. Le jour de l'oral, reformulez-les avec vos propres mots pour rester naturel."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Comprendre le rôle des objections",
+        contexte: "On commence par bien saisir ce qu'est une objection et comment la méthode CRAC fonctionne.",
+        questions: [
+          { numero: 1, consigne: "Expliquez, avec vos propres mots, pourquoi un vendeur ne doit pas redouter les objections. Appuyez-vous sur le livret.", ressources: "Document 1. Compétence C1.4.2. Reformulez, ne recopiez pas.", annexeId: 'annexe1' },
+          { numero: 2, consigne: "Citez les quatre étapes de la méthode CRAC et, pour chacune, expliquez en une phrase ce que fait le commercial. Précisez pourquoi il ne faut jamais sauter la première.", ressources: 'Document 2, annexe 2. Compétence C1.4.3.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Identifier la nature des objections",
+        contexte: "La directrice a formulé cinq objections. À vous de les analyser une par une.",
+        questions: [
+          { numero: 3, consigne: "Relevez les cinq objections de la directrice (document 3) et indiquez pour chacune si elle est SINCÈRE ou PRÉTEXTE. Justifiez à l'aide des critères du document 1.", ressources: 'Documents 1 et 3, annexe 3. Compétence C1.4.2. Une seule objection est un prétexte : à vous de la démasquer et d’expliquer pourquoi.', annexeId: 'annexe3' },
+        ] },
+      { titre: "Activité 3 — Traiter les objections avec méthode",
+        contexte: "On répond, en choisissant les bonnes preuves dans la plaquette et en respectant les consignes du tuteur.",
+        questions: [
+          { numero: 4, consigne: "Traitez l'objection sur le PRIX en appliquant les quatre étapes de la méthode CRAC. Respectez la consigne du tuteur : on défend la valeur, on ne casse pas les prix.", ressources: 'Documents 2, 4 et 5, annexe 4. Compétence C1.4.3. Choisissez dans la plaquette les preuves liées à la rentabilité.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Traitez l'objection sur les PANNES. Indiquez d'abord quelles preuves de la plaquette vous retenez, puis rédigez votre réponse complète au client.", ressources: 'Documents 3, 4 et 5, annexe 5. Compétence C1.4.3. Attention à ne pas choisir une preuve hors sujet.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "La directrice conclut par « je dois en parler à mon associé, je vous recontacterai ». Votre tuteur vous a mis en garde. Rédigez ce que vous répondriez pour découvrir, avec tact, ce qui la retient vraiment.", ressources: 'Documents 5 et 6, annexe 6. Compétence C1.4.3. Aidez-vous des formules de la fiche outil sans les recopier telles quelles.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'texte', id: 'annexe1', titre: "Annexe 1 — Pourquoi ne pas redouter les objections", lignes: 4 },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — La méthode CRAC', colonnes: ['Lettre', 'Étape', 'Ce que fait le commercial'], nbLignes: 4, largeurs: ['16%', '28%', '56%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [['C', 'Creuser', ''], ['R', 'Reformuler', ''], ['A', 'Argumenter', ''], ['C', 'Contrôler', '']] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Nature des cinq objections', colonnes: ['Objection (résumée)', 'Sincère / prétexte', 'Justification'], nbLignes: 5, largeurs: ['40%', '22%', '38%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Le prix de 30 000 € l’unité', '', ''],
+        ['La peur des pannes en pleine affluence', '', ''],
+        ['Les clients âgés déroutés par un robot', '', ''],
+        ['« Je dois en parler à mon associé »', '', ''],
+        ['Le doute sur les 50 langues', '', ''],
+      ] },
+      { type: 'traitobjections', id: 'annexe4', titre: 'Annexe 4 — Traiter l’objection prix (méthode CRAC)', lignes: [
+        { id: 'o1', objection: '« 30 000 € l’unité, et il m’en faut plusieurs : c’est un budget énorme. »', technique: 'Méthode CRAC complète + preuves de rentabilité (doc 4). On défend la valeur, pas de remise.' },
+      ] },
+      { type: 'traitobjections', id: 'annexe5', titre: 'Annexe 5 — Traiter l’objection pannes', lignes: [
+        { id: 'o2', objection: '« Et s’il tombe en panne un soir de grande affluence ? »', technique: 'Choisissez les preuves adaptées (garantie, maintenance 24 h, AP-HP) puis rédigez la réponse.' },
+      ] },
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Répondre au prétexte avec tact", lignes: 5 },
+    ],
+
+    objectifs: [
+      "Comprendre qu'une objection est un signe d'intérêt",
+      "Distinguer une objection sincère d'un prétexte",
+      "Appliquer les quatre étapes de la méthode CRAC",
+      "Choisir la preuve adaptée à chaque objection",
+      "Répondre à un prétexte avec tact, sans braquer le client",
+    ],
+  },
+
+  synthese: {
+    titre: "Argumenter et traiter les objections",
+    proposition: [
+      'Une objection', 'Un signe d’intérêt', 'Objection sincère', 'Objection prétexte',
+      'Creuser', 'Reformuler', 'Argumenter', 'Contrôler', 'La valeur, pas la remise', 'La vraie raison',
+    ],
+    racine: {
+      id: 'racine', texte: 'Le traitement des objections',
+      enfants: [
+        { id: 'obj', texte: "L'objection", enfants: [
+          { id: 'o1', texte: null, reponse: 'Une objection' },
+          { id: 'o2', texte: null, reponse: 'Un signe d’intérêt' },
+        ] },
+        { id: 'nat', texte: 'Les deux natures', enfants: [
+          { id: 'n1', texte: null, reponse: 'Objection sincère' },
+          { id: 'n2', texte: null, reponse: 'Objection prétexte' },
+        ] },
+        { id: 'crac', texte: 'La méthode CRAC', enfants: [
+          { id: 'c1', texte: null, reponse: 'Creuser' },
+          { id: 'c2', texte: null, reponse: 'Reformuler' },
+          { id: 'c3', texte: null, reponse: 'Argumenter' },
+          { id: 'c4', texte: null, reponse: 'Contrôler' },
+        ] },
+        { id: 'rep', texte: 'Les bons réflexes', enfants: [
+          { id: 'r1', texte: null, reponse: 'La valeur, pas la remise' },
+          { id: 'r2', texte: null, reponse: 'La vraie raison' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Comprendre l'objection", indicateurs: [
+        { niveau: 'novice', description: "Je prends l'objection comme un refus définitif." },
+        { niveau: 'debrouille', description: "Je sais ce qu'est une objection." },
+        { niveau: 'averti', description: "Je comprends qu'une objection est un signe d'intérêt." },
+        { niveau: 'expert', description: "J'accueille l'objection avec calme et je garde la main." },
+      ] },
+      { id: 'c2', intitule: "Identifier la nature", indicateurs: [
+        { niveau: 'novice', description: "Je confonds sincère et prétexte." },
+        { niveau: 'debrouille', description: "Je distingue les deux natures en théorie." },
+        { niveau: 'averti', description: "Je repère le prétexte parmi de vraies objections." },
+        { niveau: 'expert', description: "Je justifie la nature de chaque objection avec des critères." },
+      ] },
+      { id: 'c3', intitule: "Traiter l'objection", indicateurs: [
+        { niveau: 'novice', description: "Je réponds au hasard ou je casse le prix." },
+        { niveau: 'debrouille', description: "J'applique une partie de la méthode CRAC." },
+        { niveau: 'averti', description: "J'applique CRAC et je choisis une preuve adaptée." },
+        { niveau: 'expert', description: "Je traite même un prétexte avec tact et je défends la valeur." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Objection', definition: "Réserve, doute ou frein exprimé par le client face à l'offre." },
+      { terme: 'Objection sincère', definition: "Objection exprimant un vrai doute, sur un point précis et vérifiable." },
+      { terme: 'Objection prétexte', definition: "Fausse objection, vague, qui sert à repousser la décision sans s'engager." },
+      { terme: 'Méthode CRAC', definition: "Méthode de traitement d'objection : Creuser, Reformuler, Argumenter, Contrôler." },
+      { terme: 'Creuser', definition: "Poser une question pour comprendre la vraie raison de l'objection." },
+      { terme: 'Reformuler', definition: "Répéter l'objection avec ses mots pour montrer qu'on a compris." },
+      { terme: 'Argumenter', definition: "Répondre avec un argument ou une preuve adaptés au vrai besoin." },
+      { terme: 'Contrôler', definition: "Vérifier que le client est rassuré avant de poursuivre." },
+      { terme: 'Défendre la valeur', definition: "Justifier le prix par les bénéfices, plutôt que d'accorder une remise." },
+      { terme: 'Retour sur investissement', definition: "Ce que le client gagne dans la durée par rapport à sa dépense." },
+      { terme: 'Preuve', definition: "Élément concret qui rend une réponse crédible (garantie, chiffre, référence)." },
+      { terme: 'Référence client', definition: "Exemple d'un autre client satisfait, utilisé pour rassurer (ici, l'AP-HP)." },
+    ],
+    flashcards: [
+      { recto: "Une objection est-elle une mauvaise nouvelle ?", verso: 'Non : c’est un signe d’intérêt du client.' },
+      { recto: "Objection sincère ou prétexte : quelle différence ?", verso: 'La sincère porte sur un point précis ; le prétexte est vague et repousse la décision.' },
+      { recto: "Que signifie CRAC ?", verso: 'Creuser, Reformuler, Argumenter, Contrôler.' },
+      { recto: "Pourquoi ne jamais sauter l'étape Creuser ?", verso: 'Pour comprendre la vraie raison et ne pas répondre à côté.' },
+      { recto: "Comment traiter l'objection prix chez Enchanted Tools ?", verso: 'En défendant la valeur (rentabilité, temps gagné), sans casser le prix.' },
+      { recto: "Quelles preuves pour l'objection pannes ?", verso: 'Garantie 2 ans, maintenance sous 24 h, références AP-HP.' },
+      { recto: "« Je dois en parler à mon associé, je rappellerai » : nature ?", verso: 'Le plus souvent un prétexte.' },
+      { recto: "Comment traiter un prétexte ?", verso: 'En cherchant avec tact la vraie raison, sans braquer le client.' },
+      { recto: "Que fait-on à l'étape Contrôler ?", verso: 'On vérifie que le client est rassuré.' },
+      { recto: "Quel est le taux de panne annoncé sur le parc ?", verso: 'Moins de 1 %.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Une objection est avant tout :', options: ['un signe d’intérêt', 'un refus définitif', 'une insulte'], bonne: 0 },
+      { type: 'unique', question: 'Une objection sincère porte sur :', options: ['un point précis et vérifiable', 'rien de concret', 'une excuse'], bonne: 0 },
+      { type: 'unique', question: 'Une objection prétexte sert à :', options: ['repousser la décision', 'obtenir une preuve', 'négocier un délai de livraison'], bonne: 0 },
+      { type: 'unique', question: 'CRAC signifie :', options: ['Creuser, Reformuler, Argumenter, Contrôler', 'Client, Robot, Achat, Coût', 'Contacter, Rappeler, Attendre, Conclure'], bonne: 0 },
+      { type: 'unique', question: 'On ne saute jamais l’étape :', options: ['Creuser', 'Contrôler', 'Argumenter'], bonne: 0 },
+      { type: 'unique', question: 'Chez Enchanted Tools, l’objection prix se traite :', options: ['en défendant la valeur', 'par une grosse remise', 'en refusant de répondre'], bonne: 0 },
+      { type: 'unique', question: 'Pour l’objection pannes, on cite :', options: ['garantie, maintenance 24 h, AP-HP', 'les 50 langues', 'le design'], bonne: 0 },
+      { type: 'unique', question: '« J’en parle à mon associé, je rappellerai » est souvent :', options: ['un prétexte', 'une objection sincère', 'une commande'], bonne: 0 },
+      { type: 'unique', question: 'Le taux de panne annoncé est :', options: ['moins de 1 %', 'environ 20 %', 'inconnu'], bonne: 0 },
+      { type: 'unique', question: 'Traiter un prétexte, c’est :', options: ['chercher la vraie raison avec tact', 'insister lourdement', 'abandonner la vente'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque phrase : objection SINCÈRE ou PRÉTEXTE.',
+      etiquettes: ['Objection SINCÈRE', 'Objection PRÉTEXTE'],
+      zones: [
+        { libelle: '« J’ai peur qu’il tombe en panne le soir »', etiquetteIndex: 0 },
+        { libelle: '« 30 000 € l’unité, c’est un gros budget »', etiquetteIndex: 0 },
+        { libelle: '« Mes clients âgés seront déroutés »', etiquetteIndex: 0 },
+        { libelle: '« Fonctionne-t-il vraiment en 50 langues ? »', etiquetteIndex: 0 },
+        { libelle: '« La maintenance intervient en combien de temps ? »', etiquetteIndex: 0 },
+        { libelle: '« Je dois en parler à mon associé, je rappellerai »', etiquetteIndex: 1 },
+        { libelle: '« Je n’ai pas trop le temps là, une autre fois »', etiquetteIndex: 1 },
+        { libelle: '« Il faut que j’y réfléchisse, on verra plus tard »', etiquetteIndex: 1 },
+        { libelle: '« Le personnel sera-t-il formé ? »', etiquetteIndex: 0 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Pourquoi un vendeur ne doit-il pas redouter les objections ?", documents: ['Document 1'], bareme: 2,
+        reponse: "Une objection montre que le client s'intéresse à l'offre : il réfléchit, il se projette, il cherche à se rassurer avant de dire oui. Un client vraiment indifférent ne discute pas : il écourte l'entretien et s'en va. L'objection est donc une occasion de convaincre, pas un rejet.",
+        complement: "1 point pour l'idée que l'objection traduit l'intérêt/l'implication du client, 1 point pour l'idée qu'un client indifférent n'objecte pas (il part). Exiger une reformulation, refuser le simple recopiage du livret." },
+
+      { intitule: "Les quatre étapes de CRAC et l'importance de « Creuser ».", documents: ['Document 2', 'Annexe 2'], bareme: 3,
+        reponse: "Les quatre étapes, dans l'ordre.",
+        tableau: { colonnes: ['Lettre', 'Étape', 'Ce que fait le commercial'], lignes: [
+          ['C', 'Creuser', 'Poser une question pour comprendre la vraie raison'],
+          ['R', 'Reformuler', 'Répéter l’objection pour montrer qu’on a compris'],
+          ['A', 'Argumenter', 'Répondre avec un argument ou une preuve adaptés'],
+          ['C', 'Contrôler', 'Vérifier que le client est rassuré'],
+        ] },
+        complement: "0,5 point par étape correctement expliquée (2 points), 1 point pour l'importance de Creuser : sans comprendre la vraie raison, on risque de répondre à côté et de sortir une preuve inutile. Valoriser l'appui sur l'exemple du lave-vaisselle du document 2." },
+
+      { intitule: "Nature des cinq objections (sincère / prétexte) + justification.", documents: ['Documents 1 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "Quatre objections sont sincères, une seule est un prétexte.",
+        tableau: { colonnes: ['Objection', 'Nature', 'Justification'], lignes: [
+          ['Le prix (30 000 € l’unité)', 'Sincère', 'Porte sur un point précis (le budget), vrai frein financier'],
+          ['La peur des pannes', 'Sincère', 'Inquiétude concrète sur la fiabilité, vérifiable'],
+          ['Les clients âgés déroutés', 'Sincère', 'Doute réel sur l’acceptation par la clientèle'],
+          ['« J’en parle à mon associé, je rappellerai »', 'PRÉTEXTE', 'Reste vague, repousse la décision, n’attend pas de réponse précise'],
+          ['Le doute sur les 50 langues', 'Sincère', 'Demande de vérification sur un point précis et essentiel pour elle'],
+        ] },
+        complement: "1 point par ligne (0,5 nature + 0,5 justification). Le cœur de l'exercice : démasquer que « j'en parle à mon associé, je vous recontacterai un de ces jours » est le PRÉTEXTE — formulation vague, sans date, qui repousse. Les quatre autres portent sur des points précis et vérifiables, donc sincères. Refuser un classement non justifié." },
+
+      { intitule: "Traiter l'objection prix avec la méthode CRAC.", documents: ['Documents 2, 4 et 5', 'Annexe 4'], bareme: 4,
+        reponse: "Réponse construite en quatre étapes, défendant la valeur (jamais la remise).",
+        complement: "Exemple attendu. Creuser : « Qu'est-ce qui vous paraît le plus lourd : l'investissement de départ ou le coût sur la durée ? » (déjà amorcé dans le dialogue). Reformuler : « Si je comprends bien, vous vous demandez si un tel investissement se justifie. » Argumenter (preuves de rentabilité, doc 4) : « Un Mirokaï fonctionne en continu, 7 j/7, sans pause ; il absorbe l'accueil aux heures de pointe et libère votre personnel pour des tâches à plus forte valeur. Beaucoup d'établissements l'amortissent ainsi. » Contrôler : « Est-ce que, vu comme cela, l'investissement vous paraît plus justifié ? » Barème : 1 point par étape. IMPÉRATIF : aucune remise sauvage (consigne du tuteur, doc 5) ; pénaliser l'élève qui baisse le prix. Valoriser l'emploi des preuves de rentabilité. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Traiter l'objection pannes (choix des preuves + réponse).", documents: ['Documents 3, 4 et 5', 'Annexe 5'], bareme: 4,
+        reponse: "L'élève sélectionne les bonnes preuves puis rédige.",
+        complement: "Preuves attendues (doc 4) : garantie 2 ans, maintenance sous 24 h partout en France, taux de panne inférieur à 1 %, références AP-HP (en service sans interruption). Exemple de réponse : « Je comprends votre inquiétude, c'est un point essentiel. Nos robots affichent moins de 1 % de panne, ils sont garantis 2 ans et un technicien intervient sous 24 h partout en France. Ils fonctionnent déjà sans interruption dans les hôpitaux de l'AP-HP. Est-ce que cela vous rassure sur ce point ? » Barème : 1 point pour le bon choix de preuves (rejeter les 50 langues ou le design, hors sujet), 2 points pour une réponse construite et rassurante, 1 point pour le contrôle final. Ne pas pénaliser l'orthographe." },
+
+      { intitule: "Répondre au prétexte « j'en parle à mon associé » avec tact.", documents: ['Documents 5 et 6', 'Annexe 6'], bareme: 2,
+        reponse: "Il faut creuser avec tact pour faire émerger le vrai frein, sans braquer la cliente.",
+        complement: "Exemple attendu : ne pas insister lourdement ni abandonner, mais poser une question ouverte et bienveillante. « Bien sûr, c'est une décision importante et il est normal d'en discuter. Puis-je simplement vous demander s'il reste, aujourd'hui, un point précis qui vous fait hésiter ? Je pourrais peut-être vous rassurer dès maintenant. » On peut aussi proposer un essai du robot ou un rendez-vous à trois avec l'associé. Barème : 1 point pour comprendre qu'il faut CREUSER (chercher la vraie raison), 1 point pour une formulation habile et respectueuse (ni insistance, ni abandon). S'appuyer sur la fiche outil (doc 6) sans la recopier mot pour mot. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 5 - Etablir le devis et conclure la vente
+// Bloc 1 : conseiller et vendre. Classe de Premiere. VERSION RICHE + CALCULS.
+// Les formules figurent dans les documents, avec un exemple guide chiffre
+// DIFFERENT de l'exercice. L'eleve calcule lui-meme.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M5: ContenuMission = {
+  travaux: {
+    consigne:
+      "Établissez le devis de l'hôtel Le Grand Siècle à partir de la grille tarifaire et des conditions commerciales, calculez le montant à payer, puis préparez la conclusion de la vente.",
+    contexte:
+      "Bonne nouvelle : après avoir traité ses objections, la directrice de l'hôtel Le Grand Siècle est convaincue. Elle souhaite un devis officiel pour 4 robots Mirokaï destinés à son hall d'accueil, avec la formation de son personnel et un contrat de maintenance. Votre tuteur, Karim Haddad, vous confie l'établissement du devis : « Tu as tout ce qu'il faut : la grille tarifaire, nos conditions commerciales et la méthode de calcul. Applique les formules pas à pas, ne te trompe pas dans les totaux : un devis, c'est un document officiel qui engage l'entreprise. Ensuite, on préparera la phrase de conclusion pour décrocher la signature. »",
+    competence: {
+      groupe: 'Bloc de compétences 1 — Conseiller et vendre',
+      intitule: "C1.5 — Établir un devis et conclure la vente",
+      detail: "C1.5.1 Exploiter une grille tarifaire et des conditions commerciales. C1.5.2 Calculer un devis (remise, HT, TVA, TTC, acompte). C1.5.3 Conclure la vente.",
+    },
+    documents: [
+      // DOC 1 : grille tarifaire (page web riche)
+      { numero: 1, titre: "La grille tarifaire d'Enchanted Tools", texte: [
+        { pageWeb: true },
+        { intertitre: 'Tarifs professionnels — en vigueur cette année' },
+        { paragraphes: [
+          "Voici nos tarifs. Attention : tous ces produits et services ne figureront pas forcément sur le devis de l'hôtel. Vous devrez choisir ceux qui correspondent à sa commande.",
+        ] },
+        { tableau: { colonnes: ['Référence', 'Produit ou service', 'Prix unitaire HT'], lignes: [
+          ['MIR-01', 'Robot Mirokaï (modèle accueil)', '30 000,00 €'],
+          ['MIR-02', 'Robot Mirokaï (modèle logistique)', '34 000,00 €'],
+          ['FORM-01', 'Formation du personnel (forfait, tout le personnel)', '1 500,00 €'],
+          ['MAINT-01', 'Contrat de maintenance annuel (par robot)', '2 400,00 €'],
+          ['ACC-01', 'Station de recharge supplémentaire', '450,00 €'],
+          ['ACC-02', 'Habillage personnalisé aux couleurs de l’hôtel (par robot)', '600,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["L'hôtel commande le modèle accueil (MIR-01), la formation (FORM-01) et la maintenance (MAINT-01). Il ne prend ni le modèle logistique, ni les accessoires. À vous de ne retenir que les bonnes lignes."] } },
+      ] },
+
+      // DOC 2 : conditions commerciales (remise, acompte, reglement)
+      { numero: 2, titre: "Nos conditions commerciales", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Conditions commerciales' },
+        { intertitre: 'Remise, acompte et règlement' },
+        { paragraphes: [
+          "Remise quantité : pour toute commande d'au moins 3 robots, une remise commerciale de 5 % est accordée sur le montant total des robots (la remise ne s'applique PAS à la formation ni à la maintenance).",
+          "TVA : le taux de TVA applicable est de 20 %.",
+          "Acompte : à la signature du devis, le client verse un acompte de 30 % du montant TTC. Le solde (70 %) est réglé à la livraison.",
+          "Validité : le devis est valable 30 jours à compter de sa date d'émission.",
+        ] },
+        { bulleConseil: { texte: ["L'hôtel commande 4 robots : la remise de 5 % s'applique donc. Souvenez-vous qu'elle porte uniquement sur les robots."] } },
+      ] },
+
+      // DOC 3 : methode de calcul (LES FORMULES) + exemple guide DIFFERENT
+      { numero: 3, titre: "Méthode — Comment calculer un devis", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 11. Calculer un devis étape par étape' },
+        { paragraphes: [
+          "Un devis se calcule toujours dans le même ordre. Voici les formules à appliquer.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Formule'], lignes: [
+          ['1. Total par ligne', 'Prix unitaire HT × quantité'],
+          ['2. Sous-total HT (robots)', 'Somme des lignes de robots'],
+          ['3. Remise', 'Sous-total robots × taux de remise (5 % = × 0,05)'],
+          ['4. Total HT', '(Sous-total robots − remise) + formation + maintenance'],
+          ['5. TVA', 'Total HT × 0,20'],
+          ['6. Total TTC', 'Total HT + TVA'],
+          ['7. Acompte', 'Total TTC × 0,30'],
+          ['8. Solde', 'Total TTC − acompte'],
+        ] } },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres)' },
+        { paragraphes: [
+          "Un client commande 3 robots à 20 000 € HT, plus une formation à 1 000 €, sans maintenance. Remise quantité de 5 %.",
+          "1) Robots : 20 000 × 3 = 60 000 €. 2) Sous-total robots = 60 000 €. 3) Remise = 60 000 × 0,05 = 3 000 €. 4) Total HT = (60 000 − 3 000) + 1 000 = 58 000 €. 5) TVA = 58 000 × 0,20 = 11 600 €. 6) TTC = 58 000 + 11 600 = 69 600 €. 7) Acompte = 69 600 × 0,30 = 20 880 €. 8) Solde = 69 600 − 20 880 = 48 720 €.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise des chiffres DIFFÉRENTS de la commande de l'hôtel. Il vous montre la méthode : à vous de refaire les mêmes étapes avec les vrais chiffres de l'hôtel."] } },
+      ] },
+
+      // DOC 4 : bon de commande signe par le client (les quantites)
+      { numero: 4, titre: "La demande de l'hôtel (bon pour commande)", texte: [
+        { logoEntete: 'HÔTEL LE GRAND SIÈCLE — Demande de devis' },
+        { paragraphes: [
+          "Document transmis par la cliente. Il précise ce qu'elle veut commander. C'est à partir de là que vous établissez le devis.",
+        ] },
+        { tableau: { colonnes: ['Ce que commande l’hôtel', 'Quantité'], lignes: [
+          ['Robots Mirokaï modèle accueil (MIR-01)', '4'],
+          ['Formation du personnel (FORM-01)', '1 forfait'],
+          ['Contrat de maintenance annuel (MAINT-01)', '4 (un par robot)'],
+        ] } },
+        { paragraphes: [
+          "Signé : Camille Rousseau, directrice de l'accueil.",
+        ] },
+      ] },
+
+      // DOC 5 : techniques de conclusion
+      { numero: 5, titre: "Fiche méthode — Conclure la vente", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Une fois le devis présenté, il faut conclure, c'est-à-dire amener le client à signer. On ne laisse jamais l'entretien se terminer sans tenter une conclusion.",
+        ] },
+        { tableau: { colonnes: ['Technique de conclusion', 'Exemple de phrase'], lignes: [
+          ['La conclusion directe', '« Souhaitez-vous que nous établissions le bon de commande dès aujourd’hui ? »'],
+          ['L’alternative', '« Préférez-vous une livraison en juin ou en septembre ? »'],
+          ['Le dernier avantage (joker)', '« Si vous signez cette semaine, j’inclus l’habillage aux couleurs de l’hôtel. »'],
+          ['La conclusion par l’acompte', '« Pour lancer la commande, il suffit de verser l’acompte de 30 %. »'],
+        ] } },
+        { bulleConseil: { texte: ["Choisissez une technique adaptée à votre cliente, qui aime se sentir privilégiée et moderne (rappelez-vous ses motivations SONCAS)."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Préparer le devis",
+        contexte: "Avant de calculer, on identifie les bonnes lignes et les bons prix.",
+        questions: [
+          { numero: 1, consigne: "À partir de la grille tarifaire (doc 1) et de la demande de l'hôtel (doc 4), relevez les références, désignations, prix unitaires HT et quantités à faire figurer sur le devis.", ressources: 'Documents 1 et 4, annexe 1. Compétence C1.5.1. Ne retenez que ce que l’hôtel commande.', annexeId: 'annexe1' },
+        ] },
+      { titre: "Activité 2 — Calculer le devis",
+        contexte: "On applique les formules du document 3, pas à pas, avec les vrais chiffres de l'hôtel.",
+        questions: [
+          { numero: 2, consigne: "Calculez le total HT de chaque ligne, puis le sous-total des robots. Montrez vos calculs.", ressources: 'Documents 1, 3 et 4, annexe 2. Compétence C1.5.2. Formule : prix unitaire × quantité.', annexeId: 'annexe2' },
+          { numero: 3, consigne: "Calculez la remise commerciale, puis le total HT du devis (robots remisés + formation + maintenance). Montrez vos calculs.", ressources: 'Documents 2 et 3, annexe 3. Compétence C1.5.2. La remise ne porte que sur les robots.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez la TVA, le total TTC, l'acompte de 30 % et le solde. Montrez vos calculs.", ressources: 'Documents 2 et 3, annexe 4. Compétence C1.5.2.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Reportez tous vos résultats sur le devis officiel pour le présenter à la cliente.", ressources: 'Annexe 5 (devis à compléter). Compétence C1.5.2. Vérifiez la cohérence de l’ensemble.', annexeId: 'annexe5' },
+        ] },
+      { titre: "Activité 3 — Conclure la vente",
+        contexte: "Le devis est prêt. Il reste à décrocher la signature.",
+        questions: [
+          { numero: 6, consigne: "Choisissez une technique de conclusion adaptée à la directrice (rappelez-vous ses motivations) et rédigez la phrase que vous lui direz pour l'amener à signer.", ressources: 'Document 5, annexe 6. Compétence C1.5.3. Justifiez brièvement votre choix de technique.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les lignes du devis', colonnes: ['Référence', 'Désignation', 'Prix unitaire HT', 'Quantité'], nbLignes: 3, largeurs: ['18%', '42%', '22%', '18%'], reponseMultiligne: false },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Totaux par ligne et sous-total robots', colonnes: ['Calcul', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['30%', '46%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Robots : 30 000 × 4', '', ''],
+        ['Formation : 1 500 × 1', '', ''],
+        ['Maintenance : 2 400 × 4', '', ''],
+        ['Sous-total robots', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Remise et total HT', colonnes: ['Calcul', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 3, largeurs: ['30%', '46%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Remise 5 % (robots × 0,05)', '', ''],
+        ['Robots après remise', '', ''],
+        ['Total HT (robots remisés + formation + maintenance)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — TVA, TTC, acompte et solde', colonnes: ['Calcul', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['30%', '46%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['TVA (total HT × 0,20)', '', ''],
+        ['Total TTC (HT + TVA)', '', ''],
+        ['Acompte 30 % (TTC × 0,30)', '', ''],
+        ['Solde (TTC − acompte)', '', ''],
+      ] },
+      { type: 'boncommandecalcule', id: 'annexe5', titre: 'Annexe 5 — Devis officiel à compléter', client: 'Hôtel Le Grand Siècle — Camille Rousseau',
+        lignes: [
+          { ref: 'MIR-01', designation: 'Robot Mirokaï modèle accueil', prixHT: '30000', quantite: '4' },
+          { ref: 'FORM-01', designation: 'Formation du personnel (forfait)', prixHT: '1500', quantite: '1' },
+          { ref: 'MAINT-01', designation: 'Contrat de maintenance annuel', prixHT: '2400', quantite: '4' },
+        ],
+        reduction: true, paiement2fois: true },
+      { type: 'texte', id: 'annexe6', titre: "Annexe 6 — Ma phrase de conclusion (+ technique choisie)", lignes: 4 },
+    ],
+
+    objectifs: [
+      "Exploiter une grille tarifaire et des conditions commerciales",
+      "Calculer les totaux d'un devis (ligne, sous-total, remise)",
+      "Calculer HT, TVA, TTC, acompte et solde",
+      "Établir un devis officiel",
+      "Choisir une technique de conclusion adaptée au client",
+    ],
+  },
+
+  synthese: {
+    titre: "Le devis et la conclusion",
+    proposition: [
+      'Prix unitaire × quantité', 'Remise 5 % sur les robots', 'Total HT', 'TVA × 0,20',
+      'Total TTC', 'Acompte 30 %', 'Le solde à la livraison', 'Conclure la vente',
+      'La conclusion directe', 'Le joker',
+    ],
+    racine: {
+      id: 'racine', texte: 'Établir et conclure',
+      enfants: [
+        { id: 'cal', texte: 'Les calculs', enfants: [
+          { id: 'c1', texte: null, reponse: 'Prix unitaire × quantité' },
+          { id: 'c2', texte: null, reponse: 'Remise 5 % sur les robots' },
+          { id: 'c3', texte: null, reponse: 'Total HT' },
+          { id: 'c4', texte: null, reponse: 'TVA × 0,20' },
+          { id: 'c5', texte: null, reponse: 'Total TTC' },
+        ] },
+        { id: 'reg', texte: 'Le règlement', enfants: [
+          { id: 'r1', texte: null, reponse: 'Acompte 30 %' },
+          { id: 'r2', texte: null, reponse: 'Le solde à la livraison' },
+        ] },
+        { id: 'con', texte: 'La conclusion', enfants: [
+          { id: 'x1', texte: null, reponse: 'Conclure la vente' },
+          { id: 'x2', texte: null, reponse: 'La conclusion directe' },
+          { id: 'x3', texte: null, reponse: 'Le joker' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Exploiter les tarifs", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelles lignes retenir." },
+        { niveau: 'debrouille', description: "Je repère les produits commandés." },
+        { niveau: 'averti', description: "Je relève les bons prix et quantités." },
+        { niveau: 'expert', description: "Je ne garde que ce que l'hôtel commande vraiment." },
+      ] },
+      { id: 'c2', intitule: "Calculer le devis", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelle formule appliquer." },
+        { niveau: 'debrouille', description: "Je calcule les totaux par ligne." },
+        { niveau: 'averti', description: "Je calcule remise, HT, TVA et TTC." },
+        { niveau: 'expert', description: "Je calcule tout, y compris acompte et solde, sans erreur." },
+      ] },
+      { id: 'c3', intitule: "Conclure la vente", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas comment amener à la signature." },
+        { niveau: 'debrouille', description: "Je connais une technique de conclusion." },
+        { niveau: 'averti', description: "Je rédige une phrase de conclusion correcte." },
+        { niveau: 'expert', description: "J'adapte ma conclusion aux motivations du client." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Devis', definition: "Document officiel qui détaille les produits, services et prix proposés à un client avant l'achat." },
+      { terme: 'Grille tarifaire', definition: "Document qui liste les prix des produits et services d'une entreprise." },
+      { terme: 'Prix unitaire HT', definition: "Prix d'un seul article, hors taxes." },
+      { terme: 'Total HT', definition: "Montant hors taxes de la commande (avant TVA)." },
+      { terme: 'Remise', definition: "Réduction accordée au client, souvent en pourcentage." },
+      { terme: 'TVA', definition: "Taxe sur la valeur ajoutée, ici 20 %, ajoutée au montant HT." },
+      { terme: 'Total TTC', definition: "Montant toutes taxes comprises : total HT + TVA." },
+      { terme: 'Acompte', definition: "Somme versée à la commande (ici 30 % du TTC) ; le reste est le solde." },
+      { terme: 'Solde', definition: "Montant restant à payer après l'acompte (ici 70 %), réglé à la livraison." },
+      { terme: 'Conclure la vente', definition: "Amener le client à prendre sa décision d'achat et à signer." },
+      { terme: 'Conclusion alternative', definition: "Proposer un choix entre deux options qui mènent toutes deux à l'achat." },
+      { terme: 'Validité du devis', definition: "Durée pendant laquelle le devis et ses prix restent garantis (ici 30 jours)." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on le total d'une ligne ?", verso: 'Prix unitaire HT × quantité.' },
+      { recto: "Sur quoi porte la remise de 5 % ?", verso: 'Uniquement sur le montant des robots (pas la formation ni la maintenance).' },
+      { recto: "Comment obtient-on le total HT ?", verso: '(Robots − remise) + formation + maintenance.' },
+      { recto: "Comment calcule-t-on la TVA à 20 % ?", verso: 'Total HT × 0,20.' },
+      { recto: "Comment obtient-on le total TTC ?", verso: 'Total HT + TVA.' },
+      { recto: "Comment calcule-t-on l'acompte de 30 % ?", verso: 'Total TTC × 0,30.' },
+      { recto: "Comment obtient-on le solde ?", verso: 'Total TTC − acompte.' },
+      { recto: "Combien de temps le devis est-il valable ?", verso: '30 jours à compter de son émission.' },
+      { recto: "Qu'est-ce que conclure la vente ?", verso: 'Amener le client à décider et à signer.' },
+      { recto: "Cite une technique de conclusion.", verso: 'Directe, alternative, dernier avantage (joker), par l’acompte.' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le total d’une ligne se calcule par :', options: ['prix unitaire × quantité', 'prix unitaire + quantité', 'prix unitaire − remise'], bonne: 0 },
+      { type: 'unique', question: 'La remise de 5 % porte sur :', options: ['les robots seulement', 'toute la commande', 'la formation'], bonne: 0 },
+      { type: 'unique', question: 'La TVA applicable est de :', options: ['20 %', '5 %', '10 %'], bonne: 0 },
+      { type: 'unique', question: 'Le total TTC est égal à :', options: ['total HT + TVA', 'total HT − TVA', 'total HT × 2'], bonne: 0 },
+      { type: 'unique', question: 'L’acompte demandé est de :', options: ['30 % du TTC', '50 % du HT', '10 % du TTC'], bonne: 0 },
+      { type: 'unique', question: 'Le solde correspond à :', options: ['TTC − acompte', 'TTC + acompte', 'HT − TVA'], bonne: 0 },
+      { type: 'unique', question: 'Le devis est valable :', options: ['30 jours', '1 an', '3 jours'], bonne: 0 },
+      { type: 'unique', question: 'La remise s’applique car l’hôtel commande :', options: ['au moins 3 robots', 'un seul robot', 'de la formation'], bonne: 0 },
+      { type: 'unique', question: 'Conclure la vente, c’est :', options: ['amener le client à signer', 'baisser le prix', 'refaire le devis'], bonne: 0 },
+      { type: 'unique', question: 'La conclusion « alternative » propose :', options: ['un choix entre deux options', 'un refus', 'une seule solution'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque calcul à sa formule.',
+      etiquettes: ['Total ligne', 'Remise', 'Total HT', 'TVA', 'TTC', 'Acompte'],
+      zones: [
+        { libelle: 'Prix unitaire × quantité', etiquetteIndex: 0 },
+        { libelle: 'Robots × 0,05', etiquetteIndex: 1 },
+        { libelle: '(Robots − remise) + formation + maintenance', etiquetteIndex: 2 },
+        { libelle: 'Total HT × 0,20', etiquetteIndex: 3 },
+        { libelle: 'Total HT + TVA', etiquetteIndex: 4 },
+        { libelle: 'Total TTC × 0,30', etiquetteIndex: 5 },
+        { libelle: '30 000 × 4 = 120 000', etiquetteIndex: 0 },
+        { libelle: '120 000 × 0,05 = 6 000', etiquetteIndex: 1 },
+        { libelle: '125 100 × 0,20 = 25 020', etiquetteIndex: 3 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les lignes du devis (références, désignations, prix, quantités).", documents: ['Documents 1 et 4', 'Annexe 1'], bareme: 3,
+        reponse: "On ne retient que les trois lignes commandées par l'hôtel.",
+        tableau: { colonnes: ['Réf.', 'Désignation', 'Prix unitaire HT', 'Quantité'], lignes: [
+          ['MIR-01', 'Robot Mirokaï modèle accueil', '30 000 €', '4'],
+          ['FORM-01', 'Formation du personnel (forfait)', '1 500 €', '1'],
+          ['MAINT-01', 'Contrat de maintenance annuel', '2 400 €', '4'],
+        ] },
+        complement: "1 point par ligne correcte. Piège volontaire : la grille contient aussi le modèle logistique (MIR-02) et des accessoires (ACC-01, ACC-02) que l'hôtel NE commande PAS. Pénaliser l'élève qui les ajoute. Il faut croiser la grille (doc 1) et la demande (doc 4)." },
+
+      { intitule: "Calculez les totaux par ligne et le sous-total des robots.", documents: ['Documents 1, 3 et 4', 'Annexe 2'], bareme: 3,
+        reponse: "On applique : prix unitaire × quantité.",
+        tableau: { colonnes: ['Calcul', 'Opération', 'Résultat'], lignes: [
+          ['Robots', '30 000 × 4', '120 000 €'],
+          ['Formation', '1 500 × 1', '1 500 €'],
+          ['Maintenance', '2 400 × 4', '9 600 €'],
+          ['Sous-total robots', '—', '120 000 €'],
+        ] },
+        complement: "0,75 point par calcul juste (robots, formation, maintenance, sous-total). Exiger que l'opération soit montrée, pas seulement le résultat. Erreur fréquente : oublier de multiplier la maintenance par 4." },
+
+      { intitule: "Calculez la remise et le total HT.", documents: ['Documents 2 et 3', 'Annexe 3'], bareme: 5,
+        reponse: "La remise de 5 % ne porte que sur les robots.",
+        tableau: { colonnes: ['Calcul', 'Opération', 'Résultat'], lignes: [
+          ['Remise 5 %', '120 000 × 0,05', '6 000 €'],
+          ['Robots après remise', '120 000 − 6 000', '114 000 €'],
+          ['Total HT', '114 000 + 1 500 + 9 600', '125 100 €'],
+        ] },
+        complement: "2 points pour la remise (calcul et résultat 6 000 €), 1 point pour les robots remisés (114 000 €), 2 points pour le total HT (125 100 €). ERREUR CLASSIQUE à sanctionner : appliquer la remise sur toute la commande (formation et maintenance comprises). La remise ne concerne QUE les robots (condition du doc 2)." },
+
+      { intitule: "Calculez TVA, TTC, acompte et solde.", documents: ['Documents 2 et 3', 'Annexe 4'], bareme: 5,
+        reponse: "On enchaîne les formules à partir du total HT (125 100 €).",
+        tableau: { colonnes: ['Calcul', 'Opération', 'Résultat'], lignes: [
+          ['TVA 20 %', '125 100 × 0,20', '25 020 €'],
+          ['Total TTC', '125 100 + 25 020', '150 120 €'],
+          ['Acompte 30 %', '150 120 × 0,30', '45 036 €'],
+          ['Solde 70 %', '150 120 − 45 036', '105 084 €'],
+        ] },
+        complement: "1,25 point par calcul juste. Vérifier l'enchaînement : une erreur au total HT (question 3) se répercute ici — dans ce cas, évaluer la cohérence de la démarche plutôt que le seul résultat. Résultats attendus exacts : TVA 25 020 €, TTC 150 120 €, acompte 45 036 €, solde 105 084 €." },
+
+      { intitule: "Reportez les résultats sur le devis officiel.", documents: ['Annexe 5'], bareme: 2,
+        reponse: "Le devis reprend toutes les valeurs calculées, cohérentes entre elles.",
+        complement: "Devis attendu : 3 lignes (robots 120 000, formation 1 500, maintenance 9 600), remise 6 000, total HT 125 100, TVA 25 020, TTC 150 120, acompte 45 036, solde 105 084. Barème : 1 point pour un devis complet et lisible, 1 point pour la cohérence de tous les montants. Valoriser la présentation soignée d'un document officiel." },
+
+      { intitule: "Choisissez une technique de conclusion et rédigez votre phrase.", documents: ['Document 5', 'Annexe 6'], bareme: 2,
+        reponse: "La phrase doit être adaptée aux motivations de la directrice (Nouveauté, Orgueil, Confort).",
+        complement: "Exemples valables. Joker (adapté à son goût du privilège) : « Si vous signez cette semaine, j'inclus l'habillage aux couleurs de l'hôtel, pour un accueil vraiment unique. » Alternative : « Préférez-vous une mise en service en juin ou en septembre ? » Par l'acompte : « Pour lancer votre commande dès aujourd'hui, il suffit de verser l'acompte de 30 %, soit 45 036 €. » Barème : 1 point pour une technique clairement identifiée et justifiée (lien avec les motivations SONCAS de la cliente), 1 point pour une phrase de conclusion naturelle et efficace. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 6 - Suivre la commande et preparer la livraison
+// Bloc 2 : suivre les ventes. Classe de Premiere. VERSION RICHE + CALCULS delais.
+// Dates figees : signature 14 avril 202N, fabrication 8 semaines, livraison
+// mardi 15 juin, formation 16-17 juin. Penalite retard 1 % HT par semaine.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M6: ContenuMission = {
+  travaux: {
+    consigne:
+      "Assurez le suivi de la commande de l'hôtel : vérifiez le dossier, calculez les délais, établissez le planning de livraison et informez le client.",
+    contexte:
+      "La directrice de l'hôtel Le Grand Siècle a signé le devis le 14 avril 202N et versé son acompte. La vente est conclue, mais votre travail ne s'arrête pas là : c'est maintenant le suivi de la commande qui commence. Votre tuteur vous explique : « Beaucoup de vendeurs croient que tout se joue à la signature. C'est faux. Un client mal suivi après la vente, c'est un client perdu pour la suite. Tu dois vérifier que le dossier est complet, calculer les délais réels, préparer la livraison avec la logistique, et surtout tenir la cliente informée. Et attention : si nous livrons en retard, l'entreprise paie des pénalités. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.1 — Assurer le suivi de la commande et préparer la livraison",
+      detail: "C2.1.1 Vérifier et traiter le dossier de commande. C2.1.2 Calculer et contrôler les délais. C2.1.3 Organiser la livraison et informer le client.",
+    },
+    documents: [
+      // DOC 1 : accuse de reception de commande (document authentique)
+      { numero: 1, titre: "Accusé de réception de commande n° CD-2041", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Accusé de réception de commande' },
+        { tableau: { colonnes: ['Rubrique', 'Information'], lignes: [
+          ['N° de commande', 'CD-2041'],
+          ['Client', 'Hôtel Le Grand Siècle — 8, rue de la Paix, Paris'],
+          ['Interlocutrice', 'Camille Rousseau, directrice de l’accueil'],
+          ['Date de signature du devis', '14 avril 202N'],
+          ['Montant total TTC', '150 120,00 €'],
+          ['Acompte versé (30 %)', '45 036,00 € — reçu le 14 avril 202N'],
+          ['Solde à régler à la livraison', '105 084,00 €'],
+          ['Produits commandés', '4 robots Mirokaï (MIR-01), formation, maintenance annuelle'],
+          ['Adresse de livraison', 'Hôtel Le Grand Siècle — entrée logistique, 12 rue Volney, Paris'],
+          ['Contact sur place', 'M. Diallo, responsable technique — disponible du lundi au vendredi, 8 h à 17 h'],
+        ] } },
+        { bulleConseil: { texte: ["Vérifiez toujours qu'un dossier de commande est complet AVANT de lancer la fabrication. Une information manquante retarde toute la chaîne."] } },
+      ] },
+
+      // DOC 2 : conditions logistiques et delais (avec regles de calcul)
+      { numero: 2, titre: "Nos conditions logistiques et nos délais", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 12. Délais et logistique' },
+        { paragraphes: [
+          "Chaque commande suit un circuit précis. Voici les règles à connaître pour calculer une date de livraison et informer correctement le client.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Durée / règle'], lignes: [
+          ['Validation du dossier', '2 jours ouvrés après réception de l’acompte'],
+          ['Fabrication des robots', '8 semaines à compter de la signature'],
+          ['Contrôle qualité', '3 jours ouvrés avant expédition'],
+          ['Transport et installation', '1 journée sur site'],
+          ['Formation du personnel', '2 journées, après la mise en service'],
+          ['Livraison', 'Uniquement du lundi au vendredi, jamais le week-end'],
+        ] } },
+        { intertitre: 'Règle de calcul des pénalités de retard' },
+        { paragraphes: [
+          "Si Enchanted Tools livre après la date annoncée, une pénalité est due au client.",
+          "Formule : pénalité = montant HT de la commande × 1 % × nombre de semaines de retard.",
+          "Exemple avec d'autres chiffres : pour une commande de 80 000 € HT livrée avec 3 semaines de retard, la pénalité serait de 80 000 × 0,01 × 3 = 2 400 €.",
+        ] },
+        { bulleConseil: { texte: ["L'exemple utilise des chiffres différents de notre commande. À vous d'appliquer la même formule avec les vrais montants du dossier."] } },
+      ] },
+
+      // DOC 3 : courriel de l'atelier de production (probleme + info a trier)
+      { numero: 3, titre: "Courriel de l'atelier de production", texte: [
+        { mailLecture: {
+          de: 'production@enchanted.tools',
+          a: 'k.haddad@enchanted.tools',
+          objet: 'Commande CD-2041 — point de fabrication',
+          corps: [
+            "Bonjour Karim,",
+            "Point sur la commande CD-2041 (4 robots MIR-01).",
+            "La fabrication a démarré comme prévu. Les trois premiers robots sortent de chaîne dans les temps. L'atelier tourne bien, l'équipe a d'ailleurs battu son record de production ce mois-ci.",
+            "En revanche, le quatrième robot a un souci : le fournisseur de la batterie Saft nous livre avec 5 jours de retard. Cela ne remet pas en cause la date globale car nous avions prévu une marge, mais il faudra confirmer.",
+            "Autre information : la nouvelle cafétéria de l'atelier ouvre lundi, tu es le bienvenu.",
+            "Le contrôle qualité est programmé pour le 9 juin. Si tout est conforme, l'expédition peut partir dans la foulée.",
+            "Bonne journée,",
+            "Sofia Marchetti, responsable production",
+          ],
+        } },
+        { bulleConseil: { texte: ["Ce courriel contient des informations utiles pour le suivi… et d'autres qui ne servent à rien. Repérez celles qui concernent réellement la commande."] } },
+      ] },
+
+      // DOC 4 : planning previsionnel a completer (les dates)
+      { numero: 4, titre: "Le calendrier prévisionnel de la commande", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Suivi de commande CD-2041' },
+        { paragraphes: [
+          "Voici les étapes de la commande. Certaines dates sont déjà connues, d'autres sont à calculer à partir des règles du document 2.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Date', 'Statut'], lignes: [
+          ['Signature du devis et acompte', '14 avril 202N', 'Fait'],
+          ['Validation du dossier', '16 avril 202N', 'Fait'],
+          ['Fabrication (8 semaines)', 'du 16 avril au 9 juin 202N', 'En cours'],
+          ['Contrôle qualité', '9 juin 202N', 'Programmé'],
+          ['Livraison et installation sur site', 'mardi 15 juin 202N', 'À confirmer'],
+          ['Formation du personnel (2 jours)', '16 et 17 juin 202N', 'À planifier'],
+          ['Règlement du solde', 'à la livraison', 'En attente'],
+        ] } },
+        { bulleConseil: { texte: ["Attention : la livraison ne peut avoir lieu ni le week-end, ni en dehors des horaires du contact sur place (document 1)."] } },
+      ] },
+
+      // DOC 5 : fiche methode - informer le client
+      { numero: 5, titre: "Fiche méthode — Informer le client d'une livraison", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Un client bien informé est un client rassuré. Avant toute livraison, on envoie systématiquement un message de confirmation. Il doit contenir six informations, sans exception.",
+        ] },
+        { tableau: { colonnes: ['À indiquer', 'Pourquoi'], lignes: [
+          ['La référence de la commande', 'Pour que le client retrouve son dossier'],
+          ['La date et l’heure de livraison', 'Pour qu’il organise la présence de son personnel'],
+          ['Le lieu exact de livraison', 'Pour éviter toute erreur d’adresse'],
+          ['Ce qui sera livré', 'Pour qu’il vérifie la conformité à la réception'],
+          ['Ce qu’il doit prévoir', 'Accès, présence d’un responsable, espace dégagé'],
+          ['Le montant restant à régler', 'Pour qu’il prépare le règlement du solde'],
+        ] } },
+        { bulleConseil: { texte: ["Un message de livraison incomplet génère des appels, des retards et de l'agacement. Vérifiez les six points avant d'envoyer."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Vérifier le dossier de commande",
+        contexte: "Avant tout, on s'assure que le dossier est complet et exact.",
+        questions: [
+          { numero: 1, consigne: "Relevez dans l'accusé de réception les informations clés du dossier : numéro de commande, date de signature, montant TTC, acompte versé et solde restant dû.", ressources: 'Document 1, annexe 1. Compétence C2.1.1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Le courriel de l'atelier (doc 3) contient des informations utiles et d'autres inutiles pour le suivi de la commande. Classez-les en deux colonnes.", ressources: 'Document 3, annexe 2. Compétence C2.1.1. Plusieurs informations sont là pour vous distraire.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Contrôler les délais",
+        contexte: "On vérifie que les dates annoncées sont tenables, et on calcule le risque financier d'un retard.",
+        questions: [
+          { numero: 3, consigne: "La fabrication dure 8 semaines à compter de la signature du 14 avril. Vérifiez par le calcul que la date de fin de fabrication du 9 juin est correcte. Expliquez votre raisonnement.", ressources: 'Documents 2 et 4, annexe 3. Compétence C2.1.2. Comptez en semaines puis en jours.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Imaginons que la livraison prenne 2 semaines de retard. Calculez le montant de la pénalité due au client, en appliquant la formule du document 2. Montrez votre calcul.", ressources: 'Documents 1 et 2, annexe 4. Compétence C2.1.2. La pénalité se calcule sur le montant HT, pas sur le TTC.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Organiser la livraison et informer",
+        contexte: "Dernière étape : caler la livraison et prévenir la cliente dans les règles.",
+        questions: [
+          { numero: 5, consigne: "La livraison est prévue le mardi 15 juin. Vérifiez qu'elle respecte les deux contraintes de l'entreprise et du client, et justifiez pourquoi le samedi 12 juin aurait été impossible.", ressources: 'Documents 1, 2 et 4, annexe 5. Compétence C2.1.3. Croisez les horaires du contact sur place et les règles de livraison.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le courriel de confirmation de livraison à la directrice. Il doit contenir les six informations obligatoires de la fiche méthode.", ressources: 'Documents 1, 4 et 5, annexe 6. Compétence C2.1.3. Vérifiez les six points avant d’envoyer.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les informations clés du dossier', colonnes: ['Rubrique', 'Réponse'], nbLignes: 5, largeurs: ['45%', '55%'], prerempli: [
+        ['N° de commande', ''],
+        ['Date de signature du devis', ''],
+        ['Montant total TTC', ''],
+        ['Acompte versé (30 %)', ''],
+        ['Solde restant dû', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Trier les informations du courriel', colonnes: ['Informations UTILES au suivi', 'Informations INUTILES'], nbLignes: 4, largeurs: ['50%', '50%'], reponseMultiligne: false },
+      { type: 'texte', id: 'annexe3', titre: "Annexe 3 — Vérification de la date de fin de fabrication", lignes: 5 },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Calcul de la pénalité de retard', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 3, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Montant HT de la commande', '', ''],
+        ['Pénalité par semaine (HT × 0,01)', '', ''],
+        ['Pénalité pour 2 semaines', '', ''],
+      ] },
+      { type: 'texte', id: 'annexe5', titre: "Annexe 5 — Vérification de la date de livraison", lignes: 5 },
+      { type: 'mail', id: 'annexe6', titre: "Annexe 6 — Courriel de confirmation de livraison", deParDefaut: 'stagiaire@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Vérifier un dossier de commande",
+      "Trier les informations utiles au suivi",
+      "Calculer et contrôler des délais",
+      "Calculer une pénalité de retard",
+      "Organiser une livraison et informer le client",
+    ],
+  },
+
+  synthese: {
+    titre: "Le suivi de la commande",
+    proposition: [
+      "L'accusé de réception", "L'acompte de 30 %", 'Le solde à la livraison',
+      '8 semaines de fabrication', 'Le contrôle qualité', 'Livraison en jour ouvré',
+      'Pénalité 1 % HT par semaine', 'Les six informations obligatoires',
+      'Informer le client', 'Le suivi après la vente',
+    ],
+    racine: {
+      id: 'racine', texte: 'Suivre la commande',
+      enfants: [
+        { id: 'dos', texte: 'Le dossier', enfants: [
+          { id: 'd1', texte: null, reponse: "L'accusé de réception" },
+          { id: 'd2', texte: null, reponse: "L'acompte de 30 %" },
+          { id: 'd3', texte: null, reponse: 'Le solde à la livraison' },
+        ] },
+        { id: 'del', texte: 'Les délais', enfants: [
+          { id: 'e1', texte: null, reponse: '8 semaines de fabrication' },
+          { id: 'e2', texte: null, reponse: 'Le contrôle qualité' },
+          { id: 'e3', texte: null, reponse: 'Livraison en jour ouvré' },
+          { id: 'e4', texte: null, reponse: 'Pénalité 1 % HT par semaine' },
+        ] },
+        { id: 'inf', texte: 'La communication', enfants: [
+          { id: 'i1', texte: null, reponse: 'Les six informations obligatoires' },
+          { id: 'i2', texte: null, reponse: 'Informer le client' },
+          { id: 'i3', texte: null, reponse: 'Le suivi après la vente' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Vérifier un dossier", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quelles informations vérifier." },
+        { niveau: 'debrouille', description: "Je relève quelques informations du dossier." },
+        { niveau: 'averti', description: "Je relève toutes les informations clés." },
+        { niveau: 'expert', description: "Je trie l'utile de l'inutile dans les échanges internes." },
+      ] },
+      { id: 'c2', intitule: "Contrôler les délais", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas calculer une date d'échéance." },
+        { niveau: 'debrouille', description: "Je calcule une durée simple." },
+        { niveau: 'averti', description: "Je vérifie une date par le calcul." },
+        { niveau: 'expert', description: "Je calcule aussi le coût d'un retard." },
+      ] },
+      { id: 'c3', intitule: "Organiser et informer", indicateurs: [
+        { niveau: 'novice', description: "J'oublie des contraintes de livraison." },
+        { niveau: 'debrouille', description: "Je vérifie une contrainte." },
+        { niveau: 'averti', description: "Je croise toutes les contraintes." },
+        { niveau: 'expert', description: "Je rédige un message complet et professionnel." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Accusé de réception de commande', definition: "Document qui confirme au client l'enregistrement de sa commande et en rappelle les éléments." },
+      { terme: 'Suivi de commande', definition: "Ensemble des actions menées après la vente pour que la livraison se passe bien." },
+      { terme: 'Acompte', definition: "Somme versée à la commande (ici 30 % du TTC)." },
+      { terme: 'Solde', definition: "Montant restant à payer, réglé à la livraison (ici 70 %)." },
+      { terme: 'Jour ouvré', definition: "Jour travaillé de l'entreprise, du lundi au vendredi (week-end exclu)." },
+      { terme: 'Délai de fabrication', definition: "Temps nécessaire pour produire la commande (ici 8 semaines)." },
+      { terme: 'Contrôle qualité', definition: "Vérification des produits avant expédition." },
+      { terme: 'Pénalité de retard', definition: "Somme due au client si la livraison a lieu après la date annoncée." },
+      { terme: 'Logistique', definition: "Organisation du transport, du stockage et de la livraison des produits." },
+      { terme: 'Mise en service', definition: "Installation et démarrage du produit chez le client." },
+      { terme: 'Contact sur place', definition: "Personne à joindre chez le client le jour de la livraison." },
+      { terme: 'Conformité', definition: "Fait que la livraison corresponde exactement à la commande." },
+    ],
+    flashcards: [
+      { recto: "Quel est le numéro de la commande de l'hôtel ?", verso: 'CD-2041.' },
+      { recto: "Quel acompte a été versé et quand ?", verso: '45 036 € (30 % du TTC), le 14 avril 202N.' },
+      { recto: "Quel montant reste dû à la livraison ?", verso: '105 084 € (le solde de 70 %).' },
+      { recto: "Combien de temps dure la fabrication ?", verso: '8 semaines à compter de la signature.' },
+      { recto: "Quels jours la livraison est-elle possible ?", verso: 'Du lundi au vendredi uniquement, jamais le week-end.' },
+      { recto: "Quelle est la formule de la pénalité de retard ?", verso: 'Montant HT × 1 % × nombre de semaines de retard.' },
+      { recto: "À combien s'élève la pénalité pour 2 semaines de retard ?", verso: '125 100 × 0,01 × 2 = 2 502 €.' },
+      { recto: "Quand a lieu le contrôle qualité ?", verso: 'Le 9 juin 202N, avant expédition.' },
+      { recto: "Combien d'informations doit contenir le message de livraison ?", verso: 'Six informations obligatoires.' },
+      { recto: "Qui est le contact sur place chez le client ?", verso: 'M. Diallo, responsable technique (lundi au vendredi, 8 h-17 h).' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le numéro de la commande est :', options: ['CD-2041', 'MIR-01', 'FORM-01'], bonne: 0 },
+      { type: 'unique', question: 'L’acompte versé s’élève à :', options: ['45 036 €', '105 084 €', '150 120 €'], bonne: 0 },
+      { type: 'unique', question: 'Le solde à régler à la livraison est de :', options: ['105 084 €', '45 036 €', '125 100 €'], bonne: 0 },
+      { type: 'unique', question: 'La fabrication dure :', options: ['8 semaines', '8 jours', '8 mois'], bonne: 0 },
+      { type: 'unique', question: 'La livraison est possible :', options: ['du lundi au vendredi', 'tous les jours', 'le week-end seulement'], bonne: 0 },
+      { type: 'unique', question: 'La pénalité de retard se calcule sur :', options: ['le montant HT', 'le montant TTC', 'l’acompte'], bonne: 0 },
+      { type: 'unique', question: 'Pour 2 semaines de retard, la pénalité est de :', options: ['2 502 €', '1 251 €', '3 000 €'], bonne: 0 },
+      { type: 'unique', question: 'Le contrôle qualité a lieu :', options: ['avant expédition', 'après la livraison', 'chez le client'], bonne: 0 },
+      { type: 'unique', question: 'Le message de livraison doit contenir :', options: ['six informations', 'deux informations', 'aucune règle'], bonne: 0 },
+      { type: 'unique', question: 'Le contact sur place est disponible :', options: ['8 h à 17 h en semaine', '24 h/24', 'le samedi'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Classez chaque information : UTILE au suivi de la commande, ou INUTILE.',
+      etiquettes: ['Information UTILE', 'Information INUTILE'],
+      zones: [
+        { libelle: 'Le fournisseur de batterie a 5 jours de retard', etiquetteIndex: 0 },
+        { libelle: 'Le contrôle qualité est prévu le 9 juin', etiquetteIndex: 0 },
+        { libelle: 'Les trois premiers robots sortent dans les temps', etiquetteIndex: 0 },
+        { libelle: 'Une marge avait été prévue au planning', etiquetteIndex: 0 },
+        { libelle: 'L’atelier a battu son record de production', etiquetteIndex: 1 },
+        { libelle: 'La nouvelle cafétéria ouvre lundi', etiquetteIndex: 1 },
+        { libelle: 'L’équipe travaille bien en ce moment', etiquetteIndex: 1 },
+        { libelle: 'L’expédition peut partir après le contrôle', etiquetteIndex: 0 },
+        { libelle: 'Karim est invité à la cafétéria', etiquetteIndex: 1 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les informations clés du dossier de commande.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Toutes les informations figurent dans l'accusé de réception.",
+        tableau: { colonnes: ['Rubrique', 'Réponse'], lignes: [
+          ['N° de commande', 'CD-2041'],
+          ['Date de signature du devis', '14 avril 202N'],
+          ['Montant total TTC', '150 120,00 €'],
+          ['Acompte versé (30 %)', '45 036,00 €'],
+          ['Solde restant dû', '105 084,00 €'],
+        ] },
+        complement: "0,6 point par ligne correcte. Exercice de lecture précise d'un document commercial. Vérifier que l'élève ne confond pas acompte (45 036 €) et solde (105 084 €), erreur fréquente." },
+
+      { intitule: "Triez les informations du courriel de l'atelier.", documents: ['Document 3', 'Annexe 2'], bareme: 4,
+        reponse: "Il faut distinguer ce qui concerne la commande de ce qui relève du bavardage interne.",
+        tableau: { colonnes: ['UTILES au suivi', 'INUTILES'], lignes: [
+          ['Les 3 premiers robots sortent dans les temps', 'L’atelier a battu son record de production'],
+          ['Le 4e robot : batterie livrée avec 5 jours de retard', 'La nouvelle cafétéria ouvre lundi'],
+          ['Une marge avait été prévue, la date globale tient', 'Karim est invité à la cafétéria'],
+          ['Contrôle qualité programmé le 9 juin, expédition ensuite', ''],
+        ] },
+        complement: "0,5 point par information correctement classée (8 éléments). Le piège : le record de production et la cafétéria sont des informations sympathiques mais sans effet sur la commande. Un bon commercial va à l'essentiel. Pénaliser l'élève qui classe tout en « utile »." },
+
+      { intitule: "Vérifiez par le calcul la date de fin de fabrication.", documents: ['Documents 2 et 4', 'Annexe 3'], bareme: 4,
+        reponse: "La fabrication démarre le 14 avril et dure 8 semaines. 8 semaines = 8 × 7 = 56 jours. Du 14 avril, on compte : 16 jours pour finir avril (jusqu'au 30 avril), puis 31 jours de mai (soit 47 jours au 31 mai), puis 9 jours de juin pour atteindre 56 jours. On arrive donc au 9 juin 202N. La date annoncée est exacte.",
+        complement: "1 point pour la conversion 8 semaines = 56 jours, 2 points pour le décompte correct des mois (avril, mai, juin), 1 point pour la conclusion (date confirmée). Accepter tout raisonnement juste, y compris un décompte semaine par semaine. L'essentiel est que l'élève vérifie au lieu de recopier la date." },
+
+      { intitule: "Calculez la pénalité pour 2 semaines de retard.", documents: ['Documents 1 et 2', 'Annexe 4'], bareme: 4,
+        reponse: "On applique la formule du document 2 sur le montant HT.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Montant HT de la commande', 'TTC 150 120 − TVA 25 020 (ou total HT du devis)', '125 100 €'],
+          ['Pénalité par semaine', '125 100 × 0,01', '1 251 €'],
+          ['Pénalité pour 2 semaines', '1 251 × 2', '2 502 €'],
+        ] },
+        complement: "1 point pour identifier le bon montant HT (125 100 €, PAS le TTC), 1,5 point pour la pénalité hebdomadaire (1 251 €), 1,5 point pour le total (2 502 €). ERREUR À SANCTIONNER : calculer sur le TTC (150 120 × 0,01 × 2 = 3 002,40 €), ce qui est faux. Le document 2 précise bien « montant HT »." },
+
+      { intitule: "Vérifiez la date de livraison du mardi 15 juin.", documents: ['Documents 1, 2 et 4', 'Annexe 5'], bareme: 3,
+        reponse: "Le mardi 15 juin respecte les deux contraintes : c'est un jour ouvré (la livraison n'est possible que du lundi au vendredi, doc 2), et le contact sur place, M. Diallo, est disponible du lundi au vendredi de 8 h à 17 h (doc 1). De plus, la date est postérieure au contrôle qualité du 9 juin. Le samedi 12 juin aurait été impossible : c'est un week-end, la livraison n'est pas assurée ce jour-là et le contact sur place n'est pas présent.",
+        complement: "1 point pour la contrainte « jour ouvré » (doc 2), 1 point pour la disponibilité du contact sur place (doc 1), 1 point pour l'explication du refus du samedi. C'est une question de CROISEMENT : l'élève doit relier deux documents différents. Valoriser celui qui mentionne aussi le contrôle qualité préalable." },
+
+      { intitule: "Rédigez le courriel de confirmation de livraison.", documents: ['Documents 1, 4 et 5', 'Annexe 6'], bareme: 2,
+        reponse: "Le courriel doit contenir les six informations obligatoires de la fiche méthode.",
+        complement: "Les six points attendus : (1) référence de la commande CD-2041 ; (2) date et heure de livraison, mardi 15 juin 202N ; (3) lieu exact : entrée logistique, 12 rue Volney ; (4) ce qui sera livré : 4 robots Mirokaï MIR-01 avec installation ; (5) ce qu'elle doit prévoir : présence de M. Diallo, accès dégagé ; (6) montant restant à régler : 105 084 €. Exemple d'ouverture : « Madame Rousseau, j'ai le plaisir de vous confirmer la livraison de votre commande CD-2041… ». Barème : 2 points si les six informations sont présentes et le ton professionnel ; retirer 0,25 par information manquante. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+// ---------------------------------------------------------------------------
+// ENCHANTED TOOLS, mission 7 - Facturer et gerer le paiement
+// Bloc 2 : suivre les ventes. Classe de Premiere. VERSION RICHE + CALCULS.
+// Chaine figee : HT 125 100, TVA 25 020, TTC 150 120, acompte 45 036,
+// solde 105 084. Escompte 2 % = 2 101,68. Retard 15 j = 431,85 + 40 € forfait.
+// ---------------------------------------------------------------------------
+const ENCHANTED_M7: ContenuMission = {
+  travaux: {
+    consigne:
+      "Établissez la facture définitive de l'hôtel, calculez le solde à payer, appliquez les conditions de règlement et traitez le retard de paiement.",
+    contexte:
+      "Les 4 robots Mirokaï ont été livrés et installés le 15 juin 202N à l'hôtel Le Grand Siècle. Tout s'est bien passé. Il faut maintenant facturer : établir le document officiel qui réclame le paiement du solde. Votre tuteur insiste : « La facture, c'est du sérieux. C'est un document légal, obligatoire entre professionnels, qui sert de preuve en cas de litige. Un chiffre faux, une mention oubliée, et c'est l'entreprise qui est en tort. Tu dois aussi savoir gérer ce qui suit : les remises pour paiement rapide, les délais, et surtout les retards. Parce qu'un client qui ne paie pas, c'est de la trésorerie en moins pour nous. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.2 — Établir la facture et suivre le règlement",
+      detail: "C2.2.1 Établir une facture conforme. C2.2.2 Calculer le solde, l'escompte et les pénalités. C2.2.3 Relancer un client en retard de paiement.",
+    },
+    documents: [
+      // DOC 1 : facture officielle (document authentique et complet)
+      { numero: 1, titre: "La facture n° FA-2041 (document officiel)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS SAS — FACTURE' },
+        { paragraphes: [
+          "Enchanted Tools SAS — 14 rue du Faubourg Saint-Antoine, 75012 Paris — SIRET 892 451 337 00024 — TVA intracommunautaire FR 12 892451337",
+        ] },
+        { tableau: { colonnes: ['Rubrique', 'Information'], lignes: [
+          ['Numéro de facture', 'FA-2041'],
+          ['Date d’émission', '15 juin 202N'],
+          ['Référence commande', 'CD-2041 du 14 avril 202N'],
+          ['Client', 'Hôtel Le Grand Siècle — 8 rue de la Paix, 75002 Paris'],
+          ['Date de livraison', '15 juin 202N'],
+          ['Échéance de règlement', '30 jours à compter de la date d’émission'],
+        ] } },
+        { intertitre: 'Détail de la facturation' },
+        { tableau: { colonnes: ['Désignation', 'Qté', 'PU HT', 'Total HT'], lignes: [
+          ['Robot Mirokaï MIR-01', '4', '30 000,00 €', '120 000,00 €'],
+          ['Remise commerciale 5 % sur robots', '—', '—', '− 6 000,00 €'],
+          ['Formation du personnel (forfait)', '1', '1 500,00 €', '1 500,00 €'],
+          ['Contrat de maintenance annuel', '4', '2 400,00 €', '9 600,00 €'],
+          ['TOTAL HT', '', '', '125 100,00 €'],
+          ['TVA 20 %', '', '', '25 020,00 €'],
+          ['TOTAL TTC', '', '', '150 120,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["Une facture entre professionnels doit obligatoirement mentionner : le numéro, la date, les coordonnées et le SIRET du vendeur, celles du client, le détail des prestations, les montants HT, la TVA, le TTC et les conditions de règlement."] } },
+      ] },
+
+      // DOC 2 : conditions de reglement (avec les formules)
+      { numero: 2, titre: "Nos conditions de règlement", texte: [
+        { pageWeb: true },
+        { intertitre: 'Le livret du stagiaire — 13. Facturation et règlement' },
+        { paragraphes: [
+          "Voici les règles appliquées par Enchanted Tools à tous ses clients professionnels.",
+        ] },
+        { tableau: { colonnes: ['Règle', 'Détail'], lignes: [
+          ['Acompte', '30 % du TTC, versé à la commande'],
+          ['Solde', 'Le reste, exigible à la livraison'],
+          ['Délai de paiement', '30 jours à compter de la date de facture'],
+          ['Escompte', '2 % de remise sur le solde si le client paie sous 8 jours'],
+          ['Pénalité de retard', 'Taux annuel de 10 % sur le montant impayé, au prorata des jours de retard'],
+          ['Indemnité forfaitaire', '40 € de frais de recouvrement, dus dès le premier jour de retard'],
+        ] } },
+        { intertitre: 'Les formules de calcul' },
+        { paragraphes: [
+          "Solde à payer = Total TTC − acompte déjà versé.",
+          "Escompte = solde × 2 % (soit × 0,02). Net à payer = solde − escompte.",
+          "Pénalité de retard = montant impayé × 10 % × (nombre de jours de retard ÷ 365).",
+          "Montant total dû en cas de retard = solde + pénalité + 40 € d'indemnité forfaitaire.",
+        ] },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres)' },
+        { paragraphes: [
+          "Une facture de 60 000 € TTC, avec un acompte de 18 000 € déjà versé, payée avec 20 jours de retard.",
+          "Solde = 60 000 − 18 000 = 42 000 €. Pénalité = 42 000 × 0,10 × (20 ÷ 365) = 230,14 €. Total dû = 42 000 + 230,14 + 40 = 42 270,14 €.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise d'autres chiffres que notre facture. Appliquez la même méthode avec les vrais montants de l'hôtel."] } },
+      ] },
+
+      // DOC 3 : releve du compte client (l'acompte deja verse)
+      { numero: 3, titre: "Relevé du compte client — Hôtel Le Grand Siècle", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Service comptabilité' },
+        { tableau: { colonnes: ['Date', 'Opération', 'Débit', 'Crédit'], lignes: [
+          ['14 avril 202N', 'Acompte 30 % sur commande CD-2041 (virement reçu)', '', '45 036,00 €'],
+          ['15 juin 202N', 'Facture FA-2041 (total TTC)', '150 120,00 €', ''],
+          ['—', 'Solde restant dû à ce jour', '', 'à calculer'],
+        ] } },
+        { paragraphes: [
+          "Le compte client récapitule tout ce que le client a déjà payé et tout ce qu'il doit. Le débit correspond à ce qu'il doit, le crédit à ce qu'il a versé.",
+        ] },
+      ] },
+
+      // DOC 4 : courriel de la cliente (demande escompte) - info a trier
+      { numero: 4, titre: "Courriel de la cliente", texte: [
+        { mailLecture: {
+          de: 'accueil@legrandsiecle-paris.fr',
+          a: 'compta@enchanted.tools',
+          objet: 'Réception de votre facture FA-2041',
+          corps: [
+            "Bonjour,",
+            "Nous avons bien reçu votre facture et je vous confirme que l'installation s'est parfaitement déroulée. Le personnel est ravi, les robots ont même été applaudis par des clients japonais hier soir.",
+            "Notre service comptabilité m'indique que nous pourrions régler rapidement, sous 8 jours, si cela nous permet de bénéficier de la remise dont vous m'aviez parlé. Pouvez-vous me confirmer le montant exact que nous aurions alors à payer ?",
+            "Par ailleurs, nous envisageons de refaire la moquette du hall cet automne, et peut-être d'ouvrir un second établissement à Lyon l'an prochain.",
+            "Dans l'attente de votre retour,",
+            "Camille Rousseau, directrice de l'accueil",
+          ],
+        } },
+        { bulleConseil: { texte: ["La cliente pose une question précise. Repérez-la : c'est à elle que vous devrez répondre par un calcul."] } },
+      ] },
+
+      // DOC 5 : note interne (le retard finalement constate)
+      { numero: 5, titre: "Note du service comptabilité (30 juillet 202N)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Note interne' },
+        { paragraphes: [
+          "Objet : facture FA-2041 — retard de paiement constaté.",
+          "Finalement, l'hôtel n'a pas réglé sous 8 jours et n'a donc pas bénéficié de l'escompte. La facture, émise le 15 juin, arrivait à échéance le 15 juillet 202N.",
+          "À ce jour, 30 juillet 202N, le règlement n'est toujours pas parvenu. Le retard est donc constaté depuis l'échéance.",
+          "Merci de calculer les sommes dues et de préparer une relance courtoise mais ferme. Nous tenons à ce client : le ton doit rester commercial, sans agressivité.",
+          "Nadia Cherif, responsable comptabilité",
+        ] },
+        { bulleConseil: { texte: ["Pour calculer le nombre de jours de retard, comptez à partir de la date d'échéance, pas de la date de facture."] } },
+      ] },
+
+      // DOC 6 : fiche methode - la relance
+      { numero: 6, titre: "Fiche méthode — Relancer un client en retard", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Relancer un client demande du tact : il faut obtenir le paiement sans abîmer la relation commerciale. Une relance efficace suit cinq points.",
+        ] },
+        { tableau: { colonnes: ['Étape', 'Ce qu’on écrit'], lignes: [
+          ['1. Rappeler la référence', 'Numéro de facture, date, montant'],
+          ['2. Constater le retard', 'Sans accuser : « sauf erreur de notre part… »'],
+          ['3. Indiquer les sommes dues', 'Solde + pénalités + indemnité, avec le détail'],
+          ['4. Proposer une solution', 'Demander le règlement sous un délai court, proposer de l’aide'],
+          ['5. Rester commercial', 'Formule de politesse, rappel de la qualité de la relation'],
+        ] } },
+        { bulleConseil: { texte: ["On n'écrit jamais « vous n'avez pas payé ». On écrit « sauf erreur de notre part, nous n'avons pas encore enregistré votre règlement »."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Vérifier et comprendre la facture",
+        contexte: "On commence par contrôler le document officiel et le compte du client.",
+        questions: [
+          { numero: 1, consigne: "Relevez les mentions obligatoires présentes sur la facture FA-2041 : numéro, date d'émission, identification du vendeur (SIRET), client, échéance de règlement.", ressources: 'Document 1, annexe 1. Compétence C2.2.1.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "À partir du relevé de compte, calculez le solde restant dû par l'hôtel. Montrez votre calcul.", ressources: 'Documents 1, 2 et 3, annexe 2. Compétence C2.2.2. Formule : total TTC − acompte versé.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Répondre à la demande d'escompte",
+        contexte: "La cliente demande combien elle paierait en réglant vite. À vous de calculer.",
+        questions: [
+          { numero: 3, consigne: "Identifiez la question précise posée par la cliente dans son courriel, puis calculez l'escompte de 2 % et le net à payer si elle règle sous 8 jours. Montrez vos calculs.", ressources: 'Documents 2 et 4, annexe 3. Compétence C2.2.2. Le courriel contient aussi des informations sans rapport : ne vous laissez pas distraire.', annexeId: 'annexe3' },
+        ] },
+      { titre: "Activité 3 — Traiter le retard de paiement",
+        contexte: "L'hôtel n'a finalement pas payé. On calcule ce qui est dû et on relance.",
+        questions: [
+          { numero: 4, consigne: "Calculez le nombre exact de jours de retard au 30 juillet 202N. Expliquez à partir de quelle date vous comptez et pourquoi.", ressources: 'Documents 1 et 5, annexe 4. Compétence C2.2.2. On compte à partir de l’échéance, pas de la date de facture.', annexeId: 'annexe4' },
+          { numero: 5, consigne: "Calculez la pénalité de retard, puis le montant total dû par l'hôtel au 30 juillet (solde + pénalité + indemnité forfaitaire). Montrez chaque étape.", ressources: 'Documents 2 et 5, annexe 5. Compétence C2.2.2. Appliquez la formule du document 2.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le courriel de relance à la directrice, en respectant les cinq points de la fiche méthode et le ton demandé par la comptabilité.", ressources: 'Documents 5 et 6, annexe 6. Compétence C2.2.3. Courtois mais ferme : ne jamais accuser le client.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Les mentions obligatoires de la facture', colonnes: ['Mention', 'Information relevée'], nbLignes: 5, largeurs: ['45%', '55%'], prerempli: [
+        ['Numéro de facture', ''],
+        ['Date d’émission', ''],
+        ['SIRET du vendeur', ''],
+        ['Client facturé', ''],
+        ['Échéance de règlement', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Calcul du solde restant dû', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 3, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Total TTC de la facture', '', ''],
+        ['Acompte déjà versé', '', ''],
+        ['Solde restant dû', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Escompte et net à payer', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['La question posée par la cliente', '', ''],
+        ['Solde avant escompte', '', ''],
+        ['Escompte 2 % (solde × 0,02)', '', ''],
+        ['Net à payer sous 8 jours', '', ''],
+      ] },
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Nombre de jours de retard (avec explication)", lignes: 4 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Pénalité et montant total dû', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Montant impayé (solde)', '', ''],
+        ['Pénalité de retard (formule doc 2)', '', ''],
+        ['Indemnité forfaitaire', '', ''],
+        ['TOTAL dû au 30 juillet', '', ''],
+      ] },
+      { type: 'mail', id: 'annexe6', titre: "Annexe 6 — Courriel de relance", deParDefaut: 'compta@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Contrôler les mentions obligatoires d'une facture",
+      "Calculer un solde à partir d'un compte client",
+      "Calculer un escompte pour paiement rapide",
+      "Calculer des pénalités de retard",
+      "Rédiger une relance courtoise et ferme",
+    ],
+  },
+
+  synthese: {
+    titre: "La facture et le règlement",
+    proposition: [
+      'La facture', 'Les mentions obligatoires', 'Le solde', "L'acompte déduit",
+      "L'escompte 2 %", 'Le délai de 30 jours', 'La pénalité de retard',
+      "L'indemnité de 40 €", 'La relance', 'Courtois mais ferme',
+    ],
+    racine: {
+      id: 'racine', texte: 'Facturer et encaisser',
+      enfants: [
+        { id: 'fac', texte: 'Le document', enfants: [
+          { id: 'f1', texte: null, reponse: 'La facture' },
+          { id: 'f2', texte: null, reponse: 'Les mentions obligatoires' },
+        ] },
+        { id: 'mon', texte: 'Les montants', enfants: [
+          { id: 'm1', texte: null, reponse: 'Le solde' },
+          { id: 'm2', texte: null, reponse: "L'acompte déduit" },
+          { id: 'm3', texte: null, reponse: "L'escompte 2 %" },
+        ] },
+        { id: 'del', texte: 'Les délais', enfants: [
+          { id: 'd1', texte: null, reponse: 'Le délai de 30 jours' },
+          { id: 'd2', texte: null, reponse: 'La pénalité de retard' },
+          { id: 'd3', texte: null, reponse: "L'indemnité de 40 €" },
+        ] },
+        { id: 'rel', texte: 'Le recouvrement', enfants: [
+          { id: 'r1', texte: null, reponse: 'La relance' },
+          { id: 'r2', texte: null, reponse: 'Courtois mais ferme' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Contrôler une facture", indicateurs: [
+        { niveau: 'novice', description: "Je ne connais pas les mentions obligatoires." },
+        { niveau: 'debrouille', description: "Je repère quelques mentions." },
+        { niveau: 'averti', description: "Je vérifie toutes les mentions obligatoires." },
+        { niveau: 'expert', description: "Je repère une facture incomplète ou erronée." },
+      ] },
+      { id: 'c2', intitule: "Calculer les montants", indicateurs: [
+        { niveau: 'novice', description: "Je confonds acompte, solde et total." },
+        { niveau: 'debrouille', description: "Je calcule le solde." },
+        { niveau: 'averti', description: "Je calcule aussi l'escompte." },
+        { niveau: 'expert', description: "Je calcule pénalités et total dû sans erreur." },
+      ] },
+      { id: 'c3', intitule: "Relancer un client", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas comment aborder le retard." },
+        { niveau: 'debrouille', description: "Je rappelle la facture impayée." },
+        { niveau: 'averti', description: "Je détaille les sommes dues." },
+        { niveau: 'expert', description: "Je relance fermement en préservant la relation." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Facture', definition: "Document commercial obligatoire qui détaille la prestation et réclame le paiement." },
+      { terme: 'Mentions obligatoires', definition: "Informations que toute facture doit contenir (numéro, date, SIRET, montants, échéance)." },
+      { terme: 'SIRET', definition: "Numéro d'identification unique d'un établissement d'entreprise en France." },
+      { terme: 'Acompte', definition: "Somme déjà versée par le client à la commande, déduite de la facture finale." },
+      { terme: 'Solde', definition: "Montant restant à payer après déduction de l'acompte." },
+      { terme: 'Escompte', definition: "Remise accordée au client qui paie plus tôt que le délai prévu (ici 2 % sous 8 jours)." },
+      { terme: 'Échéance', definition: "Date limite à laquelle le paiement doit être effectué." },
+      { terme: 'Pénalité de retard', definition: "Somme due par le client qui paie après l'échéance." },
+      { terme: 'Indemnité forfaitaire', definition: "Frais fixes de recouvrement (40 €) dus dès le premier jour de retard." },
+      { terme: 'Relance', definition: "Message adressé au client pour réclamer un paiement en retard." },
+      { terme: 'Débit', definition: "Dans un compte client, ce que le client doit à l'entreprise." },
+      { terme: 'Crédit', definition: "Dans un compte client, ce que le client a déjà versé." },
+    ],
+    flashcards: [
+      { recto: "Quel est le numéro de la facture de l'hôtel ?", verso: 'FA-2041, émise le 15 juin 202N.' },
+      { recto: "Comment calcule-t-on le solde à payer ?", verso: 'Total TTC − acompte déjà versé.' },
+      { recto: "Quel est le solde dû par l'hôtel ?", verso: '150 120 − 45 036 = 105 084 €.' },
+      { recto: "Qu'est-ce qu'un escompte ?", verso: 'Une remise pour paiement anticipé (ici 2 % sous 8 jours).' },
+      { recto: "Combien vaut l'escompte de 2 % sur le solde ?", verso: '105 084 × 0,02 = 2 101,68 €.' },
+      { recto: "Quel est le délai de paiement accordé ?", verso: '30 jours à compter de la date de facture.' },
+      { recto: "Quelle est l'échéance de la facture du 15 juin ?", verso: 'Le 15 juillet 202N.' },
+      { recto: "Quelle est la formule de la pénalité de retard ?", verso: 'Montant impayé × 10 % × (jours de retard ÷ 365).' },
+      { recto: "Combien vaut l'indemnité forfaitaire de recouvrement ?", verso: '40 €, dus dès le premier jour de retard.' },
+      { recto: "Comment formuler une relance sans accuser ?", verso: '« Sauf erreur de notre part, nous n’avons pas encore enregistré votre règlement. »' },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le solde à payer se calcule par :', options: ['TTC − acompte', 'TTC + acompte', 'HT − TVA'], bonne: 0 },
+      { type: 'unique', question: 'Le solde dû par l’hôtel est de :', options: ['105 084 €', '45 036 €', '150 120 €'], bonne: 0 },
+      { type: 'unique', question: 'Un escompte est accordé pour :', options: ['un paiement anticipé', 'un retard', 'une grosse commande'], bonne: 0 },
+      { type: 'unique', question: 'L’escompte de 2 % représente :', options: ['2 101,68 €', '1 050,84 €', '3 002,40 €'], bonne: 0 },
+      { type: 'unique', question: 'Le délai de paiement est de :', options: ['30 jours', '8 jours', '90 jours'], bonne: 0 },
+      { type: 'unique', question: 'La facture du 15 juin arrive à échéance le :', options: ['15 juillet', '15 juin', '30 juillet'], bonne: 0 },
+      { type: 'unique', question: 'La pénalité se calcule à partir de :', options: ['la date d’échéance', 'la date de facture', 'la date de commande'], bonne: 0 },
+      { type: 'unique', question: 'L’indemnité forfaitaire de recouvrement est de :', options: ['40 €', '100 €', '10 €'], bonne: 0 },
+      { type: 'unique', question: 'Dans un compte client, le crédit correspond à :', options: ['ce que le client a versé', 'ce qu’il doit', 'la TVA'], bonne: 0 },
+      { type: 'unique', question: 'Une bonne relance est :', options: ['courtoise mais ferme', 'agressive', 'silencieuse'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Mention obligatoire', 'Calcul', 'Règle de délai'],
+      zones: [
+        { libelle: 'Le numéro de facture FA-2041', etiquetteIndex: 0 },
+        { libelle: 'Le SIRET du vendeur', etiquetteIndex: 0 },
+        { libelle: 'La date d’émission', etiquetteIndex: 0 },
+        { libelle: 'TTC − acompte = solde', etiquetteIndex: 1 },
+        { libelle: 'Solde × 0,02 = escompte', etiquetteIndex: 1 },
+        { libelle: 'Impayé × 10 % × (jours ÷ 365)', etiquetteIndex: 1 },
+        { libelle: 'Paiement sous 30 jours', etiquetteIndex: 2 },
+        { libelle: 'Escompte si règlement sous 8 jours', etiquetteIndex: 2 },
+        { libelle: '40 € dus dès le 1ᵉʳ jour de retard', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Relevez les mentions obligatoires de la facture.", documents: ['Document 1', 'Annexe 1'], bareme: 3,
+        reponse: "Toutes les mentions figurent en tête de la facture.",
+        tableau: { colonnes: ['Mention', 'Information'], lignes: [
+          ['Numéro de facture', 'FA-2041'],
+          ['Date d’émission', '15 juin 202N'],
+          ['SIRET du vendeur', '892 451 337 00024'],
+          ['Client facturé', 'Hôtel Le Grand Siècle, 8 rue de la Paix, 75002 Paris'],
+          ['Échéance de règlement', '30 jours à compter de l’émission (soit le 15 juillet 202N)'],
+        ] },
+        complement: "0,6 point par mention correcte. Objectif : montrer qu'une facture est un document légal encadré. Valoriser l'élève qui déduit lui-même la date d'échéance (15 juillet) à partir du délai de 30 jours." },
+
+      { intitule: "Calculez le solde restant dû.", documents: ['Documents 1, 2 et 3', 'Annexe 2'], bareme: 3,
+        reponse: "On déduit du total TTC l'acompte déjà versé.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Total TTC de la facture', '—', '150 120,00 €'],
+          ['Acompte déjà versé', 'crédit du 14 avril', '45 036,00 €'],
+          ['Solde restant dû', '150 120 − 45 036', '105 084,00 €'],
+        ] },
+        complement: "1 point par ligne. Le relevé de compte (doc 3) montre l'acompte au crédit : l'élève doit comprendre que ce qui a été versé se déduit. Erreur fréquente : additionner au lieu de soustraire, ou oublier l'acompte." },
+
+      { intitule: "Identifiez la question de la cliente et calculez l'escompte.", documents: ['Documents 2 et 4', 'Annexe 3'], bareme: 4,
+        reponse: "La cliente demande le montant exact à payer si elle règle sous 8 jours.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Question posée', '—', 'Quel montant exact payer en réglant sous 8 jours ?'],
+          ['Solde avant escompte', '—', '105 084,00 €'],
+          ['Escompte 2 %', '105 084 × 0,02', '2 101,68 €'],
+          ['Net à payer sous 8 jours', '105 084 − 2 101,68', '102 982,32 €'],
+        ] },
+        complement: "1 point pour identifier la vraie question (le courriel parle aussi de la moquette, de Lyon, des clients japonais : ce sont des distracteurs), 1 point pour le solde, 1 point pour l'escompte (2 101,68 €), 1 point pour le net (102 982,32 €). Sanctionner l'élève qui applique l'escompte au TTC complet au lieu du solde." },
+
+      { intitule: "Calculez le nombre de jours de retard au 30 juillet.", documents: ['Documents 1 et 5', 'Annexe 4'], bareme: 3,
+        reponse: "La facture du 15 juin, payable à 30 jours, arrivait à échéance le 15 juillet 202N. Au 30 juillet, le retard se compte à partir de l'échéance : du 15 au 30 juillet, cela fait 15 jours de retard.",
+        complement: "1 point pour établir l'échéance (15 juillet), 1 point pour le décompte correct (15 jours), 1 point pour l'explication du point de départ (on compte depuis l'échéance, PAS depuis la date de facture). ERREUR CLASSIQUE : compter depuis le 15 juin (45 jours), ce qui est faux. Le doc 5 le rappelle explicitement." },
+
+      { intitule: "Calculez la pénalité et le montant total dû.", documents: ['Documents 2 et 5', 'Annexe 5'], bareme: 5,
+        reponse: "On applique la formule du document 2.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Montant impayé (solde)', '—', '105 084,00 €'],
+          ['Pénalité de retard', '105 084 × 0,10 × (15 ÷ 365)', '431,85 €'],
+          ['Indemnité forfaitaire', 'forfait légal', '40,00 €'],
+          ['TOTAL dû au 30 juillet', '105 084 + 431,85 + 40', '105 555,85 €'],
+        ] },
+        complement: "1 point pour le montant impayé, 2 points pour la pénalité (accepter 431,85 € ou un arrondi proche à 431,84/431,86 selon la méthode), 1 point pour l'indemnité, 1 point pour le total (105 555,85 €). Vérifier l'enchaînement : si le nombre de jours de la question 4 est faux, évaluer la cohérence de la démarche. Détail du calcul : 105 084 × 0,10 = 10 508,40 ; 10 508,40 × 15 ÷ 365 = 431,85." },
+
+      { intitule: "Rédigez le courriel de relance.", documents: ['Documents 5 et 6', 'Annexe 6'], bareme: 2,
+        reponse: "La relance doit suivre les cinq points de la fiche méthode, sur un ton courtois mais ferme.",
+        complement: "Les cinq points attendus : (1) rappel de la facture FA-2041 du 15 juin, 105 084 € ; (2) constat du retard sans accusation (« sauf erreur de notre part, nous n'avons pas encore enregistré votre règlement ») ; (3) détail des sommes dues : solde 105 084 € + pénalité 431,85 € + indemnité 40 € = 105 555,85 € ; (4) demande de règlement sous un délai court, proposition d'aide ; (5) formule commerciale rappelant la qualité de la relation (l'installation s'est bien passée). Barème : 2 points si les cinq points sont respectés et le ton juste ; retirer 0,5 par point manquant ou si le ton devient accusateur. Ne pas pénaliser l'orthographe." },
+    ],
+  },
+}
+
+const ENCHANTED_M8: ContenuMission = {
+  travaux: {
+    consigne:
+      "Contrôlez la conformité de la livraison des 4 robots, chiffrez les écarts constatés, qualifiez la réclamation de la cliente et rédigez la réponse commerciale.",
+    contexte:
+      "Mardi 15 juin 202N, 7 h 40. Le camion se gare devant l'hôtel Le Grand Siècle. Vous êtes sur place avec Marc Lefèvre, le technicien, pour réceptionner les 4 robots Mirokaï et signer le procès-verbal de réception. Karim Haddad vous a briefé la veille : « La réception, c'est le moment le plus risqué de toute la vente. Une fois que tu as signé sans réserve, l'entreprise est engagée : si tu découvres un problème après, c'est trop tard, tu ne peux plus rien réclamer au transporteur. Tu contrôles TOUT, tu comptes, tu ouvres, tu vérifies les numéros de série. Et si quelque chose cloche, tu écris la réserve noir sur blanc, précise, chiffrée. Ensuite seulement on traite. » À 9 h 15, un courriel de Camille Rousseau arrive. Elle n'est pas contente.",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.3 — Contrôler la livraison et traiter une réclamation",
+      detail: "C2.3.1 Contrôler la conformité d'une livraison au bon de livraison et à la commande. C2.3.2 Formuler des réserves écrites et chiffrer un écart. C2.3.3 Qualifier une réclamation et déterminer la responsabilité. C2.3.4 Traiter la réclamation et rédiger la réponse au client.",
+    },
+    documents: [
+      // DOC 1 : le bon de livraison du transporteur
+      { numero: 1, titre: "Le bon de livraison n° BL-2041 (document du transporteur)", texte: [
+        { logoEntete: 'TRANSPORTS BERNAUD — BON DE LIVRAISON' },
+        { paragraphes: [
+          "Transports Bernaud SAS — 42 avenue de la Logistique, 94500 Champigny-sur-Marne — Téléphone 01 48 82 17 40 — Chauffeur : M. Aziz Benali, tournée PAR-14.",
+        ] },
+        { tableau: { colonnes: ['Rubrique', 'Information'], lignes: [
+          ['Numéro de bon de livraison', 'BL-2041'],
+          ['Date de livraison', 'mardi 15 juin 202N — arrivée 7 h 40'],
+          ['Expéditeur', 'Enchanted Tools SAS, 14 rue du Faubourg Saint-Antoine, 75012 Paris'],
+          ['Destinataire', 'Hôtel Le Grand Siècle, 8 rue de la Paix, 75002 Paris'],
+          ['Référence commande', 'CD-2041 du 14 avril 202N'],
+          ['Nombre de colis annoncés', '6 colis'],
+          ['Poids total annoncé', '132 kg'],
+          ['Température de transport', 'non applicable'],
+        ] } },
+        { intertitre: 'Détail des colis annoncés sur le bon' },
+        { tableau: { colonnes: ['Colis', 'Contenu annoncé', 'Qté', 'N° de série'], lignes: [
+          ['Colis 1', 'Robot Mirokaï MIR-01', '1', 'MK-2041-A'],
+          ['Colis 2', 'Robot Mirokaï MIR-01', '1', 'MK-2041-B'],
+          ['Colis 3', 'Robot Mirokaï MIR-01', '1', 'MK-2041-C'],
+          ['Colis 4', 'Robot Mirokaï MIR-01', '1', 'MK-2041-D'],
+          ['Colis 5', 'Stations de recharge MIR-DOCK', '4', '—'],
+          ['Colis 6', 'Kits d’accessoires (housse, plateau, notice)', '4', '—'],
+        ] } },
+        { bulleConseil: { texte: ["Ce document est celui du transporteur. Il annonce ce qui est censé être dans le camion. Votre travail est de vérifier si la réalité correspond."] } },
+      ] },
+
+      // DOC 2 : le proces-verbal de reception rempli sur place (les constats bruts)
+      { numero: 2, titre: "Le procès-verbal de réception rempli sur le quai", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Procès-verbal de réception' },
+        { paragraphes: [
+          "Document rempli à la main par Marc Lefèvre, technicien, le 15 juin 202N entre 7 h 40 et 9 h 05, en présence du chauffeur et de M. Diallo, contact technique de l'hôtel.",
+        ] },
+        { intertitre: 'Contrôle quantitatif — ce qui a été réellement compté' },
+        { tableau: { colonnes: ['Élément', 'Annoncé', 'Reçu', 'Observation du technicien'], lignes: [
+          ['Colis au total', '6', '6', 'Comptage fait deux fois, OK'],
+          ['Robots Mirokaï', '4', '4', 'Les 4 caisses sont bien là'],
+          ['Stations de recharge MIR-DOCK', '4', '3', 'Une seule station dans le colis 5 au lieu de deux paires'],
+          ['Kits d’accessoires', '4', '4', 'Complets, notices en français'],
+        ] } },
+        { intertitre: 'Contrôle qualitatif — état à l’ouverture des caisses' },
+        { tableau: { colonnes: ['N° de série', 'État de la caisse', 'État du robot', 'Mise sous tension'], lignes: [
+          ['MK-2041-A', 'Intacte', 'Aucun défaut visible', 'Démarre, oreilles mobiles, OK'],
+          ['MK-2041-B', 'Intacte', 'Aucun défaut visible', 'Démarre, OK'],
+          ['MK-2041-C', 'Angle inférieur droit enfoncé, film plastique déchiré', 'Coque du globe roulant rayée sur 12 cm, éclat de peinture', 'Démarre mais roulement bruyant, déplacement dévié'],
+          ['MK-2041-D', 'Intacte', 'Aucun défaut visible', 'Démarre, OK'],
+        ] } },
+        { intertitre: 'Autres observations portées au procès-verbal' },
+        { paragraphes: [
+          "Le chauffeur signale que le camion a freiné brutalement porte de Bercy à cause d'un scooter. Il ne sait pas si un colis a bougé.",
+          "Le hall de l'hôtel était en cours de nettoyage, la livraison a dû se faire par l'entrée de service, rue Danielle-Casanova.",
+          "M. Diallo a demandé si les robots pouvaient parler japonais. Réponse donnée : oui, plus de 50 langues.",
+          "Le procès-verbal a été signé par Marc Lefèvre à 9 h 05. Mention portée dans la case « réserves » : à compléter.",
+        ] },
+        { bulleConseil: { texte: ["Toutes les observations de ce document ne concernent pas la conformité de la livraison. Triez : certaines relèvent d'un écart réel, d'autres sont du bavardage de quai."] } },
+      ] },
+
+      // DOC 3 : la commande de reference (pour recouper)
+      { numero: 3, titre: "Rappel de la commande CD-2041 et du prix des éléments", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Extrait du dossier client' },
+        { paragraphes: [
+          "Rappel de ce que l'hôtel a commandé et signé le 14 avril 202N. C'est ce document qui fait foi : la livraison doit être conforme à la commande, pas seulement au bon de livraison.",
+        ] },
+        { tableau: { colonnes: ['Désignation', 'Qté commandée', 'PU HT', 'Total HT'], lignes: [
+          ['Robot Mirokaï MIR-01', '4', '30 000,00 €', '120 000,00 €'],
+          ['Remise commerciale 5 % sur robots', '—', '—', '− 6 000,00 €'],
+          ['Formation du personnel (forfait)', '1', '1 500,00 €', '1 500,00 €'],
+          ['Contrat de maintenance annuel', '4', '2 400,00 €', '9 600,00 €'],
+          ['TOTAL HT de la commande', '', '', '125 100,00 €'],
+        ] } },
+        { intertitre: 'Les éléments fournis avec chaque robot (compris dans le prix)' },
+        { tableau: { colonnes: ['Élément livré avec le robot', 'Qté par robot', 'Valeur HT unitaire si vendu seul'], lignes: [
+          ['Station de recharge MIR-DOCK', '1', '850,00 €'],
+          ['Kit d’accessoires (housse, plateau, notice)', '1', '180,00 €'],
+          ['Batterie Saft de rechange', '0 (option non commandée)', '1 200,00 €'],
+        ] } },
+        { paragraphes: [
+          "L'hôtel n'a pas commandé de batterie de rechange. Cette ligne figure au catalogue mais ne fait pas partie du contrat.",
+        ] },
+      ] },
+
+      // DOC 4 : le courriel de reclamation de la cliente
+      { numero: 4, titre: "Le courriel de réclamation de Camille Rousseau", texte: [
+        { mailLecture: {
+          de: 'accueil@legrandsiecle-paris.fr',
+          a: 'k.haddad@enchanted.tools',
+          objet: 'Livraison de ce matin — je ne suis pas satisfaite',
+          corps: [
+            "Bonjour Monsieur Haddad,",
+            "Je viens de faire le tour du local technique avec M. Diallo et je dois vous dire ma déception.",
+            "Premièrement, il manque des stations de recharge. Nous en avons trois pour quatre robots. Concrètement, cela veut dire qu'un robot ne pourra pas être chargé la nuit et sera donc inutilisable une journée sur deux. Nous ouvrons notre saison le 25 juin, avec un séminaire de 180 personnes. Je ne peux pas me permettre d'avoir un robot à l'arrêt.",
+            "Deuxièmement, l'un des robots est abîmé. La coque est rayée sur une bonne longueur et il fait un bruit inquiétant quand il roule. Pour un investissement de cette importance, recevoir du matériel dans cet état est difficilement acceptable. Mes équipes l'ont vu, cela ne donne pas une bonne image.",
+            "Je précise que la formation des 16 et 17 juin est maintenue, mes six réceptionnistes sont bloqués sur ces créneaux.",
+            "Je souhaite une réponse aujourd'hui avec des engagements précis et des dates. Je vous rappelle que nous devons encore régler le solde de la facture.",
+            "Cordialement,",
+            "Camille Rousseau, directrice de l'accueil — Hôtel Le Grand Siècle",
+          ],
+        } },
+        { bulleConseil: { texte: ["Une réclamation contient toujours des faits, des conséquences et des émotions. Séparez les trois : on traite les faits, on tient compte des conséquences, on ne discute pas les émotions."] } },
+      ] },
+
+      // DOC 5 : la procedure interne de traitement des reclamations
+      { numero: 5, titre: "Le livret du stagiaire — 14. Traiter une réclamation", texte: [
+        { pageWeb: true },
+        { intertitre: 'Étape 1 — Qualifier la réclamation' },
+        { paragraphes: [
+          "Qualifier, c'est répondre à trois questions avant d'agir : de quel type d'écart s'agit-il, qui en est responsable, et quelle est sa gravité pour le client.",
+        ] },
+        { tableau: { colonnes: ['Type d’écart', 'Définition', 'Exemple'], lignes: [
+          ['Écart de quantité', 'Le nombre reçu est différent du nombre commandé', 'Il manque un article'],
+          ['Écart de qualité', 'Le produit est là mais abîmé ou défectueux', 'Une coque rayée'],
+          ['Écart de référence', 'Ce n’est pas le bon produit', 'Un modèle différent livré'],
+          ['Écart de délai', 'La livraison arrive après la date prévue', 'Livré avec deux semaines de retard'],
+        ] } },
+        { intertitre: 'Étape 2 — Déterminer la responsabilité' },
+        { tableau: { colonnes: ['Indice', 'Responsable probable', 'Conséquence'], lignes: [
+          ['Emballage intact, contenu manquant', 'Enchanted Tools (erreur de préparation)', 'On complète à nos frais'],
+          ['Emballage endommagé, produit abîmé', 'Le transporteur', 'On indemnise le client puis on se retourne contre le transporteur'],
+          ['Produit conforme mais mal utilisé', 'Le client', 'Intervention facturée'],
+        ] } },
+        { intertitre: 'Étape 3 — Les quatre solutions possibles' },
+        { tableau: { colonnes: ['Solution', 'Quand l’utiliser'], lignes: [
+          ['Livraison complémentaire', 'Il manque un article, on l’envoie'],
+          ['Échange standard', 'Le produit est abîmé, on le remplace'],
+          ['Avoir commercial', 'On accorde une réduction sur la facture'],
+          ['Geste commercial', 'On offre un service ou un produit pour compenser la gêne'],
+        ] } },
+        { intertitre: 'Étape 4 — Le délai de réponse' },
+        { paragraphes: [
+          "Une réclamation écrite doit recevoir une réponse écrite dans les 24 heures, même si la solution définitive demande plus de temps.",
+        ] },
+        { bulleConseil: { texte: ["Une réserve non écrite sur le procès-verbal le jour de la livraison ne peut plus être opposée au transporteur ensuite. L'écrit du jour J est ce qui protège l'entreprise."] } },
+      ] },
+
+      // DOC 6 : fiche methode avec les formules et l'exemple chiffre different
+      { numero: 6, titre: "Fiche méthode — Chiffrer un écart de livraison", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Une réclamation n'est crédible que si elle est chiffrée. Dire « il manque du matériel » ne sert à rien. Dire « il manque 1 station à 850 € HT, soit 1 020 € TTC » permet de traiter le dossier.",
+        ] },
+        { intertitre: 'Les formules' },
+        { paragraphes: [
+          "Quantité manquante = quantité commandée − quantité réellement reçue.",
+          "Valeur HT de l'écart = quantité manquante × prix unitaire HT de l'élément.",
+          "Valeur TTC de l'écart = valeur HT × 1,20 (TVA à 20 %).",
+          "Avoir pour préjudice = valeur HT de l'écart + geste commercial éventuel.",
+          "Taux de conformité de la livraison = (nombre d'éléments conformes ÷ nombre d'éléments attendus) × 100.",
+        ] },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres que notre dossier)' },
+        { paragraphes: [
+          "Un client a commandé 10 bornes tactiles à 640 € HT l'unité. À la réception, il en reçoit 7 en bon état, 1 rayée et 2 manquantes.",
+          "Quantité manquante = 10 − 8 = 2. Valeur HT de l'écart = 2 × 640 = 1 280 €. Valeur TTC = 1 280 × 1,20 = 1 536 €.",
+          "Éléments conformes = 7 (la borne rayée n'est pas conforme). Taux de conformité = (7 ÷ 10) × 100 = 70 %.",
+          "Avec un geste commercial de 200 € HT, l'avoir total serait de 1 280 + 200 = 1 480 € HT.",
+        ] },
+        { bulleConseil: { texte: ["Attention : un article livré mais abîmé compte comme non conforme dans le taux de conformité, alors qu'il ne compte pas dans la quantité manquante. Ce sont deux calculs différents."] } },
+      ] },
+
+      // DOC 7 : note de direction (le cadrage de la reponse, avec contraintes a trier)
+      { numero: 7, titre: "Note de la direction commerciale (15 juin, 10 h 20)", texte: [
+        { noteDirection: {
+          titre: 'Note interne — dossier Le Grand Siècle',
+          signature: 'Karim Haddad, responsable commercial',
+          intro: "De : Karim Haddad, responsable commercial. À : le stagiaire. Copie : Nadia Cherif, Sofia Marchetti.",
+          paragraphe: "J'ai lu le courriel de Mme Rousseau. On répond aujourd'hui, c'est non négociable.",
+          puces: [
+            "Vérification faite auprès de Sofia à la production : la station manquante est bien une erreur de notre part, le colis 5 a été préparé avec trois stations au lieu de quatre. L'emballage était intact à l'arrivée, donc le transporteur n'y est pour rien sur ce point.",
+            "Pour le robot MK-2041-C, la caisse était enfoncée et le film déchiré : c'est du dommage de transport. Marc a bien noté l'état de la caisse sur le procès-verbal, donc nous sommes couverts vis-à-vis de Bernaud. Nous ferons jouer leur assurance de notre côté, mais cela ne regarde pas la cliente : pour elle, c'est nous qui réglons.",
+            "Nous avons un robot de démonstration disponible immédiatement à Paris, numéro de série MK-DEMO-07, identique au modèle vendu, 40 heures d'utilisation. Il peut être mis à disposition dès le 17 juin en attendant l'échange définitif.",
+            "Une station de recharge neuve peut partir de l'atelier le 16 juin pour une livraison le 17 juin au matin.",
+            "L'échange définitif du robot abîmé demande 3 semaines de fabrication : disponible le 6 juillet.",
+            "Sur le geste commercial, je vous laisse proposer : la marge nous permet d'aller jusqu'à 2 000 € HT sans validation de la direction générale. Au-delà, il faut mon accord écrit.",
+            "Ne promettez jamais une date que la production ne peut pas tenir. Une deuxième promesse non tenue sur ce dossier et nous perdons le client, et l'hôtel de Lyon avec.",
+            "Rappel : la formation des 16 et 17 juin est maintenue, les 6 réceptionnistes sont bloqués.",
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette note contient les moyens dont vous disposez réellement. Vous ne pouvez rien promettre qui n'y figure pas."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Contrôler la conformité de la livraison",
+        contexte: "Avant de répondre à la cliente, il faut savoir exactement ce qui a été livré et ce qui manque. On recoupe trois documents : la commande, le bon de livraison et le procès-verbal.",
+        questions: [
+          { numero: 1, consigne: "Complétez le tableau de contrôle de conformité en comparant la commande CD-2041, le bon de livraison BL-2041 et les constats du procès-verbal. Indiquez pour chaque ligne s'il y a conformité ou écart.", ressources: 'Documents 1, 2 et 3, annexe 1. Compétence C2.3.1. Attention : le bon de livraison annonce des quantités, le procès-verbal indique ce qui a été réellement compté. Les deux ne disent pas la même chose.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Identifiez les deux anomalies réelles de cette livraison. Pour chacune, nommez le type d'écart et désignez le responsable en justifiant par un indice précis relevé dans les documents.", ressources: 'Documents 2, 5 et 7, annexe 2. Compétence C2.3.3. Le document 5 donne la grille des types d’écarts et la règle de responsabilité. Le document 2 contient aussi des observations qui ne sont pas des anomalies : ne les retenez pas.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Chiffrer les écarts et rédiger les réserves",
+        contexte: "Un écart non chiffré et non écrit n'existe pas juridiquement. On calcule, puis on rédige la réserve qui aurait dû figurer sur le procès-verbal.",
+        questions: [
+          { numero: 3, consigne: "Calculez la valeur HT puis TTC de la station de recharge manquante, et calculez le taux de conformité de la livraison des robots. Montrez toutes vos opérations.", ressources: 'Documents 3 et 6, annexe 3. Compétence C2.3.2. Les formules et un exemple entièrement calculé figurent au document 6. Pour le taux de conformité, souvenez-vous qu’un robot abîmé n’est pas conforme.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Rédigez la réserve écrite qui doit être portée sur le procès-verbal de réception à la case « réserves ». Elle doit être précise, datée, chiffrée et mentionner les numéros de série concernés.", ressources: 'Documents 1, 2 et 5, annexe 4. Compétence C2.3.2. Une réserve utile décrit le fait constaté, pas l’opinion du réceptionnaire.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Construire et rédiger la réponse à la cliente",
+        contexte: "La cliente attend une réponse aujourd'hui, avec des engagements et des dates. On choisit les solutions, on prépare l'entretien téléphonique, puis on écrit.",
+        questions: [
+          { numero: 5, consigne: "Pour chacune des deux anomalies, choisissez la solution de traitement adaptée parmi les quatre du livret et fixez la date d'engagement correspondante. Justifiez chaque choix.", ressources: 'Documents 5 et 7, annexe 5. Compétence C2.3.4. Toutes les dates possibles figurent dans la note de direction. Ne proposez aucune date qui n’y est pas.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Préparez votre appel téléphonique à Mme Rousseau en complétant la fiche CROC. Vous devez annoncer les solutions retenues avant l'envoi du courrier écrit.", ressources: 'Documents 4, 5 et 7, annexe 6. Compétence C2.3.4. Le C est le contact, le R la raison de l’appel, le O l’objectif visé, le C la conclusion et la prise de congé.', annexeId: 'annexe6' },
+          { numero: 7, consigne: "Rédigez le courriel de réponse à Mme Rousseau : reconnaissance des faits, solutions avec dates, geste commercial chiffré et respectant la limite fixée par la direction, formule de conclusion.", ressources: 'Documents 4, 5, 6 et 7, annexe 7. Compétence C2.3.4. Le geste commercial doit être un montant précis, justifié, et ne pas dépasser le plafond de la note de direction.', annexeId: 'annexe7' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Tableau de contrôle de conformité de la livraison', colonnes: ['Élément', 'Qté commandée', 'Qté annoncée au BL', 'Qté réellement reçue', 'Conforme ? (oui / non)'], nbLignes: 4, largeurs: ['32%', '17%', '17%', '17%', '17%'], prerempli: [
+        ['Robots Mirokaï MIR-01', '', '', '', ''],
+        ['Stations de recharge MIR-DOCK', '', '', '', ''],
+        ['Kits d’accessoires', '', '', '', ''],
+        ['Robots en parfait état de fonctionnement', '', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Qualification des anomalies', colonnes: ['Anomalie constatée', 'Type d’écart', 'Responsable', 'Indice qui le prouve'], nbLignes: 2, largeurs: ['26%', '20%', '20%', '34%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Anomalie n° 1', '', '', ''],
+        ['Anomalie n° 2', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Chiffrage des écarts', colonnes: ['Élément à calculer', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 5, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Quantité de stations manquantes', '', ''],
+        ['Valeur HT de l’écart', '', ''],
+        ['Valeur TTC de l’écart', '', ''],
+        ['Nombre de robots conformes', '', ''],
+        ['Taux de conformité des robots', '', ''],
+      ] },
+      { type: 'texte', id: 'annexe4', titre: "Annexe 4 — Réserve à porter sur le procès-verbal de réception", lignes: 6 },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Solutions de traitement retenues', colonnes: ['Anomalie', 'Solution retenue', 'Date d’engagement', 'Justification du choix'], nbLignes: 3, largeurs: ['22%', '22%', '18%', '38%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Station manquante', '', '', ''],
+        ['Robot MK-2041-C abîmé (solution immédiate)', '', '', ''],
+        ['Robot MK-2041-C abîmé (solution définitive)', '', '', ''],
+      ] },
+      { type: 'croc', id: 'annexe6', titre: "Annexe 6 — Fiche CROC de préparation de l’appel à Mme Rousseau" },
+      { type: 'mail', id: 'annexe7', titre: "Annexe 7 — Courriel de réponse à la réclamation", deParDefaut: 'stagiaire@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Contrôler une livraison en recoupant commande, bon de livraison et procès-verbal",
+      "Distinguer un écart de quantité d'un écart de qualité",
+      "Déterminer la responsabilité d'une anomalie à partir d'indices matériels",
+      "Chiffrer un écart en valeur HT, TTC et en taux de conformité",
+      "Rédiger une réserve écrite recevable",
+      "Choisir la solution de traitement adaptée et l'engager sur une date tenable",
+      "Répondre par écrit à une réclamation en préservant la relation commerciale",
+    ],
+  },
+
+  synthese: {
+    titre: "Le contrôle de la livraison et le traitement de la réclamation",
+    proposition: [
+      'Le bon de livraison', 'Le procès-verbal de réception', 'La réserve écrite',
+      "L'écart de quantité", "L'écart de qualité", 'La responsabilité du fournisseur',
+      'La responsabilité du transporteur', 'La livraison complémentaire',
+      "L'échange standard", 'Le geste commercial',
+    ],
+    racine: {
+      id: 'racine', texte: 'Contrôler et réclamer',
+      enfants: [
+        { id: 'ctr', texte: 'Les documents du contrôle', enfants: [
+          { id: 'c1', texte: null, reponse: 'Le bon de livraison' },
+          { id: 'c2', texte: null, reponse: 'Le procès-verbal de réception' },
+          { id: 'c3', texte: null, reponse: 'La réserve écrite' },
+        ] },
+        { id: 'eca', texte: 'Les types d’écarts', enfants: [
+          { id: 'e1', texte: null, reponse: "L'écart de quantité" },
+          { id: 'e2', texte: null, reponse: "L'écart de qualité" },
+        ] },
+        { id: 'res', texte: 'Qui est responsable', enfants: [
+          { id: 'r1', texte: null, reponse: 'La responsabilité du fournisseur' },
+          { id: 'r2', texte: null, reponse: 'La responsabilité du transporteur' },
+        ] },
+        { id: 'sol', texte: 'Les solutions', enfants: [
+          { id: 's1', texte: null, reponse: 'La livraison complémentaire' },
+          { id: 's2', texte: null, reponse: "L'échange standard" },
+          { id: 's3', texte: null, reponse: 'Le geste commercial' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Contrôler une livraison", indicateurs: [
+        { niveau: 'novice', description: "Je signe le bon de livraison sans rien vérifier." },
+        { niveau: 'debrouille', description: "Je compte les colis." },
+        { niveau: 'averti', description: "Je compare la livraison à la commande et j'ouvre les caisses." },
+        { niveau: 'expert', description: "Je recoupe les trois documents et je repère les écarts cachés." },
+      ] },
+      { id: 'c2', intitule: "Qualifier et chiffrer un écart", indicateurs: [
+        { niveau: 'novice', description: "Je dis qu'il y a un problème sans le préciser." },
+        { niveau: 'debrouille', description: "Je nomme le type d'écart." },
+        { niveau: 'averti', description: "Je chiffre l'écart en valeur HT et TTC." },
+        { niveau: 'expert', description: "Je détermine aussi la responsabilité en m'appuyant sur des indices." },
+      ] },
+      { id: 'c3', intitule: "Rédiger une réserve", indicateurs: [
+        { niveau: 'novice', description: "Je n'écris rien sur le procès-verbal." },
+        { niveau: 'debrouille', description: "J'écris une remarque générale." },
+        { niveau: 'averti', description: "Je décris le fait constaté avec précision." },
+        { niveau: 'expert', description: "Ma réserve est datée, chiffrée et cite les numéros de série." },
+      ] },
+      { id: 'c4', intitule: "Traiter une réclamation", indicateurs: [
+        { niveau: 'novice', description: "Je me justifie ou j'accuse le transporteur devant le client." },
+        { niveau: 'debrouille', description: "Je reconnais le problème." },
+        { niveau: 'averti', description: "Je propose une solution avec une date." },
+        { niveau: 'expert', description: "Je propose une solution immédiate et une solution définitive, avec un geste commercial justifié." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Bon de livraison', definition: "Document du transporteur qui accompagne la marchandise et annonce ce qu'elle contient." },
+      { terme: 'Procès-verbal de réception', definition: "Document signé à la réception qui constate l'état réel de la marchandise livrée." },
+      { terme: 'Réserve', definition: "Mention écrite portée sur le procès-verbal pour signaler un écart au moment de la livraison." },
+      { terme: 'Contrôle quantitatif', definition: "Vérification du nombre d'articles reçus par rapport au nombre annoncé." },
+      { terme: 'Contrôle qualitatif', definition: "Vérification de l'état et du bon fonctionnement des articles reçus." },
+      { terme: 'Écart de quantité', definition: "Différence entre la quantité commandée et la quantité réellement reçue." },
+      { terme: 'Écart de qualité', definition: "Article livré en bon nombre mais abîmé ou défectueux." },
+      { terme: 'Numéro de série', definition: "Identifiant unique gravé sur chaque appareil, qui permet de le tracer." },
+      { terme: 'Livraison complémentaire', definition: "Envoi ultérieur de l'article manquant, aux frais du fournisseur." },
+      { terme: 'Échange standard', definition: "Remplacement d'un article défectueux par un article neuf identique." },
+      { terme: 'Avoir', definition: "Document commercial qui réduit la somme due par le client." },
+      { terme: 'Geste commercial', definition: "Avantage offert au client pour compenser une gêne, sans y être obligé." },
+    ],
+    flashcards: [
+      { recto: "À quoi sert le procès-verbal de réception ?", verso: "À constater par écrit l'état réel de la marchandise au moment de la livraison." },
+      { recto: "Que risque-t-on en signant sans réserve ?", verso: "On ne peut plus rien réclamer au transporteur ensuite." },
+      { recto: "Combien de stations de recharge ont été livrées ?", verso: "3 seulement, alors que 4 étaient commandées." },
+      { recto: "Quel robot est arrivé abîmé ?", verso: "Le MK-2041-C : coque rayée sur 12 cm et roulement bruyant." },
+      { recto: "Qui est responsable de la station manquante ?", verso: "Enchanted Tools : erreur de préparation, l'emballage était intact." },
+      { recto: "Qui est responsable du robot abîmé ?", verso: "Le transporteur : la caisse était enfoncée et le film déchiré." },
+      { recto: "Quelle est la valeur HT d'une station de recharge ?", verso: "850 € HT, soit 1 020 € TTC." },
+      { recto: "Comment calcule-t-on un taux de conformité ?", verso: "(Éléments conformes ÷ éléments attendus) × 100." },
+      { recto: "Quel est le délai de réponse à une réclamation écrite ?", verso: "24 heures, même si la solution définitive prend plus de temps." },
+      { recto: "Quel est le plafond du geste commercial sans validation ?", verso: "2 000 € HT ; au-delà il faut l'accord écrit du responsable." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'Le document qui constate l’état réel de la marchandise à la réception est :', options: ['le procès-verbal de réception', 'le bon de commande', 'la facture', 'le devis'], bonne: 0 },
+      { type: 'unique', question: 'Signer un bon de livraison sans réserve signifie :', options: ['qu’on accepte la livraison telle quelle', 'qu’on se réserve un recours', 'qu’on refuse la livraison', 'qu’on paie comptant'], bonne: 0 },
+      { type: 'unique', question: 'Il manque une station de recharge : c’est un écart :', options: ['de quantité', 'de qualité', 'de référence', 'de délai'], bonne: 0 },
+      { type: 'unique', question: 'Le robot MK-2041-C rayé et bruyant relève d’un écart :', options: ['de qualité', 'de quantité', 'de délai', 'de prix'], bonne: 0 },
+      { type: 'unique', question: 'Emballage intact mais contenu manquant : le responsable est :', options: ['le fournisseur', 'le transporteur', 'le client', 'l’assureur'], bonne: 0 },
+      { type: 'unique', question: 'La valeur TTC de la station manquante est de :', options: ['1 020 €', '850 €', '1 200 €', '950 €'], bonne: 0 },
+      { type: 'unique', question: 'Sur 4 robots livrés, 3 sont conformes. Le taux de conformité est de :', options: ['75 %', '80 %', '25 %', '100 %'], bonne: 0 },
+      { type: 'unique', question: 'Remplacer un article défectueux par un article neuf identique s’appelle :', options: ['un échange standard', 'un avoir', 'une livraison complémentaire', 'une remise'], bonne: 0 },
+      { type: 'unique', question: 'Face à un client mécontent, on commence par :', options: ['reconnaître les faits', 'accuser le transporteur', 'discuter le montant', 'renvoyer au contrat'], bonne: 0 },
+      { type: 'unique', question: 'Une réponse écrite à une réclamation doit être envoyée sous :', options: ['24 heures', '8 jours', '30 jours', 'un mois'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Document du contrôle', 'Type d’écart', 'Solution de traitement'],
+      zones: [
+        { libelle: 'Le bon de livraison BL-2041', etiquetteIndex: 0 },
+        { libelle: 'Le procès-verbal de réception', etiquetteIndex: 0 },
+        { libelle: 'La réserve écrite datée et chiffrée', etiquetteIndex: 0 },
+        { libelle: 'Il manque une station de recharge', etiquetteIndex: 1 },
+        { libelle: 'La coque du robot est rayée', etiquetteIndex: 1 },
+        { libelle: 'Le colis arrive après la date prévue', etiquetteIndex: 1 },
+        { libelle: 'Envoyer l’article manquant à nos frais', etiquetteIndex: 2 },
+        { libelle: 'Remplacer le robot abîmé par un neuf', etiquetteIndex: 2 },
+        { libelle: 'Offrir une compensation pour la gêne', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Complétez le tableau de contrôle de conformité de la livraison.", documents: ['Documents 1, 2 et 3', 'Annexe 1'], bareme: 3,
+        reponse: "Le contrôle se fait en trois colonnes : ce qui a été commandé (doc 3), ce qui a été annoncé au bon de livraison (doc 1) et ce qui a été réellement compté (doc 2).",
+        tableau: { colonnes: ['Élément', 'Commandé', 'Annoncé au BL', 'Reçu', 'Conforme'], lignes: [
+          ['Robots Mirokaï MIR-01', '4', '4', '4', 'Oui'],
+          ['Stations de recharge MIR-DOCK', '4', '4', '3', 'Non'],
+          ['Kits d’accessoires', '4', '4', '4', 'Oui'],
+          ['Robots en parfait état', '4', '4', '3', 'Non'],
+        ] },
+        complement: "0,75 point par ligne correctement complétée. Le point clé, à valoriser : le bon de livraison annonce 4 stations alors que 3 seulement ont été reçues. L'élève qui recopie le bon de livraison sans lire le procès-verbal ne trouve aucun écart. ERREUR CLASSIQUE à sanctionner : compter 6 colis reçus sur 6 annoncés et conclure que la livraison est conforme ; le nombre de colis est bien conforme, c'est le contenu du colis 5 qui ne l'est pas. Accepter toute formulation équivalente pour la dernière ligne (« robots fonctionnels », « robots en bon état »)." },
+
+      { intitule: "Identifiez les deux anomalies, leur type et le responsable.", documents: ['Documents 2, 5 et 7', 'Annexe 2'], bareme: 4,
+        reponse: "Deux anomalies seulement doivent être retenues. Les autres observations du procès-verbal ne sont pas des écarts de livraison.",
+        tableau: { colonnes: ['Anomalie', 'Type d’écart', 'Responsable', 'Indice'], lignes: [
+          ['Il manque 1 station de recharge (3 reçues sur 4)', 'Écart de quantité', 'Enchanted Tools', 'L’emballage du colis 5 était intact : le doc 5 indique qu’emballage intact + contenu manquant = erreur de préparation. Le doc 7 le confirme (Sofia Marchetti).'],
+          ['Robot MK-2041-C rayé sur 12 cm et roulement bruyant', 'Écart de qualité', 'Le transporteur', 'La caisse était enfoncée à l’angle et le film plastique déchiré : le doc 5 indique qu’emballage endommagé + produit abîmé = responsabilité du transporteur. Le freinage brusque porte de Bercy le confirme.'],
+        ] },
+        complement: "2 points par anomalie : 0,5 pour l'identification, 0,5 pour le type d'écart, 0,5 pour le responsable, 0,5 pour l'indice matériel. Exiger un indice MATÉRIEL (état de l'emballage), pas une simple affirmation. ERREURS CLASSIQUES à sanctionner : (1) retenir comme anomalie le fait que la livraison se soit faite par l'entrée de service, ou la question de M. Diallo sur le japonais, ou le nettoyage du hall — ce sont des informations parasites volontaires ; (2) attribuer la station manquante au transporteur alors que l'emballage était intact ; (3) inverser les deux responsabilités. Ne pas pénaliser l'élève qui écrit « Enchanted Tools » ou « nous » ou « le fournisseur ».",
+      },
+
+      { intitule: "Chiffrez l'écart et calculez le taux de conformité.", documents: ['Documents 3 et 6', 'Annexe 3'], bareme: 4,
+        reponse: "On applique les formules du document 6 avec les prix du document 3.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Quantité de stations manquantes', '4 − 3', '1 station'],
+          ['Valeur HT de l’écart', '1 × 850', '850,00 €'],
+          ['Valeur TTC de l’écart', '850 × 1,20', '1 020,00 €'],
+          ['Nombre de robots conformes', '4 − 1 (le MK-2041-C est abîmé)', '3 robots'],
+          ['Taux de conformité des robots', '(3 ÷ 4) × 100', '75 %'],
+        ] },
+        complement: "0,5 point pour la quantité manquante, 1 point pour la valeur HT, 1 point pour la valeur TTC, 0,5 point pour le nombre de robots conformes, 1 point pour le taux. Exiger l'opération écrite, pas seulement le résultat : retirer la moitié des points de la ligne si seul le résultat figure. ERREURS CLASSIQUES à sanctionner : (1) utiliser le prix du robot (30 000 €) au lieu de celui de la station (850 €) ; (2) utiliser le prix de la batterie de rechange (1 200 €), qui est un piège du document 3 puisqu'elle n'a pas été commandée ; (3) compter 4 robots conformes en oubliant que le MK-2041-C est abîmé, ce qui donne 100 % au lieu de 75 % ; (4) confondre les deux calculs et retirer le robot abîmé de la quantité manquante. Accepter 1 020 € obtenu par 850 + (850 × 0,20)." },
+
+      { intitule: "Rédigez la réserve à porter sur le procès-verbal.", documents: ['Documents 1, 2 et 5', 'Annexe 4'], bareme: 3,
+        reponse: "Une réserve recevable décrit les faits constatés, avec la date, les quantités et les numéros de série. Exemple de rédaction attendue : « Réserves émises le 15 juin 202N à 9 h 05 lors de la réception de la livraison BL-2041 (commande CD-2041). Premièrement, manque une station de recharge MIR-DOCK : 3 unités reçues dans le colis 5 pour 4 unités annoncées et commandées, valeur 850 € HT. Deuxièmement, robot Mirokaï n° de série MK-2041-C livré endommagé : caisse enfoncée à l'angle inférieur droit, film plastique déchiré, coque du globe roulant rayée sur 12 cm, éclat de peinture, roulement bruyant et déplacement dévié à la mise sous tension. Les trois autres robots (MK-2041-A, B et D) sont conformes et fonctionnels. Réserves formulées en présence du chauffeur, M. Aziz Benali, et de M. Diallo. »",
+        complement: "3 points répartis ainsi : 0,5 pour la date et la référence du bon de livraison ; 1 point pour la description chiffrée du manquant ; 1 point pour la description précise du dommage avec le numéro de série MK-2041-C ; 0,5 pour la mention des témoins ou des robots conformes. ERREURS CLASSIQUES à sanctionner : (1) une réserve vague du type « livraison non conforme » ou « matériel abîmé », qui ne vaut rien juridiquement ; (2) l'absence du numéro de série ; (3) une réserve qui donne un avis ou accuse (« le chauffeur a mal conduit ») au lieu de constater un fait. Ne pas pénaliser l'orthographe ni l'ordre des deux réserves." },
+
+      { intitule: "Choisissez les solutions de traitement et les dates d'engagement.", documents: ['Documents 5 et 7', 'Annexe 5'], bareme: 3,
+        reponse: "Le traitement combine une réponse immédiate et une réponse définitive pour le robot abîmé, car la cliente ouvre sa saison le 25 juin.",
+        tableau: { colonnes: ['Anomalie', 'Solution', 'Date', 'Justification'], lignes: [
+          ['Station manquante', 'Livraison complémentaire à nos frais', '17 juin 202N au matin', 'Erreur de préparation de notre fait, la station part de l’atelier le 16 juin. Le doc 5 prévoit la livraison complémentaire pour un article manquant.'],
+          ['Robot MK-2041-C (immédiat)', 'Mise à disposition du robot de démonstration MK-DEMO-07', '17 juin 202N', 'La cliente ouvre sa saison le 25 juin avec un séminaire de 180 personnes : elle doit disposer de 4 robots opérationnels avant cette date. Le robot de prêt est disponible immédiatement.'],
+          ['Robot MK-2041-C (définitif)', 'Échange standard par un robot neuf', '6 juillet 202N', 'La fabrication demande 3 semaines. On n’annonce pas une date plus proche que la production ne pourrait pas tenir.'],
+        ] },
+        complement: "1 point par ligne : 0,5 pour la solution, 0,25 pour la date, 0,25 pour la justification. Le raisonnement le plus important à valoriser est la distinction entre solution immédiate (prêt) et solution définitive (échange), justifiée par la date d'ouverture du 25 juin. ERREURS CLASSIQUES à sanctionner : (1) inventer une date qui ne figure pas dans la note de direction (par exemple « sous 48 heures » pour l'échange définitif), ce qui est exactement ce que le tuteur interdit ; (2) proposer un avoir ou un remboursement du robot abîmé alors que la cliente a besoin de robots fonctionnels, pas d'argent ; (3) ne proposer que l'échange à 3 semaines, ce qui laisse la cliente sans solution pour son séminaire. Accepter le 16 juin pour la station si l'élève justifie par le départ atelier, mais valoriser le 17 juin qui est la date de livraison réelle." },
+
+      { intitule: "Complétez la fiche CROC de préparation de l'appel.", documents: ['Documents 4, 5 et 7', 'Annexe 6'], bareme: 3,
+        reponse: "La fiche doit être opérationnelle, rédigée en phrases prêtes à être dites.",
+        tableau: { colonnes: ['Étape', 'Contenu attendu'], lignes: [
+          ['C — Contact', "Se présenter avec nom, fonction et entreprise, s’assurer que Mme Rousseau est disponible : « Bonjour Madame Rousseau, [prénom nom], du service commercial d’Enchanted Tools, je vous appelle au sujet de la livraison de ce matin. Avez-vous quelques minutes ? »"],
+          ['R — Raison', "Annoncer l’objet de l’appel en reconnaissant les faits : « J’ai bien reçu votre courriel. Vous avez raison sur les deux points, nous avons vérifié : il manque effectivement une station de recharge et le robot MK-2041-C a été endommagé. »"],
+          ['O — Objectif', "Annoncer les solutions et les dates : station complémentaire livrée le 17 juin, robot de prêt MK-DEMO-07 mis à disposition le 17 juin, échange définitif le 6 juillet, geste commercial. Confirmer que la formation des 16 et 17 juin est maintenue."],
+          ['C — Conclusion', "Vérifier l’accord de la cliente, annoncer l’envoi du courriel de confirmation écrite dans la journée, remercier et prendre congé : « Je vous confirme tout cela par écrit d’ici ce soir. Merci de votre confiance, Madame Rousseau. »"],
+        ] },
+        complement: "0,75 point par zone. Exiger des phrases prêtes à dire, pas des mots-clés isolés (« se présenter » seul ne vaut pas le point). ERREURS CLASSIQUES à sanctionner : (1) commencer par se justifier ou accuser le transporteur devant la cliente, ce qui est interdit par la note de direction ; (2) oublier de reconnaître les faits avant d'annoncer les solutions ; (3) oublier la prise de congé et l'annonce de l'écrit. Ne pas exiger le prénom de l'élève." },
+
+      { intitule: "Rédigez le courriel de réponse à Mme Rousseau.", documents: ['Documents 4, 5, 6 et 7', 'Annexe 7'], bareme: 4,
+        reponse: "Le courriel doit reprendre les cinq éléments : accusé de réception et reconnaissance des faits, solution pour la station, solution double pour le robot, geste commercial chiffré, formule de conclusion engageante. Exemple : « Madame Rousseau, j'ai bien reçu votre message de ce matin et je vous confirme que vos deux constats sont exacts. Concernant la station de recharge : notre atelier a commis une erreur de préparation, la station manquante vous sera livrée le 17 juin au matin, sans frais. Concernant le robot MK-2041-C : il a été endommagé pendant le transport. Nous procéderons à son échange par un appareil neuf, disponible le 6 juillet. Pour que vous disposiez bien de quatre robots opérationnels dès l'ouverture de votre saison le 25 juin, nous mettons à votre disposition dès le 17 juin un robot de remplacement, référence MK-DEMO-07, identique au vôtre. La formation de vos six réceptionnistes est maintenue les 16 et 17 juin. Enfin, pour la gêne occasionnée, nous vous accordons un avoir de 1 500 € HT sur le solde de votre facture. Je reste votre interlocuteur sur ce dossier et je vous appellerai le 17 juin pour vérifier que tout est en ordre. »",
+        complement: "Barème détaillé : 1 point pour la reconnaissance claire des deux faits sans se justifier ni accuser le transporteur ; 1 point pour la solution de la station avec sa date (17 juin) ; 1 point pour la double solution du robot (prêt le 17 juin ET échange le 6 juillet) ; 1 point pour le geste commercial chiffré et conforme au plafond. Accepter tout montant compris entre 500 et 2 000 € HT dès lors qu'il est justifié ; refuser un montant supérieur à 2 000 € HT sans mention d'un accord du responsable, et refuser un geste non chiffré (« un geste commercial vous sera accordé »). ERREURS CLASSIQUES à sanctionner : (1) écrire à la cliente que c'est la faute du transporteur, ce que la note de direction interdit expressément (« cela ne regarde pas la cliente ») ; (2) proposer une date d'échange plus courte que le 6 juillet ; (3) oublier le robot de prêt, ce qui laisse la cliente sans solution pour le 25 juin ; (4) répondre aux éléments parasites du courriel (la moquette, l'hôtel de Lyon, les clients japonais) ; (5) conditionner les solutions au règlement du solde. Ne pas pénaliser l'orthographe. Valoriser l'élève qui propose un rappel de suivi." },
+    ],
+  },
+}
+
+const ENCHANTED_M9: ContenuMission = {
+  travaux: {
+    consigne:
+      "Qualifiez trois demandes de service après-vente, appliquez le contrat de maintenance et les garanties, chiffrez ce qui est facturable, planifiez les interventions et rédigez la réponse au client.",
+    contexte:
+      "Nous sommes le 8 septembre 202N. Les 4 robots Mirokaï tournent depuis la mi-juin à l'hôtel Le Grand Siècle. L'incident de livraison est réglé : le robot MK-2041-C a été échangé le 6 juillet, la station de recharge a été livrée, la cliente a soldé sa facture. Vous êtes désormais affecté deux jours par semaine au service après-vente, avec Nadia Cherif. Ce matin, trois demandes sont arrivées sur le même dossier. Nadia vous prévient : « Au SAV, la question n'est jamais “est-ce qu'on répare ?”. C'est toujours “qui paie ?”. Le contrat de maintenance ne couvre pas tout, la garantie légale ne couvre pas la même chose que la garantie commerciale, et une casse due au client se facture. Tu qualifies d'abord, tu chiffres ensuite, tu planifies après. Et tu réponds à la cliente le jour même : c'est notre engagement contractuel. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.4 — Assurer le service après-vente",
+      detail: "C2.4.1 Qualifier une demande de service après-vente. C2.4.2 Appliquer les garanties et le contrat de maintenance. C2.4.3 Chiffrer une intervention facturable. C2.4.4 Planifier les interventions et informer le client.",
+    },
+    documents: [
+      // DOC 1 : le contrat de maintenance (ce qui est couvert, ce qui ne l'est pas)
+      { numero: 1, titre: "Le contrat de maintenance annuel MIR-CARE (extrait)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Contrat MIR-CARE n° MC-2041' },
+        { paragraphes: [
+          "Contrat souscrit le 14 avril 202N pour 4 robots, au prix de 2 400 € HT par robot et par an, soit 9 600 € HT au total. Période couverte : du 15 juin 202N au 14 juin 202N+1.",
+        ] },
+        { intertitre: 'Article 3 — Ce que le contrat couvre' },
+        { tableau: { colonnes: ['Prestation incluse', 'Détail', 'Limite annuelle'], lignes: [
+          ['Visite de maintenance préventive', 'Contrôle complet sur site, mise à jour logicielle', '2 visites par robot et par an'],
+          ['Intervention corrective sur site', 'Déplacement et main-d’œuvre d’un technicien', '4 interventions par robot et par an'],
+          ['Pièces d’usure normale', 'Roulements, brosses de globe, joints', 'Illimité'],
+          ['Assistance téléphonique', 'Du lundi au vendredi, 8 h – 19 h', 'Illimité'],
+          ['Prêt d’un robot de remplacement', 'Si l’immobilisation dépasse 5 jours ouvrés', 'Sur demande'],
+        ] } },
+        { intertitre: 'Article 4 — Ce que le contrat ne couvre pas' },
+        { paragraphes: [
+          "Les dommages résultant d'un choc, d'une chute, d'une immersion ou d'une utilisation non conforme à la notice.",
+          "Les dommages causés par un tiers, y compris un client de l'établissement.",
+          "Les consommables et les accessoires : housses, plateaux de service, batteries de rechange.",
+          "Les interventions demandées en dehors des heures ouvrées.",
+          "Les modifications logicielles demandées par le client (personnalisation des dialogues, ajout de langues supplémentaires).",
+        ] },
+        { intertitre: 'Article 7 — Délais d’intervention garantis' },
+        { tableau: { colonnes: ['Niveau d’urgence', 'Définition', 'Délai garanti'], lignes: [
+          ['Critique', 'Robot totalement immobilisé', '24 heures ouvrées'],
+          ['Majeur', 'Robot utilisable mais fonction dégradée', '72 heures ouvrées'],
+          ['Mineur', 'Gêne sans impact sur le service', '10 jours ouvrés'],
+        ] } },
+        { bulleConseil: { texte: ["Lisez l'article 4 aussi attentivement que l'article 3. Au SAV, ce qui n'est pas couvert est aussi important que ce qui l'est."] } },
+      ] },
+
+      // DOC 2 : les deux garanties (livret du stagiaire)
+      { numero: 2, titre: "Le livret du stagiaire — 15. Les garanties et le SAV", texte: [
+        { pageWeb: true },
+        { intertitre: 'Ne pas confondre les trois protections' },
+        { paragraphes: [
+          "Un client professionnel bénéficie de plusieurs protections qui se superposent. Elles n'ont ni la même durée, ni le même contenu, ni la même personne qui paie.",
+        ] },
+        { tableau: { colonnes: ['Protection', 'Durée', 'Ce qu’elle couvre', 'Qui paie'], lignes: [
+          ['Garantie légale de conformité', '2 ans à compter de la livraison', 'Le produit ne correspond pas à ce qui a été vendu ou ne fonctionne pas comme annoncé', 'Le vendeur'],
+          ['Garantie commerciale Enchanted', '3 ans à compter de la livraison', 'Toute panne d’origine interne, pièces et main-d’œuvre', 'Le vendeur'],
+          ['Contrat de maintenance MIR-CARE', '1 an renouvelable', 'L’entretien préventif, les visites, les pièces d’usure, l’assistance', 'Le client (il l’a acheté)'],
+        ] } },
+        { intertitre: 'La règle qui décide' },
+        { paragraphes: [
+          "Devant une demande, on se pose toujours la même question dans le même ordre : la panne vient-elle du produit lui-même, ou d'une cause extérieure ?",
+          "Si elle vient du produit : c'est la garantie qui joue, rien n'est facturé au client.",
+          "Si elle vient d'une cause extérieure (choc, mauvaise utilisation, tiers) : la garantie ne joue pas, l'intervention est facturée.",
+          "Si c'est un entretien normal prévu au contrat : c'est le contrat de maintenance qui joue, rien n'est facturé en plus, mais on décompte la visite du quota annuel.",
+        ] },
+        { intertitre: 'Un point que les élèves confondent souvent' },
+        { paragraphes: [
+          "Une demande peut être couverte par la garantie et consommer quand même un déplacement. Couvert ne veut pas dire illimité : le quota du contrat continue de se décompter.",
+        ] },
+        { bulleConseil: { texte: ["Ce n'est jamais le client qui décide sous quelle protection sa demande tombe. C'est le technicien, à partir de ce qu'il constate."] } },
+      ] },
+
+      // DOC 3 : les trois demandes arrivees (le coeur du dossier, avec du bruit)
+      { numero: 3, titre: "Les trois demandes reçues au SAV le 8 septembre", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Journal du service après-vente' },
+        { intertitre: 'Demande n° 1 — appel téléphonique de 8 h 42' },
+        { paragraphes: [
+          "Appelant : M. Diallo, contact technique de l'hôtel. Robot concerné : MK-2041-A.",
+          "Constat rapporté : depuis deux jours, le robot ne reconnaît plus les commandes vocales en anglais. Il répond en français à des clients qui lui parlent en anglais. Les autres langues fonctionnent. M. Diallo précise que personne n'a touché aux réglages et qu'aucune mise à jour n'a été faite depuis la livraison.",
+          "Le robot circule normalement, porte les plateaux, et accueille les clients. Il est utilisable, mais une fonction ne marche plus.",
+          "M. Diallo demande aussi, dans le même appel, si on peut ajouter le mandarin aux langues du robot, parce que l'hôtel attend un groupe de Shanghai en novembre.",
+        ] },
+        { intertitre: 'Demande n° 2 — courriel de 9 h 15' },
+        { paragraphes: [
+          "Expéditeur : Camille Rousseau. Robot concerné : MK-2041-B.",
+          "Constat rapporté : samedi soir, pendant un cocktail, un invité a fait tomber une coupe de champagne sur le robot en dansant. Le robot s'est arrêté net. Depuis, il ne redémarre plus du tout. Le personnel a essayé de le sécher au sèche-cheveux.",
+          "Mme Rousseau précise que l'invité a reconnu les faits devant témoins et que l'hôtel a fait un constat interne. Elle demande si son assurance responsabilité civile peut être mobilisée.",
+          "Le robot est totalement immobilisé.",
+        ] },
+        { intertitre: 'Demande n° 3 — message de 10 h 30 laissé sur le portail client' },
+        { paragraphes: [
+          "Auteur : M. Diallo. Robot concerné : MK-2041-D.",
+          "Constat rapporté : le robot fait un léger grincement quand il tourne à droite. Il fonctionne parfaitement par ailleurs, personne ne s'en plaint sauf le personnel de nuit quand le hall est silencieux.",
+          "Le robot a parcouru environ 900 km depuis sa mise en service. La notice indique un contrôle des roulements du globe tous les 800 km.",
+          "M. Diallo signale par ailleurs que la machine à café du hall est en panne, mais ce n'est pas notre problème.",
+        ] },
+        { bulleConseil: { texte: ["Chaque demande contient des informations qui servent à qualifier et des informations qui ne servent à rien. Repérez d'abord la cause de la panne : c'est elle qui décide qui paie."] } },
+      ] },
+
+      // DOC 4 : le bareme d'intervention SAV (les prix)
+      { numero: 4, titre: "Le barème des interventions SAV facturables", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Tarifs SAV en vigueur' },
+        { paragraphes: [
+          "Ces tarifs s'appliquent uniquement aux interventions non couvertes par la garantie ou par le contrat de maintenance.",
+        ] },
+        { tableau: { colonnes: ['Prestation', 'Tarif HT', 'Unité'], lignes: [
+          ['Déplacement d’un technicien en Île-de-France', '120,00 €', 'par déplacement'],
+          ['Main-d’œuvre atelier', '85,00 €', 'par heure entamée'],
+          ['Main-d’œuvre sur site', '110,00 €', 'par heure entamée'],
+          ['Diagnostic complet en atelier', '150,00 €', 'forfait'],
+          ['Carte électronique principale', '1 450,00 €', 'la pièce'],
+          ['Bloc moteur du globe roulant', '980,00 €', 'la pièce'],
+          ['Roulement de globe (pièce d’usure)', '65,00 €', 'la pièce'],
+          ['Batterie Saft de remplacement', '1 200,00 €', 'la pièce'],
+          ['Ajout d’une langue supplémentaire', '450,00 €', 'forfait par langue'],
+          ['Nettoyage et remise en état après liquide', '240,00 €', 'forfait'],
+        ] } },
+        { intertitre: 'Remise commerciale applicable' },
+        { paragraphes: [
+          "Un client titulaire d'un contrat MIR-CARE en cours de validité bénéficie de 15 % de remise sur le total HT de toute intervention facturable.",
+        ] },
+        { bulleConseil: { texte: ["Attention : toutes les lignes de ce barème ne concernent pas nos trois demandes. N'utilisez que celles dont vous avez besoin."] } },
+      ] },
+
+      // DOC 5 : fiche methode avec formules et exemple chiffre different
+      { numero: 5, titre: "Fiche méthode — Chiffrer une intervention SAV", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Un devis SAV se construit toujours dans le même ordre : les pièces, puis la main-d'œuvre, puis le déplacement, puis la remise, puis la TVA.",
+        ] },
+        { intertitre: 'Les formules' },
+        { tableau: { colonnes: ['Ce que l’on cherche', 'Formule'], lignes: [
+          ['Coût des pièces', 'somme des prix unitaires HT × quantités'],
+          ['Coût de la main-d’œuvre', 'nombre d’heures entamées × tarif horaire HT'],
+          ['Total HT avant remise', 'pièces + main-d’œuvre + déplacement + forfaits'],
+          ['Remise contrat', 'total HT avant remise × 15 % (soit × 0,15)'],
+          ['Total HT après remise', 'total HT avant remise − remise'],
+          ['Total TTC', 'total HT après remise × 1,20'],
+        ] } },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres que notre dossier)' },
+        { paragraphes: [
+          "Une borne d'accueil doit être réparée chez un client sous contrat : changement d'un écran à 620 € HT, 3 heures de main-d'œuvre sur site à 110 € HT, un déplacement à 120 € HT.",
+          "Pièces = 1 × 620 = 620 €. Main-d'œuvre = 3 × 110 = 330 €. Déplacement = 120 €.",
+          "Total HT avant remise = 620 + 330 + 120 = 1 070 €.",
+          "Remise contrat = 1 070 × 0,15 = 160,50 €. Total HT après remise = 1 070 − 160,50 = 909,50 €.",
+          "Total TTC = 909,50 × 1,20 = 1 091,40 €.",
+        ] },
+        { intertitre: 'Le piège des heures entamées' },
+        { paragraphes: [
+          "Une heure entamée est due en entier. Une intervention de 2 h 15 se facture 3 heures, pas 2,25 heures.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise d'autres chiffres et d'autres pièces que notre dossier. Reprenez la méthode, pas les montants."] } },
+      ] },
+
+      // DOC 6 : le planning de l'equipe technique (contrainte de planification)
+      { numero: 6, titre: "Le planning de l'équipe technique — semaine du 8 septembre", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Planning atelier et interventions' },
+        { paragraphes: [
+          "Deux techniciens sont mobilisables sur l'Île-de-France : Marc Lefèvre et Hélène Dubois. Une intervention sur site occupe une demi-journée.",
+        ] },
+        { tableau: { colonnes: ['Jour', 'Marc Lefèvre', 'Hélène Dubois'], lignes: [
+          ['Lundi 8 septembre', 'Matin : dossier Novotel Bercy — Après-midi : atelier', 'Journée : formation interne obligatoire'],
+          ['Mardi 9 septembre', 'Matin : disponible — Après-midi : disponible', 'Matin : disponible — Après-midi : ISIR Sorbonne'],
+          ['Mercredi 10 septembre', 'Journée : congé posé', 'Matin : disponible — Après-midi : disponible'],
+          ['Jeudi 11 septembre', 'Matin : disponible — Après-midi : atelier', 'Journée : déplacement Lille'],
+          ['Vendredi 12 septembre', 'Matin : atelier — Après-midi : disponible', 'Matin : disponible — Après-midi : disponible'],
+        ] } },
+        { intertitre: 'Contraintes de l’atelier' },
+        { paragraphes: [
+          "Un robot immobilisé doit être enlevé par nos soins et rapatrié à l'atelier de Paris 12e. L'enlèvement compte comme un déplacement.",
+          "Le diagnostic en atelier demande une journée complète avant tout devis.",
+          "Le stock atelier au 8 septembre : 2 cartes électroniques principales, 6 roulements de globe, 0 bloc moteur (réapprovisionnement sous 3 semaines).",
+        ] },
+        { bulleConseil: { texte: ["Une date d'intervention n'est valable que si un technicien est réellement libre ce jour-là. Vérifiez le planning avant de promettre quoi que ce soit."] } },
+      ] },
+
+      // DOC 7 : note de Nadia (le cadrage commercial)
+      { numero: 7, titre: "Note de Nadia Cherif, responsable SAV (8 septembre, 11 h 00)", texte: [
+        { noteDirection: {
+          titre: 'Note interne — dossier Le Grand Siècle, trois demandes SAV',
+          signature: 'Nadia Cherif, responsable du service après-vente',
+          intro: "De : Nadia Cherif. À : le stagiaire. Copie : Karim Haddad.",
+          paragraphe: "Trois demandes sur le même client le même matin. On répond aujourd'hui, en une seule fois, pas en trois courriels séparés.",
+          puces: [
+            "Sur la demande n° 1 : notre équipe logicielle a déjà identifié le problème. C'est un défaut du module de reconnaissance vocale présent sur une série de robots livrés au printemps. Rien à voir avec l'utilisation qu'en fait l'hôtel. Le correctif se déploie à distance, sans déplacement, en moins d'une heure.",
+            "Toujours sur la demande n° 1 : l'ajout du mandarin est une demande différente, ce n'est ni une panne ni un entretien. Traitez-la comme telle.",
+            "Sur la demande n° 2 : le sèche-cheveux a probablement aggravé les choses, mais ne le reprochez pas à la cliente par écrit. Le diagnostic dira. Prévoyez au minimum le nettoyage après liquide et le remplacement de la carte électronique principale, plus une heure de main-d'œuvre atelier.",
+            "Sur la demande n° 3 : 900 km parcourus pour un contrôle prévu tous les 800 km. C'est de l'entretien, pas une panne.",
+            "Rappel utile : l'hôtel a consommé 0 intervention corrective et 0 visite préventive depuis juin. Les quotas sont intacts.",
+            "Mme Rousseau nous a écrit qu'elle envisage d'équiper son futur établissement de Lyon. Le dossier est commercialement sensible : on est irréprochable sur la forme.",
+            "Ne facturez jamais quelque chose qui est couvert. Ne faites jamais cadeau de quelque chose qui ne l'est pas : cela crée un précédent que le commercial paiera l'an prochain.",
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette note vous donne la cause technique de chaque panne. Sans elle, vous ne pouvez pas qualifier correctement."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Qualifier les trois demandes",
+        contexte: "Avant tout chiffrage, il faut savoir sous quelle protection tombe chaque demande et qui va payer.",
+        questions: [
+          { numero: 1, consigne: "Pour chacune des trois demandes, indiquez le robot concerné, la cause de la panne, la protection applicable (garantie commerciale, contrat de maintenance, ou aucune) et le niveau d'urgence selon l'article 7 du contrat.", ressources: 'Documents 1, 2, 3 et 7, annexe 1. Compétence C2.4.1. La règle de décision figure au document 2 : la panne vient-elle du produit ou d’une cause extérieure ? Le document 7 vous donne la cause technique de chaque panne.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Indiquez pour chaque demande si elle est facturée au client ou non, en justifiant par l'article précis du contrat ou par la règle du livret. Traitez également la demande d'ajout du mandarin.", ressources: 'Documents 1, 2, 4 et 7, annexe 2. Compétence C2.4.2. Attention : l’ajout d’une langue n’est ni une panne ni un entretien. Cherchez dans quel article du contrat il tombe.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Chiffrer ce qui est facturable",
+        contexte: "Une seule des trois demandes donne lieu à un devis. On le construit dans l'ordre de la fiche méthode.",
+        questions: [
+          { numero: 3, consigne: "Établissez le devis de l'intervention facturable : détaillez les pièces, la main-d'œuvre, le déplacement et les forfaits, puis calculez le total HT avant remise. Montrez chaque opération.", ressources: 'Documents 4, 5 et 7, annexe 3. Compétence C2.4.3. Le document 7 vous indique précisément les prestations à prévoir. N’ajoutez rien qu’il ne mentionne pas.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez la remise contrat de 15 %, le total HT après remise et le total TTC. Calculez également le montant que l'hôtel aurait payé s'il n'avait pas souscrit le contrat MIR-CARE, et concluez en une phrase sur l'intérêt du contrat.", ressources: 'Documents 4 et 5, annexe 4. Compétence C2.4.3. La formule de la remise et un exemple entièrement calculé figurent au document 5.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Planifier et répondre au client",
+        contexte: "Il reste à poser des dates réalistes et à écrire une réponse unique, claire et complète.",
+        questions: [
+          { numero: 5, consigne: "Planifiez le traitement des trois demandes en respectant les délais garantis de l'article 7 et les disponibilités réelles des techniciens. Indiquez pour chacune la date, le technicien ou le mode d'intervention, et vérifiez le respect du délai garanti.", ressources: 'Documents 1, 6 et 7, annexe 5. Compétence C2.4.4. Une date n’est valable que si un technicien est libre. Le correctif logiciel de la demande 1 ne nécessite aucun déplacement.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le courriel unique de réponse à Mme Rousseau : reprise des trois demandes, qualification de chacune, ce qui est pris en charge et ce qui est facturé, montant TTC du devis, dates d'intervention, réponse à la demande de mandarin et à la question de l'assurance.", ressources: 'Documents 3, 4, 6 et 7, annexe 6. Compétence C2.4.4. Un seul courriel pour les trois demandes. La cliente a posé une question sur son assurance : ne l’oubliez pas.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Qualification des trois demandes', colonnes: ['Demande', 'Robot', 'Cause de la panne', 'Protection applicable', 'Niveau d’urgence'], nbLignes: 3, largeurs: ['14%', '13%', '30%', '25%', '18%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Demande n° 1', '', '', '', ''],
+        ['Demande n° 2', '', '', '', ''],
+        ['Demande n° 3', '', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Prise en charge : qui paie ?', colonnes: ['Demande', 'Facturé au client ? (oui / non)', 'Justification (article du contrat ou règle du livret)'], nbLignes: 4, largeurs: ['26%', '22%', '52%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Demande n° 1 — reconnaissance vocale', '', ''],
+        ['Demande n° 1 bis — ajout du mandarin', '', ''],
+        ['Demande n° 2 — robot immobilisé', '', ''],
+        ['Demande n° 3 — grincement', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Devis de l’intervention facturable (total HT avant remise)', colonnes: ['Ligne du devis', 'Détail (montrez l’opération)', 'Montant HT'], nbLignes: 5, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Pièces', '', ''],
+        ['Main-d’œuvre', '', ''],
+        ['Déplacement', '', ''],
+        ['Forfaits', '', ''],
+        ['TOTAL HT avant remise', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Remise, total TTC et intérêt du contrat', colonnes: ['Élément à calculer', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 5, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Remise contrat 15 %', '', ''],
+        ['TOTAL HT après remise', '', ''],
+        ['TOTAL TTC à facturer', '', ''],
+        ['Montant TTC sans contrat MIR-CARE', '', ''],
+        ['Conclusion en une phrase', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — Planification des interventions', colonnes: ['Demande', 'Date retenue', 'Technicien ou mode', 'Délai garanti respecté ? Justifiez'], nbLignes: 3, largeurs: ['16%', '18%', '24%', '42%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['Demande n° 1', '', '', ''],
+        ['Demande n° 2', '', '', ''],
+        ['Demande n° 3', '', '', ''],
+      ] },
+      { type: 'mail', id: 'annexe6', titre: "Annexe 6 — Courriel unique de réponse au client", deParDefaut: 'sav@enchanted.tools', aParDefaut: 'accueil@legrandsiecle-paris.fr' },
+    ],
+
+    objectifs: [
+      "Distinguer garantie légale, garantie commerciale et contrat de maintenance",
+      "Qualifier une demande de SAV à partir de la cause de la panne",
+      "Déterminer qui paie une intervention",
+      "Établir un devis SAV dans l'ordre : pièces, main-d'œuvre, déplacement, remise, TVA",
+      "Appliquer la règle de l'heure entamée",
+      "Planifier des interventions en respectant délais garantis et disponibilités réelles",
+      "Répondre à plusieurs demandes dans un courriel unique et clair",
+    ],
+  },
+
+  synthese: {
+    titre: "Le service après-vente",
+    proposition: [
+      'La garantie légale de conformité', 'La garantie commerciale', 'Le contrat de maintenance',
+      'La cause interne au produit', 'La cause extérieure', "Le quota d'interventions",
+      "Le délai garanti", 'Le devis SAV', "L'heure entamée", 'La remise contrat 15 %',
+    ],
+    racine: {
+      id: 'racine', texte: 'Assurer le SAV',
+      enfants: [
+        { id: 'pro', texte: 'Les protections', enfants: [
+          { id: 'p1', texte: null, reponse: 'La garantie légale de conformité' },
+          { id: 'p2', texte: null, reponse: 'La garantie commerciale' },
+          { id: 'p3', texte: null, reponse: 'Le contrat de maintenance' },
+        ] },
+        { id: 'qui', texte: 'Qui paie', enfants: [
+          { id: 'q1', texte: null, reponse: 'La cause interne au produit' },
+          { id: 'q2', texte: null, reponse: 'La cause extérieure' },
+        ] },
+        { id: 'lim', texte: 'Les limites du contrat', enfants: [
+          { id: 'l1', texte: null, reponse: "Le quota d'interventions" },
+          { id: 'l2', texte: null, reponse: 'Le délai garanti' },
+        ] },
+        { id: 'chi', texte: 'Le chiffrage', enfants: [
+          { id: 'ch1', texte: null, reponse: 'Le devis SAV' },
+          { id: 'ch2', texte: null, reponse: "L'heure entamée" },
+          { id: 'ch3', texte: null, reponse: 'La remise contrat 15 %' },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Qualifier une demande de SAV", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas par quoi commencer devant une panne." },
+        { niveau: 'debrouille', description: "Je décris la panne." },
+        { niveau: 'averti', description: "J'identifie la cause et la protection applicable." },
+        { niveau: 'expert', description: "Je qualifie aussi le niveau d'urgence et je repère les demandes hors contrat." },
+      ] },
+      { id: 'c2', intitule: "Appliquer les garanties", indicateurs: [
+        { niveau: 'novice', description: "Je confonds garantie et contrat de maintenance." },
+        { niveau: 'debrouille', description: "Je sais qu'il existe plusieurs protections." },
+        { niveau: 'averti', description: "Je dis qui paie et pourquoi." },
+        { niveau: 'expert', description: "Je cite l'article du contrat qui fonde ma décision." },
+      ] },
+      { id: 'c3', intitule: "Chiffrer une intervention", indicateurs: [
+        { niveau: 'novice', description: "Je ne sais pas quoi mettre dans un devis." },
+        { niveau: 'debrouille', description: "J'additionne les pièces." },
+        { niveau: 'averti', description: "Je calcule pièces, main-d'œuvre, déplacement et TVA." },
+        { niveau: 'expert', description: "J'applique la remise contrat et la règle de l'heure entamée sans erreur." },
+      ] },
+      { id: 'c4', intitule: "Planifier et informer", indicateurs: [
+        { niveau: 'novice', description: "Je donne une date au hasard." },
+        { niveau: 'debrouille', description: "Je regarde le planning." },
+        { niveau: 'averti', description: "Je vérifie qu'un technicien est libre et que le délai garanti est tenu." },
+        { niveau: 'expert', description: "Je réponds à toutes les demandes du client dans un seul message clair." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: 'Service après-vente', definition: "Ensemble des prestations assurées après la vente : assistance, entretien, réparation." },
+      { terme: 'Garantie légale de conformité', definition: "Protection de 2 ans obligatoire : le produit doit correspondre à ce qui a été vendu." },
+      { terme: 'Garantie commerciale', definition: "Protection supplémentaire offerte par le vendeur, ici 3 ans sur les pannes d'origine interne." },
+      { terme: 'Contrat de maintenance', definition: "Contrat payant qui couvre l'entretien préventif, les visites et l'assistance." },
+      { terme: 'Maintenance préventive', definition: "Entretien réalisé avant la panne pour l'éviter." },
+      { terme: 'Intervention corrective', definition: "Intervention réalisée après une panne pour la réparer." },
+      { terme: 'Quota', definition: "Nombre maximal de prestations comprises dans le contrat sur une année." },
+      { terme: 'Délai garanti', definition: "Temps maximal contractuel entre la demande du client et l'intervention." },
+      { terme: 'Pièce d’usure', definition: "Pièce qui se dégrade avec l'utilisation normale et se remplace périodiquement." },
+      { terme: 'Heure entamée', definition: "Toute heure commencée est facturée en entier, même partiellement utilisée." },
+      { terme: 'Devis', definition: "Document qui chiffre une prestation avant sa réalisation, pour accord du client." },
+      { terme: 'Remise contrat', definition: "Réduction accordée aux clients sous contrat sur les interventions facturables (ici 15 %)." },
+    ],
+    flashcards: [
+      { recto: "Combien de temps dure la garantie légale de conformité ?", verso: "2 ans à compter de la livraison." },
+      { recto: "Combien de temps dure la garantie commerciale Enchanted ?", verso: "3 ans à compter de la livraison, pièces et main-d'œuvre." },
+      { recto: "Que couvre le contrat MIR-CARE ?", verso: "L'entretien préventif, les interventions correctives, les pièces d'usure et l'assistance." },
+      { recto: "Quelle question décide de qui paie ?", verso: "La panne vient-elle du produit lui-même ou d'une cause extérieure ?" },
+      { recto: "Une casse due à un client de l'hôtel est-elle couverte ?", verso: "Non : l'article 4 exclut les dommages causés par un tiers." },
+      { recto: "Quel est le délai garanti pour un robot totalement immobilisé ?", verso: "24 heures ouvrées (niveau critique)." },
+      { recto: "Combien coûte un déplacement de technicien en Île-de-France ?", verso: "120 € HT par déplacement." },
+      { recto: "Comment se facture une intervention de 2 h 15 ?", verso: "3 heures : toute heure entamée est due en entier." },
+      { recto: "Quelle remise pour un client sous contrat MIR-CARE ?", verso: "15 % sur le total HT de l'intervention facturable." },
+      { recto: "L'ajout d'une langue est-il couvert par le contrat ?", verso: "Non : l'article 4 exclut les modifications logicielles demandées par le client. 450 € HT par langue." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La garantie légale de conformité dure :', options: ['2 ans', '1 an', '3 ans', '5 ans'], bonne: 0 },
+      { type: 'unique', question: 'La garantie commerciale Enchanted dure :', options: ['3 ans', '2 ans', '1 an', '6 mois'], bonne: 0 },
+      { type: 'unique', question: 'Un défaut du module de reconnaissance vocale relève :', options: ['de la garantie commerciale', 'du client', 'du transporteur', 'd’un consommable'], bonne: 0 },
+      { type: 'unique', question: 'Un invité renverse une coupe sur le robot : l’intervention est :', options: ['facturée au client', 'gratuite', 'prise par la garantie', 'prise par le contrat'], bonne: 0 },
+      { type: 'unique', question: 'Le contrôle des roulements tous les 800 km relève :', options: ['de la maintenance préventive', 'de la garantie légale', 'd’une casse', 'd’un consommable'], bonne: 0 },
+      { type: 'unique', question: 'Le délai garanti pour un robot totalement immobilisé est de :', options: ['24 heures ouvrées', '72 heures ouvrées', '10 jours ouvrés', '30 jours'], bonne: 0 },
+      { type: 'unique', question: 'Une intervention de 2 h 15 se facture :', options: ['3 heures', '2 heures', '2,25 heures', '2,5 heures'], bonne: 0 },
+      { type: 'unique', question: 'La remise accordée à un client sous contrat MIR-CARE est de :', options: ['15 %', '5 %', '10 %', '20 %'], bonne: 0 },
+      { type: 'unique', question: 'L’ajout d’une langue supplémentaire coûte :', options: ['450 € HT', '240 € HT', '120 € HT', 'c’est gratuit'], bonne: 0 },
+      { type: 'unique', question: 'Le nombre d’interventions correctives incluses au contrat est de :', options: ['4 par robot et par an', '2 par robot et par an', 'illimité', '1 par an'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Protection du client', 'Cause qui rend facturable', 'Ligne du devis SAV'],
+      zones: [
+        { libelle: 'La garantie légale de conformité', etiquetteIndex: 0 },
+        { libelle: 'La garantie commerciale de 3 ans', etiquetteIndex: 0 },
+        { libelle: 'Le contrat de maintenance MIR-CARE', etiquetteIndex: 0 },
+        { libelle: 'Un choc provoqué par un invité', etiquetteIndex: 1 },
+        { libelle: 'Une utilisation non conforme à la notice', etiquetteIndex: 1 },
+        { libelle: 'Une modification logicielle demandée par le client', etiquetteIndex: 1 },
+        { libelle: 'Le déplacement du technicien à 120 € HT', etiquetteIndex: 2 },
+        { libelle: 'La main-d’œuvre atelier à 85 € HT de l’heure', etiquetteIndex: 2 },
+        { libelle: 'La remise contrat de 15 %', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Qualifiez les trois demandes.", documents: ['Documents 1, 2, 3 et 7', 'Annexe 1'], bareme: 4,
+        reponse: "La qualification se fait toujours à partir de la cause de la panne, donnée par la note de Nadia Cherif (document 7), et non à partir de ce que dit le client.",
+        tableau: { colonnes: ['Demande', 'Robot', 'Cause', 'Protection', 'Urgence'], lignes: [
+          ['N° 1', 'MK-2041-A', 'Défaut du module de reconnaissance vocale sur une série livrée au printemps : cause interne au produit', 'Garantie commerciale (3 ans, panne d’origine interne)', 'Majeur : le robot est utilisable mais une fonction est dégradée. Délai 72 h ouvrées.'],
+          ['N° 2', 'MK-2041-B', 'Liquide renversé par un invité pendant un cocktail : cause extérieure, dommage causé par un tiers', 'Aucune : exclu par l’article 4 du contrat', 'Critique : robot totalement immobilisé. Délai 24 h ouvrées.'],
+          ['N° 3', 'MK-2041-D', 'Usure normale des roulements du globe à 900 km, contrôle prévu tous les 800 km', 'Contrat de maintenance MIR-CARE (entretien et pièces d’usure)', 'Mineur : gêne sans impact sur le service. Délai 10 jours ouvrés.'],
+        ] },
+        complement: "4 points au total, soit 1,33 point par demande arrondi comme suit : 1,5 point pour la demande n° 1, 1,5 point pour la n° 2, 1 point pour la n° 3. Par demande : 0,25 pour le robot, 0,5 pour la cause, 0,5 pour la protection, 0,25 à 0,5 pour l'urgence. ERREURS CLASSIQUES à sanctionner : (1) qualifier la demande n° 2 de critique mais la placer sous garantie parce que le robot est neuf ; l'ancienneté n'a rien à voir, c'est la CAUSE qui décide ; (2) qualifier la demande n° 1 de critique alors que le robot circule, porte les plateaux et accueille les clients ; l'article 7 est explicite ; (3) placer la demande n° 3 sous garantie alors qu'il s'agit d'usure normale à un kilométrage supérieur au seuil de contrôle ; (4) retenir la machine à café du hall ou le groupe de Shanghai comme éléments de qualification. Accepter « garantie » sans préciser « commerciale » pour la demande n° 1 si la durée de 3 ans ou l'origine interne est mentionnée." },
+
+      { intitule: "Indiquez qui paie chaque demande, y compris l'ajout du mandarin.", documents: ['Documents 1, 2, 4 et 7', 'Annexe 2'], bareme: 3,
+        reponse: "Quatre lignes à traiter : les trois demandes plus la demande annexe d'ajout de langue, qui est un piège classique.",
+        tableau: { colonnes: ['Demande', 'Facturé ?', 'Justification'], lignes: [
+          ['N° 1 — reconnaissance vocale', 'Non', 'Panne d’origine interne : la garantie commerciale de 3 ans couvre pièces et main-d’œuvre (document 2). Le correctif est déployé à distance, sans déplacement.'],
+          ['N° 1 bis — ajout du mandarin', 'Oui', 'L’article 4 du contrat exclut expressément les modifications logicielles demandées par le client, dont l’ajout de langues supplémentaires. Tarif : 450 € HT par langue (document 4).'],
+          ['N° 2 — robot immobilisé', 'Oui', 'L’article 4 exclut les dommages causés par un tiers et ceux résultant d’une immersion ou d’un liquide. La cause est extérieure au produit, donc aucune garantie ne joue.'],
+          ['N° 3 — grincement', 'Non', 'Entretien et pièces d’usure normale : couvert par le contrat MIR-CARE (article 3). Rien n’est facturé en plus, mais l’intervention se décompte du quota annuel.'],
+        ] },
+        complement: "0,75 point par ligne : 0,25 pour le oui/non, 0,5 pour la justification référencée. Exiger une justification qui cite l'article du contrat ou la règle du livret, pas une simple opinion. ERREURS CLASSIQUES à sanctionner : (1) oublier purement et simplement la ligne du mandarin, qui est la question annexe glissée dans l'appel de 8 h 42 ; c'est le piège principal de la question ; (2) facturer la demande n° 3 en la confondant avec une panne ; (3) répondre « non » à la demande n° 2 par empathie pour la cliente, ce que la note de Nadia interdit expressément (« ne faites jamais cadeau de quelque chose qui ne l'est pas ») ; (4) oublier de préciser pour la demande n° 3 que le quota se décompte quand même, point que le document 2 signale comme souvent confondu. Valoriser l'élève qui fait cette dernière remarque." },
+
+      { intitule: "Établissez le devis de l'intervention facturable (total HT avant remise).", documents: ['Documents 4, 5 et 7', 'Annexe 3'], bareme: 4,
+        reponse: "Une seule intervention est facturable au titre d'une panne : la demande n° 2. Le document 7 en donne le contenu exact : nettoyage après liquide, carte électronique principale, une heure de main-d'œuvre atelier. S'y ajoute l'enlèvement du robot, qui compte comme un déplacement (document 6).",
+        tableau: { colonnes: ['Ligne du devis', 'Opération', 'Montant HT'], lignes: [
+          ['Pièces — carte électronique principale', '1 × 1 450', '1 450,00 €'],
+          ['Main-d’œuvre atelier', '1 h × 85', '85,00 €'],
+          ['Déplacement (enlèvement du robot)', '1 × 120', '120,00 €'],
+          ['Forfait nettoyage et remise en état après liquide', 'forfait', '240,00 €'],
+          ['TOTAL HT avant remise', '1 450 + 85 + 120 + 240', '1 895,00 €'],
+        ] },
+        complement: "1 point pour la pièce, 0,75 pour la main-d'œuvre, 0,75 pour le déplacement, 0,75 pour le forfait, 0,75 pour le total. Exiger l'opération écrite. ERREURS CLASSIQUES à sanctionner : (1) chiffrer aussi les demandes 1 et 3, qui ne sont pas facturables ; sanctionner lourdement, c'est l'erreur de raisonnement principale ; (2) ajouter le bloc moteur à 980 € ou la batterie à 1 200 €, qui figurent au barème mais ne sont mentionnés nulle part dans la note de Nadia ; (3) ajouter le diagnostic en atelier à 150 € : accepter cette ligne si l'élève la justifie par la contrainte du document 6 (« le diagnostic en atelier demande une journée complète avant tout devis »), ce qui donnerait 2 045 € HT ; dans ce cas, poursuivre le barème des questions suivantes en cohérence avec ce total ; (4) utiliser le tarif de main-d'œuvre sur site (110 €) alors que le robot est rapatrié à l'atelier ; (5) oublier le déplacement d'enlèvement. Accepter l'ordre des lignes indifféremment." },
+
+      { intitule: "Calculez la remise, le total TTC et l'intérêt du contrat.", documents: ['Documents 4 et 5', 'Annexe 4'], bareme: 3,
+        reponse: "On applique la remise de 15 % réservée aux titulaires d'un contrat MIR-CARE en cours de validité, puis la TVA.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Remise contrat 15 %', '1 895 × 0,15', '284,25 €'],
+          ['TOTAL HT après remise', '1 895 − 284,25', '1 610,75 €'],
+          ['TOTAL TTC à facturer', '1 610,75 × 1,20', '1 932,90 €'],
+          ['Montant TTC sans contrat MIR-CARE', '1 895 × 1,20', '2 274,00 €'],
+          ['Économie réalisée grâce au contrat', '2 274 − 1 932,90', '341,10 €'],
+        ] },
+        complement: "0,75 point pour la remise, 0,5 pour le HT après remise, 0,75 pour le TTC, 0,5 pour le montant sans contrat, 0,5 pour la conclusion. Conclusion attendue, toute formulation équivalente acceptée : le contrat MIR-CARE fait économiser 341,10 € TTC sur cette seule intervention, en plus de couvrir gratuitement les demandes 1 et 3. ERREURS CLASSIQUES à sanctionner : (1) appliquer la remise après la TVA au lieu de l'appliquer sur le HT ; l'ordre est donné au document 5 ; (2) calculer le TTC avec 1,02 ou 0,20 au lieu de 1,20 ; (3) présenter comme conclusion une phrase vide du type « le contrat est intéressant » sans citer le montant. Valoriser l'élève qui remarque que l'économie réelle est bien supérieure puisque les demandes 1 et 3 auraient également été facturées sans protection." },
+
+      { intitule: "Planifiez les trois interventions.", documents: ['Documents 1, 6 et 7', 'Annexe 5'], bareme: 3,
+        reponse: "Le point de départ est le lundi 8 septembre. Les délais garantis se comptent en jours et heures ouvrés. Le correctif de la demande 1 se déploie à distance et ne consomme aucun technicien sur site.",
+        tableau: { colonnes: ['Demande', 'Date', 'Technicien ou mode', 'Respect du délai'], lignes: [
+          ['N° 1 — vocale', 'Mardi 9 septembre', 'Déploiement du correctif à distance, moins d’une heure, aucun déplacement', 'Oui : niveau majeur, délai de 72 h ouvrées, largement tenu.'],
+          ['N° 2 — immobilisé', 'Mardi 9 septembre au matin', 'Marc Lefèvre : enlèvement du robot et transfert à l’atelier. Hélène Dubois est en formation obligatoire le 8 et à l’ISIR l’après-midi du 9.', 'Oui : niveau critique, délai de 24 h ouvrées à compter du 8 septembre. Marc est disponible le mardi matin.'],
+          ['N° 3 — grincement', 'Vendredi 12 septembre après-midi', 'Marc Lefèvre ou Hélène Dubois, tous deux disponibles. Roulements en stock (6 disponibles).', 'Oui : niveau mineur, délai de 10 jours ouvrés. Largement tenu.'],
+        ] },
+        complement: "1 point par demande : 0,5 pour une date réellement disponible au planning, 0,25 pour le technicien ou le mode, 0,25 pour la vérification du délai. ERREURS CLASSIQUES à sanctionner : (1) programmer une intervention le mercredi 10 avec Marc Lefèvre, qui est en congé posé ; (2) programmer quoi que ce soit avec Hélène Dubois le lundi 8 (formation obligatoire) ou le jeudi 11 (déplacement à Lille) ; (3) envoyer un technicien sur site pour la demande n° 1 alors que le correctif est distant, ce qui facture inutilement un déplacement ; (4) traiter la demande n° 2 le jeudi ou le vendredi, ce qui dépasse le délai critique de 24 h ouvrées. Accepter pour la demande n° 3 toute date du 9 au 22 septembre où un technicien est libre. Valoriser l'élève qui note que le bloc moteur est en rupture de stock mais qu'il n'est pas nécessaire ici." },
+
+      { intitule: "Rédigez le courriel unique de réponse à Mme Rousseau.", documents: ['Documents 3, 4, 6 et 7', 'Annexe 6'], bareme: 3,
+        reponse: "Un seul message, structuré demande par demande, qui distingue clairement ce qui est pris en charge de ce qui est facturé, et qui répond aux deux questions annexes (mandarin, assurance). Exemple de rédaction attendue : « Madame Rousseau, nous avons bien reçu vos trois demandes de ce matin et vous en trouverez le traitement complet ci-dessous. Robot MK-2041-A, reconnaissance vocale en anglais : il s'agit d'un défaut d'origine interne, entièrement couvert par notre garantie commerciale. Le correctif sera déployé à distance dès le mardi 9 septembre, sans intervention sur place et sans frais. Robot MK-2041-D, grincement en virage : votre robot a dépassé le seuil de contrôle des roulements. Cette intervention relève de votre contrat de maintenance et ne vous sera pas facturée. Un technicien passera le vendredi 12 septembre après-midi. Robot MK-2041-B, immobilisé : le dommage résulte d'un liquide renversé par un tiers, situation exclue de la garantie et du contrat par l'article 4. Nous enlèverons le robot le mardi 9 septembre au matin pour diagnostic et remise en état. Le devis s'élève à 1 610,75 € HT, soit 1 932,90 € TTC, remise contrat de 15 % déjà déduite. Concernant votre assurance : le dommage étant imputable à un tiers identifié ayant reconnu les faits, votre assurance responsabilité civile peut effectivement être sollicitée. Nous vous remettrons un rapport technique détaillé à l'appui de votre déclaration. Enfin, l'ajout du mandarin est possible. Ne relevant pas du contrat, il est proposé au tarif de 450 € HT. Nous pouvons l'intégrer avant novembre si vous nous donnez votre accord. Je reste à votre disposition. »",
+        complement: "Barème : 0,75 point pour le traitement clair des trois demandes avec ce qui est couvert et ce qui ne l'est pas ; 0,75 point pour le montant TTC exact et les dates ; 0,75 point pour la réponse à la question de l'assurance ; 0,75 point pour la réponse chiffrée sur le mandarin. ERREURS CLASSIQUES à sanctionner : (1) écrire trois courriels séparés, ce que la note de Nadia interdit ; (2) reprocher par écrit à la cliente l'usage du sèche-cheveux, ce que la note interdit expressément ; (3) ignorer la question de l'assurance, qui est une demande explicite de la cliente ; (4) ignorer le mandarin ; (5) annoncer un montant HT en le présentant comme le montant à payer ; (6) présenter la facturation de la demande n° 2 sans expliquer pourquoi elle n'est pas couverte, ce qui donne l'impression d'un abus. Ne pas pénaliser l'orthographe. Valoriser l'élève qui commence par les deux bonnes nouvelles (demandes 1 et 3, gratuites) avant d'annoncer la seule facturable, et celui qui rappelle la remise contrat comme un avantage." },
+    ],
+  },
+}
+
+const ENCHANTED_M10: ContenuMission = {
+  travaux: {
+    consigne:
+      "Analysez les résultats de la vente, mesurez la satisfaction de la cliente, calculez les indicateurs commerciaux du dossier, construisez une offre de fidélisation chiffrée et présentez votre bilan à votre tuteur.",
+    contexte:
+      "Nous sommes le 12 janvier 202N+1. Le dossier Le Grand Siècle est ouvert depuis neuf mois : premier rendez-vous en mars, signature le 14 avril, livraison le 15 juin, incident réglé début juillet, trois demandes SAV traitées en septembre. Depuis, plus rien : les robots tournent, personne ne se plaint. C'est le moment que Karim Haddad choisit pour vous convoquer. « Un dossier, ça ne s'arrête pas quand le client a payé. C'est là que le vrai travail commence. Un client acquis coûte cinq fois moins cher qu'un client à conquérir, et celui-là ouvre un établissement à Lyon. Alors tu vas me faire trois choses : tu analyses ce que cette vente nous a rapporté, tu regardes objectivement ce qu'on a raté, et tu me construis une offre pour l'année prochaine. Avec des chiffres. Pas des impressions. »",
+    competence: {
+      groupe: 'Bloc de compétences 2 — Suivre les ventes',
+      intitule: "C2.5 — Fidéliser le client et analyser la performance de la vente",
+      detail: "C2.5.1 Calculer et interpréter les indicateurs commerciaux d'un dossier. C2.5.2 Exploiter une enquête de satisfaction. C2.5.3 Construire une offre de fidélisation chiffrée. C2.5.4 Rendre compte de son analyse à sa hiérarchie.",
+    },
+    documents: [
+      // DOC 1 : le recapitulatif financier complet du dossier
+      { numero: 1, titre: "Le récapitulatif financier du dossier Le Grand Siècle", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche de synthèse client CD-2041' },
+        { paragraphes: [
+          "Document édité par la comptabilité le 10 janvier 202N+1. Il récapitule tout ce que ce client nous a rapporté depuis l'ouverture du dossier.",
+        ] },
+        { intertitre: 'Les encaissements de l’année' },
+        { tableau: { colonnes: ['Date', 'Nature', 'Montant HT'], lignes: [
+          ['14 avril 202N', 'Acompte 30 % sur commande CD-2041', '37 530,00 €'],
+          ['15 juin 202N', 'Solde de la commande CD-2041', '87 570,00 €'],
+          ['30 septembre 202N', 'Intervention SAV facturable (robot MK-2041-B)', '1 610,75 €'],
+          ['15 octobre 202N', 'Ajout de la langue mandarin', '450,00 €'],
+          ['TOTAL encaissé HT sur l’exercice', '', '127 160,75 €'],
+        ] } },
+        { intertitre: 'Le détail du chiffre d’affaires initial' },
+        { tableau: { colonnes: ['Poste', 'Montant HT', 'Part'], lignes: [
+          ['Vente des 4 robots (après remise 5 %)', '114 000,00 €', 'à calculer'],
+          ['Formation du personnel', '1 500,00 €', 'à calculer'],
+          ['Contrat de maintenance annuel', '9 600,00 €', 'à calculer'],
+          ['TOTAL HT de la commande', '125 100,00 €', '100 %'],
+        ] } },
+        { intertitre: 'Les coûts engagés sur le dossier' },
+        { tableau: { colonnes: ['Poste de coût', 'Montant HT'], lignes: [
+          ['Coût d’achat des 4 robots (coût de revient usine)', '82 000,00 €'],
+          ['Coût de la formation dispensée', '900,00 €'],
+          ['Coût des interventions SAV prises en charge (garantie et contrat)', '1 240,00 €'],
+          ['Coût de l’échange du robot MK-2041-C', '0,00 € (refacturé au transporteur)'],
+          ['Geste commercial accordé en juin', '1 500,00 €'],
+          ['TOTAL des coûts', '85 640,00 €'],
+        ] } },
+        { bulleConseil: { texte: ["Toutes les lignes de ce document ne servent pas au même calcul. Le chiffre d'affaires n'est pas la marge, et la marge n'est pas le bénéfice."] } },
+      ] },
+
+      // DOC 2 : la fiche methode avec formules et exemple chiffre different
+      { numero: 2, titre: "Fiche méthode — Les indicateurs d'un dossier client", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Fiche méthode' },
+        { paragraphes: [
+          "Analyser une vente, c'est répondre à trois questions : combien a-t-on vendu, combien a-t-on gagné, et combien ce client peut-il nous rapporter demain.",
+        ] },
+        { intertitre: 'Les formules' },
+        { tableau: { colonnes: ['Indicateur', 'Formule', 'Ce qu’il mesure'], lignes: [
+          ['Chiffre d’affaires HT', 'somme des ventes hors taxes', 'Le volume d’activité'],
+          ['Marge commerciale', 'chiffre d’affaires HT − coûts engagés', 'Ce qui reste à l’entreprise'],
+          ['Taux de marge', '(marge ÷ chiffre d’affaires HT) × 100', 'La rentabilité en pourcentage'],
+          ['Part d’un poste dans le CA', '(montant du poste ÷ CA total) × 100', 'Le poids d’une famille de produits'],
+          ['Panier moyen par robot', 'chiffre d’affaires HT ÷ nombre de robots vendus', 'Ce que rapporte une unité vendue'],
+          ['Chiffre d’affaires récurrent', 'somme des revenus qui se répètent chaque année', 'La part stable du client'],
+        ] } },
+        { intertitre: 'Exemple entièrement calculé (avec d’autres chiffres que notre dossier)' },
+        { paragraphes: [
+          "Une agence a vendu 6 bornes d'accueil pour un chiffre d'affaires de 48 000 € HT. Les coûts engagés sur ce dossier s'élèvent à 31 200 € HT.",
+          "Marge commerciale = 48 000 − 31 200 = 16 800 €.",
+          "Taux de marge = (16 800 ÷ 48 000) × 100 = 35 %.",
+          "Panier moyen par borne = 48 000 ÷ 6 = 8 000 € HT.",
+          "Si le contrat d'entretien représente 4 800 € HT dans ce total, sa part est de (4 800 ÷ 48 000) × 100 = 10 %.",
+        ] },
+        { intertitre: 'Un point important' },
+        { paragraphes: [
+          "Le chiffre d'affaires récurrent est celui que l'on retrouve l'année suivante sans avoir à revendre : contrats de maintenance, abonnements, services annuels. C'est lui qui sécurise une entreprise.",
+        ] },
+        { bulleConseil: { texte: ["Cet exemple utilise d'autres chiffres et un autre produit. Reprenez la méthode, pas les montants."] } },
+      ] },
+
+      // DOC 3 : l'enquete de satisfaction (donnees brutes a exploiter)
+      { numero: 3, titre: "Les résultats de l'enquête de satisfaction annuelle", texte: [
+        { pageWeb: true },
+        { intertitre: 'Enquête clients Enchanted Tools — décembre 202N' },
+        { paragraphes: [
+          "Enquête envoyée à nos 34 clients professionnels équipés depuis plus de six mois. 28 réponses exploitables, soit un taux de retour de 82 %.",
+          "Chaque critère est noté de 1 (très insatisfait) à 10 (très satisfait). Voici les résultats du Grand Siècle comparés à la moyenne de nos clients.",
+        ] },
+        { tableau: { colonnes: ['Critère évalué', 'Note du Grand Siècle', 'Moyenne de nos clients'], lignes: [
+          ['Qualité du produit', '9 / 10', '8,4 / 10'],
+          ['Respect des délais de livraison', '5 / 10', '7,9 / 10'],
+          ['Qualité de la formation du personnel', '9 / 10', '8,1 / 10'],
+          ['Réactivité du service après-vente', '9 / 10', '7,2 / 10'],
+          ['Clarté de la facturation', '6 / 10', '8,0 / 10'],
+          ['Relation avec le commercial', '8 / 10', '8,3 / 10'],
+        ] } },
+        { intertitre: 'Le commentaire libre laissé par la cliente' },
+        { paragraphes: [
+          "« Les robots sont exactement ce que nous espérions et nos clients les adorent. Le personnel a été très bien formé. Le SAV est irréprochable : trois demandes traitées en une journée, avec une réponse claire sur ce qui était couvert et ce qui ne l'était pas, c'est rare.",
+          "En revanche, la réception a été pénible : une station manquante et un robot abîmé le jour de la livraison, cela fait beaucoup pour un premier contact. J'ajoute que j'ai reçu une relance de paiement alors que j'attendais encore la résolution de l'incident, ce que j'ai trouvé maladroit.",
+          "Nous ouvrons Lyon en septembre. Je vous consulterai, mais je regarderai aussi ce que propose la concurrence. »",
+          "Camille Rousseau, directrice de l'accueil.",
+        ] },
+        { intertitre: 'Note globale et indicateur de recommandation' },
+        { paragraphes: [
+          "Note globale attribuée par l'hôtel : 8 sur 10.",
+          "À la question « recommanderiez-vous Enchanted Tools à un confrère ? », la cliente a répondu « probablement ».",
+          "Sur l'ensemble de nos 28 répondants, 19 ont répondu « certainement », 6 « probablement » et 3 « probablement pas ».",
+        ] },
+        { bulleConseil: { texte: ["Un client peut donner une bonne note globale et signaler un point grave. Regardez les écarts critère par critère, pas seulement la moyenne."] } },
+      ] },
+
+      // DOC 4 : la grille de fidelisation (les leviers disponibles)
+      { numero: 4, titre: "Le livret du stagiaire — 16. Fidéliser un client professionnel", texte: [
+        { pageWeb: true },
+        { intertitre: 'Pourquoi fidéliser' },
+        { paragraphes: [
+          "Conquérir un nouveau client coûte environ cinq fois plus cher que conserver un client existant : prospection, déplacements, temps commercial, remises d'entrée.",
+          "Un client fidèle achète plus souvent, accepte plus facilement les nouveautés et recommande l'entreprise autour de lui.",
+        ] },
+        { intertitre: 'Les quatre leviers de fidélisation' },
+        { tableau: { colonnes: ['Levier', 'En quoi ça consiste', 'Effet recherché'], lignes: [
+          ['Le levier contractuel', 'Renouveler ou étendre un contrat de service', 'Sécuriser un revenu récurrent'],
+          ['Le levier commercial', 'Accorder un avantage tarifaire au réachat', 'Rendre le réachat plus intéressant que la concurrence'],
+          ['Le levier relationnel', 'Rendez-vous de suivi, interlocuteur dédié, information privilégiée', 'Créer un lien difficile à rompre'],
+          ['Le levier de l’extension', 'Proposer un produit ou service complémentaire', 'Augmenter le panier du client'],
+        ] } },
+        { intertitre: 'Nos offres de fidélisation disponibles' },
+        { tableau: { colonnes: ['Offre', 'Contenu', 'Tarif HT'], lignes: [
+          ['Renouvellement MIR-CARE standard', 'Reconduction du contrat de maintenance à l’identique', '2 400 € par robot et par an'],
+          ['Renouvellement MIR-CARE PREMIUM', 'Idem + visites préventives illimitées + délai critique ramené à 12 h + robot de prêt systématique', '3 100 € par robot et par an'],
+          ['Remise fidélité au réachat', 'Sur toute nouvelle commande de robots dans les 24 mois', '8 % sur le prix catalogue'],
+          ['Extension de garantie à 5 ans', 'Prolongation de la garantie commerciale', '1 900 € par robot, une seule fois'],
+          ['Formation de perfectionnement', 'Une journée sur site pour le personnel déjà formé', '1 200 € forfait'],
+          ['Rendez-vous trimestriel de suivi', 'Quatre points annuels avec le commercial référent', 'Gratuit pour les clients sous contrat'],
+        ] } },
+        { bulleConseil: { texte: ["Une offre de fidélisation doit répondre à ce que le client a vécu, pas à ce que l'on a envie de vendre. Relisez son enquête avant de choisir vos leviers."] } },
+      ] },
+
+      // DOC 5 : la concurrence (l'element de tension)
+      { numero: 5, titre: "Note de veille concurrentielle (5 janvier 202N+1)", texte: [
+        { logoEntete: 'ENCHANTED TOOLS — Service marketing' },
+        { paragraphes: [
+          "Un concurrent allemand, Robotik Service GmbH, s'est implanté en France en novembre. Il cible l'hôtellerie haut de gamme.",
+        ] },
+        { tableau: { colonnes: ['Élément', 'Robotik Service GmbH', 'Enchanted Tools'], lignes: [
+          ['Prix catalogue du robot', '27 500 € HT', '30 000 € HT'],
+          ['Contrat de maintenance annuel', '2 900 € par robot', '2 400 € par robot'],
+          ['Délai d’intervention critique garanti', '48 heures', '24 heures'],
+          ['Langues disponibles', '12 langues', 'plus de 50 langues'],
+          ['Formation du personnel', 'en option, 2 400 €', 'incluse dans la commande'],
+          ['Présence en France', '1 agence à Lyon', '1 site à Paris'],
+        ] } },
+        { paragraphes: [
+          "Le concurrent est moins cher à l'achat mais plus cher à l'entretien, moins réactif et moins complet. Il dispose en revanche d'une agence à Lyon.",
+          "Le service marketing rappelle par ailleurs que le salon Hospitality Paris se tiendra du 3 au 5 mars, que le nouveau modèle Mirokaï 2 sortira en juin, et que la couleur bronze sera disponible en série.",
+        ] },
+        { bulleConseil: { texte: ["Face à un concurrent moins cher, on ne baisse pas son prix : on démontre ce que le client obtient en plus. Cherchez dans ce tableau les arguments qui parlent à un hôtelier."] } },
+      ] },
+
+      // DOC 6 : note de Karim (le cadrage, avec contraintes)
+      { numero: 6, titre: "Note de Karim Haddad (12 janvier 202N+1, 9 h 00)", texte: [
+        { noteDirection: {
+          titre: 'Note interne — préparation du rendez-vous annuel Le Grand Siècle',
+          signature: 'Karim Haddad, responsable commercial',
+          intro: "De : Karim Haddad. À : le stagiaire. Copie : Nadia Cherif.",
+          paragraphe: "Le rendez-vous annuel avec Mme Rousseau est calé au 4 février. Je veux ton analyse et ta proposition avant le 20 janvier.",
+          puces: [
+            "Le contrat MIR-CARE arrive à échéance le 14 juin. Il faut le renouveler, c'est la priorité absolue : c'est notre revenu récurrent sur ce client.",
+            "Sur l'enquête : ne me cache pas les mauvaises notes. Je veux savoir précisément sur quels critères nous sommes en dessous de la moyenne de nos clients et pourquoi.",
+            "Sur le projet de Lyon : elle ouvre en septembre. Robotik a une agence là-bas, nous non. Ne promettez aucune implantation à Lyon, nous n'en avons pas le projet.",
+            "Sur l'offre : je veux un montant total chiffré, pas une liste de possibilités. Vous pouvez combiner plusieurs leviers, mais tout ce que vous proposez doit figurer au catalogue du document 4.",
+            "Sur la remise : je vous autorise une remise commerciale supplémentaire de 5 % maximum sur le renouvellement du contrat de maintenance, et rien d'autre. Cette remise se calcule sur le montant du contrat avant TVA.",
+            "N'oubliez pas que la formation de perfectionnement répond directement à un point qu'elle a soulevé dans son commentaire. Relisez-le.",
+            "Le rendez-vous trimestriel est gratuit et ne coûte que du temps. C'est notre meilleure arme contre un concurrent qui a une agence à Lyon et nous pas.",
+          ],
+        } },
+        { bulleConseil: { texte: ["Cette note fixe vos limites : le plafond de remise, l'interdiction de promettre Lyon, et l'obligation de chiffrer. Tout le reste est à vous."] } },
+      ] },
+    ],
+
+    activites: [
+      { titre: "Activité 1 — Analyser la performance de la vente",
+        contexte: "Avant de proposer quoi que ce soit, il faut savoir ce que ce client a réellement rapporté.",
+        questions: [
+          { numero: 1, consigne: "Calculez le chiffre d'affaires HT total encaissé sur l'exercice, la marge commerciale du dossier et le taux de marge. Montrez chaque opération.", ressources: 'Documents 1 et 2, annexe 1. Compétence C2.5.1. Les formules et un exemple entièrement calculé figurent au document 2. Attention à ne pas confondre le chiffre d’affaires de la commande initiale et le total encaissé sur l’exercice.', annexeId: 'annexe1' },
+          { numero: 2, consigne: "Calculez la part de chaque poste dans le chiffre d'affaires de la commande initiale, ainsi que le panier moyen par robot vendu. Identifiez ensuite le chiffre d'affaires récurrent de ce client et expliquez en une phrase pourquoi il compte plus que le reste.", ressources: 'Documents 1 et 2, annexe 2. Compétence C2.5.1. Le chiffre d’affaires récurrent est celui qui revient chaque année sans avoir à revendre.', annexeId: 'annexe2' },
+        ] },
+      { titre: "Activité 2 — Exploiter l'enquête de satisfaction",
+        contexte: "Les chiffres disent ce qu'on a gagné. L'enquête dit ce qu'on a raté.",
+        questions: [
+          { numero: 3, consigne: "Relevez les critères sur lesquels l'hôtel note Enchanted Tools en dessous de la moyenne des clients. Pour chacun, calculez l'écart et reliez-le à un événement précis du dossier survenu au cours de l'année.", ressources: 'Documents 3 et 6, annexe 3. Compétence C2.5.2. Le commentaire libre de la cliente explique les mauvaises notes. Reliez chaque écart à un fait daté, pas à une supposition.', annexeId: 'annexe3' },
+          { numero: 4, consigne: "Calculez le pourcentage de clients qui recommanderaient certainement Enchanted Tools, puis situez le Grand Siècle par rapport à cet ensemble. Concluez en une phrase sur le risque que représente ce client.", ressources: 'Documents 3 et 5, annexe 4. Compétence C2.5.2. Sur 28 répondants. Pensez à ce que la cliente écrit sur Lyon et sur la concurrence.', annexeId: 'annexe4' },
+        ] },
+      { titre: "Activité 3 — Construire l'offre et rendre compte",
+        contexte: "Il reste à transformer cette analyse en une proposition chiffrée, puis à la défendre devant votre tuteur.",
+        questions: [
+          { numero: 5, consigne: "Construisez l'offre de fidélisation à présenter le 4 février : choisissez vos leviers, justifiez chaque choix par un élément de l'enquête ou de la veille, appliquez la remise autorisée et calculez le montant total HT puis TTC de la proposition.", ressources: 'Documents 3, 4, 5 et 6, annexe 5. Compétence C2.5.3. Vous ne pouvez proposer que des offres figurant au document 4. La remise de 5 % ne s’applique qu’au contrat de maintenance.', annexeId: 'annexe5' },
+          { numero: 6, consigne: "Rédigez le compte rendu d'analyse destiné à Karim Haddad : bilan chiffré de la vente, points forts, points faibles avec leur cause, risque concurrentiel et offre proposée avec son montant.", ressources: 'Tous les documents, annexe 6. Compétence C2.5.4. Un compte rendu professionnel présente des faits chiffrés, pas des impressions. Rappelez-vous l’interdiction de promettre une implantation à Lyon.', annexeId: 'annexe6' },
+        ] },
+    ],
+
+    annexes: [
+      { type: 'grille', id: 'annexe1', titre: 'Annexe 1 — Chiffre d’affaires, marge et taux de marge', colonnes: ['Indicateur', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Chiffre d’affaires HT encaissé sur l’exercice', '', ''],
+        ['Total des coûts engagés', '', ''],
+        ['Marge commerciale', '', ''],
+        ['Taux de marge', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe2', titre: 'Annexe 2 — Structure du chiffre d’affaires et revenu récurrent', colonnes: ['Élément', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 6, largeurs: ['32%', '44%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Part des robots dans la commande', '', ''],
+        ['Part de la formation', '', ''],
+        ['Part du contrat de maintenance', '', ''],
+        ['Panier moyen par robot vendu', '', ''],
+        ['Chiffre d’affaires récurrent annuel', '', ''],
+        ['Pourquoi il compte plus (une phrase)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe3', titre: 'Annexe 3 — Les critères en dessous de la moyenne', colonnes: ['Critère', 'Note hôtel', 'Moyenne clients', 'Écart', 'Événement du dossier qui l’explique'], nbLignes: 3, largeurs: ['24%', '11%', '13%', '10%', '42%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe4', titre: 'Annexe 4 — Indicateur de recommandation et niveau de risque', colonnes: ['Élément à calculer', 'Détail (montrez l’opération)', 'Résultat'], nbLignes: 4, largeurs: ['34%', '42%', '24%'], reponseMultiligne: true, lignesReponse: 1, prerempli: [
+        ['Nombre de répondants', '', ''],
+        ['Part des clients qui recommanderaient certainement', '', ''],
+        ['Position du Grand Siècle dans cet ensemble', '', ''],
+        ['Conclusion sur le risque (une phrase)', '', ''],
+      ] },
+      { type: 'grille', id: 'annexe5', titre: 'Annexe 5 — L’offre de fidélisation chiffrée', colonnes: ['Offre retenue', 'Levier utilisé', 'Justification (enquête ou veille)', 'Calcul', 'Montant HT'], nbLignes: 6, largeurs: ['22%', '14%', '30%', '18%', '16%'], reponseMultiligne: true, lignesReponse: 2, prerempli: [
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['Sous-total HT', '', '', '', ''],
+        ['Remise autorisée', '', '', '', ''],
+        ['TOTAL de l’offre (HT puis TTC)', '', '', '', ''],
+      ] },
+      { type: 'compterendu', id: 'annexe6', titre: "Annexe 6 — Le compte rendu d'analyse du dossier",
+        entete: "Éditeur de compte rendu — Analyse annuelle d'un dossier client",
+        champsEntete: [
+          { id: 'date', label: 'Date' },
+          { id: 'emetteur', label: 'Émetteur' },
+          { id: 'destinataire', label: 'Destinataire' },
+          { id: 'objet', label: 'Objet' },
+        ],
+        sections: [
+          { id: 's1', titre: '1. Bilan chiffré de la vente', indice: "Chiffre d'affaires, marge, taux de marge, revenu récurrent." },
+          { id: 's2', titre: '2. Les points forts du dossier', indice: "Appuyez-vous sur les notes supérieures à la moyenne." },
+          { id: 's3', titre: '3. Les points faibles et leur cause', indice: "Citez les écarts chiffrés et l'événement qui les explique." },
+          { id: 's4', titre: '4. Le risque concurrentiel', indice: "Robotik Service GmbH, le projet de Lyon, la réponse à apporter." },
+          { id: 's5', titre: "5. L'offre de fidélisation proposée", indice: "Les leviers retenus et le montant total HT et TTC." },
+        ],
+      },
+    ],
+
+    objectifs: [
+      "Calculer le chiffre d'affaires, la marge et le taux de marge d'un dossier",
+      "Mesurer la part de chaque poste et le panier moyen",
+      "Identifier le chiffre d'affaires récurrent d'un client",
+      "Exploiter une enquête de satisfaction en reliant les notes à des faits",
+      "Calculer un indicateur de recommandation",
+      "Construire une offre de fidélisation chiffrée à partir de leviers identifiés",
+      "Rédiger un compte rendu d'analyse destiné à sa hiérarchie",
+    ],
+  },
+
+  synthese: {
+    titre: "L'analyse de la vente et la fidélisation",
+    proposition: [
+      "Le chiffre d'affaires HT", 'La marge commerciale', 'Le taux de marge',
+      "Le chiffre d'affaires récurrent", "L'enquête de satisfaction", 'Le taux de recommandation',
+      'Le levier contractuel', 'Le levier commercial', 'Le levier relationnel', "Le levier de l'extension",
+    ],
+    racine: {
+      id: 'racine', texte: 'Analyser et fidéliser',
+      enfants: [
+        { id: 'per', texte: 'Mesurer la performance', enfants: [
+          { id: 'pe1', texte: null, reponse: "Le chiffre d'affaires HT" },
+          { id: 'pe2', texte: null, reponse: 'La marge commerciale' },
+          { id: 'pe3', texte: null, reponse: 'Le taux de marge' },
+        ] },
+        { id: 'dur', texte: 'Sécuriser dans la durée', enfants: [
+          { id: 'du1', texte: null, reponse: "Le chiffre d'affaires récurrent" },
+        ] },
+        { id: 'eco', texte: 'Écouter le client', enfants: [
+          { id: 'ec1', texte: null, reponse: "L'enquête de satisfaction" },
+          { id: 'ec2', texte: null, reponse: 'Le taux de recommandation' },
+        ] },
+        { id: 'lev', texte: 'Les leviers de fidélisation', enfants: [
+          { id: 'le1', texte: null, reponse: 'Le levier contractuel' },
+          { id: 'le2', texte: null, reponse: 'Le levier commercial' },
+          { id: 'le3', texte: null, reponse: 'Le levier relationnel' },
+          { id: 'le4', texte: null, reponse: "Le levier de l'extension" },
+        ] },
+      ],
+    },
+  },
+
+  autoEval: {
+    competences: [
+      { id: 'c1', intitule: "Calculer les indicateurs commerciaux", indicateurs: [
+        { niveau: 'novice', description: "Je confonds chiffre d'affaires et marge." },
+        { niveau: 'debrouille', description: "Je calcule un chiffre d'affaires." },
+        { niveau: 'averti', description: "Je calcule la marge et le taux de marge." },
+        { niveau: 'expert', description: "J'identifie aussi le revenu récurrent et j'explique ce qu'il apporte." },
+      ] },
+      { id: 'c2', intitule: "Exploiter une enquête de satisfaction", indicateurs: [
+        { niveau: 'novice', description: "Je regarde seulement la note globale." },
+        { niveau: 'debrouille', description: "Je repère les notes basses." },
+        { niveau: 'averti', description: "Je calcule les écarts avec la moyenne." },
+        { niveau: 'expert', description: "Je relie chaque écart à un fait daté du dossier." },
+      ] },
+      { id: 'c3', intitule: "Construire une offre de fidélisation", indicateurs: [
+        { niveau: 'novice', description: "Je propose une remise sans réfléchir." },
+        { niveau: 'debrouille', description: "Je choisis une offre au catalogue." },
+        { niveau: 'averti', description: "Je combine plusieurs leviers et je chiffre le total." },
+        { niveau: 'expert', description: "Je justifie chaque levier par un élément de l'enquête ou de la veille." },
+      ] },
+      { id: 'c4', intitule: "Rendre compte à sa hiérarchie", indicateurs: [
+        { niveau: 'novice', description: "Je raconte ce qui s'est passé." },
+        { niveau: 'debrouille', description: "Je structure mon compte rendu." },
+        { niveau: 'averti', description: "J'appuie chaque point sur un chiffre." },
+        { niveau: 'expert', description: "Je présente aussi les points faibles et une recommandation argumentée." },
+      ] },
+    ],
+  },
+
+  activites: {
+    glossaire: [
+      { terme: "Chiffre d'affaires", definition: "Total des ventes réalisées sur une période, exprimé hors taxes." },
+      { terme: 'Marge commerciale', definition: "Différence entre le chiffre d'affaires et les coûts engagés." },
+      { terme: 'Taux de marge', definition: "Marge rapportée au chiffre d'affaires, exprimée en pourcentage." },
+      { terme: 'Panier moyen', definition: "Chiffre d'affaires divisé par le nombre d'unités vendues." },
+      { terme: "Chiffre d'affaires récurrent", definition: "Revenu qui se répète chaque année sans nouvelle vente, comme un contrat de maintenance." },
+      { terme: 'Fidélisation', definition: "Ensemble des actions visant à conserver un client et à le faire réacheter." },
+      { terme: 'Enquête de satisfaction', definition: "Questionnaire adressé aux clients pour mesurer leur perception du produit et du service." },
+      { terme: 'Taux de recommandation', definition: "Part des clients prêts à conseiller l'entreprise à d'autres." },
+      { terme: 'Veille concurrentielle', definition: "Surveillance organisée des offres et des pratiques des concurrents." },
+      { terme: 'Levier de fidélisation', definition: "Moyen d'action pour retenir un client : contrat, tarif, relation ou extension." },
+      { terme: 'Remise fidélité', definition: "Avantage tarifaire réservé à un client déjà acquis lors d'un réachat." },
+      { terme: 'Compte rendu', definition: "Document professionnel qui restitue une analyse et des recommandations à sa hiérarchie." },
+    ],
+    flashcards: [
+      { recto: "Comment calcule-t-on la marge commerciale ?", verso: "Chiffre d'affaires HT − coûts engagés." },
+      { recto: "Comment calcule-t-on le taux de marge ?", verso: "(Marge ÷ chiffre d'affaires HT) × 100." },
+      { recto: "Quel est le chiffre d'affaires HT encaissé sur l'exercice ?", verso: "127 160,75 € HT." },
+      { recto: "Quelle est la marge commerciale du dossier ?", verso: "127 160,75 − 85 640 = 41 520,75 €." },
+      { recto: "Qu'est-ce que le chiffre d'affaires récurrent ?", verso: "Le revenu qui revient chaque année sans revendre, ici le contrat de maintenance de 9 600 € HT." },
+      { recto: "Sur quels critères l'hôtel note-t-il en dessous de la moyenne ?", verso: "Le respect des délais de livraison (5/10) et la clarté de la facturation (6/10)." },
+      { recto: "Combien coûte le renouvellement MIR-CARE PREMIUM ?", verso: "3 100 € HT par robot et par an." },
+      { recto: "Quels sont les quatre leviers de fidélisation ?", verso: "Contractuel, commercial, relationnel et extension." },
+      { recto: "Pourquoi fidéliser plutôt que conquérir ?", verso: "Conquérir un nouveau client coûte environ cinq fois plus cher." },
+      { recto: "Quel est l'avantage clé face à Robotik Service ?", verso: "Un délai critique de 24 h contre 48 h, plus de 50 langues et la formation incluse." },
+    ],
+    quiz: [
+      { type: 'unique', question: 'La marge commerciale se calcule par :', options: ['CA HT − coûts engagés', 'CA HT + coûts', 'CA TTC − TVA', 'coûts − CA HT'], bonne: 0 },
+      { type: 'unique', question: 'Le taux de marge s’exprime :', options: ['en pourcentage du CA', 'en euros', 'en nombre d’unités', 'en jours'], bonne: 0 },
+      { type: 'unique', question: 'La marge du dossier Le Grand Siècle est de :', options: ['41 520,75 €', '85 640,00 €', '127 160,75 €', '125 100,00 €'], bonne: 0 },
+      { type: 'unique', question: 'Le chiffre d’affaires récurrent de ce client correspond :', options: ['au contrat de maintenance', 'à la vente des robots', 'à la formation', 'à l’acompte'], bonne: 0 },
+      { type: 'unique', question: 'Le critère le plus mal noté par l’hôtel est :', options: ['le respect des délais de livraison', 'la qualité du produit', 'le service après-vente', 'la formation'], bonne: 0 },
+      { type: 'unique', question: 'Conquérir un nouveau client coûte environ :', options: ['5 fois plus cher que le conserver', '2 fois moins cher', 'le même prix', '10 fois moins cher'], bonne: 0 },
+      { type: 'unique', question: 'Proposer un rendez-vous trimestriel de suivi relève du levier :', options: ['relationnel', 'contractuel', 'commercial', 'de l’extension'], bonne: 0 },
+      { type: 'unique', question: 'Le délai d’intervention critique de Robotik Service est de :', options: ['48 heures', '24 heures', '12 heures', '72 heures'], bonne: 0 },
+      { type: 'unique', question: 'La remise supplémentaire autorisée par le responsable est de :', options: ['5 % sur le contrat de maintenance', '10 % sur tout', '8 % sur les robots', 'aucune'], bonne: 0 },
+      { type: 'unique', question: 'Un compte rendu professionnel doit présenter :', options: ['des faits chiffrés', 'des impressions', 'uniquement les points forts', 'des promesses'], bonne: 0 },
+    ],
+    glisserDeposer: {
+      consigne: 'Associez chaque élément à sa catégorie.',
+      etiquettes: ['Indicateur de performance', 'Levier de fidélisation', 'Argument face à la concurrence'],
+      zones: [
+        { libelle: 'Le taux de marge', etiquetteIndex: 0 },
+        { libelle: 'Le panier moyen par robot', etiquetteIndex: 0 },
+        { libelle: "Le chiffre d'affaires récurrent", etiquetteIndex: 0 },
+        { libelle: 'Le renouvellement du contrat MIR-CARE', etiquetteIndex: 1 },
+        { libelle: 'La remise fidélité de 8 % au réachat', etiquetteIndex: 1 },
+        { libelle: 'Le rendez-vous trimestriel de suivi', etiquetteIndex: 1 },
+        { libelle: 'Un délai critique de 24 h contre 48 h', etiquetteIndex: 2 },
+        { libelle: 'Plus de 50 langues contre 12', etiquetteIndex: 2 },
+        { libelle: 'La formation incluse et non en option', etiquetteIndex: 2 },
+      ],
+    },
+  },
+
+  corrige: {
+    questions: [
+      { intitule: "Calculez le chiffre d'affaires, la marge et le taux de marge.", documents: ['Documents 1 et 2', 'Annexe 1'], bareme: 4,
+        reponse: "Le chiffre d'affaires à retenir est le total encaissé sur l'exercice, qui inclut la commande initiale mais aussi le SAV facturable et l'ajout de langue.",
+        tableau: { colonnes: ['Indicateur', 'Opération', 'Résultat'], lignes: [
+          ["Chiffre d'affaires HT encaissé", '37 530 + 87 570 + 1 610,75 + 450', '127 160,75 €'],
+          ['Total des coûts engagés', '82 000 + 900 + 1 240 + 0 + 1 500', '85 640,00 €'],
+          ['Marge commerciale', '127 160,75 − 85 640', '41 520,75 €'],
+          ['Taux de marge', '(41 520,75 ÷ 127 160,75) × 100', '32,65 %'],
+        ] },
+        complement: "1 point pour le chiffre d'affaires, 1 point pour le total des coûts, 1 point pour la marge, 1 point pour le taux. Exiger l'opération écrite. Accepter le taux arrondi entre 32,6 % et 32,7 %. ERREURS CLASSIQUES à sanctionner : (1) retenir 125 100 € (le total de la commande initiale) au lieu du total encaissé sur l'exercice, en oubliant le SAV et le mandarin ; c'est le piège principal, le document 1 sépare volontairement les deux tableaux ; (2) additionner l'acompte et le solde en croyant qu'ils s'ajoutent au total de la commande, ce qui donnerait un double comptage ; vérifier que l'élève a bien compris que 37 530 + 87 570 = 125 100 € ; (3) oublier le geste commercial de 1 500 € dans les coûts ; (4) inclure l'échange du robot MK-2041-C dans les coûts alors qu'il a été refacturé au transporteur et vaut 0 € ; (5) calculer le taux de marge sur les coûts au lieu du chiffre d'affaires. Valoriser l'élève qui remarque que l'acompte et le solde recomposent exactement la commande initiale." },
+
+      { intitule: "Calculez la structure du chiffre d'affaires et le revenu récurrent.", documents: ['Documents 1 et 2', 'Annexe 2'], bareme: 4,
+        reponse: "Les parts se calculent sur le total de la commande initiale, soit 125 100 € HT, et non sur le total encaissé.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Part des robots', '(114 000 ÷ 125 100) × 100', '91,13 %'],
+          ['Part de la formation', '(1 500 ÷ 125 100) × 100', '1,20 %'],
+          ['Part du contrat de maintenance', '(9 600 ÷ 125 100) × 100', '7,67 %'],
+          ['Panier moyen par robot vendu', '125 100 ÷ 4', '31 275,00 €'],
+          ["Chiffre d'affaires récurrent annuel", 'contrat de maintenance', '9 600,00 €'],
+        ] },
+        complement: "0,5 point par part (1,5 point au total), 1 point pour le panier moyen, 1 point pour l'identification du revenu récurrent, 0,5 point pour l'explication. Accepter les arrondis à deux décimales ou à l'unité (91 %, 1 %, 8 %). Vérifier que la somme des trois parts fait bien 100 %. Explication attendue, toute formulation équivalente acceptée : le contrat de maintenance revient chaque année sans qu'il soit nécessaire de revendre un robot, il sécurise donc le revenu de l'entreprise et rend le client durablement rentable. ERREURS CLASSIQUES à sanctionner : (1) calculer les parts sur 127 160,75 € au lieu de 125 100 €, ce qui fausse les trois résultats ; (2) utiliser 120 000 € pour les robots en oubliant la remise de 5 % déjà déduite, alors que le document 1 donne bien 114 000 € ; (3) diviser par 4 le total encaissé plutôt que le chiffre d'affaires de la commande pour le panier moyen ; accepter 31 790,19 € si l'élève justifie explicitement son choix ; (4) désigner la vente des robots comme revenu récurrent, ce qui est le contresens central de la question." },
+
+      { intitule: "Relevez les critères en dessous de la moyenne et expliquez-les.", documents: ['Documents 3 et 6', 'Annexe 3'], bareme: 4,
+        reponse: "Deux critères seulement sont en dessous de la moyenne des clients. Un troisième est très légèrement inférieur et peut être accepté s'il est correctement calculé.",
+        tableau: { colonnes: ['Critère', 'Hôtel', 'Moyenne', 'Écart', 'Événement explicatif'], lignes: [
+          ['Respect des délais de livraison', '5 / 10', '7,9 / 10', '− 2,9 points', "La réception du 15 juin : une station de recharge manquante et le robot MK-2041-C livré endommagé. La cliente l'écrit dans son commentaire : « la réception a été pénible »."],
+          ['Clarté de la facturation', '6 / 10', '8,0 / 10', '− 2,0 points', "La relance de paiement envoyée le 30 juillet alors que l'incident de livraison n'était pas encore soldé dans l'esprit de la cliente. Elle qualifie cela de « maladroit »."],
+          ['Relation avec le commercial', '8 / 10', '8,3 / 10', '− 0,3 point', "Écart très faible, non significatif. À accepter si l'élève le relève et le calcule correctement, mais ne pas l'exiger."],
+        ] },
+        complement: "1,5 point pour chacun des deux critères principaux (0,25 pour le critère, 0,5 pour l'écart chiffré, 0,75 pour l'événement daté) et 1 point pour la qualité globale du raisonnement, dont 0,5 bonus si le troisième écart est relevé et correctement qualifié de non significatif. ERREURS CLASSIQUES à sanctionner : (1) retenir la qualité du produit ou le SAV, qui sont au-dessus de la moyenne, par confusion entre note basse en valeur absolue et note inférieure à la moyenne ; (2) donner un écart sans le calculer (« beaucoup plus bas ») ; (3) expliquer les mauvaises notes par une supposition (« la cliente est exigeante ») au lieu de citer un fait daté du dossier ; le commentaire libre donne les deux causes explicitement ; (4) attribuer la mauvaise note de facturation à une erreur de calcul sur la facture, alors qu'aucune erreur n'a été commise : c'est le moment de la relance qui est en cause, pas son contenu. Valoriser l'élève qui note que le SAV, initialement source de tension, est devenu le meilleur écart positif du dossier (9 contre 7,2)." },
+
+      { intitule: "Calculez le taux de recommandation et concluez sur le risque.", documents: ['Documents 3 et 5', 'Annexe 4'], bareme: 2,
+        reponse: "Le calcul porte sur les 28 répondants, pas sur les 34 clients interrogés.",
+        tableau: { colonnes: ['Élément', 'Opération', 'Résultat'], lignes: [
+          ['Nombre de répondants', 'donné par l’enquête', '28 répondants'],
+          ['Part des clients qui recommanderaient certainement', '(19 ÷ 28) × 100', '67,86 %'],
+          ['Position du Grand Siècle', 'a répondu « probablement »', 'Dans les 6 clients tièdes, soit 21,43 % des répondants'],
+        ] },
+        complement: "0,5 point pour le nombre de répondants, 0,75 point pour le pourcentage, 0,25 point pour la position du client, 0,5 point pour la conclusion. Accepter 68 % arrondi. Conclusion attendue, toute formulation équivalente acceptée : le Grand Siècle n'est pas un client acquis. Il donne une bonne note globale mais ne recommande que « probablement », il annonce qu'il consultera la concurrence pour Lyon, et Robotik Service dispose justement d'une agence sur place. Le risque de perdre le projet lyonnais, voire le renouvellement du contrat, est réel. ERREURS CLASSIQUES à sanctionner : (1) calculer sur 34 clients au lieu de 28 répondants, ce qui donne 55,88 % ; le taux de retour de 82 % est donné pour permettre cette vérification ; (2) additionner « certainement » et « probablement » pour gonfler le taux à 89 %, ce qui masque exactement le problème ; sanctionner nettement, c'est une erreur d'analyse, pas de calcul ; (3) conclure que le client est satisfait donc acquis, en s'arrêtant à la note globale de 8/10." },
+
+      { intitule: "Construisez l'offre de fidélisation chiffrée.", documents: ['Documents 3, 4, 5 et 6', 'Annexe 5'], bareme: 4,
+        reponse: "Plusieurs combinaisons sont recevables. La proposition attendue combine le levier contractuel (priorité fixée par Karim Haddad), le levier relationnel (gratuit et efficace contre l'agence lyonnaise du concurrent) et une réponse à un point soulevé par la cliente.",
+        tableau: { colonnes: ['Offre retenue', 'Levier', 'Justification', 'Calcul', 'Montant HT'], lignes: [
+          ['Renouvellement MIR-CARE PREMIUM (4 robots)', 'Contractuel', "Le SAV est le meilleur critère du dossier (9 contre 7,2). Le PREMIUM ramène le délai critique à 12 h, contre 48 h chez Robotik : c'est l'argument le plus fort face au concurrent.", '4 × 3 100', '12 400,00 €'],
+          ['Formation de perfectionnement', 'Extension', "La cliente note la formation 9/10 et six réceptionnistes sont déjà formés. Une journée de perfectionnement prépare aussi l'ouverture de Lyon sans rien promettre d'autre.", 'forfait', '1 200,00 €'],
+          ['Rendez-vous trimestriel de suivi', 'Relationnel', "Gratuit pour les clients sous contrat. Crée un lien régulier là où Robotik n'a qu'une proximité géographique. Répond au fait que la cliente ne recommande que « probablement ».", 'inclus', '0,00 €'],
+          ['Sous-total HT', '', '', '12 400 + 1 200 + 0', '13 600,00 €'],
+          ['Remise 5 % sur le contrat de maintenance uniquement', 'Commercial', "Plafond autorisé par la note de Karim Haddad, applicable au seul contrat.", '12 400 × 0,05', '− 620,00 €'],
+          ['TOTAL HT de l’offre', '', '', '13 600 − 620', '12 980,00 €'],
+          ['TOTAL TTC de l’offre', '', '', '12 980 × 1,20', '15 576,00 €'],
+        ] },
+        complement: "1,5 point pour le choix de leviers cohérents et justifiés par l'enquête ou la veille (0,5 par offre retenue, minimum trois lignes attendues) ; 1 point pour le sous-total ; 1 point pour la remise correctement appliquée au seul contrat ; 0,5 point pour le total TTC. Accepter toute combinaison différente à condition qu'elle figure au document 4, qu'elle soit justifiée et correctement chiffrée : par exemple le renouvellement MIR-CARE standard (4 × 2 400 = 9 600 €) avec extension de garantie (4 × 1 900 = 7 600 €) est recevable. Recalculer alors le barème en cohérence avec les montants de l'élève. ERREURS CLASSIQUES à sanctionner : (1) appliquer les 5 % sur le total de l'offre au lieu du seul contrat de maintenance, ce que la note interdit explicitement ; (2) inventer une offre absente du document 4, notamment une implantation ou un technicien dédié à Lyon, ce que la note interdit expressément ; sanctionner lourdement, c'est le piège central ; (3) proposer la remise fidélité de 8 % alors qu'aucune nouvelle commande de robots n'est en cours ; l'accepter uniquement si l'élève la présente comme une offre conditionnelle liée au projet de Lyon et ne l'intègre pas au total ; (4) ne pas chiffrer et se contenter d'une liste de possibilités, ce que Karim Haddad refuse par avance ; (5) oublier le TTC. Valoriser l'élève qui inclut le rendez-vous trimestriel à 0 € en expliquant qu'un levier gratuit reste un levier." },
+
+      { intitule: "Rédigez le compte rendu d'analyse à Karim Haddad.", documents: ['Tous les documents', 'Annexe 6'], bareme: 2,
+        reponse: "Le compte rendu suit les cinq sections de l'annexe. Il est daté, adressé, et chaque affirmation est appuyée sur un chiffre.",
+        tableau: { colonnes: ['Section', 'Contenu attendu'], lignes: [
+          ['En-tête', "Date du 12 au 20 janvier 202N+1, émetteur : le stagiaire, destinataire : Karim Haddad, objet : analyse annuelle du dossier Le Grand Siècle et proposition de fidélisation."],
+          ['1. Bilan chiffré', "127 160,75 € HT encaissés, 41 520,75 € de marge, 32,65 % de taux de marge, 9 600 € HT de revenu récurrent annuel, panier moyen de 31 275 € par robot."],
+          ['2. Points forts', "Produit noté 9/10 contre 8,4 de moyenne, formation 9/10 contre 8,1, SAV 9/10 contre 7,2. Le service après-vente est notre meilleur différentiel."],
+          ['3. Points faibles', "Délais de livraison 5/10, soit − 2,9 points, à cause de la station manquante et du robot endommagé du 15 juin. Facturation 6/10, soit − 2,0 points, à cause de la relance du 30 juillet jugée maladroite."],
+          ['4. Risque concurrentiel', "Robotik Service GmbH, agence à Lyon, robot moins cher de 2 500 €. La cliente ne recommande que « probablement » et annonce qu'elle consultera la concurrence pour Lyon. Nos arguments : 24 h contre 48 h, plus de 50 langues contre 12, formation incluse."],
+          ['5. Offre proposée', "MIR-CARE PREMIUM sur 4 robots, formation de perfectionnement, rendez-vous trimestriel, remise de 5 % sur le contrat. Total 12 980 € HT, soit 15 576 € TTC."],
+        ] },
+        complement: "0,25 point pour l'en-tête complet, 0,25 par section correctement traitée (1,25 point au total), 0,5 point pour la présence effective de chiffres dans chaque section. ERREURS CLASSIQUES à sanctionner : (1) rédiger un récit chronologique du dossier au lieu d'une analyse structurée ; (2) omettre la section 3, c'est-à-dire ne présenter que les bonnes nouvelles, alors que Karim Haddad demande explicitement l'inverse (« ne me cache pas les mauvaises notes ») ; sanctionner par la perte de la section et de la moitié du point de forme ; (3) écrire des appréciations sans chiffre (« la cliente est plutôt satisfaite ») ; (4) proposer dans le compte rendu une implantation à Lyon. Ne pas pénaliser l'orthographe. Valoriser l'élève qui conclut par une recommandation explicite sur le rendez-vous du 4 février." },
+    ],
+  },
+}
+
 const CONTENUS: Record<string, ContenuMission> = {
+  'enchanted-m1': ENCHANTED_M1,
+  'enchanted-m2': ENCHANTED_M2,
+  'enchanted-m3': ENCHANTED_M3,
+  'enchanted-m4': ENCHANTED_M4,
+  'enchanted-m5': ENCHANTED_M5,
+  'enchanted-m6': ENCHANTED_M6,
+  'enchanted-m7': ENCHANTED_M7,
+  'enchanted-m8': ENCHANTED_M8,
+  'enchanted-m9': ENCHANTED_M9,
+  'enchanted-m10': ENCHANTED_M10,
   'kiloutou-m1': KILOUTOU_M1,
   'kiloutou-m2': KILOUTOU_M2,
   'kiloutou-m3': KILOUTOU_M3,
