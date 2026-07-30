@@ -2,21 +2,22 @@
 // L'eleve exporte en PDF ses propres donnees : journal de bord, travaux,
 // resultats d'activites. Meme moteur d'impression que cote professeur.
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth'
-import { getMission } from '../../data/schema'
 import {
   journalEleve,
   travauxEleve,
   quizEleve,
 } from '../../lib/enseignant'
 import { imprimerPdf, type SectionPdf } from '../../lib/pdf'
+import { titreComplet } from '../../lib/libelles'
 
-function titreMission(missionId: string): string {
-  const scenarioId = missionId.split('-m')[0]
-  const m = getMission(scenarioId, missionId)
-  return m ? `Mission ${m.numero} - ${m.titre}` : missionId
+// Missions sur lesquelles l'eleve a effectivement travaille : seules
+// celles-ci apparaissent dans la liste d'export par mission.
+interface MissionTravaillee {
+  id: string
+  libelle: string
 }
 
 export function ExportsEleve() {
@@ -24,7 +25,91 @@ export function ExportsEleve() {
   const { session, profil } = useAuth()
   const eleveId = session?.user?.id
   const [enCours, setEnCours] = useState(false)
+  const [missions, setMissions] = useState<MissionTravaillee[]>([])
+  const [missionChoisie, setMissionChoisie] = useState('')
+  const [chargementMissions, setChargementMissions] = useState(true)
 
+  // Nom affiche en pied de page sur chaque page du PDF.
+  const nomEleve = profil ? `${profil.nom ?? ''} ${profil.prenom ?? ''}`.trim() : ''
+
+  // Recense les missions ou l'eleve a laisse une trace (travail, journal ou
+  // resultat), pour ne proposer que celles-la a l'export.
+  useEffect(() => {
+    if (!eleveId) return
+    let actif = true
+    async function charger() {
+      const [travaux, journal, quiz] = await Promise.all([
+        travauxEleve(eleveId as string),
+        journalEleve(eleveId as string),
+        quizEleve(eleveId as string),
+      ])
+      const ids = new Set<string>()
+      travaux.forEach((t) => ids.add(t.mission_id))
+      journal.forEach((j) => ids.add(j.mission_id))
+      quiz.forEach((q) => ids.add(q.mission_id))
+      const liste = Array.from(ids)
+        .map((id) => ({ id, libelle: titreComplet(id) }))
+        .sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'))
+      if (!actif) return
+      setMissions(liste)
+      setMissionChoisie(liste.length > 0 ? liste[0].id : '')
+      setChargementMissions(false)
+    }
+    charger()
+    return () => {
+      actif = false
+    }
+  }, [eleveId])
+
+  // Export d'une seule mission : le pied de page porte le scenario et la mission.
+  async function exporterMission() {
+    if (!eleveId || !missionChoisie) return
+    setEnCours(true)
+    const [travaux, journal, quiz] = await Promise.all([
+      travauxEleve(eleveId),
+      journalEleve(eleveId),
+      quizEleve(eleveId),
+    ])
+    const t = travaux.filter((x) => x.mission_id === missionChoisie)
+    const j = journal.filter((x) => x.mission_id === missionChoisie)
+    const q = quiz.filter((x) => x.mission_id === missionChoisie)
+    const sections: SectionPdf[] = []
+
+    sections.push({
+      titre: 'Mon travail',
+      paragraphes: t.length === 0 ? ['Aucun travail rendu pour cette mission.'] : undefined,
+      lignes: t.map((x) => ({ label: 'Mes réponses', valeur: x.contenu, nature: 'eleve' as const })),
+    })
+    sections.push({
+      titre: 'Mon journal de bord',
+      paragraphes: j.length === 0 ? ['Aucune entrée pour cette mission.'] : undefined,
+      lignes: j.flatMap((x) => [
+        { label: "Ce qui n'a pas été réussi", valeur: x.non_reussi, nature: 'eleve' as const },
+        { label: 'Ce qui a été le moins bien réussi', valeur: x.moins_bien_reussi, nature: 'eleve' as const },
+      ]),
+    })
+    sections.push({
+      titre: 'Mes résultats',
+      paragraphes: q.length === 0 ? ['Aucun résultat enregistré pour cette mission.'] : undefined,
+      lignes: q.map((x) => ({
+        label: 'Score obtenu',
+        valeur: x.score !== null ? `${x.score} point(s)` : null,
+        nature: 'eleve' as const,
+      })),
+    })
+
+    imprimerPdf({
+      titre: titreComplet(missionChoisie),
+      sousTitre: nomEleve || undefined,
+      sections,
+      piedNom: nomEleve,
+      piedContexte: titreComplet(missionChoisie),
+    })
+    setEnCours(false)
+  }
+
+  // Export global : plusieurs missions dans un meme document, le pied de page
+  // ne porte donc que le nom de l'eleve.
   async function exporter(type: 'journal' | 'travaux' | 'activites' | 'tout') {
     if (!eleveId) return
     setEnCours(true)
@@ -36,9 +121,9 @@ export function ExportsEleve() {
         titre: 'Journal de bord',
         paragraphes: journal.length === 0 ? ['Aucune entrée.'] : undefined,
         lignes: journal.flatMap((j) => [
-          { label: titreMission(j.mission_id), valeur: '' },
-          { label: "Ce qui n'a pas été réussi", valeur: j.non_reussi },
-          { label: 'Ce qui a été le moins bien réussi', valeur: j.moins_bien_reussi },
+          { label: titreComplet(j.mission_id), valeur: '', nature: 'neutre' as const },
+          { label: "Ce qui n'a pas été réussi", valeur: j.non_reussi, nature: 'eleve' as const },
+          { label: 'Ce qui a été le moins bien réussi', valeur: j.moins_bien_reussi, nature: 'eleve' as const },
         ]),
       })
     }
@@ -48,8 +133,8 @@ export function ExportsEleve() {
         titre: 'Mes travaux',
         paragraphes: travaux.length === 0 ? ['Aucun travail rendu.'] : undefined,
         lignes: travaux.flatMap((t) => [
-          { label: titreMission(t.mission_id), valeur: t.contenu },
-          { label: 'Correction du professeur', valeur: t.correction },
+          { label: titreComplet(t.mission_id), valeur: '', nature: 'neutre' as const },
+          { label: 'Mes réponses', valeur: t.contenu, nature: 'eleve' as const },
         ]),
       })
     }
@@ -59,15 +144,17 @@ export function ExportsEleve() {
         titre: 'Mes résultats',
         paragraphes: quiz.length === 0 ? ['Aucun résultat enregistré.'] : undefined,
         lignes: quiz.map((q) => ({
-          label: titreMission(q.mission_id),
-          valeur: q.score !== null ? `${q.score} point(s)` : 'Non noté',
+          label: titreComplet(q.mission_id),
+          valeur: q.score !== null ? `${q.score} point(s)` : null,
+          nature: 'eleve' as const,
         })),
       })
     }
 
     imprimerPdf({
-      titre: profil ? `Mon dossier - ${profil.prenom} ${profil.nom}` : 'Mon dossier',
+      titre: nomEleve ? `Mon dossier - ${nomEleve}` : 'Mon dossier',
       sections,
+      piedNom: nomEleve,
     })
     setEnCours(false)
   }
@@ -99,14 +186,60 @@ export function ExportsEleve() {
 
       <main style={{ maxWidth: 760, margin: '20px auto 0', padding: '0 24px' }}>
         <div style={{ background: '#FFFFFF', borderRadius: 14, border: '1px solid #DCE8F4', padding: 20 }}>
-          <p style={{ fontSize: 14, color: '#374151', marginTop: 0 }}>
-            Choisir un document à enregistrer en PDF.
+          <h2 style={{ margin: '0 0 4px', fontSize: 16, color: '#16456E' }}>Exporter une mission</h2>
+          <p style={{ fontSize: 13, color: '#374151', margin: '0 0 12px' }}>
+            Choisir la mission à rendre. Le document ne contient que ce travail.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-            <Bouton libelle="Journal de bord" onClick={() => exporter('journal')} disabled={enCours} />
-            <Bouton libelle="Mes travaux" onClick={() => exporter('travaux')} disabled={enCours} />
-            <Bouton libelle="Mes résultats" onClick={() => exporter('activites')} disabled={enCours} />
-            <Bouton libelle="Tout" principal onClick={() => exporter('tout')} disabled={enCours} />
+          {chargementMissions ? (
+            <p style={{ fontSize: 13, color: '#6B7280' }}>Chargement…</p>
+          ) : missions.length === 0 ? (
+            <p style={{ fontSize: 13, color: '#B91C1C' }}>
+              Aucun travail enregistré pour le moment.
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+              <select
+                value={missionChoisie}
+                onChange={(e) => setMissionChoisie(e.target.value)}
+                disabled={enCours}
+                style={{
+                  fontFamily: 'Arial, sans-serif',
+                  fontSize: 13,
+                  padding: '10px 12px',
+                  borderRadius: 8,
+                  border: '1px solid #BFD4E8',
+                  color: '#16456E',
+                  background: '#FFFFFF',
+                  minWidth: 280,
+                  flex: '1 1 280px',
+                }}
+              >
+                {missions.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.libelle}
+                  </option>
+                ))}
+              </select>
+              <Bouton
+                libelle="Exporter cette mission"
+                principal
+                onClick={exporterMission}
+                disabled={enCours || !missionChoisie}
+              />
+            </div>
+          )}
+
+          <div style={{ borderTop: '1px solid #E2E8F0', margin: '20px 0 0', paddingTop: 16 }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: 16, color: '#16456E' }}>Exporter tout mon dossier</h2>
+            <p style={{ fontSize: 13, color: '#374151', margin: '0 0 12px' }}>
+              Toutes les missions réunies dans un seul document.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              <Bouton libelle="Journal de bord" onClick={() => exporter('journal')} disabled={enCours} />
+              <Bouton libelle="Mes travaux" onClick={() => exporter('travaux')} disabled={enCours} />
+              <Bouton libelle="Mes résultats" onClick={() => exporter('activites')} disabled={enCours} />
+              <Bouton libelle="Tout" onClick={() => exporter('tout')} disabled={enCours} />
+            </div>
           </div>
           <p style={{ fontSize: 12, color: '#6B7280', marginTop: 16, lineHeight: 1.5 }}>
             L'export ouvre la fenêtre d'impression. Choisir "Enregistrer en PDF".

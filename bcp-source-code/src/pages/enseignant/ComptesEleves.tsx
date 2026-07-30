@@ -1,14 +1,14 @@
 // ComptesEleves.tsx
 // Espace Comptes eleves cote professeur. Pour chaque eleve accepte : nom,
-// prenom, email. Pour les eleves MANUELS uniquement, un mot de passe simple
-// visible et modifiable (choisi par le professeur). Les comptes Auth normaux
-// ont un mot de passe chiffre cote Supabase, jamais lisible ici.
+// prenom, email. Le professeur peut DEFINIR un nouveau mot de passe, jamais le
+// relire : les mots de passe sont chiffres par Supabase Auth et ne sont plus
+// stockes en clair dans la base.
 // Style inline, Arial, couleur professeur.
 
 import { useEffect, useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
 import { COULEUR_PROF } from '../../data/schema'
-import { listerComptesEleves, definirMdpSimple } from '../../lib/enseignant'
+import { listerComptesEleves, definirMotDePasseEleve } from '../../lib/enseignant'
 import type { Profil } from '../../lib/auth'
 
 function triNom(a: Profil, b: Profil): number {
@@ -35,26 +35,28 @@ export function ComptesEleves() {
 
   function commencerEdition(e: Profil) {
     setEditionId(e.id)
-    setValeur(e.mdp_simple ?? '')
+    setValeur('')
   }
 
   async function enregistrer(id: string) {
-    if (!valeur.trim()) {
-      alert('Saisissez un mot de passe.')
+    const mdp = valeur.trim()
+    if (mdp.length < 6) {
+      alert('Le mot de passe doit comporter au moins 6 caractères.')
       return
     }
     setEnCours(true)
-    const { erreur } = await definirMdpSimple(id, valeur.trim())
+    const { erreur } = await definirMotDePasseEleve(id, mdp)
     setEnCours(false)
     if (erreur) {
       alert(
-        "L'enregistrement a échoué. Vérifiez que la migration SQL des comptes élèves (migration-comptes-eleves.sql) a bien été exécutée dans Supabase.\n\nDétail : " +
+        "L'enregistrement a échoué. Vérifiez que la fonction reinitialiser-mdp-eleve est bien déployée dans Supabase.\n\nDétail : " +
           erreur
       )
       return
     }
     setEditionId(null)
     setValeur('')
+    alert('Mot de passe enregistré. Notez-le : il ne sera plus affiché.')
     recharger()
   }
 
@@ -109,10 +111,11 @@ export function ComptesEleves() {
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '24px' }}>
         <h1 style={{ fontSize: 24, color: '#1F2933', margin: '0 0 6px 0' }}>Comptes élèves</h1>
         <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 22px 0', lineHeight: 1.6 }}>
-          Identifiants de connexion des élèves. Pour les élèves ajoutés à la main, vous pouvez définir
-          et lire un mot de passe simple. Les comptes créés par les élèves eux-mêmes ont un mot de passe
-          chiffré côté serveur : il n'est jamais lisible ici, mais l'élève peut le réinitialiser depuis la
-          page de connexion (lien « Mot de passe oublié »).
+          Identifiants de connexion des élèves. Vous pouvez définir un nouveau mot de passe pour un élève,
+          mais aucun mot de passe n'est lisible : ils sont chiffrés côté serveur et ne sont plus conservés
+          en clair dans la base. Après avoir défini un mot de passe, notez-le et transmettez-le à l'élève :
+          il ne sera plus affiché. L'élève peut aussi le réinitialiser lui-même depuis la page de connexion
+          (lien « Mot de passe oublié »).
         </p>
 
         {chargement ? (
@@ -122,7 +125,7 @@ export function ComptesEleves() {
             <div style={carte}>
               <h2 style={{ fontSize: 17, color: '#1F2933', margin: '0 0 4px 0' }}>Élèves ajoutés à la main</h2>
               <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 14px 0' }}>
-                Mot de passe simple visible et modifiable.
+                Vous pouvez définir un mot de passe. Il ne sera pas affiché ensuite.
               </p>
               {manuels.length === 0 ? (
                 <p style={{ fontSize: 14, color: '#9AA5B1', margin: 0 }}>Aucun élève ajouté à la main.</p>
@@ -149,13 +152,11 @@ export function ComptesEleves() {
                               style={champ}
                               value={valeur}
                               onChange={(ev) => setValeur(ev.target.value)}
-                              placeholder="Mot de passe"
+                              placeholder="6 caractères minimum"
                               autoFocus
                             />
-                          ) : e.mdp_simple ? (
-                            <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{e.mdp_simple}</span>
                           ) : (
-                            <span style={{ color: '#9AA5B1' }}>non défini</span>
+                            <span style={{ color: '#9AA5B1' }}>chiffré (non lisible)</span>
                           )}
                         </td>
                         <td style={{ ...td, whiteSpace: 'nowrap' }}>
@@ -182,7 +183,7 @@ export function ComptesEleves() {
                             </>
                           ) : (
                             <button type="button" style={bouton} onClick={() => commencerEdition(e)}>
-                              {e.mdp_simple ? 'Modifier' : 'Définir'}
+                              Définir
                             </button>
                           )}
                         </td>
