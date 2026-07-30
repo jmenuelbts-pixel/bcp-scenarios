@@ -5,11 +5,11 @@
 import { COULEUR_PROF } from '../data/schema'
 
 // Ombre douce reutilisable sur les cartes et tableaux.
-export const OMBRE_CARTE = '0 2px 10px rgba(27, 107, 58, 0.07)'
-export const OMBRE_CARTE_FORTE = '0 3px 12px rgba(27, 107, 58, 0.10)'
+export const OMBRE_CARTE = '0 2px 10px rgba(14, 165, 233, 0.08)'
+export const OMBRE_CARTE_FORTE = '0 3px 12px rgba(14, 165, 233, 0.12)'
 
 // Degrade vert de l'espace enseignant (en-tetes, boutons actifs).
-export const DEGRADE_PROF = 'linear-gradient(135deg, #1B6B3A 0%, #2E9E5B 100%)'
+export const DEGRADE_PROF = 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)'
 
 // Palette de fonds de pastilles d'initiales, choisie de facon stable a partir
 // du nom pour que chaque eleve garde toujours la meme couleur.

@@ -258,7 +258,7 @@ function LigneActivite({ quiz, eleveId }: { quiz: ReponseQuiz; eleveId: string }
 
 function Section({ titre, compte, children }: { titre: string; compte: number; children: React.ReactNode }) {
   return (
-    <section style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 18 }}>
+    <section style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 18 }}>
       <h2 style={{ margin: '0 0 12px 0', fontSize: 15, color: COULEUR_PROF, display: 'flex', alignItems: 'center', gap: 8 }}>
         {titre}
         <span style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF', background: COULEUR_PROF, borderRadius: 99, padding: '1px 8px' }}>

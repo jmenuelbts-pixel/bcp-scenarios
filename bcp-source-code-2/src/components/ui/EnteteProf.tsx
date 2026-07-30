@@ -4,7 +4,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth'
-import { COULEUR_PROF } from '../../data/schema'
+import { COULEUR_PROF, DEGRADE_PROF_ENTETE } from '../../data/schema'
 
 const ONGLETS_PROF = [
   { libelle: 'Tableau de bord', route: '/enseignant' },
@@ -19,7 +19,7 @@ export function EnteteProf({ actif }: { actif: string }) {
 
   return (
     <>
-      <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
+      <header style={{ background: DEGRADE_PROF_ENTETE, color: '#FFFFFF', padding: '16px 24px' }}>
         <div
           style={{
             maxWidth: 1000,

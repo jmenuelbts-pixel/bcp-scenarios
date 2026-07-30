@@ -263,7 +263,7 @@ export function Exports() {
       </header>
 
       <main style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-        <section style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 20 }}>
+        <section style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 20 }}>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
             Classe
           </label>

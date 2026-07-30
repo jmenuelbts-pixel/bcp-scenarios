@@ -11,7 +11,7 @@ import { listerElevesAcceptes } from '../../lib/enseignant'
 import { activitesEnvoyees, COMPOSANTS_MISSION } from '../../lib/eleve'
 import type { Profil } from '../../lib/auth'
 
-const VERT = '#1B6B3A'
+const VERT = '#0EA5E9'
 
 const LIBELLES: Record<string, string> = {
   travaux: 'Travaux',
@@ -143,7 +143,7 @@ export function Progression() {
         ) : eleves.length === 0 ? (
           <p style={{ fontSize: 13, color: '#6B7280' }}>Aucun élève accepté.</p>
         ) : (
-          <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)' }}>
+          <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: '#F1F6F3' }}>

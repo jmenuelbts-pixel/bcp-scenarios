@@ -108,10 +108,10 @@ const ITEMS: ItemTableau[] = [
     route: '/enseignant/liste',
     icone: (
       <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
-        <line x1="8" y1="8" x2="16" y2="8" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="12" x2="16" y2="12" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="16" x2="13" y2="16" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="#0EA5E9" strokeWidth="2" />
+        <line x1="8" y1="8" x2="16" y2="8" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" />
+        <line x1="8" y1="12" x2="16" y2="12" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" />
+        <line x1="8" y1="16" x2="13" y2="16" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" />
       </svg>
     ),
   },

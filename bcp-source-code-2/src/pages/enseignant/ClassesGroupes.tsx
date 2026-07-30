@@ -104,7 +104,7 @@ export function ClassesGroupes() {
         <h1 style={{ fontSize: 20, color: '#1F2933', margin: '0 0 16px' }}>Classes et groupes</h1>
 
         {/* Creation de classe */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 14, marginBottom: 16 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16 }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
             <span style={{ fontSize: 13, fontWeight: 700 }}>Nouvelle classe :</span>
             <input value={nouvelleClasse} onChange={(e) => setNouvelleClasse(e.target.value)} placeholder="Ex : Terminale MCV B" style={{ ...champ, minWidth: 220 }} />
@@ -125,7 +125,7 @@ export function ClassesGroupes() {
         {classeCourante && (
           <>
             {/* Groupes de la classe */}
-            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 14, marginBottom: 16 }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 700 }}>Groupes de cette classe :</span>
                 <input value={nouveauGroupe} onChange={(e) => setNouveauGroupe(e.target.value)} placeholder="Ex : Groupe A" style={{ ...champ, minWidth: 180 }} />
@@ -145,7 +145,7 @@ export function ClassesGroupes() {
             </div>
 
             {/* Affectation des eleves */}
-            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 14 }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14 }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Élèves de la classe et groupes</div>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>

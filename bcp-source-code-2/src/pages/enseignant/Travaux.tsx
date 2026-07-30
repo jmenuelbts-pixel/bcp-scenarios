@@ -71,7 +71,7 @@ export function Travaux() {
             {tries.map((t) => {
               const estOuvert = ouvert === t.id
               return (
-                <div key={t.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', overflow: 'hidden' }}>
+                <div key={t.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', overflow: 'hidden' }}>
                   <button
                     type="button"
                     onClick={() => setOuvert(estOuvert ? null : t.id)}

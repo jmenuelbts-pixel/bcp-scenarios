@@ -138,7 +138,7 @@ export function Deverrouillage() {
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
         {/* Selecteur de portee : classe entiere ou eleve precis */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Portée :</span>
           <button
             type="button"
@@ -371,7 +371,7 @@ function pastilleOnglet(ouvert: boolean): React.CSSProperties {
     borderRadius: 99,
     border: `1px solid ${ouvert ? '#A8D5BC' : '#E2B3B1'}`,
     background: ouvert ? '#EAF7EF' : '#FCECEB',
-    color: ouvert ? '#1B6B3A' : '#8A2A28',
+    color: ouvert ? '#0EA5E9' : '#8A2A28',
     cursor: 'pointer',
   }
 }

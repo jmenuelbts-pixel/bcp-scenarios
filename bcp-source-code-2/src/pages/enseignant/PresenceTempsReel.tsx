@@ -143,7 +143,7 @@ export function PresenceTempsReel() {
               const progression = enMission ? Math.max(0, Math.min(100, p?.progression ?? 0)) : 0
 
               return (
-                <div key={e.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(27, 107, 58, 0.07)', padding: '14px 16px' }}>
+                <div key={e.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: '14px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     <span
                       aria-hidden="true"
