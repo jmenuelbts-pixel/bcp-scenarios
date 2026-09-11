@@ -3,11 +3,11 @@
 // Activités, Journal de bord). Les onglets verrouilles affichent un cadenas noir,
 // un texte grise et un curseur not-allowed. Le journal est toujours accessible.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
 import { getScenario, getMission, ONGLETS, couleurEntete, couleurTexteSur, type OngletId } from '../../data/schema'
 import { getContenuMission } from '../../data/contenus'
-import { ongletOuvert, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
+import { ongletOuvert, evaluationsOuvertes, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
 import { OngletTravaux } from '../../components/mission/OngletTravaux'
 import { OngletSynthese } from '../../components/mission/OngletSynthese'
 import { OngletAutoEval } from '../../components/mission/OngletAutoEval'
@@ -25,22 +25,18 @@ export function Mission() {
   const mission = scenarioId && missionId ? getMission(scenarioId, missionId) : undefined
   const contenu = missionId ? getContenuMission(missionId) : undefined
 
-  const { session } = useAuth()
+  const { session, profil } = useAuth()
   const userId = session?.user?.id
 
-  const [actif, setActif] = useState<OngletId>('journal')
+  const [actif, setActif] = useState<OngletId>('travaux')
   const [etatDeverr, setEtatDeverr] = useState<EtatDeverrouillage>(DEVERROUILLAGE_DEFAUT)
 
   useEffect(() => {
     chargerDeverrouillages().then((e) => {
       setEtatDeverr(e)
-      // Ouvre par defaut le premier onglet accessible pour cet eleve.
-      if (mission) {
-        const premier = [...ONGLETS]
-          .sort((a, b) => a.ordre - b.ordre)
-          .find((o) => ongletOuvert(mission.id, o.id, e, userId))
-        if (premier) setActif(premier.id)
-      }
+      // La mission s'ouvre toujours sur « Travaux à rendre » par defaut, meme
+      // si l'onglet est verrouille (l'eleve voit alors le cadenas).
+      setActif('travaux')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missionId, userId])
@@ -122,7 +118,7 @@ export function Mission() {
           {[...ONGLETS]
             .sort((a, b) => a.ordre - b.ordre)
             .map((o) => {
-              const ouvert = ongletOuvert(mission.id, o.id, etatDeverr, userId)
+              const ouvert = o.id === 'activites' ? true : ongletOuvert(mission.id, o.id, etatDeverr, userId)
               const estActif = actif === o.id
               return (
                 <button
@@ -169,7 +165,7 @@ export function Mission() {
             {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} />}
             {actif === 'synthese' && contenu && <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} />}
             {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} />}
+            {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} evaluationsOuvertes={evaluationsOuvertes(mission.id, etatDeverr, userId)} />}
             {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
           </>
         )}
@@ -187,4 +183,33 @@ const btnRetour: React.CSSProperties = {
   padding: '8px 16px',
   cursor: 'pointer',
   marginTop: 12,
+}
+
+function btnExport(couleurTexte: string): React.CSSProperties {
+  return {
+    fontFamily: 'Arial, sans-serif',
+    background: 'rgba(255,255,255,0.22)',
+    border: '1px solid rgba(255,255,255,0.6)',
+    color: couleurTexte,
+    borderRadius: 8,
+    padding: '8px 16px',
+    fontSize: 13,
+    fontWeight: 700,
+    cursor: 'pointer',
+  }
+}
+
+const optExport: React.CSSProperties = {
+  fontFamily: 'Arial, sans-serif',
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  background: '#FFFFFF',
+  border: 'none',
+  borderBottom: '1px solid #EEF2F6',
+  color: '#1F2933',
+  padding: '11px 14px',
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: 'pointer',
 }

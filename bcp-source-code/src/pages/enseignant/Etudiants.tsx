@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { COULEUR_PROF, SCENARIOS } from '../../data/schema'
 import { listerElevesAcceptes, visitesEleve, refuserEleve, supprimerEleveComplet } from '../../lib/enseignant'
+import { lireDelaiCorrection, definirDelaiCorrection, OPTIONS_DELAI } from '../../lib/reglages'
 import type { Profil } from '../../lib/auth'
 
 const TOTAL_MISSIONS = SCENARIOS.reduce((n, s) => n + s.missions.length, 0)
@@ -18,6 +19,18 @@ export function Etudiants() {
   // Eleve dont on affiche la boite de choix de suppression.
   const [aSupprimer, setASupprimer] = useState<Profil | null>(null)
   const [traitement, setTraitement] = useState(false)
+  const [delai, setDelai] = useState<number>(60)
+  const [delaiEnregistre, setDelaiEnregistre] = useState(false)
+
+  useEffect(() => { lireDelaiCorrection().then(setDelai) }, [])
+
+  async function changerDelai(minutes: number) {
+    setDelai(minutes)
+    setDelaiEnregistre(false)
+    await definirDelaiCorrection(minutes)
+    setDelaiEnregistre(true)
+    window.setTimeout(() => setDelaiEnregistre(false), 2500)
+  }
 
   async function refuser(e: Profil) {
     setTraitement(true)
@@ -67,6 +80,18 @@ export function Etudiants() {
       </header>
 
       <main style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
+        <div style={{ background: '#EAF2FF', border: '1px solid #A9C7E8', borderRadius: 12, padding: '12px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Délai avant que l'élève voie sa correction (Quiz / Glisser-déposer)</span>
+          <select
+            value={delai}
+            onChange={(e) => changerDelai(Number(e.target.value))}
+            style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '7px 10px', fontSize: 13 }}
+          >
+            {OPTIONS_DELAI.map((o) => <option key={o.valeur} value={o.valeur}>{o.libelle}</option>)}
+          </select>
+          {delaiEnregistre && <span style={{ fontSize: 12, fontWeight: 700, color: '#0F7A52' }}>Enregistré</span>}
+          <span style={{ fontSize: 11.5, color: '#5C6B7A', flexBasis: '100%' }}>Réglage général : s'applique à tous les élèves, calculé depuis l'heure d'envoi de chacun. Vous voyez la note et l'appréciation immédiatement.</span>
+        </div>
         {chargement ? (
           <p style={{ fontSize: 14, color: '#6B7280' }}>Chargement en cours...</p>
         ) : eleves.length === 0 ? (
