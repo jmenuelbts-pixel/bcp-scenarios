@@ -87,10 +87,17 @@ export function PanneauInvite() {
         <span style={{ background: VIOLET, color: '#fff', fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>ACCÈS INVITÉ</span>
         <h2 style={{ fontSize: 17, color: '#1F2933', margin: 0 }}>Collègue ou inspecteur</h2>
       </div>
-      <p style={{ fontSize: 13, color: '#5B4B7A', margin: '0 0 16px 0', lineHeight: 1.6 }}>
+      <p style={{ fontSize: 13, color: '#5B4B7A', margin: '0 0 12px 0', lineHeight: 1.6 }}>
         Un compte visiteur unique qui voit l'interface élève d'une classe réelle, mais uniquement les scénarios que vous ouvrez.
         Désactivez l'accès une fois la visite terminée.
       </p>
+
+      {/* Identifiant fixe, toujours visible */}
+      <div style={{ background: '#FFFFFF', border: '1px solid #D8CBEE', borderRadius: 10, padding: '10px 14px', marginBottom: 16 }}>
+        <span style={{ fontSize: 12, color: '#6B7280' }}>Identifiant de connexion de l'invité (toujours le même) :</span>
+        <div style={{ fontSize: 14, fontWeight: 700, color: VIOLET, fontFamily: 'monospace', marginTop: 2 }}>invite@bcp-scenarios-mcvb.app</div>
+        <span style={{ fontSize: 12, color: '#6B7280' }}>Vous choisissez le mot de passe ci-dessous et le donnez à l'invité. Seul ce compte peut le voir.</span>
+      </div>
 
       {/* Etat actuel */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>

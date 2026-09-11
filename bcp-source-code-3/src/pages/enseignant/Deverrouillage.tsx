@@ -17,6 +17,7 @@ import {
   aReglageIndividuel,
   evaluationsOuvertes,
   ONGLET_EVALUATION,
+  toutVerrouillerPartout,
   DEVERROUILLAGE_DEFAUT,
   type EtatDeverrouillage,
 } from '../../lib/deverrouillage'
@@ -102,14 +103,10 @@ export function Deverrouillage() {
 
   // Verrouille TOUT (tous les scenarios, toutes les missions) en global.
   async function toutVerrouillerGlobal() {
-    if (!window.confirm("Verrouiller tous les onglets de toutes les missions de tous les scénarios ?\n\nLes réglages individuels des élèves sont conservés.")) return
+    if (!window.confirm("Verrouiller TOUS les onglets de toutes les missions de tous les scénarios, y compris les quiz, glisser-déposer et les réglages individuels des élèves ?")) return
     setEnCours('lock-all')
     try {
-      const missions = SCENARIOS.flatMap((s) =>
-        s.missions.map((m) => ({ scenarioId: s.id, missionId: m.id }))
-      )
-      const ongletIds = ONGLETS_VERROUILLABLES.map((o) => o.id)
-      const nouvel = await definirTousOnglets(missions, ongletIds, false, etat)
+      const nouvel = await toutVerrouillerPartout()
       setEtat(nouvel)
     } catch (e) {
       alert("L'enregistrement a échoué. Vérifiez que la migration SQL du déverrouillage a bien été exécutée dans Supabase.\n\nDétail : " + (e instanceof Error ? e.message : String(e)))

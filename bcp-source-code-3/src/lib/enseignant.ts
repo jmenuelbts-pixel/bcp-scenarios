@@ -64,6 +64,20 @@ export async function definirMotDePasseEleve(
   return { erreur: null }
 }
 
+// Deconnecte de tous leurs appareils les eleves d'une classe (classeId null =>
+// tous les eleves). Passe par l'Edge Function serveur (cle service_role).
+export async function deconnecterClasse(
+  classeId: string | null
+): Promise<{ deconnectes: number; erreur: string | null }> {
+  const { data, error } = await supabase.functions.invoke('deconnecter-classe', {
+    body: { classe_id: classeId },
+  })
+  if (error) return { deconnectes: 0, erreur: error.message }
+  const rep = data as { erreur?: string; deconnectes?: number } | null
+  if (rep?.erreur) return { deconnectes: 0, erreur: rep.erreur }
+  return { deconnectes: rep?.deconnectes ?? 0, erreur: null }
+}
+
 // Supprime un eleve (profil). A utiliser avec prudence : supprime aussi ses
 // notes/appels lies par cascade cote base.
 export async function supprimerEleve(eleveId: string): Promise<{ erreur: string | null }> {
@@ -130,6 +144,7 @@ export interface ReponseQuiz {
   score: number | null
   bareme: number | null
   submitted_at: string
+  appreciation?: string | null
 }
 
 export interface EvaluationCompetence {
@@ -167,7 +182,7 @@ export async function visitesEleve(eleveId: string): Promise<VisiteOnglet[]> {
 export async function quizEleve(eleveId: string): Promise<ReponseQuiz[]> {
   const { data } = await supabase
     .from('reponses_quiz')
-    .select('mission_id, activite_id, reponses, score, bareme, submitted_at')
+    .select('mission_id, activite_id, reponses, score, bareme, submitted_at, appreciation')
     .eq('etudiant_id', eleveId)
     .order('submitted_at', { ascending: false })
   return (data as ReponseQuiz[]) ?? []
