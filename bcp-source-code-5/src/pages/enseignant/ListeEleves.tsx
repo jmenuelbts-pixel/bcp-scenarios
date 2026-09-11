@@ -7,15 +7,26 @@
 import { useEffect, useMemo, useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
 import { COULEUR_PROF } from '../../data/schema'
+import { PastilleInitiales, CarteStat, OMBRE_CARTE, DEGRADE_PROF } from '../../lib/theme'
 import { listerElevesAcceptes, ajouterEleveManuel, supprimerEleve } from '../../lib/enseignant'
 import type { Profil } from '../../lib/auth'
+import { exporterBilanPresence } from '../../lib/pdf'
 import { SCENARIOS } from '../../data/schema'
-import { listerClasses, listerGroupes, listerLiaisonsGroupes, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
+import { listerClasses, listerGroupes, listerLiaisonsGroupes, definirGroupeUnique, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
 import {
-  appelsDuJour,
   datesAppels,
-  enregistrerAppel,
   supprimerAppelDate,
+  nbHeuresSeance,
+  definirNbHeures,
+  creneauxDuJour,
+  appliquerAppelAuto,
+  enregistrerCreneau,
+  definirCreneauColonne,
+  enregistrerMotifSeance,
+  motifsDuJour,
+  CRENEAUX_HORAIRES,
+  bilanPresence,
+  type BilanPresence,
   listerColonnes,
   ajouterColonne,
   majColonne,
@@ -23,9 +34,12 @@ import {
   listerNotes,
   enregistrerNote,
   importerScoresActivite,
-  type Appel,
+  creerColonnesActivitesManquantes,
+  type CreneauAppel,
+  type StatutCreneau,
   type ColonneNote,
   type NoteEleve,
+  type StatutNote,
 } from '../../lib/listeEleves'
 
 function aujourdhui(): string {
@@ -97,14 +111,14 @@ export function ListeEleves() {
   }
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant" />
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
         <h1 style={{ fontSize: 20, color: '#1F2933', margin: '0 0 16px' }}>Liste des élèves</h1>
 
         {/* Ajout d'un eleve manuel */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 14, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Ajouter un élève :</span>
           <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Prénom" style={champManuel} />
           <input value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom" style={champManuel} />
@@ -116,7 +130,7 @@ export function ListeEleves() {
         </div>
 
         {/* Filtre classe / groupe */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 12, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: 12, marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           <span style={{ fontSize: 13, fontWeight: 700 }}>Filtrer :</span>
           <select value={filtreClasse} onChange={(e) => { setFiltreClasse(e.target.value); setFiltreGroupe('') }} style={{ ...champManuel, minWidth: 180 }}>
             <option value="">Toutes les classes</option>
@@ -142,11 +156,11 @@ export function ListeEleves() {
                 onClick={() => setOnglet(o)}
                 style={{
                   fontFamily: 'Arial, sans-serif',
-                  background: actif ? COULEUR_PROF : '#FFFFFF',
+                  background: actif ? DEGRADE_PROF : '#FFFFFF',
                   color: actif ? '#FFFFFF' : COULEUR_PROF,
-                  border: `1px solid ${COULEUR_PROF}`,
-                  borderRadius: 99,
-                  padding: '8px 20px',
+                  border: actif ? 'none' : `1px solid ${COULEUR_PROF}`,
+                  borderRadius: 10,
+                  padding: '9px 22px',
                   fontSize: 14,
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -165,7 +179,7 @@ export function ListeEleves() {
         ) : onglet === 'appel' ? (
           <OngletAppel eleves={elevesFiltres} />
         ) : (
-          <OngletNotes eleves={eleves.filter((e) => !filtreClasse || e.classe_id === filtreClasse)} onRetirer={retirer} />
+          <OngletNotes eleves={eleves.filter((e) => !filtreClasse || e.classe_id === filtreClasse)} onRetirer={retirer} groupes={groupes} liaisons={liaisons} onGroupesMaj={rechargerEleves} />
         )}
       </main>
     </div>
@@ -181,61 +195,118 @@ const champManuel: React.CSSProperties = {
   minWidth: 120,
 }
 
-// --- Onglet Appel ----------------------------------------------------------
+// --- Onglet Appel (par heures) --------------------------------------------
 
 function OngletAppel({ eleves }: { eleves: Profil[] }) {
   const [date, setDate] = useState<string>(aujourdhui())
-  const [appels, setAppels] = useState<Record<string, Appel>>({})
+  const [nbHeures, setNbHeures] = useState<number>(1)
+  const [creneaux, setCreneaux] = useState<Record<string, CreneauAppel>>({})
+  const [libelles, setLibelles] = useState<string[]>([])
+  const [motifs, setMotifs] = useState<Record<string, string>>({})
   const [historique, setHistorique] = useState<string[]>([])
 
+  const cle = (eleveId: string, h: number) => eleveId + '-' + h
+
   async function charger(d: string) {
-    const liste = await appelsDuJour(d)
-    const map: Record<string, Appel> = {}
-    for (const a of liste) map[a.etudiant_id] = a
-    setAppels(map)
+    // Appel automatique : cree les presences depuis l'historique de connexion
+    // (>= 10 min sur un creneau), sans ecraser les saisies manuelles.
+    const crActuels = await creneauxDuJour(d)
+    await appliquerAppelAuto(d, crActuels)
+    const [nb, cr, mo] = await Promise.all([nbHeuresSeance(d), creneauxDuJour(d), motifsDuJour(d)])
+    setNbHeures(nb)
+    const map: Record<string, CreneauAppel> = {}
+    const libs: string[] = Array.from({ length: nb }, () => '')
+    for (const c of cr) {
+      map[cle(c.etudiant_id, c.heure_index)] = c
+      if (c.creneau && c.heure_index < nb) libs[c.heure_index] = c.creneau
+    }
+    setCreneaux(map)
+    setLibelles(libs)
+    setMotifs(mo)
   }
 
-  useEffect(() => {
+  useEffect(() => { charger(date) }, [date])
+  useEffect(() => { datesAppels().then(setHistorique) }, [])
+
+  function statut(eleveId: string, h: number): StatutCreneau {
+    return creneaux[cle(eleveId, h)]?.statut ?? 'present'
+  }
+
+  async function changerNbHeures(nb: number) {
+    setNbHeures(nb)
+    setLibelles((prev) => {
+      const copie = [...prev]
+      while (copie.length < nb) copie.push('')
+      return copie.slice(0, nb)
+    })
+    if (eleves[0]) await definirNbHeures(date, nb, eleves[0].id)
+    datesAppels().then(setHistorique)
+  }
+
+  const ordreStatut: StatutCreneau[] = ['present', 'absent', 'retard', 'exclusion']
+
+  async function cyclerStatut(eleveId: string, h: number) {
+    const courant = statut(eleveId, h)
+    const suivant = ordreStatut[(ordreStatut.indexOf(courant) + 1) % ordreStatut.length]
+    const libelle = libelles[h] || null
+    setCreneaux((m) => ({ ...m, [cle(eleveId, h)]: { etudiant_id: eleveId, heure_index: h, creneau: libelle, statut: suivant } }))
+    await enregistrerCreneau(date, eleveId, h, libelle, suivant)
+    datesAppels().then(setHistorique)
+  }
+
+  async function choisirCreneau(h: number, libelle: string) {
+    setLibelles((prev) => { const c = [...prev]; c[h] = libelle; return c })
+    await definirCreneauColonne(date, h, libelle, eleves.map((e) => e.id))
     charger(date)
-  }, [date])
-
-  useEffect(() => {
-    datesAppels().then(setHistorique)
-  }, [])
-
-  function etat(eleveId: string): { absent: boolean; retard: number | null } {
-    const a = appels[eleveId]
-    return { absent: a?.absent ?? false, retard: a?.retard_minutes ?? null }
   }
 
-  async function basculerAbsent(eleveId: string) {
-    const e = etat(eleveId)
-    const absent = !e.absent
-    setAppels((m) => ({
-      ...m,
-      [eleveId]: { ...(m[eleveId] ?? { id: '', date_appel: date, etudiant_id: eleveId }), absent, retard_minutes: absent ? null : e.retard } as Appel,
-    }))
-    await enregistrerAppel(date, eleveId, absent, absent ? null : e.retard)
-    datesAppels().then(setHistorique)
+  function motifRequis(eleveId: string): boolean {
+    for (let h = 0; h < nbHeures; h++) if (statut(eleveId, h) !== 'present') return true
+    return false
   }
 
-  async function majRetard(eleveId: string, minutes: number | null) {
-    const e = etat(eleveId)
-    if (e.absent) return
-    setAppels((m) => ({
-      ...m,
-      [eleveId]: { ...(m[eleveId] ?? { id: '', date_appel: date, etudiant_id: eleveId, absent: false }), retard_minutes: minutes } as Appel,
-    }))
-    await enregistrerAppel(date, eleveId, false, minutes)
-    datesAppels().then(setHistorique)
+  function majMotifLocal(eleveId: string, v: string) {
+    setMotifs((m) => ({ ...m, [eleveId]: v }))
+  }
+  async function persisterMotif(eleveId: string) {
+    await enregistrerMotifSeance(date, eleveId, motifs[eleveId] ?? '')
   }
 
-  const nbAbsents = eleves.filter((e) => etat(e.id).absent).length
-  const nbPresents = eleves.length - nbAbsents
+  const styleStatut: Record<StatutCreneau, { bg: string; bd: string; fg: string; libelle: string }> = {
+    present: { bg: '#E4F5EC', bd: '#8FD3AE', fg: '#0F7A52', libelle: 'Présent' },
+    absent: { bg: '#FBE4E2', bd: '#E7A6A0', fg: '#B03A32', libelle: 'Absent' },
+    retard: { bg: '#FCEFD6', bd: '#E9C77E', fg: '#996A12', libelle: 'Retard' },
+    exclusion: { bg: '#EDE4F7', bd: '#C3A8E4', fg: '#6B3FA0', libelle: 'Exclu' },
+  }
+
+  const heures = Array.from({ length: nbHeures }, (_, i) => i)
+
+  // Bilan de presence sur une periode.
+  const [bilanDebut, setBilanDebut] = useState<string>(aujourdhui())
+  const [bilanFin, setBilanFin] = useState<string>(aujourdhui())
+  const [bilan, setBilan] = useState<Record<string, BilanPresence> | null>(null)
+
+  async function calculerBilan() {
+    setBilan(await bilanPresence(bilanDebut, bilanFin))
+  }
+
+  function exporterBilan() {
+    if (!bilan) return
+    const lignes = eleves.map((e) => {
+      const b = bilan[e.id]
+      return {
+        nom: e.nom ?? '', prenom: e.prenom ?? '',
+        heures_absence: b?.heures_absence ?? 0,
+        heures_retard: b?.heures_retard ?? 0,
+        heures_exclusion: b?.heures_exclusion ?? 0,
+      }
+    })
+    const periode = `Du ${new Date(bilanDebut).toLocaleDateString('fr-FR')} au ${new Date(bilanFin).toLocaleDateString('fr-FR')}`
+    exporterBilanPresence('Bilan de présence', periode, lignes)
+  }
 
   return (
     <div>
-      {/* Barre date + historique */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
         <label style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>Date de l'appel</label>
         <input
@@ -244,6 +315,14 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
           onChange={(e) => setDate(e.target.value)}
           style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '8px 10px', fontSize: 14 }}
         />
+        <label style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>Nombre d'heures</label>
+        <select
+          value={nbHeures}
+          onChange={(e) => changerNbHeures(Number(e.target.value))}
+          style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '8px 10px', fontSize: 14 }}
+        >
+          {[1, 2, 3, 4, 5, 6].map((n) => <option key={n} value={n}>{n} heure{n > 1 ? 's' : ''}</option>)}
+        </select>
         {historique.length > 0 && (
           <select
             value={historique.includes(date) ? date : ''}
@@ -252,20 +331,14 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
           >
             <option value="">Historique des appels</option>
             {historique.map((d) => (
-              <option key={d} value={d}>
-                {new Date(d).toLocaleDateString('fr-FR')}
-              </option>
+              <option key={d} value={d}>{new Date(d).toLocaleDateString('fr-FR')}</option>
             ))}
           </select>
         )}
         {historique.includes(date) && (
           <button
             type="button"
-            onClick={async () => {
-              await supprimerAppelDate(date)
-              setAppels({})
-              datesAppels().then(setHistorique)
-            }}
+            onClick={async () => { await supprimerAppelDate(date); charger(date); datesAppels().then(setHistorique) }}
             style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', border: '1px solid #E2C0C0', color: '#A33', borderRadius: 8, padding: '8px 12px', fontSize: 13, cursor: 'pointer' }}
           >
             Supprimer cet appel
@@ -273,48 +346,62 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: 16, marginBottom: 12, fontSize: 13 }}>
-        <span style={{ color: '#2E8B57', fontWeight: 700 }}>Présents : {nbPresents}</span>
-        <span style={{ color: '#A33', fontWeight: 700 }}>Absents : {nbAbsents}</span>
-      </div>
-
-      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12 }}>
+      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 12, boxShadow: OMBRE_CARTE }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
           <thead>
             <tr>
-              <th style={{ ...thStyle, textAlign: 'left' }}>Élève</th>
-              <th style={thStyle}>Absent</th>
-              <th style={thStyle}>Retard (min)</th>
+              <th style={{ ...thStyle, textAlign: 'left', minWidth: 150 }}>Élève</th>
+              {heures.map((h) => (
+                <th key={h} style={thStyle}>
+                  <div style={{ fontSize: 11, color: '#9AA5B1', marginBottom: 3 }}>Heure {h + 1}</div>
+                  <select
+                    value={libelles[h] ?? ''}
+                    onChange={(e) => choisirCreneau(h, e.target.value)}
+                    style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 6, padding: '3px 5px', fontSize: 12 }}
+                  >
+                    <option value="">Créneau...</option>
+                    {CRENEAUX_HORAIRES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </th>
+              ))}
+              <th style={{ ...thStyle, textAlign: 'left', minWidth: 220 }}>Motif</th>
             </tr>
           </thead>
           <tbody>
             {eleves.map((e) => {
-              const s = etat(e.id)
+              const requis = motifRequis(e.id)
               return (
                 <tr key={e.id}>
-                  <td style={{ ...tdStyle, fontWeight: 600 }}>{e.nom} {e.prenom}</td>
-                  <td style={{ ...tdStyle, textAlign: 'center' }}>
-                    <input type="checkbox" checked={s.absent} onChange={() => basculerAbsent(e.id)} style={{ width: 18, height: 18, cursor: 'pointer' }} />
+                  <td style={{ ...tdStyle, fontWeight: 600 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                      <PastilleInitiales nom={e.nom} prenom={e.prenom} />
+                      {e.nom} {e.prenom}
+                    </span>
                   </td>
-                  <td style={{ ...tdStyle, textAlign: 'center' }}>
+                  {heures.map((h) => {
+                    const s = statut(e.id, h)
+                    const st = styleStatut[s]
+                    return (
+                      <td key={h} style={{ ...tdStyle, textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => cyclerStatut(e.id, h)}
+                          style={{ fontFamily: 'Arial, sans-serif', minWidth: 74, borderRadius: 8, padding: '6px 8px', fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid ' + st.bd, background: st.bg, color: st.fg }}
+                        >
+                          {st.libelle}
+                        </button>
+                      </td>
+                    )
+                  })}
+                  <td style={tdStyle}>
                     <input
-                      type="number"
-                      min={0}
-                      value={s.retard ?? ''}
-                      disabled={s.absent}
-                      onChange={(ev) => majRetard(e.id, ev.target.value === '' ? null : Number(ev.target.value))}
-                      placeholder="-"
-                      style={{
-                        fontFamily: 'Arial, sans-serif',
-                        width: 64,
-                        border: '1px solid #C9D6E3',
-                        borderRadius: 6,
-                        padding: '5px 7px',
-                        fontSize: 13,
-                        textAlign: 'center',
-                        background: s.absent ? '#F0F2F5' : '#FFFFFF',
-                        color: s.absent ? '#9AA5B1' : '#1F2933',
-                      }}
+                      type="text"
+                      value={motifs[e.id] ?? ''}
+                      disabled={!requis}
+                      onChange={(ev) => majMotifLocal(e.id, ev.target.value)}
+                      onBlur={() => persisterMotif(e.id)}
+                      placeholder={requis ? 'Motif (ex : RDV médical H1, exclu H3)' : '—'}
+                      style={{ fontFamily: 'Arial, sans-serif', width: '100%', minWidth: 200, border: '1px solid #C9D6E3', borderRadius: 6, padding: '5px 8px', fontSize: 13, background: requis ? '#FFFFFF' : '#F0F2F5', color: requis ? '#1F2933' : '#9AA5B1' }}
                     />
                   </td>
                 </tr>
@@ -323,13 +410,55 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
           </tbody>
         </table>
       </div>
+      <div style={{ marginTop: 22, background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 12, boxShadow: OMBRE_CARTE, padding: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: COULEUR_PROF, marginBottom: 10 }}>Bilan de présence sur une période</div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
+          <label style={{ fontSize: 13, color: '#374151' }}>Du</label>
+          <input type="date" value={bilanDebut} onChange={(e) => setBilanDebut(e.target.value)} style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '7px 9px', fontSize: 13 }} />
+          <label style={{ fontSize: 13, color: '#374151' }}>au</label>
+          <input type="date" value={bilanFin} onChange={(e) => setBilanFin(e.target.value)} style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '7px 9px', fontSize: 13 }} />
+          <button type="button" onClick={calculerBilan} style={{ fontFamily: 'Arial, sans-serif', background: COULEUR_PROF, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Calculer</button>
+          {bilan && <button type="button" onClick={exporterBilan} style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', color: COULEUR_PROF, border: `1px solid ${COULEUR_PROF}`, borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Exporter en PDF</button>}
+        </div>
+        {bilan && (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
+              <thead>
+                <tr>
+                  <th style={{ ...thStyle, textAlign: 'left' }}>Élève</th>
+                  <th style={thStyle}>Absence (h)</th>
+                  <th style={thStyle}>Retard (h)</th>
+                  <th style={thStyle}>Exclusion (h)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {eleves.map((e) => {
+                  const b = bilan[e.id]
+                  return (
+                    <tr key={e.id}>
+                      <td style={{ ...tdStyle, fontWeight: 600 }}>{e.nom} {e.prenom}</td>
+                      <td style={{ ...tdStyle, textAlign: 'center', color: (b?.heures_absence ?? 0) > 0 ? '#C0392B' : '#9AA5B1' }}>{b?.heures_absence ?? 0}</td>
+                      <td style={{ ...tdStyle, textAlign: 'center', color: (b?.heures_retard ?? 0) > 0 ? '#996A12' : '#9AA5B1' }}>{b?.heures_retard ?? 0}</td>
+                      <td style={{ ...tdStyle, textAlign: 'center', color: (b?.heures_exclusion ?? 0) > 0 ? '#6B3FA0' : '#9AA5B1' }}>{b?.heures_exclusion ?? 0}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <p style={{ fontSize: 12, color: '#6B7280', marginTop: 10 }}>
+        Choisissez le nombre d'heures de la séance, puis le créneau de chaque heure (12h-13h exclu). Cliquez le statut d'une heure pour le changer : Présent, Absent, Retard, Exclusion. Le motif est global à la séance et s'active dès qu'une heure n'est pas Présent.
+      </p>
     </div>
   )
 }
 
 // --- Onglet Notes ----------------------------------------------------------
 
-function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: Profil) => void }) {
+function OngletNotes({ eleves, onRetirer, groupes, liaisons, onGroupesMaj }: { eleves: Profil[]; onRetirer: (e: Profil) => void; groupes: Groupe[]; liaisons: LiaisonGroupe[]; onGroupesMaj: () => void }) {
   const [colonnes, setColonnes] = useState<ColonneNote[]>([])
   const [notes, setNotes] = useState<NoteEleve[]>([])
   const [nouvelleColonne, setNouvelleColonne] = useState('')
@@ -345,7 +474,11 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
   // colonne liee a une activite auto (quiz / glisser-deposer).
   useEffect(() => {
     (async () => {
-      const cols = await listerColonnes()
+      let cols = await listerColonnes()
+      // Cree automatiquement les colonnes manquantes pour les quiz / glisser
+      // deja notes, puis recharge la liste.
+      const creees = await creerColonnesActivitesManquantes(cols)
+      if (creees > 0) cols = await listerColonnes()
       setColonnes(cols)
       for (const c of cols) {
         if (c.activite_liee_mission && c.activite_liee_id) {
@@ -355,6 +488,18 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
       setNotes(await listerNotes())
     })()
   }, [])
+
+  // Colonnes visibles selon les eleves affiches (filtre classe cote prof) :
+  // une colonne liee a une activite n'apparait que si au moins un eleve
+  // affiche a une note pour cette colonne. Les colonnes manuelles (non liees)
+  // restent toujours visibles.
+  const colonnesVisibles = useMemo(() => {
+    const idsEleves = new Set(eleves.map((e) => e.id))
+    return colonnes.filter((c) => {
+      if (!c.activite_liee_mission || !c.activite_liee_id) return true
+      return notes.some((n) => n.colonne_id === c.id && idsEleves.has(n.etudiant_id))
+    })
+  }, [colonnes, notes, eleves])
 
   // Liste des activites auto liables (quiz + glisser-deposer de chaque mission).
   const activitesLiables = useMemo(() => {
@@ -373,7 +518,7 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
     return notes.find((n) => n.colonne_id === colonneId && n.etudiant_id === eleveId)
   }
 
-  // Moyenne d'un eleve sur 20, sur les colonnes comptees uniquement.
+  // Moyenne sur 20, ponderee par coefficient. 'absent'=0, 'non_note' ignore.
   const moyennes = useMemo(() => {
     const res: Record<string, number | null> = {}
     for (const e of eleves) {
@@ -381,11 +526,12 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
       let poids = 0
       for (const c of colonnes) {
         if (!c.compter_moyenne) continue
+        const coef = c.coefficient ?? 1
         const n = noteDe(c.id, e.id)
-        if (n && n.note !== null) {
-          somme += (n.note / n.bareme) * 20
-          poids += 1
-        }
+        if (!n) continue
+        if (n.statut === 'non_note') continue
+        if (n.statut === 'absent') { somme += 0; poids += coef }
+        else if (n.note !== null) { somme += ((n.note / n.bareme) * 20) * coef; poids += coef }
       }
       res[e.id] = poids === 0 ? null : Math.round((somme / poids) * 10) / 10
     }
@@ -398,9 +544,22 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
     const existante = noteDe(colonne.id, eleveId)
     setNotes((prev) => {
       const autres = prev.filter((n) => !(n.colonne_id === colonne.id && n.etudiant_id === eleveId))
-      return [...autres, { id: existante?.id ?? '', colonne_id: colonne.id, etudiant_id: eleveId, note, bareme }]
+      return [...autres, { id: existante?.id ?? '', colonne_id: colonne.id, etudiant_id: eleveId, note, bareme, statut: 'note', manuel: true }]
     })
-    await enregistrerNote(colonne.id, eleveId, note, bareme)
+    await enregistrerNote(colonne.id, eleveId, note, bareme, 'note', true)
+  }
+
+  async function cyclerStatut(colonne: ColonneNote, eleveId: string) {
+    const bareme = colonne.bareme ?? 20
+    const existante = noteDe(colonne.id, eleveId)
+    const courant: StatutNote = existante?.statut ?? 'note'
+    const suivant: StatutNote = courant === 'note' ? 'absent' : courant === 'absent' ? 'non_note' : 'note'
+    const note = suivant === 'note' ? (existante?.note ?? null) : null
+    setNotes((prev) => {
+      const autres = prev.filter((n) => !(n.colonne_id === colonne.id && n.etudiant_id === eleveId))
+      return [...autres, { id: existante?.id ?? '', colonne_id: colonne.id, etudiant_id: eleveId, note, bareme, statut: suivant, manuel: true }]
+    })
+    await enregistrerNote(colonne.id, eleveId, note, bareme, suivant, true)
   }
 
   async function creerColonne() {
@@ -441,14 +600,15 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12 }}>
+      <div style={{ overflowX: 'auto', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 12, boxShadow: OMBRE_CARTE }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
           <thead>
             <tr>
-              <th style={{ ...thStyle, textAlign: 'left', position: 'sticky', left: 0, background: '#F4F7FA', minWidth: 150 }}>Nom Prénom</th>
+              <th style={{ ...thStyle, textAlign: 'left', position: 'sticky', left: 0, background: '#F1F6F3', minWidth: 150 }}>Nom Prénom</th>
               <th style={thStyle}>Inscription</th>
+              <th style={thStyle}>Groupe</th>
               <th style={thStyle}>Moyenne /20</th>
-              {colonnes.map((c) => (
+              {colonnesVisibles.map((c) => (
                 <th key={c.id} style={{ ...thStyle, minWidth: 130 }}>
                   <input
                     value={c.intitule}
@@ -492,6 +652,21 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
                     <option value={20}>Sur 20</option>
                     <option value={10}>Sur 10</option>
                   </select>
+                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 10, color: '#6B7280', marginTop: 4, fontWeight: 400 }}>
+                    Coef.
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.5"
+                      value={c.coefficient ?? 1}
+                      onChange={(e) => {
+                        const v = e.target.value === '' ? 1 : Number(e.target.value)
+                        setColonnes((prev) => prev.map((x) => (x.id === c.id ? { ...x, coefficient: v } : x)))
+                      }}
+                      onBlur={(e) => majColonne(c.id, { coefficient: e.target.value === '' ? 1 : Number(e.target.value) })}
+                      style={{ fontFamily: 'Arial, sans-serif', width: 46, border: '1px solid #E2E8F0', borderRadius: 6, padding: '2px 4px', fontSize: 11, textAlign: 'center' }}
+                    />
+                  </label>
                   <select
                     value={c.activite_liee_mission && c.activite_liee_id ? `${c.activite_liee_mission}::${c.activite_liee_id}` : ''}
                     onChange={(e) => {
@@ -512,7 +687,7 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
                     <button
                       type="button"
                       onClick={() => rafraichirColonne(c)}
-                      style={{ fontFamily: 'Arial, sans-serif', background: '#EAF7EF', border: '1px solid #A8D5BC', color: '#1B6B3A', fontSize: 10, cursor: 'pointer', marginTop: 4, borderRadius: 6, padding: '3px 6px', width: '100%' }}
+                      style={{ fontFamily: 'Arial, sans-serif', background: '#EAF7EF', border: '1px solid #A8D5BC', color: '#0EA5E9', fontSize: 10, cursor: 'pointer', marginTop: 4, borderRadius: 6, padding: '3px 6px', width: '100%' }}
                     >
                       Rafraîchir les scores
                     </button>
@@ -545,26 +720,62 @@ function OngletNotes({ eleves, onRetirer }: { eleves: Profil[]; onRetirer: (e: P
                 <td style={{ ...tdStyle, textAlign: 'center', color: '#6B7280' }}>
                   {e.created_at ? new Date(e.created_at).toLocaleDateString('fr-FR') : '-'}
                 </td>
+                <td style={{ ...tdStyle, textAlign: 'center' }}>
+                  {(() => {
+                    const gc = groupes.filter((g) => g.classe_id === e.classe_id)
+                    const actuel = liaisons.find((l) => l.eleve_id === e.id && gc.some((g) => g.id === l.groupe_id))?.groupe_id ?? ''
+                    if (!e.classe_id || gc.length === 0) return <span style={{ fontSize: 11, color: '#9AA5B1' }}>—</span>
+                    return (
+                      <select
+                        value={actuel}
+                        onChange={async (ev) => { await definirGroupeUnique(e.id, ev.target.value || null, gc.map((g) => g.id)); onGroupesMaj() }}
+                        style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 6, padding: '4px 6px', fontSize: 12 }}
+                      >
+                        <option value="">Aucun</option>
+                        {gc.map((g) => <option key={g.id} value={g.id}>{g.nom}</option>)}
+                      </select>
+                    )
+                  })()}
+                </td>
                 <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, color: COULEUR_PROF }}>
                   {moyennes[e.id] !== null ? moyennes[e.id] : '-'}
                 </td>
-                {colonnes.map((c) => {
+                {colonnesVisibles.map((c) => {
                   const n = noteDe(c.id, e.id)
                   const lie = !!(c.activite_liee_mission && c.activite_liee_id)
+                  const statut: StatutNote = n?.statut ?? 'note'
+                  const couleurStatut = statut === 'absent' ? '#C0392B' : statut === 'non_note' ? '#6B7280' : '#0EA5E9'
+                  const etiquette = statut === 'absent' ? 'Abs' : statut === 'non_note' ? 'NN' : 'Note'
                   return (
                     <td key={c.id} style={{ ...tdStyle, textAlign: 'center' }}>
-                      <input
-                        type="number"
-                        min={0}
-                        max={c.bareme}
-                        step="0.5"
-                        value={n?.note ?? ''}
-                        onChange={(ev) => saisirNote(c, e.id, ev.target.value)}
-                        placeholder="-"
-                        title={lie ? 'Note importée automatiquement (modifiable à la main)' : undefined}
-                        style={{ fontFamily: 'Arial, sans-serif', width: 54, border: '1px solid #C9D6E3', borderRadius: 6, padding: '5px 4px', fontSize: 13, textAlign: 'center', background: lie ? '#F1F8F4' : '#FFFFFF' }}
-                      />
-                      <div style={{ fontSize: 9, color: '#9AA6B2' }}>/{c.bareme}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        {statut === 'note' ? (
+                          <input
+                            type="number"
+                            min={0}
+                            max={c.bareme}
+                            step="0.5"
+                            value={n?.note ?? ''}
+                            onChange={(ev) => saisirNote(c, e.id, ev.target.value)}
+                            placeholder="-"
+                            title={lie ? 'Note importée automatiquement (modifiable à la main)' : undefined}
+                            style={{ fontFamily: 'Arial, sans-serif', width: 54, border: '1px solid #C9D6E3', borderRadius: 6, padding: '5px 4px', fontSize: 13, textAlign: 'center', background: lie && !n?.manuel ? '#F1F8F4' : '#FFFFFF' }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: 13, fontWeight: 700, color: couleurStatut, width: 54, display: 'inline-block' }}>
+                            {statut === 'absent' ? 'Abs' : 'Non noté'}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => cyclerStatut(c, e.id)}
+                          title="Statut : Note → Absent → Non noté"
+                          style={{ fontFamily: 'Arial, sans-serif', background: 'none', border: `1px solid ${couleurStatut}`, color: couleurStatut, borderRadius: 99, fontSize: 9, cursor: 'pointer', padding: '1px 7px', fontWeight: 700 }}
+                        >
+                          {etiquette}
+                        </button>
+                        {statut === 'note' && <div style={{ fontSize: 9, color: '#9AA6B2' }}>/{c.bareme}</div>}
+                      </div>
                     </td>
                   )
                 })}

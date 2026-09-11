@@ -3,11 +3,11 @@
 // Activités, Journal de bord). Les onglets verrouilles affichent un cadenas noir,
 // un texte grise et un curseur not-allowed. Le journal est toujours accessible.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
 import { getScenario, getMission, ONGLETS, couleurEntete, couleurTexteSur, type OngletId } from '../../data/schema'
 import { getContenuMission } from '../../data/contenus'
-import { ongletOuvert, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
+import { ongletOuvert, evaluationsOuvertes, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
 import { OngletTravaux } from '../../components/mission/OngletTravaux'
 import { OngletSynthese } from '../../components/mission/OngletSynthese'
 import { OngletAutoEval } from '../../components/mission/OngletAutoEval'
@@ -25,22 +25,18 @@ export function Mission() {
   const mission = scenarioId && missionId ? getMission(scenarioId, missionId) : undefined
   const contenu = missionId ? getContenuMission(missionId) : undefined
 
-  const { session } = useAuth()
+  const { session, profil } = useAuth()
   const userId = session?.user?.id
 
-  const [actif, setActif] = useState<OngletId>('journal')
+  const [actif, setActif] = useState<OngletId>('travaux')
   const [etatDeverr, setEtatDeverr] = useState<EtatDeverrouillage>(DEVERROUILLAGE_DEFAUT)
 
   useEffect(() => {
     chargerDeverrouillages().then((e) => {
       setEtatDeverr(e)
-      // Ouvre par defaut le premier onglet accessible pour cet eleve.
-      if (mission) {
-        const premier = [...ONGLETS]
-          .sort((a, b) => a.ordre - b.ordre)
-          .find((o) => ongletOuvert(mission.id, o.id, e, userId))
-        if (premier) setActif(premier.id)
-      }
+      // La mission s'ouvre toujours sur « Travaux à rendre » par defaut, meme
+      // si l'onglet est verrouille (l'eleve voit alors le cadenas).
+      setActif('travaux')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missionId, userId])
@@ -122,7 +118,7 @@ export function Mission() {
           {[...ONGLETS]
             .sort((a, b) => a.ordre - b.ordre)
             .map((o) => {
-              const ouvert = ongletOuvert(mission.id, o.id, etatDeverr, userId)
+              const ouvert = o.id === 'activites' ? true : ongletOuvert(mission.id, o.id, etatDeverr, userId)
               const estActif = actif === o.id
               return (
                 <button
@@ -160,19 +156,46 @@ export function Mission() {
 
       {/* Contenu de l'onglet actif */}
       <main style={{ maxWidth: 880, margin: '0 auto', padding: 24 }}>
-        {!contenu && actif !== 'journal' ? (
-          <p style={{ fontSize: 14, color: '#6B7280' }}>
-            Le contenu de cette mission n'est pas encore disponible.
-          </p>
-        ) : (
-          <>
-            {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'synthese' && contenu && <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
-          </>
-        )}
+        {(() => {
+          // L'onglet Activites et le Journal sont toujours accessibles ;
+          // les autres n'affichent leur contenu que si le professeur a
+          // deverrouille l'onglet. Sinon : ecran verrouille, aucun contenu.
+          const ongletAccessible =
+            actif === 'activites' || actif === 'journal'
+              ? true
+              : ongletOuvert(mission.id, actif, etatDeverr, userId)
+
+          if (!ongletAccessible) {
+            return (
+              <div style={{ textAlign: 'center', padding: '80px 24px', color: '#6B7280' }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style={{ marginBottom: 12 }}>
+                  <rect x="5" y="11" width="14" height="9" rx="2" fill="#9AA5B1" />
+                  <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#9AA5B1" strokeWidth="2" />
+                </svg>
+                <p style={{ fontSize: 15, margin: 0 }}>Cet onglet est verrouillé.</p>
+                <p style={{ fontSize: 13, margin: '6px 0 0', color: '#9AA5B1' }}>Il sera accessible lorsque votre professeur l'aura ouvert.</p>
+              </div>
+            )
+          }
+
+          if (!contenu && actif !== 'journal') {
+            return (
+              <p style={{ fontSize: 14, color: '#6B7280' }}>
+                Le contenu de cette mission n'est pas encore disponible.
+              </p>
+            )
+          }
+
+          return (
+            <>
+              {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} />}
+              {actif === 'synthese' && contenu && <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} />}
+              {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} />}
+              {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} evaluationsOuvertes={evaluationsOuvertes(mission.id, etatDeverr, userId)} />}
+              {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
+            </>
+          )
+        })()}
       </main>
     </div>
   )
@@ -187,4 +210,33 @@ const btnRetour: React.CSSProperties = {
   padding: '8px 16px',
   cursor: 'pointer',
   marginTop: 12,
+}
+
+function btnExport(couleurTexte: string): React.CSSProperties {
+  return {
+    fontFamily: 'Arial, sans-serif',
+    background: 'rgba(255,255,255,0.22)',
+    border: '1px solid rgba(255,255,255,0.6)',
+    color: couleurTexte,
+    borderRadius: 8,
+    padding: '8px 16px',
+    fontSize: 13,
+    fontWeight: 700,
+    cursor: 'pointer',
+  }
+}
+
+const optExport: React.CSSProperties = {
+  fontFamily: 'Arial, sans-serif',
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  background: '#FFFFFF',
+  border: 'none',
+  borderBottom: '1px solid #EEF2F6',
+  color: '#1F2933',
+  padding: '11px 14px',
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: 'pointer',
 }

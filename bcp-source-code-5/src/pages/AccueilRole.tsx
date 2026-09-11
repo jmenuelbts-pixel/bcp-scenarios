@@ -63,17 +63,21 @@ export function AccueilRole({ onChoisir }: Props) {
           width: 96,
           height: 96,
           borderRadius: 22,
-          background: 'linear-gradient(160deg, #2E7DB8 0%, #1B6090 100%)',
+          background: '#2563EB',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 22px rgba(27, 96, 144, 0.35)',
+          boxShadow: '0 8px 22px rgba(37, 99, 235, 0.35)',
           marginBottom: 20,
         }}
       >
-        <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3 l7 3 v5 c0 4 -3 7 -7 8 c-4 -1 -7 -4 -7 -8 V6 z" fill="none" stroke="#FFFFFF" strokeWidth="1.6" strokeLinejoin="round" opacity="0.9" />
-          <text x="12" y="14" textAnchor="middle" fontSize="7" fontFamily="Arial, sans-serif" fontWeight="700" fill="#FFFFFF">MCV</text>
+        <svg width="66" height="66" viewBox="0 0 100 100" aria-hidden="true">
+          <rect x="12" y="20" width="54" height="32" rx="12" fill="#FFFFFF" />
+          <path d="M20 48 l-6 12 l16 -6 Z" fill="#FFFFFF" />
+          <text x="39" y="41" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="800" fontSize="16" fill="#2563EB">MCV</text>
+          <rect x="50" y="52" width="38" height="30" rx="12" fill="#BFD7FF" />
+          <path d="M80 78 l6 12 l-16 -6 Z" fill="#BFD7FF" />
+          <text x="69" y="73" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="800" fontSize="20" fill="#1D4ED8">B</text>
         </svg>
       </div>
 

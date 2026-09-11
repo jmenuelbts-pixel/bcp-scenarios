@@ -7,6 +7,7 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import QRCode from 'qrcode'
 import { VisionneuseDocument } from '../ui/VisionneuseDocument'
+import { BoutonExportOnglet } from './BoutonExportOnglet'
 import type {
   ContenuTravaux,
   Annexe,
@@ -201,7 +202,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       : champs.every((c) => (saisies[c] ?? '').trim().length > 0)
 
   async function envoyer() {
-    if (verrouille || !toutRempli) return
+    if (verrouille) return
     if (!etudiantId) {
       setErreur('Vous devez etre connecte pour envoyer votre travail.')
       return
@@ -444,62 +445,45 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       )}
 
       {verrouille ? (
-        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
-            <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
-          </svg>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>
-            Travail envoyé au professeur. Il n'est plus modifiable.
-          </span>
+        <div style={{ marginTop: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px', marginBottom: 12 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+              <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+            </svg>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>
+              Travail envoyé au professeur. Il n'est plus modifiable.
+            </span>
+          </div>
+          <BoutonExportOnglet missionId={missionId} partie="travaux" etudiantId={etudiantId} pret={true} />
         </div>
       ) : (
-        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
           <button
             type="button"
-            disabled={!toutRempli || enCours}
-            onClick={envoyer}
+            disabled={enCours}
+            onClick={() => { if (window.confirm('Êtes-vous sûr de vouloir envoyer votre travail ?')) envoyer() }}
             style={{
               fontFamily: 'Arial, sans-serif',
-              background: !toutRempli || enCours ? '#C9CDD2' : couleur,
+              background: enCours ? '#C9CDD2' : couleur,
               color: '#FFFFFF',
               border: 'none',
               borderRadius: 8,
               padding: '10px 20px',
               fontSize: 14,
               fontWeight: 600,
-              cursor: !toutRempli || enCours ? 'not-allowed' : 'pointer',
+              cursor: enCours ? 'not-allowed' : 'pointer',
             }}
           >
             {enCours ? 'Envoi...' : 'Envoyer au professeur'}
           </button>
-          {!toutRempli && (
-            <span style={{ fontSize: 12, color: '#6B7280' }}>Complétez toutes les cases avant d'envoyer.</span>
-          )}
+          <BoutonExportOnglet missionId={missionId} partie="travaux" etudiantId={etudiantId} pret={false} />
           {erreur && <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>}
         </div>
       )}
 
-      {retour && (retour.commentaire || (retour.competences && retour.competences.length > 0)) && (
-        <div style={{ marginTop: 20, background: '#EEF6F0', border: '1px solid #BFE0CB', borderRadius: 10, padding: '16px 18px' }}>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: 15, color: '#1B6B3A' }}>Retour du professeur</h3>
-          {retour.commentaire && (
-            <p style={{ margin: '0 0 10px 0', fontSize: 14, color: '#374151', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-              {retour.commentaire}
-            </p>
-          )}
-          {retour.competences && retour.competences.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {retour.competences.map((c, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, background: '#FFFFFF', borderRadius: 8, padding: '8px 12px', fontSize: 13 }}>
-                  <span style={{ color: '#1F2933' }}>{c.intitule}</span>
-                  <span style={{ fontWeight: 700, color: '#1B6B3A' }}>{libelleNiveau(c.niveau)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Le retour du professeur sur les travaux rendus (note et appréciation)
+          est réservé au professeur et n'est pas affiché à l'élève. */}
 
       {/* Vue agrandie d'un document */}
       {docZoom && (
@@ -605,7 +589,13 @@ function BulleVue({ b, couleur }: { b: NonNullable<BlocDocumentTexte['bulle']>; 
             <p key={i} style={{ fontSize: 14, color: '#2D3748', lineHeight: 1.7, margin: i === b.lignes.length - 1 ? 0 : '0 0 8px 0', fontStyle: 'italic' }}>{l}</p>
           ))}
         </div>
-        {b.videoLien && (
+        {b.videoLocale && (
+          <video controls preload="metadata" style={{ display: 'block', width: '100%', maxWidth: 640, marginTop: 10, borderRadius: 10, border: `2px solid ${c}` }}>
+            <source src={b.videoLocale} type="video/mp4" />
+            Votre navigateur ne peut pas lire cette vidéo.
+          </video>
+        )}
+        {b.videoLien && !b.videoLocale && (
           <a href={b.videoLien} target="_blank" rel="noopener noreferrer"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 8, textDecoration: 'none', background: '#FFFFFF', color: c, border: `1px solid ${c}`, borderRadius: 16, padding: '5px 12px', fontSize: 12, fontWeight: 700 }}>
             ▶ Regarder la vidéo

@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { enregistrerJournal, chargerJournal } from '../../lib/eleve'
 import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon, useFlushBrouillon } from '../../lib/brouillon'
 
+import { BoutonExportOnglet } from './BoutonExportOnglet'
 interface Props {
   couleur: string
   etudiantId?: string
@@ -80,6 +81,7 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif' }}>
+      <BoutonExportOnglet missionId={missionId} partie="journal" etudiantId={etudiantId} pret={true} />
       <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 16px 0' }}>
         Le journal de bord reste accessible à tout moment, même si la mission est verrouillée.
       </p>

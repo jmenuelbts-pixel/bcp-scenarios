@@ -12,6 +12,7 @@ import { useInactivite } from '../lib/session'
 import { useBattementPresence } from '../lib/useBattementPresence'
 import { Authentification } from '../pages/Authentification'
 import { EnAttente } from '../pages/EnAttente'
+import { BoutonMessagerieFlottant } from '../components/ui/BoutonMessagerieFlottant'
 
 // Ecran de chargement neutre pendant la resolution de la session.
 function Chargement() {
@@ -135,6 +136,7 @@ export function GardeEtudiant() {
         </div>
       )}
       <Outlet />
+      <BoutonMessagerieFlottant />
     </>
   )
 }
@@ -153,5 +155,10 @@ export function GardeEnseignant() {
     return <Navigate to="/" replace />
   }
 
-  return <Outlet />
+  return (
+    <>
+      <Outlet />
+      <BoutonMessagerieFlottant />
+    </>
+  )
 }

@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { EnteteProf } from '../../components/ui/EnteteProf'
 import { construireDeroule } from '../../data/contenus'
+import { exporterDeroulementMission } from '../../lib/pdf'
 import {
   SCENARIOS,
   couleurEntete,
@@ -25,7 +26,7 @@ export function Deroulement() {
   const texteEntete = couleurTexteSur(fondEntete)
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant/deroulement" />
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
@@ -165,6 +166,32 @@ export function Deroulement() {
                   {scenario.nom} · Mission {mission.numero}
                 </div>
                 <h2 style={{ fontSize: 18, color: '#1F2933', margin: '0 0 16px' }}>{mission.titre}</h2>
+                {construireDeroule(mission.id, mission.titre) && (
+                  <button
+                    type="button"
+                    onClick={() => exporterDeroulementMission(mission.id, mission.titre, mission.numero, scenario.nom)}
+                    style={{
+                      fontFamily: 'Arial, sans-serif',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      background: scenario.couleur,
+                      color: couleurTexteSur(scenario.couleur),
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '9px 16px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      marginBottom: 16,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={couleurTexteSur(scenario.couleur)} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M12 3 v12" /><path d="M7 10 l5 5 5 -5" /><path d="M5 21 h14" />
+                    </svg>
+                    Exporter le déroulement en PDF
+                  </button>
+                )}
                 {(() => {
                   const d = construireDeroule(mission.id, mission.titre)
                   if (!d) return (

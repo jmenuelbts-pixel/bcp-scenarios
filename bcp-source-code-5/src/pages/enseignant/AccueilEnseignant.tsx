@@ -10,6 +10,8 @@ import { ID_ENSEIGNANT } from '../../lib/auth'
 import { COULEUR_PROF } from '../../data/schema'
 import { Infobulle } from '../../components/ui/Infobulle'
 import { nombreNonLus } from '../../lib/messagerie'
+import { tousLesTravaux, listerDemandes } from '../../lib/enseignant'
+import { sonderPresences } from '../../lib/presence'
 
 interface ItemTableau {
   id: string
@@ -108,10 +110,10 @@ const ITEMS: ItemTableau[] = [
     route: '/enseignant/liste',
     icone: (
       <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
-        <line x1="8" y1="8" x2="16" y2="8" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="12" x2="16" y2="12" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
-        <line x1="8" y1="16" x2="13" y2="16" stroke="#1B6B3A" strokeWidth="2" strokeLinecap="round" />
+        <rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="#0EA5E9" strokeWidth="2" />
+        <line x1="8" y1="8" x2="16" y2="8" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" />
+        <line x1="8" y1="12" x2="16" y2="12" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" />
+        <line x1="8" y1="16" x2="13" y2="16" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -174,6 +176,49 @@ const ITEMS: ItemTableau[] = [
       </svg>
     ),
   },
+  {
+    id: 'synthese',
+    titre: 'Synthèse par classe',
+    fond: '#E7F0FB',
+    bord: '#A9C7E8',
+    description: 'Vue de pilotage : pour chaque élève, moyenne générale, assiduité (absences, retards, exclusions) et travaux rendus/corrigés. Statistiques de classe et export d\'un bulletin PDF par élève. Choisissez la classe, le groupe et la période.',
+    route: '/enseignant/synthese',
+    icone: (
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+        <line x1="5" y1="20" x2="5" y2="10" stroke="#2E6CB0" strokeWidth="2" strokeLinecap="round" />
+        <line x1="12" y1="20" x2="12" y2="5" stroke="#2E6CB0" strokeWidth="2" strokeLinecap="round" />
+        <line x1="19" y1="20" x2="19" y2="13" stroke="#2E6CB0" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    id: 'securite',
+    titre: 'Sécurité / Face ID',
+    fond: '#E7F0FB',
+    bord: '#A9C7E8',
+    description: 'Activez la connexion par Face ID (ou Touch ID) sur cet appareil pour vous connecter sans taper votre mot de passe. Le mot de passe reste toujours disponible en secours. L\'activation est propre à chaque appareil.',
+    route: '/enseignant/securite',
+    icone: (
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 8 V6 a2 2 0 0 1 2 -2 h2" /><path d="M16 4 h2 a2 2 0 0 1 2 2 v2" /><path d="M20 16 v2 a2 2 0 0 1 -2 2 h-2" /><path d="M8 20 H6 a2 2 0 0 1 -2 -2 v-2" />
+        <path d="M9 10 v1.5" /><path d="M15 10 v1.5" /><path d="M12 9.5 v4" /><path d="M9 15.5 s1 1.3 3 1.3 3 -1.3 3 -1.3" />
+      </svg>
+    ),
+  },
+  {
+    id: 'tutoriel',
+    titre: 'Tutoriel',
+    fond: '#EAF6EE',
+    bord: '#B6DCC4',
+    description: 'Guide pas-à-pas de toutes les fonctionnalités, côté professeur et côté élève, avec une recherche par mots-clés.',
+    route: '/enseignant/tutoriel',
+    icone: (
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1B7A4B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 5 a2 2 0 0 1 2 -2 h6 v16 h-6 a2 2 0 0 0 -2 2 z" />
+        <path d="M20 5 a2 2 0 0 0 -2 -2 h-6 v16 h6 a2 2 0 0 1 2 2 z" />
+      </svg>
+    ),
+  },
 ]
 
 const ONGLETS_PROF = [
@@ -187,14 +232,22 @@ export function AccueilEnseignant() {
   const navigate = useNavigate()
   const { deconnecter, profil } = useAuth()
   const [nonLus, setNonLus] = useState(0)
+  const [aCorriger, setACorriger] = useState(0)
+  const [enAttente, setEnAttente] = useState(0)
+  const [enLigne, setEnLigne] = useState(0)
+  const [infoOuvert, setInfoOuvert] = useState<string | null>(null)
 
   useEffect(() => {
     const id = profil?.id ?? ID_ENSEIGNANT
     nombreNonLus(id).then(setNonLus)
+    tousLesTravaux().then((ts) => setACorriger(ts.filter((t) => !t.corrige).length))
+    listerDemandes().then((d) => setEnAttente(d.length))
+    const arret = sonderPresences((liste) => setEnLigne(liste.filter((p) => p.statut === 'connecte').length))
+    return () => arret()
   }, [profil])
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       {/* En-tete */}
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div
@@ -265,81 +318,74 @@ export function AccueilEnseignant() {
         </div>
       </nav>
 
-      {/* Grille des 6 items */}
+      {/* Grille des items */}
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: 18,
-          }}
-        >
-          {ITEMS.map((item) => (
-            <Infobulle key={item.id} texte={item.description}>
-              <button
-                type="button"
-                onClick={() => navigate(item.route)}
-                style={{
-                  fontFamily: 'Arial, sans-serif',
-                  textAlign: 'left',
-                  width: '100%',
-                  background: item.fond,
-                  border: `1px solid ${item.bord}`,
-                  borderRadius: 14,
-                  padding: 20,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 16,
-                }}
-              >
-                <span
-                  style={{
-                    position: 'relative',
-                    flexShrink: 0,
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: '#FFFFFF',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {item.icone}
-                  {item.id === 'messagerie' && nonLus > 0 && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: -6,
-                        right: -6,
-                        minWidth: 20,
-                        height: 20,
-                        padding: '0 5px',
-                        boxSizing: 'border-box',
-                        borderRadius: 999,
-                        background: '#D93636',
-                        color: '#FFFFFF',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: '2px solid #FFFFFF',
-                      }}
-                    >
-                      {nonLus > 99 ? '99+' : nonLus}
-                    </span>
-                  )}
-                </span>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#1F2933' }}>
-                  {item.titre}
-                </span>
-              </button>
-            </Infobulle>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 20 }}>
+          <CarteCompteur valeur={enLigne} libelle="Élèves en ligne" accent="#0F9E75" fond="#E4F5EC" onClick={() => navigate('/enseignant/presence')} />
+          <CarteCompteur valeur={aCorriger} libelle="Travaux à corriger" accent="#E08A1E" fond="#FCEFD6" onClick={() => navigate('/enseignant/travaux')} />
+          <CarteCompteur valeur={nonLus} libelle="Messages non lus" accent="#2563EB" fond="#E4EDFF" onClick={() => navigate('/enseignant/messagerie')} />
+          <CarteCompteur valeur={enAttente} libelle="Inscriptions en attente" accent="#7C3AED" fond="#EDE4F7" onClick={() => navigate('/enseignant/inscriptions')} />
         </div>
+        {SECTIONS.map((sec) => {
+          const tuiles = sec.ids.map((id) => ITEMS.find((x) => x.id === id)).filter(Boolean) as ItemTableau[]
+          if (tuiles.length === 0) return null
+          return (
+            <div key={sec.titre} style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid #E2E8F0' }}>{sec.titre}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18 }}>
+                {tuiles.map((item) => (
+                  <Tuile key={item.id} item={item} navigate={navigate} nonLus={nonLus} aCorriger={aCorriger} infoOuvert={infoOuvert} setInfoOuvert={setInfoOuvert} />
+                ))}
+              </div>
+            </div>
+          )
+        })}
+
       </main>
     </div>
+  )
+}
+
+const SECTIONS: { titre: string; ids: string[] }[] = [
+  { titre: 'Ma classe au quotidien', ids: ['liste', 'presence', 'messagerie'] },
+  { titre: 'Travail des élèves', ids: ['eleves', 'travaux', 'synthese'] },
+  { titre: 'Gestion de la classe', ids: ['classes', 'comptes', 'inscriptions', 'deverrouillage', 'securite'] },
+  { titre: 'Documents', ids: ['exports'] },
+  { titre: 'Aide', ids: ['tutoriel'] },
+]
+
+function Tuile({ item, navigate, nonLus, aCorriger, infoOuvert, setInfoOuvert }: { item: ItemTableau; navigate: (r: string) => void; nonLus: number; aCorriger: number; infoOuvert: string | null; setInfoOuvert: (v: string | null | ((c: string | null) => string | null)) => void }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      <button type="button" onClick={() => navigate(item.route)} style={{ fontFamily: 'Arial, sans-serif', textAlign: 'left', width: '100%', background: item.fond, border: `1px solid ${item.bord}`, borderRadius: 14, padding: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16 }}>
+        <span style={{ position: 'relative', flexShrink: 0, width: 48, height: 48, borderRadius: 12, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {item.icone}
+          {item.id === 'messagerie' && nonLus > 0 && (
+            <span style={{ position: 'absolute', top: -6, right: -6, minWidth: 20, height: 20, padding: '0 5px', boxSizing: 'border-box', borderRadius: 999, background: '#D93636', color: '#FFFFFF', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #FFFFFF' }}>{nonLus > 99 ? '99+' : nonLus}</span>
+          )}
+          {item.id === 'travaux' && aCorriger > 0 && (
+            <span style={{ position: 'absolute', top: -6, right: -6, minWidth: 20, height: 20, padding: '0 5px', boxSizing: 'border-box', borderRadius: 999, background: '#E08A1E', color: '#FFFFFF', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #FFFFFF' }}>{aCorriger > 99 ? '99+' : aCorriger}</span>
+          )}
+        </span>
+        <span style={{ fontSize: 16, fontWeight: 700, color: '#1F2933' }}>{item.titre}</span>
+      </button>
+      <button type="button" aria-label={`À quoi sert « ${item.titre} » ?`} onClick={(e) => { e.stopPropagation(); setInfoOuvert((c) => (c === item.id ? null : item.id)) }} style={{ position: 'absolute', top: 10, right: 10, width: 22, height: 22, borderRadius: 999, border: `1.5px solid ${item.bord}`, background: '#FFFFFF', color: '#6B7280', fontSize: 13, fontWeight: 700, fontStyle: 'italic', fontFamily: 'Georgia, serif', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>i</button>
+      {infoOuvert === item.id && (
+        <div style={{ position: 'absolute', top: 38, right: 10, left: 10, background: '#FFFFFF', border: `1px solid ${item.bord}`, borderRadius: 10, padding: '12px 14px', boxShadow: '0 6px 20px rgba(0,0,0,0.14)', zIndex: 50 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2933', marginBottom: 6 }}>{item.titre}</div>
+          <p style={{ fontSize: 12.5, color: '#4A5568', lineHeight: 1.55, margin: 0 }}>{item.description}</p>
+          <button type="button" onClick={(e) => { e.stopPropagation(); setInfoOuvert(null) }} style={{ marginTop: 8, background: 'none', border: 'none', color: COULEUR_PROF, fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0, fontFamily: 'Arial, sans-serif' }}>Fermer</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CarteCompteur({ valeur, libelle, accent, fond, onClick }: { valeur: number; libelle: string; accent: string; fond: string; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', textAlign: 'left' }}>
+      <span style={{ width: 42, height: 42, borderRadius: 11, background: fond, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18, fontWeight: 800, color: accent }}>{valeur}</span>
+      <span style={{ fontSize: 13, color: '#4B5563', fontWeight: 600 }}>{libelle}</span>
+    </button>
   )
 }
