@@ -23,9 +23,11 @@ import { ClassesGroupes } from '../pages/enseignant/ClassesGroupes'
 import { ComptesEleves } from '../pages/enseignant/ComptesEleves'
 import { ReinitialiserMotDePasse } from '../pages/ReinitialiserMotDePasse'
 import { Travaux } from '../pages/enseignant/Travaux'
+import { Synthese } from '../pages/enseignant/Synthese'
+import { SecuriteFaceId } from '../pages/enseignant/SecuriteFaceId'
+import { Tutoriel } from '../pages/enseignant/Tutoriel'
 import { PresenceTempsReel } from '../pages/enseignant/PresenceTempsReel'
 import { MessagerieEleve } from '../pages/etudiant/MessagerieEleve'
-import { ExportsEleve } from '../pages/etudiant/ExportsEleve'
 import { useAuth } from '../lib/auth'
 import { useEffect, useState } from 'react'
 import { nombreNonLus } from '../lib/messagerie'
@@ -50,7 +52,6 @@ function AccueilAvecNavigation() {
       onDeconnexion={deconnecter}
       nonLus={nonLus}
       onOuvrirMessagerie={() => navigate('/messagerie')}
-      onOuvrirExports={() => navigate('/exports')}
     />
   )
 }
@@ -65,7 +66,6 @@ export const router = createBrowserRouter([
       { path: '/scenario/:scenarioId', element: <ScenarioMissions /> },
       { path: '/scenario/:scenarioId/mission/:missionId', element: <Mission /> },
       { path: '/messagerie', element: <MessagerieEleve /> },
-      { path: '/exports', element: <ExportsEleve /> },
     ],
   },
   {
@@ -86,6 +86,9 @@ export const router = createBrowserRouter([
       { path: '/enseignant/comptes', element: <ComptesEleves /> },
       { path: '/enseignant/travaux', element: <Travaux /> },
       { path: '/enseignant/presence', element: <PresenceTempsReel /> },
+      { path: '/enseignant/synthese', element: <Synthese /> },
+      { path: '/enseignant/securite', element: <SecuriteFaceId /> },
+      { path: '/enseignant/tutoriel', element: <Tutoriel /> },
     ],
   },
 ])

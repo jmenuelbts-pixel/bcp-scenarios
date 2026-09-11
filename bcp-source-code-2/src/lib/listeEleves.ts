@@ -6,23 +6,6 @@ import { supabase } from './supabase'
 
 // --- Appels ----------------------------------------------------------------
 
-export interface Appel {
-  id: string
-  date_appel: string
-  etudiant_id: string
-  absent: boolean
-  retard_minutes: number | null
-}
-
-// Appels d'une date donnee (un par eleve present dans la table).
-export async function appelsDuJour(date: string): Promise<Appel[]> {
-  const { data } = await supabase
-    .from('appels')
-    .select('id, date_appel, etudiant_id, absent, retard_minutes')
-    .eq('date_appel', date)
-  return (data as Appel[]) ?? []
-}
-
 // Liste des dates d'appel existantes (historique), recentes d'abord.
 export async function datesAppels(): Promise<string[]> {
   const { data } = await supabase
@@ -34,29 +17,110 @@ export async function datesAppels(): Promise<string[]> {
   return [...set]
 }
 
-// Enregistre (ou met a jour) l'appel d'un eleve pour une date.
-export async function enregistrerAppel(
+// Supprime tous les appels d'une date (creneaux + repere + motifs).
+export async function supprimerAppelDate(date: string): Promise<{ erreur: string | null }> {
+  await supabase.from('appel_creneaux').delete().eq('date_appel', date)
+  const { error } = await supabase.from('appels').delete().eq('date_appel', date)
+  return { erreur: error?.message ?? null }
+}
+
+// --- Appel par heures (creneaux) -------------------------------------------
+
+export type StatutCreneau = 'present' | 'absent' | 'retard' | 'exclusion'
+
+export interface CreneauAppel {
+  etudiant_id: string
+  heure_index: number
+  creneau: string | null
+  statut: StatutCreneau
+}
+
+// Creneaux horaires proposes (12h-13h exclu : pause dejeuner).
+export const CRENEAUX_HORAIRES = [
+  '8h-9h', '9h-10h', '10h-11h', '11h-12h',
+  '13h-14h', '14h-15h', '15h-16h', '16h-17h', '17h-18h',
+]
+
+export async function nbHeuresSeance(date: string): Promise<number> {
+  const { data } = await supabase
+    .from('appels')
+    .select('nb_heures')
+    .eq('date_appel', date)
+    .limit(1)
+    .maybeSingle()
+  return (data as { nb_heures: number } | null)?.nb_heures ?? 1
+}
+
+export async function definirNbHeures(date: string, nbHeures: number, unEleveId: string): Promise<void> {
+  const { data } = await supabase.from('appels').select('id').eq('date_appel', date).limit(1)
+  if (((data as unknown[]) ?? []).length === 0) {
+    await supabase.from('appels').upsert(
+      { date_appel: date, etudiant_id: unEleveId, absent: false, retard_minutes: null, nb_heures: nbHeures },
+      { onConflict: 'date_appel,etudiant_id' }
+    )
+  } else {
+    await supabase.from('appels').update({ nb_heures: nbHeures }).eq('date_appel', date)
+  }
+}
+
+export async function creneauxDuJour(date: string): Promise<CreneauAppel[]> {
+  const { data } = await supabase
+    .from('appel_creneaux')
+    .select('etudiant_id, heure_index, creneau, statut')
+    .eq('date_appel', date)
+  return (data as CreneauAppel[]) ?? []
+}
+
+export async function enregistrerCreneau(
   date: string,
   etudiantId: string,
-  absent: boolean,
-  retardMinutes: number | null
+  heureIndex: number,
+  creneau: string | null,
+  statut: StatutCreneau
+): Promise<{ erreur: string | null }> {
+  const { error } = await supabase.from('appel_creneaux').upsert(
+    { date_appel: date, etudiant_id: etudiantId, heure_index: heureIndex, creneau, statut },
+    { onConflict: 'date_appel,etudiant_id,heure_index' }
+  )
+  return { erreur: error?.message ?? null }
+}
+
+export async function definirCreneauColonne(
+  date: string,
+  heureIndex: number,
+  creneau: string,
+  etudiantIds: string[]
+): Promise<void> {
+  for (const id of etudiantIds) {
+    await supabase.from('appel_creneaux').upsert(
+      { date_appel: date, etudiant_id: id, heure_index: heureIndex, creneau, statut: 'present' },
+      { onConflict: 'date_appel,etudiant_id,heure_index', ignoreDuplicates: false }
+    )
+  }
+}
+
+export async function enregistrerMotifSeance(
+  date: string,
+  etudiantId: string,
+  motif: string
 ): Promise<{ erreur: string | null }> {
   const { error } = await supabase.from('appels').upsert(
-    {
-      date_appel: date,
-      etudiant_id: etudiantId,
-      absent,
-      retard_minutes: absent ? null : retardMinutes,
-    },
+    { date_appel: date, etudiant_id: etudiantId, absent: false, retard_minutes: null, motif },
     { onConflict: 'date_appel,etudiant_id' }
   )
   return { erreur: error?.message ?? null }
 }
 
-// Supprime tous les appels d'une date (suppression d'une entree d'historique).
-export async function supprimerAppelDate(date: string): Promise<{ erreur: string | null }> {
-  const { error } = await supabase.from('appels').delete().eq('date_appel', date)
-  return { erreur: error?.message ?? null }
+export async function motifsDuJour(date: string): Promise<Record<string, string>> {
+  const { data } = await supabase
+    .from('appels')
+    .select('etudiant_id, motif')
+    .eq('date_appel', date)
+  const res: Record<string, string> = {}
+  for (const r of (data as { etudiant_id: string; motif: string | null }[]) ?? []) {
+    if (r.motif) res[r.etudiant_id] = r.motif
+  }
+  return res
 }
 
 // --- Notes -----------------------------------------------------------------
@@ -68,9 +132,12 @@ export interface ColonneNote {
   compter_moyenne: boolean
   ordre: number
   bareme: number
+  coefficient: number
   activite_liee_mission: string | null
   activite_liee_id: string | null
 }
+
+export type StatutNote = 'note' | 'absent' | 'non_note'
 
 export interface NoteEleve {
   id: string
@@ -78,23 +145,23 @@ export interface NoteEleve {
   etudiant_id: string
   note: number | null
   bareme: number
+  statut: StatutNote
+  manuel: boolean
 }
 
 export async function listerColonnes(): Promise<ColonneNote[]> {
   const { data } = await supabase
     .from('colonnes_notes')
-    .select('id, intitule, date_eval, compter_moyenne, ordre, bareme, activite_liee_mission, activite_liee_id')
+    .select('id, intitule, date_eval, compter_moyenne, ordre, bareme, coefficient, activite_liee_mission, activite_liee_id')
     .order('ordre', { ascending: true })
     .order('created_at', { ascending: true })
   return (data as ColonneNote[]) ?? []
 }
 
-// Ajoute une colonne en calculant l'ordre suivant. Renvoie l'id cree (ou erreur).
 export async function ajouterColonne(
   intitule: string,
   bareme = 20
 ): Promise<{ id: string | null; erreur: string | null }> {
-  // Ordre = max existant + 1.
   const { data: existantes } = await supabase.from('colonnes_notes').select('ordre')
   const ordreMax = ((existantes as { ordre: number }[]) ?? []).reduce(
     (m, c) => Math.max(m, c.ordre ?? 0),
@@ -102,7 +169,7 @@ export async function ajouterColonne(
   )
   const { data, error } = await supabase
     .from('colonnes_notes')
-    .insert({ intitule, ordre: ordreMax + 1, bareme, compter_moyenne: true })
+    .insert({ intitule, ordre: ordreMax + 1, bareme, compter_moyenne: true, coefficient: 1 })
     .select('id')
     .single()
   return { id: (data as { id: string } | null)?.id ?? null, erreur: error?.message ?? null }
@@ -113,7 +180,7 @@ export async function majColonne(
   champs: Partial<
     Pick<
       ColonneNote,
-      'intitule' | 'date_eval' | 'compter_moyenne' | 'bareme' | 'activite_liee_mission' | 'activite_liee_id'
+      'intitule' | 'date_eval' | 'compter_moyenne' | 'bareme' | 'coefficient' | 'activite_liee_mission' | 'activite_liee_id'
     >
   >
 ): Promise<{ erreur: string | null }> {
@@ -129,18 +196,22 @@ export async function supprimerColonne(id: string): Promise<{ erreur: string | n
 export async function listerNotes(): Promise<NoteEleve[]> {
   const { data } = await supabase
     .from('notes_eleves')
-    .select('id, colonne_id, etudiant_id, note, bareme')
+    .select('id, colonne_id, etudiant_id, note, bareme, statut, manuel')
   return (data as NoteEleve[]) ?? []
 }
 
+// Enregistre une note. statut : 'note' | 'absent' | 'non_note'.
+// manuel = true protege la note du report automatique.
 export async function enregistrerNote(
   colonneId: string,
   etudiantId: string,
   note: number | null,
-  bareme: number
+  bareme: number,
+  statut: StatutNote = 'note',
+  manuel = true
 ): Promise<{ erreur: string | null }> {
   const { error } = await supabase.from('notes_eleves').upsert(
-    { colonne_id: colonneId, etudiant_id: etudiantId, note, bareme },
+    { colonne_id: colonneId, etudiant_id: etudiantId, note, bareme, statut, manuel },
     { onConflict: 'colonne_id,etudiant_id' }
   )
   return { erreur: error?.message ?? null }
@@ -162,16 +233,58 @@ export async function importerScoresActivite(
     .eq('activite_id', colonne.activite_liee_id)
   if (error) return { reportees: 0, erreur: error.message }
   const lignes = (data as { etudiant_id: string; score: number | null; bareme: number | null }[]) ?? []
+  const { data: manuelles } = await supabase
+    .from('notes_eleves')
+    .select('etudiant_id')
+    .eq('colonne_id', colonne.id)
+    .eq('manuel', true)
+  const protege = new Set(((manuelles as { etudiant_id: string }[]) ?? []).map((m) => m.etudiant_id))
   let reportees = 0
   for (const l of lignes) {
     if (l.score === null || l.score === undefined) continue
+    if (protege.has(l.etudiant_id)) continue
     const baremeSource = l.bareme && l.bareme > 0 ? l.bareme : 10
     const noteConvertie = Math.round((l.score / baremeSource) * colonne.bareme * 100) / 100
     const { error: e2 } = await supabase.from('notes_eleves').upsert(
-      { colonne_id: colonne.id, etudiant_id: l.etudiant_id, note: noteConvertie, bareme: colonne.bareme },
+      { colonne_id: colonne.id, etudiant_id: l.etudiant_id, note: noteConvertie, bareme: colonne.bareme, statut: 'note', manuel: false },
       { onConflict: 'colonne_id,etudiant_id' }
     )
     if (!e2) reportees += 1
   }
   return { reportees, erreur: null }
+}
+
+// --- Bilan de presence sur une periode --------------------------------------
+
+export interface BilanPresence {
+  etudiant_id: string
+  heures_absence: number
+  heures_retard: number
+  heures_exclusion: number
+  heures_total: number
+}
+
+// Calcule, par eleve, le cumul d'heures absent / retard / exclusion sur une
+// periode [debut, fin] (dates incluses). Se base sur appel_creneaux.
+export async function bilanPresence(
+  debut: string,
+  fin: string
+): Promise<Record<string, BilanPresence>> {
+  const { data } = await supabase
+    .from('appel_creneaux')
+    .select('etudiant_id, statut, date_appel')
+    .gte('date_appel', debut)
+    .lte('date_appel', fin)
+  const res: Record<string, BilanPresence> = {}
+  for (const r of (data as { etudiant_id: string; statut: StatutCreneau }[]) ?? []) {
+    if (!res[r.etudiant_id]) {
+      res[r.etudiant_id] = { etudiant_id: r.etudiant_id, heures_absence: 0, heures_retard: 0, heures_exclusion: 0, heures_total: 0 }
+    }
+    const b = res[r.etudiant_id]
+    b.heures_total += 1
+    if (r.statut === 'absent') b.heures_absence += 1
+    else if (r.statut === 'retard') b.heures_retard += 1
+    else if (r.statut === 'exclusion') b.heures_exclusion += 1
+  }
+  return res
 }

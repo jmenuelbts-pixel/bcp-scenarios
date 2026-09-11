@@ -24,7 +24,7 @@ export const ENCRE_PROF = '#B91C1C' // rouge : correction du professeur
 export const ENCRE_NEUTRE = '#1F2933' // noir : consignes et libelles
 
 // Echappe le texte insere dans le HTML pour eviter toute injection.
-function echapper(texte: string): string {
+export function echapper(texte: string): string {
   return texte
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -54,6 +54,8 @@ export interface SectionPdf {
   titre: string
   lignes?: LignePdf[]
   paragraphes?: string[]
+  // HTML deja mis en forme (documents riches, questions), insere tel quel.
+  htmlLibre?: string
   // Force un saut de page avant cette section (export classe : un eleve par page).
   sautAvant?: boolean
 }
@@ -65,6 +67,8 @@ export interface DocumentPdf {
   // Pied de page repete sur chaque page.
   piedNom?: string // "NOM Prenom" de l'eleve
   piedContexte?: string // "Enchanted Tools - Mission 8 : ..." si export d'une seule mission
+  // Cote eleve : masque la date/heure d'export (true). Cote prof : affichee.
+  sansDate?: boolean
 }
 
 // Construit un bloc label + valeur, colore selon la nature de la ligne.
@@ -90,8 +94,9 @@ export function imprimerPdf(doc: DocumentPdf): void {
       const parasHtml = (s.paragraphes ?? [])
         .map((p) => `<p class="para">${echapper(p)}</p>`)
         .join('')
-      const classe = s.sautAvant ? 'saut' : ''
-      return `<section class="${classe}"><h2>${echapper(s.titre)}</h2>${lignesHtml}${parasHtml}</section>`
+      const libre = s.htmlLibre ?? ''
+      const classe = (s.sautAvant ? 'saut ' : '') + (libre ? 'riche' : '')
+      return `<section class="${classe.trim()}"><h2>${echapper(s.titre)}</h2>${lignesHtml}${parasHtml}${libre}</section>`
     })
     .join('')
 
@@ -120,7 +125,28 @@ export function imprimerPdf(doc: DocumentPdf): void {
   .legende .eleve { color: ${ENCRE_ELEVE}; }
   .legende .prof { color: ${ENCRE_PROF}; }
   section { margin-bottom: 22px; page-break-inside: avoid; }
+  section.riche { page-break-inside: auto; }
   section.saut { page-break-before: always; }
+  .doc { border: 1px solid #C9D6E3; border-radius: 6px; padding: 12px 14px; margin: 0 0 16px; page-break-inside: avoid; }
+  .doc-titre { font-size: 13px; font-weight: 800; color: ${COULEUR_PROF}; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .doc-intertitre { font-size: 12.5px; font-weight: 700; color: #1F2933; margin: 10px 0 4px; }
+  .doc p { font-size: 12px; line-height: 1.5; margin: 0 0 6px; }
+  .doc ul { margin: 4px 0 8px; padding-left: 18px; }
+  .doc li { font-size: 12px; line-height: 1.45; }
+  .doc img { max-width: 100%; margin: 8px 0; border: 1px solid #E2E8F0; border-radius: 4px; }
+  .doc table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 11.5px; }
+  .doc th { background: ${COULEUR_PROF}; color: #FFFFFF; border: 1px solid ${COULEUR_PROF}; padding: 5px 7px; text-align: left; }
+  .doc td { border: 1px solid #CDD6DF; padding: 5px 7px; }
+  .contexte-pro { background: #F1F6FB; border-left: 3px solid ${COULEUR_PROF}; padding: 10px 12px; font-size: 12px; line-height: 1.5; font-style: italic; color: #33404d; margin: 0 0 16px; }
+  .q { margin: 0 0 14px; page-break-inside: avoid; }
+  .q-contexte { background: #FBF6E9; border-left: 3px solid #E0B84B; padding: 8px 10px; font-size: 11.5px; font-style: italic; color: #4a3f22; margin: 0 0 6px; }
+  .q-consigne { font-size: 12.5px; line-height: 1.5; margin: 0 0 3px; }
+  .q-consigne b { color: ${COULEUR_PROF}; }
+  .q-ressource { font-size: 10.5px; color: #6B7280; margin: 0 0 6px; }
+  .q-reponse-label { font-size: 10px; font-weight: 700; color: #6B7280; letter-spacing: 0.4px; margin: 4px 0 3px; }
+  .q-vide { border: 1px solid #B9C4CF; border-radius: 4px; height: 66px; background: repeating-linear-gradient(transparent, transparent 21px, #E6EBF0 21px, #E6EBF0 22px); }
+  .q-reponse { font-size: 12.5px; line-height: 1.5; color: ${ENCRE_ELEVE}; white-space: pre-wrap; border-left: 2px solid ${ENCRE_ELEVE}; padding-left: 8px; }
+  .q-vide-court { border: 1px solid #B9C4CF; border-radius: 4px; height: 30px; }
   h2 { font-size: 15px; color: ${COULEUR_PROF}; border-bottom: 1px solid #D8E2EC; padding-bottom: 5px; margin: 0 0 12px; }
   .bloc { margin-bottom: 10px; }
   .label { font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 2px; }
@@ -187,6 +213,7 @@ export function imprimerPdf(doc: DocumentPdf): void {
   <header>
     <h1>${echapper(doc.titre)}</h1>
     ${doc.sousTitre ? `<div class="soustitre">${echapper(doc.sousTitre)}</div>` : ''}
+    ${doc.sansDate ? '' : `<div class="soustitre">Exporté le ${echapper(new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }))}</div>`}
     <div class="legende">
       Légende : <span class="pastille">noir</span> = consignes et intitulés,
       <span class="pastille eleve">bleu</span> = réponses de l'élève,
@@ -220,7 +247,7 @@ export function imprimerPdf(doc: DocumentPdf): void {
 // puis pour chaque travail attendu l'intitule, les documents a mobiliser, la
 // reponse attendue et le bareme. Destine a un dossier ou a une inspection.
 
-import { getContenuMission } from '../data/contenus'
+import { getContenuMission, construireDeroule } from '../data/contenus'
 
 // Construit le document PDF du corrige d'une mission. Renvoie null si la
 // mission n'a pas de corrige structure.
@@ -297,6 +324,123 @@ export function exporterCorrigeMission(
   nomScenario: string,
 ): boolean {
   const doc = documentCorrigeMission(missionId, titreMission, nomScenario)
+  if (!doc) return false
+  imprimerPdf(doc)
+  return true
+}
+
+// --- Export du bilan de presence -------------------------------------------
+
+export interface LigneBilanPresence {
+  nom: string
+  prenom: string
+  heures_absence: number
+  heures_retard: number
+  heures_exclusion: number
+}
+
+// Construit le document PDF du bilan de presence d'une periode.
+export function documentBilanPresence(
+  titre: string,
+  periode: string,
+  lignes: LigneBilanPresence[]
+): DocumentPdf {
+  const sections: SectionPdf[] = lignes.map((l) => ({
+    titre: `${l.nom} ${l.prenom}`,
+    lignes: [
+      { label: "Heures d'absence", valeur: String(l.heures_absence), nature: 'neutre' },
+      { label: 'Heures de retard', valeur: String(l.heures_retard), nature: 'neutre' },
+      { label: "Heures d'exclusion", valeur: String(l.heures_exclusion), nature: 'neutre' },
+    ],
+  }))
+  return {
+    titre,
+    sousTitre: periode,
+    sections,
+    piedNom: NOM_ENSEIGNANT,
+  }
+}
+
+export function exporterBilanPresence(titre: string, periode: string, lignes: LigneBilanPresence[]): void {
+  imprimerPdf(documentBilanPresence(titre, periode, lignes))
+}
+
+// --- Export du deroulement d'une mission (cote enseignant) -----------------
+
+// Construit le document PDF de la fiche de deroulement d'une mission.
+export function documentDeroulementMission(
+  missionId: string,
+  titreMission: string,
+  numeroMission: number,
+  nomScenario: string
+): DocumentPdf | null {
+  const d = construireDeroule(missionId, titreMission)
+  if (!d) return null
+
+  const sections: SectionPdf[] = []
+
+  sections.push({
+    titre: 'Informations',
+    lignes: [
+      { label: 'Durée totale', valeur: d.dureeTotale, nature: 'neutre' },
+      { label: "Nombre d'activités", valeur: String(d.nbActivites), nature: 'neutre' },
+      { label: 'Nombre de questions', valeur: String(d.nbQuestions), nature: 'neutre' },
+    ],
+  })
+
+  if (d.contexte) {
+    sections.push({ titre: 'Contexte', paragraphes: [d.contexte] })
+  }
+
+  if (d.competence) {
+    sections.push({
+      titre: 'Compétence visée',
+      lignes: [
+        { label: d.competence.groupe, valeur: d.competence.intitule, nature: 'neutre' },
+        { label: 'Détail', valeur: d.competence.detail, nature: 'neutre' },
+      ],
+    })
+  }
+
+  if (d.objectifs.length > 0) {
+    const lignes = '<ul style="margin:0;padding-left:18px;">' +
+      d.objectifs.map((o) => `<li>${echapper(o)}</li>`).join('') +
+      '</ul>'
+    sections.push({ titre: 'Objectifs', htmlLibre: lignes })
+  }
+
+  const enTete = ['Phase', 'Durée', 'Modalité', 'Supports']
+    .map((h) => `<th style="text-align:left;padding:7px 8px;font-size:12px;border:1px solid #333;background:#EEE;">${h}</th>`)
+    .join('')
+  const corps = d.phases
+    .map((ph) => {
+      const cellules = [ph.phase, ph.duree, ph.modalite, ph.supports]
+        .map((v) => `<td style="padding:7px 8px;font-size:12px;border:1px solid #999;vertical-align:top;">${echapper(v)}</td>`)
+        .join('')
+      return `<tr>${cellules}</tr>`
+    })
+    .join('')
+  const tableau = `<table style="border-collapse:collapse;width:100%;"><thead><tr>${enTete}</tr></thead><tbody>${corps}</tbody></table>`
+  sections.push({ titre: 'Déroulé de la séance', htmlLibre: tableau })
+
+  return {
+    titre: titreMission,
+    sousTitre: `${nomScenario} · Mission ${numeroMission}`,
+    sections,
+    piedNom: NOM_ENSEIGNANT,
+    piedContexte: `${nomScenario} - Mission ${numeroMission} : ${titreMission}`,
+  }
+}
+
+// Ouvre l'impression du deroulement d'une mission. Renvoie false si la mission
+// n'a pas de contenu.
+export function exporterDeroulementMission(
+  missionId: string,
+  titreMission: string,
+  numeroMission: number,
+  nomScenario: string
+): boolean {
+  const doc = documentDeroulementMission(missionId, titreMission, numeroMission, nomScenario)
   if (!doc) return false
   imprimerPdf(doc)
   return true
