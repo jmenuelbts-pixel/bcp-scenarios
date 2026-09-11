@@ -4,16 +4,17 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { COULEUR_PROF } from '../../data/schema'
+import { COULEUR_PROF, TOUTES_MISSIONS } from '../../data/schema'
 import {
   listerElevesAcceptes,
   journalEleve,
   travauxEleve,
   quizEleve,
 } from '../../lib/enseignant'
-import { listerClasses, type Classe } from '../../lib/classes'
+import { listerClasses, listerGroupes, listerLiaisonsGroupes, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
 import { imprimerPdf, type SectionPdf } from '../../lib/pdf'
 import { titreComplet } from '../../lib/libelles'
+import { serialiserMissionPdf, type PartieExport } from '../../lib/serialiserMission'
 import type { Profil } from '../../lib/auth'
 
 // Valeurs speciales du filtre de classe.
@@ -27,6 +28,28 @@ interface MissionTravaillee {
   libelle: string
 }
 
+// Les 6 parties exportables (quiz et glisser-deposer separes).
+const TOUTES_PARTIES: { id: PartieExport; libelle: string }[] = [
+  { id: 'travaux', libelle: 'Devoir à rendre' },
+  { id: 'synthese', libelle: 'Synthèse' },
+  { id: 'autoeval', libelle: 'Auto-évaluation' },
+  { id: 'quiz', libelle: 'Quiz' },
+  { id: 'glisser', libelle: 'Glisser-déposer' },
+  { id: 'journal', libelle: 'Journal de bord' },
+]
+
+const miniBtn: React.CSSProperties = {
+  fontFamily: 'Arial, sans-serif',
+  background: '#FFFFFF',
+  border: '1px solid #CBD5E1',
+  borderRadius: 8,
+  padding: '4px 12px',
+  fontSize: 12,
+  fontWeight: 700,
+  color: '#374151',
+  cursor: 'pointer',
+}
+
 // "NOM Prenom" pour le pied de page et les titres.
 function nomComplet(e: Profil | undefined): string {
   if (!e) return ''
@@ -37,27 +60,35 @@ export function Exports() {
   const navigate = useNavigate()
   const [eleves, setEleves] = useState<Profil[]>([])
   const [classes, setClasses] = useState<Classe[]>([])
+  const [groupes, setGroupes] = useState<Groupe[]>([])
+  const [liaisons, setLiaisons] = useState<LiaisonGroupe[]>([])
   const [classeChoisie, setClasseChoisie] = useState<string>(TOUTES_CLASSES)
+  const [groupeChoisi, setGroupeChoisi] = useState<string>('')
   const [selection, setSelection] = useState<string>('')
   const [missions, setMissions] = useState<MissionTravaillee[]>([])
   const [missionChoisie, setMissionChoisie] = useState<string>('')
+  const [parties, setParties] = useState<PartieExport[]>(TOUTES_PARTIES.map((p) => p.id))
   const [chargement, setChargement] = useState(true)
   const [enCours, setEnCours] = useState(false)
 
   useEffect(() => {
-    Promise.all([listerElevesAcceptes(), listerClasses()]).then(([liste, cl]) => {
+    Promise.all([listerElevesAcceptes(), listerClasses(), listerGroupes(), listerLiaisonsGroupes()]).then(([liste, cl, gs, ls]) => {
       setEleves(liste)
       setClasses(cl)
+      setGroupes(gs)
+      setLiaisons(ls)
       setChargement(false)
     })
   }, [])
 
-  // Eleves du perimetre courant, selon le filtre de classe.
+  // Eleves du perimetre courant, selon le filtre de classe puis de groupe.
   const elevesFiltres = eleves.filter((e) => {
-    if (classeChoisie === TOUTES_CLASSES) return true
-    if (classeChoisie === SANS_CLASSE) return !e.classe_id
-    return e.classe_id === classeChoisie
+    if (classeChoisie === SANS_CLASSE) { if (e.classe_id) return false }
+    else if (classeChoisie !== TOUTES_CLASSES && e.classe_id !== classeChoisie) return false
+    if (groupeChoisi && !liaisons.some((l) => l.eleve_id === e.id && l.groupe_id === groupeChoisi)) return false
+    return true
   })
+  const groupesDuFiltre = groupes.filter((g) => g.classe_id === classeChoisie)
 
   // Si l'eleve selectionne sort du perimetre, on annule la selection.
   useEffect(() => {
@@ -66,39 +97,15 @@ export function Exports() {
     }
   }, [classeChoisie, elevesFiltres, selection])
 
-  // Missions travaillees par les eleves du perimetre courant.
+  // Toutes les missions codees (tous scenarios), afin de pouvoir exporter une
+  // version vierge meme si aucun eleve ne l'a encore travaillee.
   useEffect(() => {
-    if (elevesFiltres.length === 0) {
-      setMissions([])
-      setMissionChoisie('')
-      return
-    }
-    let actif = true
-    async function charger() {
-      const lots = await Promise.all(
-        elevesFiltres.map((e) =>
-          Promise.all([travauxEleve(e.id), journalEleve(e.id), quizEleve(e.id)])
-        )
-      )
-      const ids = new Set<string>()
-      lots.forEach(([tr, jo, qz]) => {
-        tr.forEach((x) => ids.add(x.mission_id))
-        jo.forEach((x) => ids.add(x.mission_id))
-        qz.forEach((x) => ids.add(x.mission_id))
-      })
-      const liste = Array.from(ids)
-        .map((id) => ({ id, libelle: titreComplet(id) }))
-        .sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'))
-      if (!actif) return
-      setMissions(liste)
-      setMissionChoisie((prec) => (liste.some((m) => m.id === prec) ? prec : liste[0]?.id ?? ''))
-    }
-    charger()
-    return () => {
-      actif = false
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classeChoisie, eleves])
+    const liste = TOUTES_MISSIONS
+      .map(({ mission }) => ({ id: mission.id, libelle: titreComplet(mission.id) }))
+      .sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'))
+    setMissions(liste)
+    setMissionChoisie((prec) => (liste.some((m) => m.id === prec) ? prec : liste[0]?.id ?? ''))
+  }, [])
 
   const eleve = eleves.find((e) => e.id === selection)
   const nomEleve = nomComplet(eleve)
@@ -150,47 +157,39 @@ export function Exports() {
     return sections
   }
 
-  // Export d'une mission pour l'eleve selectionne.
-  async function exporterMissionEleve() {
-    if (!selection || !eleve || !missionChoisie) return
+  // Export fidele d'une mission pour un eleve (version remplie), cote prof.
+  async function exporterMissionEleve(eleveId: string) {
+    if (!missionChoisie || parties.length === 0) return
+    const paire = TOUTES_MISSIONS.find((x) => x.mission.id === missionChoisie)
+    const el = eleves.find((e) => e.id === eleveId)
+    if (!paire) return
     setEnCours(true)
-    const sections = await sectionsMission(selection, missionChoisie)
-    imprimerPdf({
-      titre: titreComplet(missionChoisie),
-      sousTitre: nomEleve,
-      sections,
-      piedNom: nomEleve,
-      piedContexte: titreComplet(missionChoisie),
-    })
-    setEnCours(false)
+    try {
+      const doc = await serialiserMissionPdf(paire.scenario.id, missionChoisie, 'rempli', eleveId, nomComplet(el), { parties, sansDate: false })
+      if (doc) imprimerPdf(doc)
+    } finally {
+      setEnCours(false)
+    }
   }
 
-  // Export d'une mission pour toute la classe : un eleve par page.
-  // Le pied de page ne peut porter qu'un seul nom : on y met la classe et la
-  // mission, le nom de l'eleve ouvrant chacune de ses pages en titre de section.
-  async function exporterMissionClasse() {
-    if (elevesFiltres.length === 0 || !missionChoisie) return
+  // Export fidele d'une mission en version VIERGE (a imprimer/distribuer).
+  async function exporterMissionVierge() {
+    if (!missionChoisie || parties.length === 0) return
+    const paire = TOUTES_MISSIONS.find((x) => x.mission.id === missionChoisie)
+    if (!paire) return
     setEnCours(true)
-    const sections: SectionPdf[] = []
-    for (let i = 0; i < elevesFiltres.length; i++) {
-      const e = elevesFiltres[i]
-      const nom = nomComplet(e)
-      const s = await sectionsMission(e.id, missionChoisie)
-      sections.push({
-        titre: `Élève : ${nom}`,
-        sautAvant: i > 0,
-        lignes: [{ label: 'Classe', valeur: nomClasse, nature: 'neutre' as const }],
-      })
-      sections.push(...s)
+    try {
+      const doc = await serialiserMissionPdf(paire.scenario.id, missionChoisie, 'vierge', undefined, undefined, { parties, sansDate: false })
+      if (doc) imprimerPdf(doc)
+    } finally {
+      setEnCours(false)
     }
-    imprimerPdf({
-      titre: titreComplet(missionChoisie),
-      sousTitre: `${nomClasse} - ${elevesFiltres.length} élève(s)`,
-      sections,
-      piedNom: nomClasse,
-      piedContexte: titreComplet(missionChoisie),
-    })
-    setEnCours(false)
+  }
+
+  // Export d'une mission pour toute la classe : version vierge (a distribuer).
+  // Les copies remplies s'exportent eleve par eleve pour rester fideles.
+  async function exporterMissionClasse() {
+    await exporterMissionVierge()
   }
 
   // Export global du dossier d'un eleve, toutes missions confondues.
@@ -269,7 +268,7 @@ export function Exports() {
           </label>
           <select
             value={classeChoisie}
-            onChange={(e) => setClasseChoisie(e.target.value)}
+            onChange={(e) => { setClasseChoisie(e.target.value); setGroupeChoisi('') }}
             disabled={chargement}
             style={selectStyle}
           >
@@ -281,78 +280,91 @@ export function Exports() {
           </select>
 
           <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', margin: '18px 0 8px' }}>
+            Groupe
+          </label>
+          <select
+            value={groupeChoisi}
+            onChange={(e) => setGroupeChoisi(e.target.value)}
+            disabled={chargement || groupesDuFiltre.length === 0}
+            style={selectStyle}
+          >
+            <option value="">{groupesDuFiltre.length === 0 ? 'Aucun groupe pour cette classe' : 'Toute la classe'}</option>
+            {groupesDuFiltre.map((g) => (
+              <option key={g.id} value={g.id}>{g.nom}</option>
+            ))}
+          </select>
+
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', margin: '18px 0 8px' }}>
             Mission
           </label>
-          {missions.length === 0 ? (
-            <p style={{ fontSize: 13, color: '#B91C1C', margin: 0 }}>
-              Aucun travail enregistré pour ce périmètre.
-            </p>
-          ) : (
-            <>
-              <select
-                value={missionChoisie}
-                onChange={(e) => setMissionChoisie(e.target.value)}
-                disabled={enCours}
-                style={selectStyle}
-              >
-                {missions.map((m) => (
-                  <option key={m.id} value={m.id}>{m.libelle}</option>
-                ))}
-              </select>
-              <div style={{ marginTop: 14 }}>
-                <BoutonExport
-                  libelle={`Exporter cette mission pour ${nomClasse} (${elevesFiltres.length})`}
-                  principal
-                  onClick={exporterMissionClasse}
-                  disabled={enCours || elevesFiltres.length === 0 || !missionChoisie}
-                />
+          <select
+            value={missionChoisie}
+            onChange={(e) => setMissionChoisie(e.target.value)}
+            disabled={enCours}
+            style={selectStyle}
+          >
+            {missions.map((m) => (
+              <option key={m.id} value={m.id}>{m.libelle}</option>
+            ))}
+          </select>
+
+          <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 12, padding: 16, marginTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2933' }}>Parties à inclure</span>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button type="button" onClick={() => setParties(TOUTES_PARTIES.map((p) => p.id))} style={miniBtn}>Tout</button>
+                <button type="button" onClick={() => setParties([])} style={miniBtn}>Rien</button>
               </div>
-            </>
-          )}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px 16px' }}>
+              {TOUTES_PARTIES.map((p) => (
+                <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#374151', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={parties.includes(p.id)}
+                    onChange={(e) => setParties((prec) => e.target.checked ? [...prec, p.id] : prec.filter((x) => x !== p.id))}
+                  />
+                  {p.libelle}
+                </label>
+              ))}
+            </div>
+            <div style={{ marginTop: 14 }}>
+              <BoutonExport
+                libelle="Exporter la version vierge (à imprimer)"
+                principal
+                onClick={exporterMissionVierge}
+                disabled={enCours || !missionChoisie || parties.length === 0}
+              />
+              <p style={{ fontSize: 11.5, color: '#6B7280', margin: '8px 0 0' }}>
+                Exercice complet à distribuer : documents, questions et zones à remplir. Sans réponse ni correction.
+              </p>
+            </div>
+          </div>
 
           <div style={{ borderTop: '1px solid #E2E8F0', margin: '22px 0 0', paddingTop: 18 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>
-              Choisir un élève
+              Version remplie d'un élève
             </label>
             {chargement ? (
               <p style={{ fontSize: 13, color: '#6B7280' }}>Chargement...</p>
             ) : elevesFiltres.length === 0 ? (
               <p style={{ fontSize: 13, color: '#6B7280' }}>Aucun élève dans ce périmètre.</p>
             ) : (
-              <select
-                value={selection}
-                onChange={(e) => setSelection(e.target.value)}
-                style={selectStyle}
-              >
-                <option value="">-- Sélectionner --</option>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {elevesFiltres.map((e) => (
-                  <option key={e.id} value={e.id}>{e.nom} {e.prenom}</option>
-                ))}
-              </select>
-            )}
-
-            {selection && (
-              <>
-                {missionChoisie && (
-                  <div style={{ marginTop: 14 }}>
-                    <BoutonExport
-                      libelle="Exporter cette mission pour cet élève"
-                      principal
-                      onClick={exporterMissionEleve}
-                      disabled={enCours}
-                    />
+                  <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, background: '#FFFFFF', border: '1px solid #E5EAF0', borderRadius: 10, padding: '10px 14px' }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#1F2933' }}>{e.nom} {e.prenom}</span>
+                    <button
+                      type="button"
+                      onClick={() => exporterMissionEleve(e.id)}
+                      disabled={enCours || !missionChoisie || parties.length === 0}
+                      style={{ fontFamily: 'Arial, sans-serif', background: enCours || !missionChoisie || parties.length === 0 ? '#9BB8DE' : '#1B7A4B', color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '9px 16px', fontSize: 13, fontWeight: 700, cursor: enCours ? 'wait' : 'pointer', whiteSpace: 'nowrap' }}
+                    >
+                      Exporter rempli
+                    </button>
                   </div>
-                )}
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#374151', margin: '18px 0 8px' }}>
-                  Dossier complet de l'élève, toutes missions confondues
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                  <BoutonExport libelle="Journal de bord" onClick={() => exporter('journal')} disabled={enCours} />
-                  <BoutonExport libelle="Travaux" onClick={() => exporter('travaux')} disabled={enCours} />
-                  <BoutonExport libelle="Activités" onClick={() => exporter('activites')} disabled={enCours} />
-                  <BoutonExport libelle="Dossier complet" onClick={() => exporter('tout')} disabled={enCours} />
-                </div>
-              </>
+                ))}
+              </div>
             )}
           </div>
         </section>

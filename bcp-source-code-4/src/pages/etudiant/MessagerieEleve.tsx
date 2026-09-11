@@ -15,8 +15,11 @@ import {
   marquerLus,
   sonderConversation,
   contactsEleve,
+  verifierFichierPj,
+  PJ_NOMBRE_MAX,
   type Message,
 } from '../../lib/messagerie'
+import { BulleMessage } from '../../lib/piecesJointes'
 
 interface Contact {
   contact: Profil
@@ -32,6 +35,7 @@ export function MessagerieEleve() {
   const [selection, setSelection] = useState<Contact | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [texte, setTexte] = useState('')
+  const [fichiers, setFichiers] = useState<File[]>([])
   const [chargement, setChargement] = useState(true)
   const finRef = useRef<HTMLDivElement>(null)
 
@@ -79,14 +83,28 @@ export function MessagerieEleve() {
   }, [eleveId, selection])
 
   async function envoyer() {
-    if (!eleveId || !selection || texte.trim().length === 0) return
+    if (!eleveId || !selection) return
     const contenu = texte.trim()
+    if (contenu.length === 0 && fichiers.length === 0) return
     const autreId = selection.contact.id
+    // Pieces jointes autorisees uniquement vers l'enseignant.
+    const pj = selection.estEnseignant ? fichiers : []
     setTexte('')
-    await envoyerMessage(eleveId, autreId, contenu)
+    setFichiers([])
+    await envoyerMessage(eleveId, autreId, contenu, pj)
     const conv = await conversation(eleveId, autreId)
     setMessages(conv)
     setTimeout(() => finRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+  }
+
+  function choisirFichiers(liste: FileList | null) {
+    if (!liste) return
+    const arr = Array.from(liste).slice(0, PJ_NOMBRE_MAX)
+    for (const f of arr) {
+      const err = verifierFichierPj(f)
+      if (err) { alert(err); return }
+    }
+    setFichiers(arr)
   }
 
   return (
@@ -181,41 +199,33 @@ export function MessagerieEleve() {
                 {messages.length === 0 ? (
                   <p style={{ fontSize: 13, color: '#9AA5B1' }}>Aucun message pour le moment.</p>
                 ) : (
-                  messages.map((m) => {
-                    const deMoi = m.expediteur_id === eleveId
-                    return (
-                      <div key={m.id} style={{ display: 'flex', justifyContent: deMoi ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
-                        <span style={{
-                          maxWidth: '75%',
-                          fontSize: 13,
-                          padding: '8px 12px',
-                          borderRadius: 12,
-                          background: deMoi ? '#2E7DB8' : '#EEF3F8',
-                          color: deMoi ? '#FFFFFF' : '#1F2933',
-                          whiteSpace: 'pre-wrap',
-                        }}>
-                          {m.contenu}
-                        </span>
-                      </div>
-                    )
-                  })
+                  messages.map((m) => (
+                    <BulleMessage key={m.id} message={m} deMoi={m.expediteur_id === eleveId} couleurMoi="#2E7DB8" />
+                  ))
                 )}
                 <div ref={finRef} />
               </div>
 
-              <div style={{ borderTop: '1px solid #EEF2F6', padding: 12, display: 'flex', gap: 8 }}>
+              <div style={{ borderTop: '1px solid #EEF2F6', padding: 12, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                {selection.estEnseignant && (
+                  <label style={{ fontFamily: 'Arial, sans-serif', background: '#FEF3C7', border: '1px solid #F0C24B', color: '#8A5A00', borderRadius: 8, padding: '8px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                    + Fichier
+                    <input type="file" multiple accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => choisirFichiers(e.target.files)} style={{ display: 'none' }} />
+                  </label>
+                )}
+                {fichiers.length > 0 && <span style={{ fontSize: 12, color: '#8A5A00' }}>{fichiers.length} fichier(s)</span>}
                 <input
                   value={texte}
                   onChange={(e) => setTexte(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') envoyer() }}
                   placeholder="Écrivez votre message..."
-                  style={{ fontFamily: 'Arial, sans-serif', flex: 1, border: '1px solid #C9D6E3', borderRadius: 8, padding: '10px 12px', fontSize: 14, color: '#1F2933' }}
+                  style={{ fontFamily: 'Arial, sans-serif', flex: 1, minWidth: 140, border: '1px solid #C9D6E3', borderRadius: 8, padding: '10px 12px', fontSize: 14, color: '#1F2933' }}
                 />
                 <button
                   type="button"
                   onClick={envoyer}
-                  disabled={texte.trim().length === 0}
-                  style={{ fontFamily: 'Arial, sans-serif', background: texte.trim().length === 0 ? '#C9CDD2' : '#2E7DB8', color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: texte.trim().length === 0 ? 'not-allowed' : 'pointer' }}
+                  disabled={texte.trim().length === 0 && fichiers.length === 0}
+                  style={{ fontFamily: 'Arial, sans-serif', background: texte.trim().length === 0 && fichiers.length === 0 ? '#C9CDD2' : '#2E7DB8', color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
                 >
                   Envoyer
                 </button>

@@ -94,3 +94,24 @@ export async function retirerEleveGroupe(eleveId: string, groupeId: string): Pro
     .eq('groupe_id', groupeId)
   return { erreur: error?.message ?? null }
 }
+
+// Affecte un eleve a UN SEUL groupe (option B) : retire ses liaisons de groupe
+// dans la classe donnee, puis ajoute la nouvelle. groupeId null = aucun.
+export async function definirGroupeUnique(
+  eleveId: string,
+  groupeId: string | null,
+  groupesDeLaClasse: string[]
+): Promise<{ erreur: string | null }> {
+  if (groupesDeLaClasse.length > 0) {
+    await supabase
+      .from('eleves_groupes')
+      .delete()
+      .eq('eleve_id', eleveId)
+      .in('groupe_id', groupesDeLaClasse)
+  }
+  if (!groupeId) return { erreur: null }
+  const { error } = await supabase
+    .from('eleves_groupes')
+    .upsert({ eleve_id: eleveId, groupe_id: groupeId }, { onConflict: 'eleve_id,groupe_id' })
+  return { erreur: error?.message ?? null }
+}

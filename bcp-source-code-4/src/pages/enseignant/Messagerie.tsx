@@ -19,8 +19,15 @@ import {
   sonderConversation,
   classeVerrouillee,
   definirVerrouClasse,
+  modifierMessage,
+  supprimerMessage,
+  viderPjConversation,
+  viderToutesPj,
+  verifierFichierPj,
+  PJ_NOMBRE_MAX,
   type Message,
 } from '../../lib/messagerie'
+import { BulleMessage } from '../../lib/piecesJointes'
 import type { Profil } from '../../lib/auth'
 import { PastilleInitiales } from '../../lib/theme'
 
@@ -35,6 +42,7 @@ export function Messagerie() {
   const [collectif, setCollectif] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [texte, setTexte] = useState('')
+  const [fichiers, setFichiers] = useState<File[]>([])
   const [chargement, setChargement] = useState(true)
   const finRef = useRef<HTMLDivElement>(null)
   const [classes, setClasses] = useState<Classe[]>([])
@@ -140,17 +148,44 @@ export function Messagerie() {
   }
 
   async function envoyer() {
-    if (!profId || texte.trim().length === 0) return
+    if (!profId) return
     const contenu = texte.trim()
+    if (contenu.length === 0 && fichiers.length === 0) return
+    const pj = fichiers
     setTexte('')
+    setFichiers([])
     if (collectif) {
-      await envoyerMessageCollectif(profId, contenu)
+      const cls = classes.find((c) => c.id === classeVerrou)
+      await envoyerMessageCollectif(profId, contenu, classeVerrou || null, cls?.nom, pj)
     } else if (selection) {
-      await envoyerMessage(profId, selection, contenu)
+      await envoyerMessage(profId, selection, contenu, pj)
       const conv = await conversation(profId, selection)
       setMessages(conv)
       setTimeout(() => finRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
     }
+  }
+
+  async function modifierUnMessage(m: Message) {
+    const nouveau = window.prompt('Modifier le message :', m.contenu ?? '')
+    if (nouveau === null || !profId || !selection) return
+    await modifierMessage(m.id, nouveau)
+    setMessages(await conversation(profId, selection))
+  }
+
+  async function supprimerUnMessage(m: Message) {
+    if (!window.confirm('Supprimer ce message ?') || !profId || !selection) return
+    await supprimerMessage(m.id)
+    setMessages(await conversation(profId, selection))
+  }
+
+  function choisirFichiers(liste: FileList | null) {
+    if (!liste) return
+    const arr = Array.from(liste).slice(0, PJ_NOMBRE_MAX)
+    for (const f of arr) {
+      const err = verifierFichierPj(f)
+      if (err) { alert(err); return }
+    }
+    setFichiers(arr)
   }
 
   // Efface tous les messages echanges avec l'eleve selectionne, apres
@@ -161,6 +196,25 @@ export function Messagerie() {
     if (!ok) return
     await supprimerConversation(profId, selection)
     setMessages([])
+  }
+
+  async function viderPjDeLaConversation() {
+    if (!profId || !selection) return
+    const ok = window.confirm('Supprimer toutes les pièces jointes de cette conversation ? Le texte des messages est conservé. Action définitive.')
+    if (!ok) return
+    const { supprimes, erreur } = await viderPjConversation(profId, selection)
+    if (erreur) { alert('Erreur : ' + erreur); return }
+    setMessages(await conversation(profId, selection))
+    alert(supprimes > 0 ? `${supprimes} pièce(s) jointe(s) supprimée(s).` : 'Aucune pièce jointe dans cette conversation.')
+  }
+
+  async function viderToutesLesPj() {
+    const ok = window.confirm('Supprimer TOUTES les pièces jointes de toute la messagerie (toutes les conversations) ? Le texte des messages est conservé. Action définitive, à réserver au ménage de fin d\'année.')
+    if (!ok) return
+    const { supprimes, erreur } = await viderToutesPj()
+    if (erreur) { alert('Erreur : ' + erreur); return }
+    if (profId && selection) setMessages(await conversation(profId, selection))
+    alert(supprimes > 0 ? `${supprimes} pièce(s) jointe(s) supprimée(s) au total.` : 'Aucune pièce jointe à supprimer.')
   }
 
   return (
@@ -174,6 +228,13 @@ export function Messagerie() {
             Tableau de bord
           </button>
           <h1 style={{ margin: 0, fontSize: 21, fontWeight: 700 }}>Messagerie</h1>
+          <button
+            type="button"
+            onClick={viderToutesLesPj}
+            style={{ fontFamily: 'Arial, sans-serif', marginTop: 8, background: 'rgba(255,255,255,0.18)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.5)', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Nettoyer toutes les pièces jointes (fin d'année)
+          </button>
         </div>
       </header>
 
@@ -318,41 +379,35 @@ export function Messagerie() {
                     return e ? `${e.nom} ${e.prenom}` : 'Conversation'
                   })()}
                 </span>
-                <button
-                  type="button"
-                  onClick={effacerConversation}
-                  style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', color: '#B0413E', border: '1px solid #E2B3B1', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-                    <polyline points="4,7 20,7" fill="none" stroke="#B0413E" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M9 7 V5 a1 1 0 0 1 1 -1 h4 a1 1 0 0 1 1 1 v2" fill="none" stroke="#B0413E" strokeWidth="2" />
-                    <path d="M6 7 l1 13 a1 1 0 0 0 1 1 h8 a1 1 0 0 0 1 -1 l1 -13" fill="none" stroke="#B0413E" strokeWidth="2" strokeLinejoin="round" />
-                  </svg>
-                  Supprimer la conversation
-                </button>
+                <span style={{ display: 'inline-flex', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={viderPjDeLaConversation}
+                    style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', color: '#8A5A00', border: '1px solid #F0C24B', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    Vider les pièces jointes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={effacerConversation}
+                    style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', color: '#B0413E', border: '1px solid #E2B3B1', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                      <polyline points="4,7 20,7" fill="none" stroke="#B0413E" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M9 7 V5 a1 1 0 0 1 1 -1 h4 a1 1 0 0 1 1 1 v2" fill="none" stroke="#B0413E" strokeWidth="2" />
+                      <path d="M6 7 l1 13 a1 1 0 0 0 1 1 h8 a1 1 0 0 0 1 -1 l1 -13" fill="none" stroke="#B0413E" strokeWidth="2" strokeLinejoin="round" />
+                    </svg>
+                    Supprimer la conversation
+                  </button>
+                </span>
               </div>
               <div style={{ flex: 1, padding: 16, overflowY: 'auto', maxHeight: 460 }}>
                 {messages.length === 0 ? (
                   <p style={{ fontSize: 13, color: '#9AA5B1' }}>Aucun message pour le moment.</p>
                 ) : (
-                  messages.map((m) => {
-                    const deMoi = m.expediteur_id === profId
-                    return (
-                      <div key={m.id} style={{ display: 'flex', justifyContent: deMoi ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
-                        <span style={{
-                          maxWidth: '75%',
-                          fontSize: 13,
-                          padding: '8px 12px',
-                          borderRadius: 12,
-                          background: deMoi ? COULEUR_PROF : '#EEF3F8',
-                          color: deMoi ? '#FFFFFF' : '#1F2933',
-                          whiteSpace: 'pre-wrap',
-                        }}>
-                          {m.contenu}
-                        </span>
-                      </div>
-                    )
-                  })
+                  messages.map((m) => (
+                    <BulleMessage key={m.id} message={m} deMoi={m.expediteur_id === profId} couleurMoi={COULEUR_PROF} montrerLu onModifier={modifierUnMessage} onSupprimer={supprimerUnMessage} />
+                  ))
                 )}
                 <div ref={finRef} />
               </div>
@@ -361,19 +416,24 @@ export function Messagerie() {
 
           {/* Zone de saisie */}
           {(selection || collectif) && (
-            <div style={{ borderTop: '1px solid #EEF2F6', padding: 12, display: 'flex', gap: 8 }}>
+            <div style={{ borderTop: '1px solid #EEF2F6', padding: 12, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <label style={{ fontFamily: 'Arial, sans-serif', background: '#FEF3C7', border: '1px solid #F0C24B', color: '#8A5A00', borderRadius: 8, padding: '8px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                + Fichier
+                <input type="file" multiple accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => choisirFichiers(e.target.files)} style={{ display: 'none' }} />
+              </label>
+              {fichiers.length > 0 && <span style={{ fontSize: 12, color: '#8A5A00' }}>{fichiers.length} fichier(s)</span>}
               <input
                 value={texte}
                 onChange={(e) => setTexte(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') envoyer() }}
                 placeholder="Écrivez votre message..."
-                style={{ fontFamily: 'Arial, sans-serif', flex: 1, border: '1px solid #C9D6E3', borderRadius: 8, padding: '10px 12px', fontSize: 14, color: '#1F2933' }}
+                style={{ fontFamily: 'Arial, sans-serif', flex: 1, minWidth: 140, border: '1px solid #C9D6E3', borderRadius: 8, padding: '10px 12px', fontSize: 14, color: '#1F2933' }}
               />
               <button
                 type="button"
                 onClick={envoyer}
-                disabled={texte.trim().length === 0}
-                style={{ fontFamily: 'Arial, sans-serif', background: texte.trim().length === 0 ? '#C9CDD2' : COULEUR_PROF, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: texte.trim().length === 0 ? 'not-allowed' : 'pointer' }}
+                disabled={texte.trim().length === 0 && fichiers.length === 0}
+                style={{ fontFamily: 'Arial, sans-serif', background: texte.trim().length === 0 && fichiers.length === 0 ? '#C9CDD2' : COULEUR_PROF, color: '#FFFFFF', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
               >
                 Envoyer
               </button>

@@ -51,6 +51,7 @@ interface ContexteAuth {
   }) => Promise<ResultatAuth>
   connecter: (email: string, motDePasse: string) => Promise<ResultatAuth>
   deconnecter: () => Promise<void>
+  deconnecterPartout: () => Promise<void>
 }
 
 const Contexte = createContext<ContexteAuth | undefined>(undefined)
@@ -75,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function chargerProfil(userId: string) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, prenom, nom, date_naissance, role, entreprise, statut')
+      .select('id, email, prenom, nom, date_naissance, role, entreprise, statut, classe_id, est_invite, invite_actif')
       .eq('id', userId)
       .maybeSingle()
     if (error) {
@@ -97,7 +98,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, nouvelleSession) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((evenement, nouvelleSession) => {
+      // Un simple rafraichissement de jeton ne doit PAS relancer l'ecran de
+      // chargement ni rerecharger le profil : sinon l'app "clignote"
+      // periodiquement. On met juste la session a jour en silence.
+      if (evenement === 'TOKEN_REFRESHED') {
+        setSession(nouvelleSession)
+        return
+      }
       setSession(nouvelleSession)
       if (nouvelleSession?.user) {
         setChargement(true)
@@ -109,7 +117,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    return () => sub.subscription.unsubscribe()
+    // Verification periodique : si la session a ete revoquee cote serveur
+    // (par exemple le professeur a deconnecte la classe), on renvoie
+    // l'utilisateur a l'ecran de connexion. IMPORTANT : on ne deconnecte QUE
+    // si le serveur repond clairement que la session n'est plus valide. Une
+    // simple coupure reseau (frequente en classe sur un wifi partage) ne doit
+    // JAMAIS deconnecter l'utilisateur en plein travail.
+    const verif = setInterval(async () => {
+      const { data } = await supabase.auth.getSession()
+      if (!data.session) return
+      let reponse
+      try {
+        // getUser interroge le serveur SANS regenerer de jeton : aucune
+        // re-render de l'app, donc pas de clignotement.
+        reponse = await supabase.auth.getUser()
+      } catch {
+        // Erreur reseau (fetch a echoue) : on ignore, on reessaiera plus tard.
+        return
+      }
+      const err = reponse.error
+      if (!err) return
+      // On ne deconnecte que sur une vraie erreur d'authentification renvoyee
+      // par le serveur (session revoquee / jeton invalide). Tout le reste
+      // (reseau, timeout, statut 5xx) est ignore.
+      const statut = (err as { status?: number }).status
+      const estRevocation = statut === 400 || statut === 401 || statut === 403
+      if (estRevocation) {
+        await supabase.auth.signOut().catch(() => {})
+        setSession(null)
+        setProfil(null)
+      }
+    }, 60000)
+
+    return () => {
+      sub.subscription.unsubscribe()
+      clearInterval(verif)
+    }
   }, [])
 
   async function inscrireEleve(params: {
@@ -156,9 +199,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfil(null)
   }
 
+  // Deconnecte le compte de TOUS les appareils (toutes les sessions ouvertes),
+  // pas seulement celui-ci. Utile si une session prof a ete laissee ouverte
+  // ailleurs.
+  async function deconnecterPartout() {
+    await supabase.auth.signOut({ scope: 'global' })
+    setProfil(null)
+  }
+
   return (
     <Contexte.Provider
-      value={{ session, profil, chargement, erreurProfil, inscrireEleve, connecter, deconnecter }}
+      value={{ session, profil, chargement, erreurProfil, inscrireEleve, connecter, deconnecter, deconnecterPartout }}
     >
       {children}
     </Contexte.Provider>

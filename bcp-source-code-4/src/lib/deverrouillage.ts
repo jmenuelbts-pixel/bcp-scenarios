@@ -204,3 +204,16 @@ export async function reinitialiserOngletEleve(
   nouvelEtat.delete(cle(missionId, ongletId, etudiantId))
   return nouvelEtat
 }
+
+// Verrouille TOUT, partout : supprime toutes les lignes de deverrouillage
+// (globales ET individuelles par eleve, tous onglets, evaluations comprises,
+// tous scenarios). Retour a l'etat par defaut = tout ferme. C'est le vrai
+// "tout verrouiller".
+export async function toutVerrouillerPartout(): Promise<EtatDeverrouillage> {
+  const { error } = await supabase
+    .from('deverrouillages_onglets')
+    .delete()
+    .not('mission_id', 'is', null)
+  if (error) throw new Error(error.message)
+  return new Map()
+}
