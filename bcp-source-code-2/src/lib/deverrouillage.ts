@@ -217,3 +217,33 @@ export async function toutVerrouillerPartout(): Promise<EtatDeverrouillage> {
   if (error) throw new Error(error.message)
   return new Map()
 }
+
+// --- Enchainement automatique (par eleve) -----------------------------------
+
+// Ordre des onglets de la chaine sequentielle. Le journal est hors chaine.
+// 'activites' contient glossaire/flashcards puis quiz/glisser, geres a part.
+const CHAINE: OngletId[] = ['travaux', 'synthese', 'autoeval', 'activites']
+
+// A l'envoi d'un onglet par un eleve : ferme cet onglet et ouvre le suivant de
+// la chaine, au niveau INDIVIDUEL de l'eleve. N'ecrit rien pour le journal.
+// Renvoie le nouvel etat. Le professeur garde la main (ses reglages manuels
+// ne sont pas touches ici : on ne fait qu'ajouter des entrees individuelles).
+export async function avancerEnchainement(
+  scenarioId: string,
+  missionId: string,
+  ongletEnvoye: OngletId,
+  etudiantId: string,
+  etat: EtatDeverrouillage
+): Promise<EtatDeverrouillage> {
+  const idx = CHAINE.indexOf(ongletEnvoye)
+  if (idx === -1) return etat
+  let nouvel = etat
+  // Ferme l'onglet envoye (pour cet eleve).
+  nouvel = await definirOngletEleve(scenarioId, missionId, ongletEnvoye, etudiantId, false, nouvel)
+  // Ouvre le suivant s'il existe.
+  const suivant = CHAINE[idx + 1]
+  if (suivant) {
+    nouvel = await definirOngletEleve(scenarioId, missionId, suivant, etudiantId, true, nouvel)
+  }
+  return nouvel
+}

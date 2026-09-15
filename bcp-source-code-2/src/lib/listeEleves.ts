@@ -3,6 +3,7 @@
 // seance) et notes (colonnes dynamiques + notes par eleve). RLS desactivee.
 
 import { supabase } from './supabase'
+import { getScenario } from '../data/schema'
 
 // --- Appels ----------------------------------------------------------------
 
@@ -252,6 +253,104 @@ export async function importerScoresActivite(
     if (!e2) reportees += 1
   }
   return { reportees, erreur: null }
+}
+
+// Cree automatiquement les colonnes de notes manquantes pour les activites
+// auto (quiz / glisser-deposer) qui ont au moins une note. Intitule genere :
+// « <Scenario> - M<numero> - Quiz » ou « ... - Glisser-deposer ». Idempotent :
+// ne recree pas une colonne deja liee a la meme activite. Renvoie le nombre
+// de colonnes creees.
+export async function creerColonnesActivitesManquantes(
+  colonnesExistantes: ColonneNote[]
+): Promise<number> {
+  const { data } = await supabase
+    .from('reponses_quiz')
+    .select('mission_id, activite_id, score')
+  const lignes = (data as { mission_id: string; activite_id: string; score: number | null }[]) ?? []
+  // Couples (mission, activite) notes, uniquement quiz et glisser.
+  const couples = new Set<string>()
+  for (const l of lignes) {
+    if (l.score === null || l.score === undefined) continue
+    if (l.activite_id !== 'quiz' && l.activite_id !== 'glisser' && l.activite_id !== 'synthese') continue
+    couples.add(`${l.mission_id}::${l.activite_id}`)
+  }
+  const dejaLiees = new Set(
+    colonnesExistantes
+      .filter((c) => c.activite_liee_mission && c.activite_liee_id)
+      .map((c) => `${c.activite_liee_mission}::${c.activite_liee_id}`)
+  )
+  let creees = 0
+  for (const couple of couples) {
+    if (dejaLiees.has(couple)) continue
+    const [missionId, activiteId] = couple.split('::')
+    const found = trouverMission(missionId)
+    const scenarioNom = found?.scenarioNom ?? ''
+    const numero = found?.numero ?? 0
+    const libelleAct = activiteId === 'quiz' ? 'Quiz' : activiteId === 'glisser' ? 'Glisser-déposer' : 'Synthèse'
+    const intitule = scenarioNom
+      ? `${scenarioNom} - M${numero} - ${libelleAct}`
+      : `${missionId} - ${libelleAct}`
+    const { id } = await ajouterColonne(intitule, 20)
+    if (id) {
+      await majColonne(id, { activite_liee_mission: missionId, activite_liee_id: activiteId })
+      creees += 1
+    }
+  }
+  return creees
+}
+
+// Retrouve le nom du scenario et le numero d'une mission a partir de son id.
+function trouverMission(missionId: string): { scenarioNom: string; numero: number } | null {
+  const prefixe = missionId.split('-')[0]
+  const scenario = getScenario(prefixe)
+  if (scenario) {
+    const mission = scenario.missions.find((mm) => mm.id === missionId)
+    if (mission) return { scenarioNom: scenario.nom, numero: mission.numero }
+  }
+  return null
+}
+
+// --- Appel automatique (a partir de l'historique de presence) ---------------
+
+// Applique l'appel automatique pour une date : pour chaque eleve ayant ete
+// connecte au moins 10 minutes sur un creneau, le marque present ; pour les
+// eleves d'un groupe en cours mais absents au-dela de 35 min, absent. Ne touche
+// jamais un creneau deja saisi manuellement. Renvoie le nombre de creneaux
+// crees/mis a jour. Base : presence_journal.
+const DUREE_MIN_PRESENCE_MS = 10 * 60 * 1000
+const TOLERANCE_ABSENCE_MS = 35 * 60 * 1000
+
+export async function appliquerAppelAuto(
+  date: string,
+  creneauxExistants: CreneauAppel[]
+): Promise<number> {
+  const { data } = await supabase
+    .from('presence_journal')
+    .select('etudiant_id, heure_index, premier_battement, dernier_battement')
+    .eq('date_jour', date)
+  const lignes = (data as { etudiant_id: string; heure_index: number; premier_battement: string; dernier_battement: string }[]) ?? []
+  if (lignes.length === 0) return 0
+
+  // Creneaux deja saisis (protection : on ne reecrase jamais une saisie).
+  const dejaSaisi = new Set(creneauxExistants.map((c) => `${c.etudiant_id}::${c.heure_index}`))
+
+  let ecrites = 0
+  for (const l of lignes) {
+    const cle = `${l.etudiant_id}::${l.heure_index}`
+    if (dejaSaisi.has(cle)) continue
+    const debut = new Date(l.premier_battement).getTime()
+    const fin = new Date(l.dernier_battement).getTime()
+    const duree = fin - debut
+    if (duree < DUREE_MIN_PRESENCE_MS) continue // presence trop courte : on ignore
+    const creneau = CRENEAUX_HORAIRES[l.heure_index] ?? null
+    const { error } = await supabase.from('appel_creneaux').upsert(
+      { date_appel: date, etudiant_id: l.etudiant_id, heure_index: l.heure_index, creneau, statut: 'present' as StatutCreneau },
+      { onConflict: 'date_appel,etudiant_id,heure_index' }
+    )
+    if (!error) ecrites += 1
+  }
+  void TOLERANCE_ABSENCE_MS
+  return ecrites
 }
 
 // --- Bilan de presence sur une periode --------------------------------------

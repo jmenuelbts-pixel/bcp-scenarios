@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8">
+<title>Mission 4 - La découverte des besoins - Carte mentale interactive</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#FAFAF8;font-family:Arial,sans-serif;padding:24px;}
+.titre{text-align:center;font-size:12px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.consigne{text-align:center;font-size:13px;color:#555;margin-bottom:20px;}
+
+/* Menus déroulants (nœuds à compléter) */
+.quiz-select{
+  width:100%;
+  font-size:11px;
+  font-weight:bold;
+  font-family:Arial,sans-serif;
+  padding:3px 4px;
+  border-radius:5px;
+  background:#fff;
+  cursor:pointer;
+}
+.quiz-select:focus{outline:none;}
+.quiz-select:disabled{
+  cursor:not-allowed;
+  background:#F1F1EE;
+  border-style:solid !important;
+  opacity:0.9;
+}
+
+.noeud.correct{background:#DFF5E1 !important;border-color:#1D9E75 !important;border-style:solid !important;}
+.noeud.correct .quiz-select:disabled{border-color:#1D9E75;color:#0F6E56;background:#EAFBEE;}
+
+.noeud.incorrect{background:#FBE4E4 !important;border-color:#C0392B !important;border-style:solid !important;}
+.noeud.incorrect .quiz-select:disabled{border-color:#C0392B;color:#8E2A1D;background:#FDEEEC;}
+
+.note-correction{
+  font-size:9.5px;
+  margin-top:2px;
+  font-style:italic;
+  color:#712B13;
+  line-height:1.2;
+}
+
+/* Barre d'action sous la carte */
+.barre-actions{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin-top:28px;
+}
+
+.btn{
+  font-size:14px;
+  font-weight:bold;
+  padding:10px 22px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.btn-validate{background:#1D9E75;color:#fff;}
+.btn-validate:hover:not(:disabled){background:#17805F;}
+.btn-validate:disabled{background:#C8C6BE;color:#6d6c68;cursor:not-allowed;}
+
+.btn-correction{background:#fff;color:#534AB7;border:1.5px solid #534AB7;}
+.btn-correction:hover:not(:disabled){background:#EEEDFE;}
+.btn-correction:disabled{background:#F1EFE8;color:#9a9890;border:1.5px solid #d8d6cd;cursor:not-allowed;}
+
+.score{
+  font-size:13px;
+  font-weight:bold;
+  color:#3C3489;
+  margin-top:14px;
+  text-align:center;
+}
+
+/* Bulle de confirmation */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(40,38,60,0.55);
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal-bulle{
+  background:#fff;
+  border-radius:16px;
+  padding:28px 32px;
+  max-width:380px;
+  width:90%;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.25);
+}
+
+.modal-icone{font-size:34px;margin-bottom:8px;}
+.modal-titre{font-size:17px;font-weight:bold;color:#712B13;margin-bottom:10px;}
+.modal-texte{font-size:13.5px;color:#444441;line-height:1.5;margin-bottom:22px;}
+.modal-actions{display:flex;justify-content:center;gap:12px;}
+
+.btn-annuler{background:#F1EFE8;color:#444441;border:1px solid #ccc;}
+.btn-annuler:hover{background:#e6e4dc;}
+.btn-confirmer{background:#1D9E75;color:#fff;}
+.btn-confirmer:hover{background:#17805F;}
+</style></head><body>
+<div class="titre">Scénario RENAULT &mdash; Mission 4 : La découverte des besoins &mdash; Carte mentale de synthèse</div>
+<div class="consigne">Complète les 7 cases en pointillés en choisissant la bonne réponse dans le menu déroulant, puis envoie ton travail.</div>
+<div style="position:relative;width:1520px;height:900px;margin:0 auto;">
+<svg style="position:absolute;top:0;left:0;width:1520px;height:900px;pointer-events:none;">
+<!-- Centre -> branches -->
+<line x1="750" y1="445" x2="750" y2="380" stroke="#7F77DD" stroke-width="2"/>
+<line x1="870" y1="480" x2="1000" y2="480" stroke="#7F77DD" stroke-width="2"/>
+<line x1="750" y1="515" x2="750" y2="600" stroke="#7F77DD" stroke-width="2"/>
+<line x1="630" y1="480" x2="610" y2="480" stroke="#7F77DD" stroke-width="2"/>
+
+<!-- Branche TOP : Le questionnement -->
+<line x1="750" y1="320" x2="275" y2="184" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="750" y1="320" x2="465" y2="184" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="750" y1="320" x2="655" y2="184" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="750" y1="320" x2="845" y2="184" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="750" y1="320" x2="1035" y2="184" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="750" y1="320" x2="1225" y2="184" stroke="#185FA5" stroke-width="1.2"/>
+
+<!-- Branche RIGHT : Les mobiles d'achat (SONCAS) -->
+<line x1="1220" y1="480" x2="1300" y2="128" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1220" y1="480" x2="1300" y2="238" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1220" y1="480" x2="1300" y2="348" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1220" y1="480" x2="1300" y2="458" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1220" y1="480" x2="1300" y2="568" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1220" y1="480" x2="1300" y2="678" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1220" y1="480" x2="1300" y2="788" stroke="#BA7517" stroke-width="1.2"/>
+
+<!-- Branche BOTTOM : Les motivations d'achat -->
+<line x1="750" y1="660" x2="490" y2="740" stroke="#1D9E75" stroke-width="1.2"/>
+<line x1="750" y1="660" x2="750" y2="740" stroke="#1D9E75" stroke-width="1.2"/>
+<line x1="750" y1="660" x2="1010" y2="740" stroke="#1D9E75" stroke-width="1.2"/>
+
+<!-- Branche LEFT : La reformulation -->
+<line x1="390" y1="480" x2="360" y2="380" stroke="#A5185F" stroke-width="1.2"/>
+<line x1="390" y1="480" x2="360" y2="510" stroke="#A5185F" stroke-width="1.2"/>
+<line x1="390" y1="480" x2="360" y2="640" stroke="#A5185F" stroke-width="1.2"/>
+</svg>
+
+<!-- CENTRE -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 14px;text-align:center;background:#EEEDFE;border:2px solid #534AB7;left:630px;top:445px;width:240px;height:70px;border-radius:12px;">
+  <span style="font-size:14px;font-weight:bold;color:#3C3489;">MISSION 4</span>
+  <span style="font-size:11px;color:#7F77DD;margin-top:3px;">La découverte des besoins</span>
+</div>
+
+<!-- ===================== BRANCHE TOP : LE QUESTIONNEMENT ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px solid #185FA5;left:630px;top:320px;width:240px;height:60px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Le questionnement</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Méthode en entonnoir : du général au particulier</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:200px;top:120px;width:150px;height:64px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Question ouverte</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Laisse le client s'exprimer librement</span>
+</div>
+
+<!-- BLANK : Fermée -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px dashed #185FA5;left:390px;top:120px;width:150px;height:64px;border-radius:7px;">
+  <span style="font-size:10px;color:#378ADD;margin-bottom:3px;line-height:1.3;">Réponse précise attendue (oui/non, âge, pointure...)</span>
+  <select class="quiz-select" data-answer="Fermée">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:580px;top:120px;width:150px;height:64px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Question alternative</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Choix entre deux possibilités</span>
+</div>
+
+<!-- BLANK : Choix multiple -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px dashed #185FA5;left:770px;top:120px;width:150px;height:64px;border-radius:7px;">
+  <span style="font-size:10px;color:#378ADD;margin-bottom:3px;line-height:1.3;">Choix entre plusieurs réponses, cumulables</span>
+  <select class="quiz-select" data-answer="Choix multiple">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:960px;top:120px;width:150px;height:64px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Question ricochet</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Fait préciser la pensée du client</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:1150px;top:120px;width:150px;height:64px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Question miroir</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Répète la parole du client, sous forme interrogative</span>
+</div>
+
+<!-- ===================== BRANCHE RIGHT : LES MOBILES D'ACHAT (SONCAS) ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px solid #854F0B;left:1000px;top:452px;width:220px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Les mobiles d'achat</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Méthode SONCAS</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1320px;top:100px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Sécurité</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Produit solide, fiable, garanti</span>
+</div>
+
+<!-- BLANK : Orgueil -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1320px;top:210px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:10px;color:#BA7517;margin-bottom:3px;line-height:1.3;">Produit prestigieux, de marque</span>
+  <select class="quiz-select" data-answer="Orgueil">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1320px;top:320px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Nouveauté</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Produit récent, innovant, à la mode</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1320px;top:430px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Confort</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Produit pratique, facile d'utilisation</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1320px;top:540px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Argent</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Prix, paiement en plusieurs fois, promotion</span>
+</div>
+
+<!-- BLANK : Sympathie -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1320px;top:650px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:10px;color:#BA7517;margin-bottom:3px;line-height:1.3;">Plaisir procuré par l'achat, attirance pour une couleur/forme</span>
+  <select class="quiz-select" data-answer="Sympathie">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1320px;top:760px;width:180px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Environnement</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Produit durable, écologique</span>
+</div>
+
+<!-- ===================== BRANCHE BOTTOM : LES MOTIVATIONS D'ACHAT ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1.5px solid #0F6E56;left:630px;top:600px;width:240px;height:60px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#085041;line-height:1.3;">Les motivations d'achat</span>
+  <span style="font-size:10px;color:#1D9E75;margin-top:2px;line-height:1.3;">Pourquoi le client achète, au-delà du produit</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1px solid #0F6E56;left:405px;top:740px;width:170px;height:60px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#085041;line-height:1.3;">Hédoniste</span>
+  <span style="font-size:10px;color:#1D9E75;margin-top:2px;line-height:1.3;">Achat pour se faire plaisir à soi-même</span>
+</div>
+
+<!-- BLANK : Oblative -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1.5px dashed #0F6E56;left:665px;top:740px;width:170px;height:60px;border-radius:7px;">
+  <span style="font-size:10px;color:#1D9E75;margin-bottom:3px;line-height:1.3;">Achat pour faire plaisir à quelqu'un d'autre</span>
+  <select class="quiz-select" data-answer="Oblative">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1px solid #0F6E56;left:925px;top:740px;width:170px;height:60px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#085041;line-height:1.3;">Auto-expression</span>
+  <span style="font-size:10px;color:#1D9E75;margin-top:2px;line-height:1.3;">Achat pour s'affirmer, se démarquer des autres</span>
+</div>
+
+<!-- ===================== BRANCHE LEFT : LA REFORMULATION ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1.5px solid #A5185F;left:390px;top:452px;width:220px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#7C1049;line-height:1.3;">La reformulation</span>
+  <span style="font-size:10px;color:#C43E82;margin-top:2px;line-height:1.3;">Vérifier que l'on a bien compris le client</span>
+</div>
+
+<!-- BLANK : Écho ou perroquet -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1.5px dashed #A5185F;left:150px;top:320px;width:210px;height:60px;border-radius:7px;">
+  <span style="font-size:10px;color:#C43E82;margin-bottom:3px;line-height:1.3;">Répéter un mot ou une phrase du client</span>
+  <select class="quiz-select" data-answer="Écho ou perroquet">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1px solid #A5185F;left:150px;top:450px;width:210px;height:60px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#7C1049;line-height:1.3;">Miroir ou reflet</span>
+  <span style="font-size:10px;color:#C43E82;margin-top:2px;line-height:1.3;">Reformuler avec ses propres mots</span>
+</div>
+
+<!-- BLANK : Résumé ou synthèse -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1.5px dashed #A5185F;left:150px;top:610px;width:210px;height:60px;border-radius:7px;">
+  <span style="font-size:10px;color:#C43E82;margin-bottom:3px;line-height:1.3;">Faire la synthèse de tout ce que le client a dit</span>
+  <select class="quiz-select" data-answer="Résumé ou synthèse">
+    <option value="">— à compléter —</option>
+    <option>Choix multiple</option>
+    <option>Écho ou perroquet</option>
+    <option>Fermée</option>
+    <option>Oblative</option>
+    <option>Orgueil</option>
+    <option>Résumé ou synthèse</option>
+    <option>Sympathie</option>
+  </select>
+</div>
+
+</div><!-- fin carte -->
+
+<div class="barre-actions">
+  <button class="btn btn-validate" id="btn-validate" onclick="openConfirmModal()">📤 Envoyer à l'enseignant</button>
+  <button class="btn btn-correction" id="btn-correction" onclick="showCorrection()" disabled>
+    <span id="lock-icon">🔒</span> Voir la correction
+  </button>
+</div>
+<div class="score" id="score"></div>
+
+<!-- BULLE DE CONFIRMATION -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-bulle">
+    <div class="modal-icone">⚠️</div>
+    <div class="modal-titre">Es-tu sûr(e) ?</div>
+    <div class="modal-texte">
+      Une fois ton travail envoyé, tu ne pourras <strong>plus modifier aucune réponse</strong>.
+      Cette action est <strong>définitive</strong>.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-annuler" onclick="closeConfirmModal()">Annuler</button>
+      <button class="btn btn-confirmer" onclick="confirmSend()">Oui, envoyer mon travail</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let validated = false;
+  let correctionShown = false;
+
+  function openConfirmModal() {
+    if (validated) return;
+    document.getElementById('modal-overlay').style.display = 'flex';
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+
+  function confirmSend() {
+    if (validated) return;
+    validated = true;
+
+    closeConfirmModal();
+
+    document.querySelectorAll('.quiz-select').forEach(sel => {
+      sel.disabled = true;
+    });
+
+    const btnValidate = document.getElementById('btn-validate');
+    btnValidate.disabled = true;
+    btnValidate.textContent = '✓ Travail envoyé';
+
+    const btnCorrection = document.getElementById('btn-correction');
+    btnCorrection.disabled = false;
+    document.getElementById('lock-icon').style.display = 'none';
+  }
+
+  function showCorrection() {
+    if (!validated || correctionShown) return;
+    correctionShown = true;
+
+    const selects = document.querySelectorAll('.quiz-select');
+    let correctCount = 0;
+
+    selects.forEach(sel => {
+      const parent = sel.closest('.noeud');
+      const correct = sel.dataset.answer;
+      if (sel.value === correct) {
+        parent.classList.add('correct');
+        correctCount++;
+      } else {
+        parent.classList.add('incorrect');
+        const note = document.createElement('div');
+        note.className = 'note-correction';
+        note.textContent = '→ ' + correct;
+        parent.appendChild(note);
+      }
+    });
+
+    document.getElementById('score').textContent = `Score : ${correctCount} / ${selects.length}`;
+  }
+</script>
+
+
+<style id="pont-css">.barre-actions{display:none !important;}</style>
+<script id="pont-postmessage">
+(function(){
+  function calculerScore(){
+    var sels = document.querySelectorAll('.quiz-select');
+    var bons = 0;
+    sels.forEach(function(s){ if(s.value === s.dataset.answer) bons++; });
+    return { bons: bons, total: sels.length };
+  }
+  function lireReponses(){
+    var r = {}; var i = 0;
+    document.querySelectorAll('.quiz-select').forEach(function(s){ r['b'+i] = s.value; i++; });
+    return r;
+  }
+  function envoyerScore(){
+    var s = calculerScore();
+    parent.postMessage({ type:'synthese_score', bons:s.bons, total:s.total }, '*');
+    parent.postMessage({ type:'synthese_reponses', reponses: lireReponses() }, '*');
+  }
+  // Enrober confirmSend pour envoyer le score DES l'envoi.
+  if (typeof window.confirmSend === 'function'){
+    var _cs = window.confirmSend;
+    window.confirmSend = function(){ _cs.apply(this, arguments); try{ envoyerScore(); }catch(e){} };
+  }
+  // Ecoute des commandes venues de l'app.
+  window.addEventListener('message', function(ev){
+    var d = ev.data || {};
+    if (d.type === 'cmd_confirmer' && typeof window.confirmSend === 'function') window.confirmSend();
+    if (d.type === 'cmd_corriger' && typeof window.showCorrection === 'function') window.showCorrection();
+    if (d.type === 'appliquer_reponses' && d.reponses){
+      var sels = document.querySelectorAll('.quiz-select'); var i = 0;
+      sels.forEach(function(s){
+        var v = d.reponses['b'+i];
+        if (v !== undefined) s.value = v;
+        i++;
+      });
+      if (typeof window.confirmSend === 'function' && !window.__figic){ window.__figic = true; window.confirmSend(); }
+    }
+  });
+  // Signale au parent que l'iframe est prete.
+  parent.postMessage({ type:'synthese_prete' }, '*');
+})();
+</script>
+
+</body></html>

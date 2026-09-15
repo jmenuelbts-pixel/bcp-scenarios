@@ -121,18 +121,21 @@ export async function enregistrerQuiz(
   activiteId: string,
   reponses: unknown,
   score: number,
-  appreciation: string | null = null
+  appreciation: string | null = null,
+  bareme: number | null = null
 ): Promise<{ erreur: string | null }> {
+  const ligne: Record<string, unknown> = {
+    etudiant_id: etudiantId,
+    mission_id: missionId,
+    activite_id: activiteId,
+    reponses,
+    score,
+    appreciation,
+    submitted_at: new Date().toISOString(),
+  }
+  if (bareme !== null) ligne.bareme = bareme
   const { error } = await supabase.from('reponses_quiz').upsert(
-    {
-      etudiant_id: etudiantId,
-      mission_id: missionId,
-      activite_id: activiteId,
-      reponses,
-      score,
-      appreciation,
-      submitted_at: new Date().toISOString(),
-    },
+    ligne,
     { onConflict: 'etudiant_id,mission_id,activite_id' }
   )
   return { erreur: error ? error.message : null }

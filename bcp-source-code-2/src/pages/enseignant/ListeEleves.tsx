@@ -19,6 +19,7 @@ import {
   nbHeuresSeance,
   definirNbHeures,
   creneauxDuJour,
+  appliquerAppelAuto,
   enregistrerCreneau,
   definirCreneauColonne,
   enregistrerMotifSeance,
@@ -33,6 +34,7 @@ import {
   listerNotes,
   enregistrerNote,
   importerScoresActivite,
+  creerColonnesActivitesManquantes,
   type CreneauAppel,
   type StatutCreneau,
   type ColonneNote,
@@ -206,6 +208,10 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
   const cle = (eleveId: string, h: number) => eleveId + '-' + h
 
   async function charger(d: string) {
+    // Appel automatique : cree les presences depuis l'historique de connexion
+    // (>= 10 min sur un creneau), sans ecraser les saisies manuelles.
+    const crActuels = await creneauxDuJour(d)
+    await appliquerAppelAuto(d, crActuels)
     const [nb, cr, mo] = await Promise.all([nbHeuresSeance(d), creneauxDuJour(d), motifsDuJour(d)])
     setNbHeures(nb)
     const map: Record<string, CreneauAppel> = {}
@@ -468,7 +474,11 @@ function OngletNotes({ eleves, onRetirer, groupes, liaisons, onGroupesMaj }: { e
   // colonne liee a une activite auto (quiz / glisser-deposer).
   useEffect(() => {
     (async () => {
-      const cols = await listerColonnes()
+      let cols = await listerColonnes()
+      // Cree automatiquement les colonnes manquantes pour les quiz / glisser
+      // deja notes, puis recharge la liste.
+      const creees = await creerColonnesActivitesManquantes(cols)
+      if (creees > 0) cols = await listerColonnes()
       setColonnes(cols)
       for (const c of cols) {
         if (c.activite_liee_mission && c.activite_liee_id) {
@@ -478,6 +488,18 @@ function OngletNotes({ eleves, onRetirer, groupes, liaisons, onGroupesMaj }: { e
       setNotes(await listerNotes())
     })()
   }, [])
+
+  // Colonnes visibles selon les eleves affiches (filtre classe cote prof) :
+  // une colonne liee a une activite n'apparait que si au moins un eleve
+  // affiche a une note pour cette colonne. Les colonnes manuelles (non liees)
+  // restent toujours visibles.
+  const colonnesVisibles = useMemo(() => {
+    const idsEleves = new Set(eleves.map((e) => e.id))
+    return colonnes.filter((c) => {
+      if (!c.activite_liee_mission || !c.activite_liee_id) return true
+      return notes.some((n) => n.colonne_id === c.id && idsEleves.has(n.etudiant_id))
+    })
+  }, [colonnes, notes, eleves])
 
   // Liste des activites auto liables (quiz + glisser-deposer de chaque mission).
   const activitesLiables = useMemo(() => {
@@ -586,7 +608,7 @@ function OngletNotes({ eleves, onRetirer, groupes, liaisons, onGroupesMaj }: { e
               <th style={thStyle}>Inscription</th>
               <th style={thStyle}>Groupe</th>
               <th style={thStyle}>Moyenne /20</th>
-              {colonnes.map((c) => (
+              {colonnesVisibles.map((c) => (
                 <th key={c.id} style={{ ...thStyle, minWidth: 130 }}>
                   <input
                     value={c.intitule}
@@ -718,7 +740,7 @@ function OngletNotes({ eleves, onRetirer, groupes, liaisons, onGroupesMaj }: { e
                 <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, color: COULEUR_PROF }}>
                   {moyennes[e.id] !== null ? moyennes[e.id] : '-'}
                 </td>
-                {colonnes.map((c) => {
+                {colonnesVisibles.map((c) => {
                   const n = noteDe(c.id, e.id)
                   const lie = !!(c.activite_liee_mission && c.activite_liee_id)
                   const statut: StatutNote = n?.statut ?? 'note'

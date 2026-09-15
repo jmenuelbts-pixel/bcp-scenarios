@@ -11,7 +11,7 @@ import {
   travauxEleve,
   quizEleve,
 } from '../../lib/enseignant'
-import { listerClasses, type Classe } from '../../lib/classes'
+import { listerClasses, listerGroupes, listerLiaisonsGroupes, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
 import { imprimerPdf, type SectionPdf } from '../../lib/pdf'
 import { titreComplet } from '../../lib/libelles'
 import { serialiserMissionPdf, type PartieExport } from '../../lib/serialiserMission'
@@ -60,7 +60,10 @@ export function Exports() {
   const navigate = useNavigate()
   const [eleves, setEleves] = useState<Profil[]>([])
   const [classes, setClasses] = useState<Classe[]>([])
+  const [groupes, setGroupes] = useState<Groupe[]>([])
+  const [liaisons, setLiaisons] = useState<LiaisonGroupe[]>([])
   const [classeChoisie, setClasseChoisie] = useState<string>(TOUTES_CLASSES)
+  const [groupeChoisi, setGroupeChoisi] = useState<string>('')
   const [selection, setSelection] = useState<string>('')
   const [missions, setMissions] = useState<MissionTravaillee[]>([])
   const [missionChoisie, setMissionChoisie] = useState<string>('')
@@ -69,19 +72,23 @@ export function Exports() {
   const [enCours, setEnCours] = useState(false)
 
   useEffect(() => {
-    Promise.all([listerElevesAcceptes(), listerClasses()]).then(([liste, cl]) => {
+    Promise.all([listerElevesAcceptes(), listerClasses(), listerGroupes(), listerLiaisonsGroupes()]).then(([liste, cl, gs, ls]) => {
       setEleves(liste)
       setClasses(cl)
+      setGroupes(gs)
+      setLiaisons(ls)
       setChargement(false)
     })
   }, [])
 
-  // Eleves du perimetre courant, selon le filtre de classe.
+  // Eleves du perimetre courant, selon le filtre de classe puis de groupe.
   const elevesFiltres = eleves.filter((e) => {
-    if (classeChoisie === TOUTES_CLASSES) return true
-    if (classeChoisie === SANS_CLASSE) return !e.classe_id
-    return e.classe_id === classeChoisie
+    if (classeChoisie === SANS_CLASSE) { if (e.classe_id) return false }
+    else if (classeChoisie !== TOUTES_CLASSES && e.classe_id !== classeChoisie) return false
+    if (groupeChoisi && !liaisons.some((l) => l.eleve_id === e.id && l.groupe_id === groupeChoisi)) return false
+    return true
   })
+  const groupesDuFiltre = groupes.filter((g) => g.classe_id === classeChoisie)
 
   // Si l'eleve selectionne sort du perimetre, on annule la selection.
   useEffect(() => {
@@ -261,7 +268,7 @@ export function Exports() {
           </label>
           <select
             value={classeChoisie}
-            onChange={(e) => setClasseChoisie(e.target.value)}
+            onChange={(e) => { setClasseChoisie(e.target.value); setGroupeChoisi('') }}
             disabled={chargement}
             style={selectStyle}
           >
@@ -270,6 +277,21 @@ export function Exports() {
               <option key={c.id} value={c.id}>{c.nom}</option>
             ))}
             <option value={SANS_CLASSE}>Élèves sans classe</option>
+          </select>
+
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', margin: '18px 0 8px' }}>
+            Groupe
+          </label>
+          <select
+            value={groupeChoisi}
+            onChange={(e) => setGroupeChoisi(e.target.value)}
+            disabled={chargement || groupesDuFiltre.length === 0}
+            style={selectStyle}
+          >
+            <option value="">{groupesDuFiltre.length === 0 ? 'Aucun groupe pour cette classe' : 'Toute la classe'}</option>
+            {groupesDuFiltre.map((g) => (
+              <option key={g.id} value={g.id}>{g.nom}</option>
+            ))}
           </select>
 
           <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', margin: '18px 0 8px' }}>

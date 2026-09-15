@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8">
+<title>Mission 7 - La conclusion de la vente et le financement du crédit - Carte mentale interactive</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#FAFAF8;font-family:Arial,sans-serif;padding:24px;}
+.titre{text-align:center;font-size:12px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.consigne{text-align:center;font-size:13px;color:#555;margin-bottom:20px;}
+
+/* Menus déroulants (nœuds à compléter) */
+.quiz-select{
+  width:100%;
+  font-size:11px;
+  font-weight:bold;
+  font-family:Arial,sans-serif;
+  padding:3px 4px;
+  border-radius:5px;
+  background:#fff;
+  cursor:pointer;
+}
+.quiz-select:focus{outline:none;}
+.quiz-select:disabled{
+  cursor:not-allowed;
+  background:#F1F1EE;
+  border-style:solid !important;
+  opacity:0.9;
+}
+
+.noeud.correct{background:#DFF5E1 !important;border-color:#1D9E75 !important;border-style:solid !important;}
+.noeud.correct .quiz-select:disabled{border-color:#1D9E75;color:#0F6E56;background:#EAFBEE;}
+
+.noeud.incorrect{background:#FBE4E4 !important;border-color:#C0392B !important;border-style:solid !important;}
+.noeud.incorrect .quiz-select:disabled{border-color:#C0392B;color:#8E2A1D;background:#FDEEEC;}
+
+.note-correction{
+  font-size:9.5px;
+  margin-top:2px;
+  font-style:italic;
+  color:#712B13;
+  line-height:1.2;
+}
+
+/* Barre d'action sous la carte */
+.barre-actions{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin-top:28px;
+}
+
+.btn{
+  font-size:14px;
+  font-weight:bold;
+  padding:10px 22px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.btn-validate{background:#1D9E75;color:#fff;}
+.btn-validate:hover:not(:disabled){background:#17805F;}
+.btn-validate:disabled{background:#C8C6BE;color:#6d6c68;cursor:not-allowed;}
+
+.btn-correction{background:#fff;color:#534AB7;border:1.5px solid #534AB7;}
+.btn-correction:hover:not(:disabled){background:#EEEDFE;}
+.btn-correction:disabled{background:#F1EFE8;color:#9a9890;border:1.5px solid #d8d6cd;cursor:not-allowed;}
+
+.score{
+  font-size:13px;
+  font-weight:bold;
+  color:#3C3489;
+  margin-top:14px;
+  text-align:center;
+}
+
+/* Bulle de confirmation */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(40,38,60,0.55);
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal-bulle{
+  background:#fff;
+  border-radius:16px;
+  padding:28px 32px;
+  max-width:380px;
+  width:90%;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.25);
+}
+
+.modal-icone{font-size:34px;margin-bottom:8px;}
+.modal-titre{font-size:17px;font-weight:bold;color:#712B13;margin-bottom:10px;}
+.modal-texte{font-size:13.5px;color:#444441;line-height:1.5;margin-bottom:22px;}
+.modal-actions{display:flex;justify-content:center;gap:12px;}
+
+.btn-annuler{background:#F1EFE8;color:#444441;border:1px solid #ccc;}
+.btn-annuler:hover{background:#e6e4dc;}
+.btn-confirmer{background:#1D9E75;color:#fff;}
+.btn-confirmer:hover{background:#17805F;}
+</style></head><body>
+<div class="titre">Scénario RENAULT &mdash; Mission 7 : La conclusion de la vente et le financement du crédit &mdash; Carte mentale de synthèse</div>
+<div class="consigne">Complète les 7 cases en pointillés en choisissant la bonne réponse dans le menu déroulant, puis envoie ton travail.</div>
+<div style="position:relative;width:1520px;height:940px;margin:0 auto;">
+<svg style="position:absolute;top:0;left:0;width:1520px;height:940px;pointer-events:none;">
+<!-- Centre -> branches -->
+<line x1="760" y1="470" x2="760" y2="400" stroke="#7F77DD" stroke-width="2"/>
+<line x1="880" y1="505" x2="1010" y2="505" stroke="#7F77DD" stroke-width="2"/>
+<line x1="760" y1="540" x2="760" y2="630" stroke="#7F77DD" stroke-width="2"/>
+<line x1="640" y1="505" x2="500" y2="505" stroke="#7F77DD" stroke-width="2"/>
+
+<!-- Branche TOP : Les signaux d'achat -->
+<line x1="760" y1="340" x2="270" y2="200" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="760" y1="340" x2="490" y2="200" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="760" y1="340" x2="720" y2="200" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="760" y1="340" x2="950" y2="200" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="760" y1="340" x2="1180" y2="200" stroke="#185FA5" stroke-width="1.2"/>
+
+<!-- Branche RIGHT : Les techniques de conclusion -->
+<line x1="1230" y1="505" x2="1310" y2="320" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1230" y1="505" x2="1310" y2="470" stroke="#BA7517" stroke-width="1.2"/>
+<line x1="1230" y1="505" x2="1310" y2="620" stroke="#BA7517" stroke-width="1.2"/>
+
+<!-- Branche BOTTOM : Le reste à vivre et l'endettement -->
+<line x1="760" y1="690" x2="440" y2="780" stroke="#1D9E75" stroke-width="1.2"/>
+<line x1="760" y1="690" x2="760" y2="780" stroke="#1D9E75" stroke-width="1.2"/>
+<line x1="760" y1="690" x2="1080" y2="780" stroke="#1D9E75" stroke-width="1.2"/>
+
+<!-- Branche LEFT : Le coût du crédit -->
+<line x1="380" y1="505" x2="360" y2="400" stroke="#A5185F" stroke-width="1.2"/>
+<line x1="380" y1="505" x2="360" y2="620" stroke="#A5185F" stroke-width="1.2"/>
+</svg>
+
+<!-- CENTRE -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 14px;text-align:center;background:#EEEDFE;border:2px solid #534AB7;left:640px;top:470px;width:240px;height:70px;border-radius:12px;">
+  <span style="font-size:14px;font-weight:bold;color:#3C3489;">MISSION 7</span>
+  <span style="font-size:11px;color:#7F77DD;margin-top:3px;">Conclure la vente et financer le crédit</span>
+</div>
+
+<!-- ===================== BRANCHE TOP : LES SIGNAUX D'ACHAT ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px solid #185FA5;left:640px;top:340px;width:240px;height:60px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Les signaux d'achat</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Indices qui montrent le bon moment pour conclure</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:190px;top:130px;width:160px;height:70px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Signaux verbaux positifs</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Le client se projette dans l'avenir, demande des détails</span>
+</div>
+
+<!-- BLANK : Signaux verbaux négatifs -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px dashed #185FA5;left:400px;top:130px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#0C447C;margin-bottom:3px;line-height:1.3;">Le client critique tout, ne voit que le négatif, émet des objections prétextes</span>
+  <select class="quiz-select" data-answer="Signaux verbaux négatifs">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+<!-- BLANK : Signaux non verbaux positifs -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px dashed #185FA5;left:630px;top:130px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#0C447C;margin-bottom:3px;line-height:1.3;">Le client sourit, est détendu, avance vers le bureau</span>
+  <select class="quiz-select" data-answer="Signaux non verbaux positifs">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:860px;top:130px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Signaux non verbaux négatifs</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Le client reste silencieux, se gratte la tête, s'enfonce dans sa chaise</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1px solid #185FA5;left:1090px;top:130px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Rôle des signaux</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Repérer le moment de lancer la conclusion</span>
+</div>
+
+<!-- ===================== BRANCHE RIGHT : LES TECHNIQUES DE CONCLUSION ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px solid #854F0B;left:1010px;top:477px;width:220px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Les techniques de conclusion</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Inciter le client à se décider</span>
+</div>
+
+<!-- BLANK : Conclusion directe -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1310px;top:290px;width:190px;height:66px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#633806;margin-bottom:3px;line-height:1.3;">Inviter naturellement le client à finaliser (« Alors vous la prenez ? »)</span>
+  <select class="quiz-select" data-answer="Conclusion directe">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+<!-- BLANK : Conclusion alternative -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1310px;top:440px;width:190px;height:66px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#633806;margin-bottom:3px;line-height:1.3;">Proposer un choix entre deux solutions (« essence ou diesel ? »)</span>
+  <select class="quiz-select" data-answer="Conclusion alternative">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+<!-- BLANK : Conclusion joker -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1310px;top:590px;width:190px;height:66px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#633806;margin-bottom:3px;line-height:1.3;">Apporter un argument gardé de côté pour précipiter la décision</span>
+  <select class="quiz-select" data-answer="Conclusion joker">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+<!-- ===================== BRANCHE BOTTOM : LE RESTE À VIVRE ET L'ENDETTEMENT ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1.5px solid #0F6E56;left:640px;top:630px;width:240px;height:60px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#085041;line-height:1.3;">Le reste à vivre et l'endettement</span>
+  <span style="font-size:10px;color:#1D9E75;margin-top:2px;line-height:1.3;">Vérifier la capacité du foyer à emprunter</span>
+</div>
+
+<!-- BLANK : Reste à vivre -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1.5px dashed #0F6E56;left:350px;top:780px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#085041;margin-bottom:3px;line-height:1.3;">Somme restante une fois toutes les charges payées : rentrées d'argent moins dépenses</span>
+  <select class="quiz-select" data-answer="Reste à vivre">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1px solid #0F6E56;left:670px;top:780px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#085041;line-height:1.3;">Taux d'endettement</span>
+  <span style="font-size:10px;color:#1D9E75;margin-top:2px;line-height:1.3;">Dépenses du ménage / salaires du couple x 100</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#DFF5E1;border:1px solid #0F6E56;left:990px;top:780px;width:180px;height:70px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#085041;line-height:1.3;">Seuil d'endettement</span>
+  <span style="font-size:10px;color:#1D9E75;margin-top:2px;line-height:1.3;">33 % maximum, au-delà le crédit est refusé</span>
+</div>
+
+<!-- ===================== BRANCHE LEFT : LE COÛT DU CRÉDIT ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1.5px solid #A5185F;left:380px;top:477px;width:220px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#7C1049;line-height:1.3;">Le coût du crédit</span>
+  <span style="font-size:10px;color:#C43E82;margin-top:2px;line-height:1.3;">Ce que l'achat coûte réellement au client</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1px solid #A5185F;left:150px;top:370px;width:210px;height:66px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#7C1049;line-height:1.3;">Intérêts à payer</span>
+  <span style="font-size:10px;color:#C43E82;margin-top:2px;line-height:1.3;">(mensualité x 12 x nombre d'années) moins le prix du véhicule</span>
+</div>
+
+<!-- BLANK : Prime à la conversion -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FBE6F1;border:1.5px dashed #A5185F;left:150px;top:590px;width:210px;height:70px;border-radius:7px;">
+  <span style="font-size:11px;font-weight:bold;color:#7C1049;margin-bottom:3px;line-height:1.3;">Aide déduite du prix pour l'achat d'un véhicule plus propre</span>
+  <select class="quiz-select" data-answer="Prime à la conversion">
+    <option value="">— à compléter —</option>
+    <option>Conclusion alternative</option>
+    <option>Conclusion directe</option>
+    <option>Conclusion joker</option>
+    <option>Prime à la conversion</option>
+    <option>Reste à vivre</option>
+    <option>Signaux non verbaux positifs</option>
+    <option>Signaux verbaux négatifs</option>
+  </select>
+</div>
+
+</div><!-- fin carte -->
+
+<div class="barre-actions">
+  <button class="btn btn-validate" id="btn-validate" onclick="openConfirmModal()">📤 Envoyer à l'enseignant</button>
+  <button class="btn btn-correction" id="btn-correction" onclick="showCorrection()" disabled>
+    <span id="lock-icon">🔒</span> Voir la correction
+  </button>
+</div>
+<div class="score" id="score"></div>
+
+<!-- BULLE DE CONFIRMATION -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-bulle">
+    <div class="modal-icone">⚠️</div>
+    <div class="modal-titre">Es-tu sûr(e) ?</div>
+    <div class="modal-texte">
+      Une fois ton travail envoyé, tu ne pourras <strong>plus modifier aucune réponse</strong>.
+      Cette action est <strong>définitive</strong>.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-annuler" onclick="closeConfirmModal()">Annuler</button>
+      <button class="btn btn-confirmer" onclick="confirmSend()">Oui, envoyer mon travail</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let validated = false;
+  let correctionShown = false;
+
+  function openConfirmModal() {
+    if (validated) return;
+    document.getElementById('modal-overlay').style.display = 'flex';
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+
+  function confirmSend() {
+    if (validated) return;
+    validated = true;
+
+    closeConfirmModal();
+
+    document.querySelectorAll('.quiz-select').forEach(sel => {
+      sel.disabled = true;
+    });
+
+    const btnValidate = document.getElementById('btn-validate');
+    btnValidate.disabled = true;
+    btnValidate.textContent = '✓ Travail envoyé';
+
+    const btnCorrection = document.getElementById('btn-correction');
+    btnCorrection.disabled = false;
+    document.getElementById('lock-icon').style.display = 'none';
+  }
+
+  function showCorrection() {
+    if (!validated || correctionShown) return;
+    correctionShown = true;
+
+    const selects = document.querySelectorAll('.quiz-select');
+    let correctCount = 0;
+
+    selects.forEach(sel => {
+      const parent = sel.closest('.noeud');
+      const correct = sel.dataset.answer;
+      if (sel.value === correct) {
+        parent.classList.add('correct');
+        correctCount++;
+      } else {
+        parent.classList.add('incorrect');
+        const note = document.createElement('div');
+        note.className = 'note-correction';
+        note.textContent = '→ ' + correct;
+        parent.appendChild(note);
+      }
+    });
+
+    document.getElementById('score').textContent = `Score : ${correctCount} / ${selects.length}`;
+  }
+</script>
+
+
+<style id="pont-css">.barre-actions{display:none !important;}</style>
+<script id="pont-postmessage">
+(function(){
+  function calculerScore(){
+    var sels = document.querySelectorAll('.quiz-select');
+    var bons = 0;
+    sels.forEach(function(s){ if(s.value === s.dataset.answer) bons++; });
+    return { bons: bons, total: sels.length };
+  }
+  function lireReponses(){
+    var r = {}; var i = 0;
+    document.querySelectorAll('.quiz-select').forEach(function(s){ r['b'+i] = s.value; i++; });
+    return r;
+  }
+  function envoyerScore(){
+    var s = calculerScore();
+    parent.postMessage({ type:'synthese_score', bons:s.bons, total:s.total }, '*');
+    parent.postMessage({ type:'synthese_reponses', reponses: lireReponses() }, '*');
+  }
+  // Enrober confirmSend pour envoyer le score DES l'envoi.
+  if (typeof window.confirmSend === 'function'){
+    var _cs = window.confirmSend;
+    window.confirmSend = function(){ _cs.apply(this, arguments); try{ envoyerScore(); }catch(e){} };
+  }
+  // Ecoute des commandes venues de l'app.
+  window.addEventListener('message', function(ev){
+    var d = ev.data || {};
+    if (d.type === 'cmd_confirmer' && typeof window.confirmSend === 'function') window.confirmSend();
+    if (d.type === 'cmd_corriger' && typeof window.showCorrection === 'function') window.showCorrection();
+    if (d.type === 'appliquer_reponses' && d.reponses){
+      var sels = document.querySelectorAll('.quiz-select'); var i = 0;
+      sels.forEach(function(s){
+        var v = d.reponses['b'+i];
+        if (v !== undefined) s.value = v;
+        i++;
+      });
+      if (typeof window.confirmSend === 'function' && !window.__figic){ window.__figic = true; window.confirmSend(); }
+    }
+  });
+  // Signale au parent que l'iframe est prete.
+  parent.postMessage({ type:'synthese_prete' }, '*');
+})();
+</script>
+
+</body></html>

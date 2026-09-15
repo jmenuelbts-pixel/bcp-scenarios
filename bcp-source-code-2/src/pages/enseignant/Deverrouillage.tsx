@@ -22,7 +22,7 @@ import {
   type EtatDeverrouillage,
 } from '../../lib/deverrouillage'
 import { listerElevesAcceptes } from '../../lib/enseignant'
-import { listerClasses, type Classe } from '../../lib/classes'
+import { listerClasses, listerGroupes, listerLiaisonsGroupes, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
 import type { Profil } from '../../lib/auth'
 
 // Onglets verrouillables uniquement (le journal n'est jamais verrouillable).
@@ -38,7 +38,10 @@ export function Deverrouillage() {
   const [eleves, setEleves] = useState<Profil[]>([])
   const [eleveId, setEleveId] = useState<string | null>(null)
   const [classes, setClasses] = useState<Classe[]>([])
+  const [groupes, setGroupes] = useState<Groupe[]>([])
+  const [liaisons, setLiaisons] = useState<LiaisonGroupe[]>([])
   const [filtreClasse, setFiltreClasse] = useState<string>('')
+  const [filtreGroupe, setFiltreGroupe] = useState<string>('')
 
   useEffect(() => {
     chargerDeverrouillages().then((e) => {
@@ -47,11 +50,18 @@ export function Deverrouillage() {
     })
     listerElevesAcceptes().then(setEleves)
     listerClasses().then(setClasses)
+    listerGroupes().then(setGroupes)
+    listerLiaisonsGroupes().then(setLiaisons)
   }, [])
 
   const scenario = SCENARIOS.find((s) => s.id === scenarioId)!
   const eleveCourant = eleveId ? eleves.find((e) => e.id === eleveId) ?? null : null
-  const elevesFiltres = filtreClasse ? eleves.filter((e) => e.classe_id === filtreClasse) : eleves
+  const elevesFiltres = eleves.filter((e) => {
+    if (filtreClasse && e.classe_id !== filtreClasse) return false
+    if (filtreGroupe && !liaisons.some((l) => l.eleve_id === e.id && l.groupe_id === filtreGroupe)) return false
+    return true
+  })
+  const groupesDuFiltre = groupes.filter((g) => g.classe_id === filtreClasse)
 
   // Bascule d'un onglet : agit sur le global ou sur l'eleve selon la portee.
   async function basculer(missionId: string, ongletId: string, ouvertActuel: boolean) {
@@ -149,9 +159,13 @@ export function Deverrouillage() {
           >
             Classe entière
           </button>
-          <select value={filtreClasse} onChange={(e) => { setFiltreClasse(e.target.value); setEleveId(null) }} style={{ fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '8px 12px', borderRadius: 8, border: '1px solid #D2DCE6', background: '#FFFFFF', color: '#1F2933', minWidth: 160 }}>
+          <select value={filtreClasse} onChange={(e) => { setFiltreClasse(e.target.value); setFiltreGroupe(''); setEleveId(null) }} style={{ fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '8px 12px', borderRadius: 8, border: '1px solid #D2DCE6', background: '#FFFFFF', color: '#1F2933', minWidth: 160 }}>
             <option value="">Toutes les classes</option>
             {classes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+          </select>
+          <select value={filtreGroupe} onChange={(e) => { setFiltreGroupe(e.target.value); setEleveId(null) }} disabled={!filtreClasse || groupesDuFiltre.length === 0} style={{ fontFamily: 'Arial, sans-serif', fontSize: 13, padding: '8px 12px', borderRadius: 8, border: '1px solid #D2DCE6', background: !filtreClasse ? '#F0F2F5' : '#FFFFFF', color: '#1F2933', minWidth: 160 }}>
+            <option value="">{filtreClasse ? 'Toute la classe' : "Choisir une classe d'abord"}</option>
+            {groupesDuFiltre.map((g) => <option key={g.id} value={g.id}>{g.nom}</option>)}
           </select>
           <select
             value={eleveId ?? ''}

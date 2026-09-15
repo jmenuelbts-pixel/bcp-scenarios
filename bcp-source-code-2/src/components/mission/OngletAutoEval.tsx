@@ -14,6 +14,7 @@ interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  onEnvoye?: () => void
 }
 
 const LIBELLES: Record<NiveauCompetence, string> = {
@@ -25,7 +26,7 @@ const LIBELLES: Record<NiveauCompetence, string> = {
 
 const ORDRE: NiveauCompetence[] = ['novice', 'debrouille', 'averti', 'expert']
 
-export function OngletAutoEval({ contenu, couleur, etudiantId, missionId }: Props) {
+export function OngletAutoEval({ contenu, couleur, etudiantId, missionId, onEnvoye }: Props) {
   const [choix, setChoix] = useState<Record<string, NiveauCompetence>>({})
   const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
@@ -75,6 +76,7 @@ export function OngletAutoEval({ contenu, couleur, etudiantId, missionId }: Prop
       brouillon.current.annuler()
       void effacerBrouillon(etudiantId, missionId, 'autoeval')
       setVerrouille(true)
+      onEnvoye?.()
     }
     setEnCours(false)
   }
