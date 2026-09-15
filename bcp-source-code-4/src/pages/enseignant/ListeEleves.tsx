@@ -19,6 +19,7 @@ import {
   nbHeuresSeance,
   definirNbHeures,
   creneauxDuJour,
+  appliquerAppelAuto,
   enregistrerCreneau,
   definirCreneauColonne,
   enregistrerMotifSeance,
@@ -207,6 +208,10 @@ function OngletAppel({ eleves }: { eleves: Profil[] }) {
   const cle = (eleveId: string, h: number) => eleveId + '-' + h
 
   async function charger(d: string) {
+    // Appel automatique : cree les presences depuis l'historique de connexion
+    // (>= 10 min sur un creneau), sans ecraser les saisies manuelles.
+    const crActuels = await creneauxDuJour(d)
+    await appliquerAppelAuto(d, crActuels)
     const [nb, cr, mo] = await Promise.all([nbHeuresSeance(d), creneauxDuJour(d), motifsDuJour(d)])
     setNbHeures(nb)
     const map: Record<string, CreneauAppel> = {}

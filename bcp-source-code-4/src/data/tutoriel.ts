@@ -148,6 +148,16 @@ export const TUTO_PROF: ThemeTuto[] = [
           'Pour un bilan sur une période : choisissez les dates puis exportez le bilan en PDF.',
         ],
       },
+      {
+        titre: 'Appel automatique (présence depuis les connexions)',
+        ou: 'Liste des élèves > onglet Appel',
+        etapes: [
+          'À partir du 10 septembre, la présence se remplit toute seule : un élève connecté au moins 10 minutes sur un créneau horaire est marqué présent.',
+          'Les connexions sont enregistrées en continu pendant le cours, même si vous n\'ouvrez pas la page ; l\'appel est calculé quand vous ouvrez l\'onglet Appel.',
+          'Vous pouvez toujours corriger un statut à la main : une correction manuelle n\'est jamais remplacée par le calcul automatique.',
+          'Les séances antérieures au 10 se font à la main.',
+        ],
+      },
     ],
   },
   {
