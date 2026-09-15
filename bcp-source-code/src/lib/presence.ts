@@ -34,7 +34,55 @@ export interface Position {
   progression: number | null
 }
 
+// Date de demarrage de l'appel automatique : rien avant le 10 septembre 2026.
+const DEBUT_APPEL_AUTO = new Date('2026-09-10T00:00:00')
+
+// Creneaux horaires (doivent correspondre a CRENEAUX_HORAIRES cote appel).
+// Index -> heure de debut. 12h-13h est exclu (pause). heure_index :
+// 0=8h,1=9h,2=10h,3=11h, 4=13h,5=14h,6=15h,7=16h,8=17h.
+function heureIndexActuel(d: Date): number | null {
+  const h = d.getHours()
+  if (h >= 8 && h < 12) return h - 8          // 0..3
+  if (h >= 13 && h < 18) return 4 + (h - 13)  // 4..8
+  return null
+}
+
+// Enregistre le battement courant dans l'historique (presence_journal) pour
+// l'appel automatique. Silencieux en cas d'erreur : ne doit jamais gener
+// l'eleve. Ne fait rien avant la date de demarrage ou hors creneau.
+async function loggerJournal(etudiantId: string): Promise<void> {
+  const maintenant = new Date()
+  if (maintenant < DEBUT_APPEL_AUTO) return
+  const idx = heureIndexActuel(maintenant)
+  if (idx === null) return
+  const dateJour = `${maintenant.getFullYear()}-${String(maintenant.getMonth() + 1).padStart(2, '0')}-${String(maintenant.getDate()).padStart(2, '0')}`
+  try {
+    const { data } = await supabase
+      .from('presence_journal')
+      .select('nb_battements, premier_battement')
+      .eq('etudiant_id', etudiantId)
+      .eq('date_jour', dateJour)
+      .eq('heure_index', idx)
+      .maybeSingle()
+    const existant = data as { nb_battements: number; premier_battement: string } | null
+    await supabase.from('presence_journal').upsert(
+      {
+        etudiant_id: etudiantId,
+        date_jour: dateJour,
+        heure_index: idx,
+        premier_battement: existant?.premier_battement ?? maintenant.toISOString(),
+        dernier_battement: maintenant.toISOString(),
+        nb_battements: (existant?.nb_battements ?? 0) + 1,
+      },
+      { onConflict: 'etudiant_id,date_jour,heure_index' }
+    )
+  } catch {
+    // silencieux
+  }
+}
+
 export async function battre(etudiantId: string, position: Position): Promise<{ erreur: string | null }> {
+  void loggerJournal(etudiantId)
   const { error } = await supabase.from('presence').upsert(
     {
       etudiant_id: etudiantId,

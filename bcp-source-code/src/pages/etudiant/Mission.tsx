@@ -10,6 +10,16 @@ import { getContenuMission } from '../../data/contenus'
 import { ongletOuvert, evaluationsOuvertes, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
 import { OngletTravaux } from '../../components/mission/OngletTravaux'
 import { OngletSynthese } from '../../components/mission/OngletSynthese'
+import { OngletSyntheseHtml } from '../../components/mission/OngletSyntheseHtml'
+
+// Missions disposant d'une synthese HTML autonome (fichier dans public/syntheses/).
+const SYNTHESES_HTML = new Set([
+  'renault-m1', 'renault-m2', 'renault-m3', 'renault-m4',
+  'renault-m5', 'renault-m6', 'renault-m7', 'renault-m8',
+])
+function syntheseHtmlDispo(missionId: string): boolean {
+  return SYNTHESES_HTML.has(missionId)
+}
 import { OngletAutoEval } from '../../components/mission/OngletAutoEval'
 import { OngletActivites } from '../../components/mission/OngletActivites'
 import { OngletJournal } from '../../components/mission/OngletJournal'
@@ -156,19 +166,50 @@ export function Mission() {
 
       {/* Contenu de l'onglet actif */}
       <main style={{ maxWidth: 880, margin: '0 auto', padding: 24 }}>
-        {!contenu && actif !== 'journal' ? (
-          <p style={{ fontSize: 14, color: '#6B7280' }}>
-            Le contenu de cette mission n'est pas encore disponible.
-          </p>
-        ) : (
-          <>
-            {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'synthese' && contenu && <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} evaluationsOuvertes={evaluationsOuvertes(mission.id, etatDeverr, userId)} />}
-            {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
-          </>
-        )}
+        {(() => {
+          // L'onglet Activites et le Journal sont toujours accessibles ;
+          // les autres n'affichent leur contenu que si le professeur a
+          // deverrouille l'onglet. Sinon : ecran verrouille, aucun contenu.
+          const ongletAccessible =
+            actif === 'activites' || actif === 'journal'
+              ? true
+              : ongletOuvert(mission.id, actif, etatDeverr, userId)
+
+          if (!ongletAccessible) {
+            return (
+              <div style={{ textAlign: 'center', padding: '80px 24px', color: '#6B7280' }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style={{ marginBottom: 12 }}>
+                  <rect x="5" y="11" width="14" height="9" rx="2" fill="#9AA5B1" />
+                  <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#9AA5B1" strokeWidth="2" />
+                </svg>
+                <p style={{ fontSize: 15, margin: 0 }}>Cet onglet est verrouillé.</p>
+                <p style={{ fontSize: 13, margin: '6px 0 0', color: '#9AA5B1' }}>Il sera accessible lorsque votre professeur l'aura ouvert.</p>
+              </div>
+            )
+          }
+
+          if (!contenu && actif !== 'journal') {
+            return (
+              <p style={{ fontSize: 14, color: '#6B7280' }}>
+                Le contenu de cette mission n'est pas encore disponible.
+              </p>
+            )
+          }
+
+          return (
+            <>
+              {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} />}
+              {actif === 'synthese' && contenu && (
+                syntheseHtmlDispo(mission.id)
+                  ? <OngletSyntheseHtml fichier={mission.id} couleur={accent} etudiantId={userId} missionId={mission.id} />
+                  : <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} />
+              )}
+              {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} />}
+              {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} evaluationsOuvertes={evaluationsOuvertes(mission.id, etatDeverr, userId)} />}
+              {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
+            </>
+          )
+        })()}
       </main>
     </div>
   )

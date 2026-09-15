@@ -17,6 +17,20 @@ interface Props {
 
 const ACCENT = '#C2660C' // orange etudiant
 
+// Met un nom de famille tout en majuscules.
+function formaterNom(v: string): string {
+  return v.toUpperCase()
+}
+
+// Met un prenom avec une majuscule initiale a chaque partie (separee par
+// espace ou tiret), le reste en minuscules. Ex : « jean-pierre » -> « Jean-Pierre »,
+// « ANNE marie » -> « Anne Marie ».
+function formaterPrenom(v: string): string {
+  return v
+    .toLowerCase()
+    .replace(/(^|[\s\-])([a-zà-ÿ])/g, (_m, sep, lettre) => sep + lettre.toUpperCase())
+}
+
 export function ConnexionEtudiant({ onRetour }: Props) {
   const { connecter, inscrireEleve } = useAuth()
   const [vue, setVue] = useState<Vue>('connexion')
@@ -262,11 +276,11 @@ export function ConnexionEtudiant({ onRetour }: Props) {
             <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ flex: 1 }}>
                 <label style={etiquette}>Nom</label>
-                <input style={champ} value={nom} onChange={(e) => setNom(e.target.value)} placeholder="DUPONT" />
+                <input style={champ} value={nom} onChange={(e) => setNom(formaterNom(e.target.value))} placeholder="DUPONT" />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={etiquette}>Prénom</label>
-                <input style={champ} value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Marie" />
+                <input style={champ} value={prenom} onChange={(e) => setPrenom(formaterPrenom(e.target.value))} placeholder="Marie" />
               </div>
             </div>
 

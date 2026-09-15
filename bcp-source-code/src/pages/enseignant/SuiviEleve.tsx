@@ -37,10 +37,12 @@ function formatDate(iso: string): string {
   }
 }
 
-// Nombre de questions notees d'une mission (hors appariement).
-function totalQuestions(missionId: string): number {
+// Nombre d'items notes d'une mission pour une activite donnee (hors
+// appariement pour le quiz ; nombre de zones pour le glisser-deposer).
+function totalQuestions(missionId: string, activiteId?: string): number {
   const c = getContenuMission(missionId)
   if (!c) return 0
+  if (activiteId === 'glisser') return c.activites.glisserDeposer?.zones.length ?? 0
   return c.activites.quiz.filter((q) => q.type !== 'appariement').length
 }
 
@@ -224,7 +226,9 @@ function BlocMission({ data, eleveId }: { data: MissionData; eleveId: string }) 
 }
 
 function LigneActivite({ quiz, eleveId }: { quiz: ReponseQuiz; eleveId: string }) {
-  const total = totalQuestions(quiz.mission_id)
+  const total = quiz.activite_id === 'synthese'
+    ? (quiz.bareme ?? 0)
+    : totalQuestions(quiz.mission_id, quiz.activite_id ?? undefined)
   const [bareme, setBareme] = useState<number | null>(quiz.bareme)
   const [enregistre, setEnregistre] = useState(false)
 
@@ -247,7 +251,7 @@ function LigneActivite({ quiz, eleveId }: { quiz: ReponseQuiz; eleveId: string }
   return (
     <div style={{ ...ligne, flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-        <span>{titreMission(quiz.mission_id)}</span>
+        <span>{titreMission(quiz.mission_id)} — {quiz.activite_id === 'glisser' ? 'Glisser-déposer' : quiz.activite_id === 'synthese' ? 'Synthèse' : 'Quiz'}</span>
         <span style={{ color: ROUGE_CORRECTION, fontWeight: 700 }}>
           {quiz.score !== null ? (
             noteConvertie !== null ? `${noteConvertie} / ${bareme}` : `${quiz.score} / ${total || '?'}`

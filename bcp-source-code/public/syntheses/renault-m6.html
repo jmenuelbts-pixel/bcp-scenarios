@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8">
+<title>Mission 6 - Le traitement des objections liées au produit et au prix - Carte mentale interactive</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#FAFAF8;font-family:Arial,sans-serif;padding:24px;}
+.titre{text-align:center;font-size:12px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.consigne{text-align:center;font-size:13px;color:#555;margin-bottom:20px;}
+
+/* Menus déroulants (nœuds à compléter) */
+.quiz-select{
+  width:100%;
+  font-size:11px;
+  font-weight:bold;
+  font-family:Arial,sans-serif;
+  padding:3px 4px;
+  border-radius:5px;
+  background:#fff;
+  cursor:pointer;
+}
+.quiz-select:focus{outline:none;}
+.quiz-select:disabled{
+  cursor:not-allowed;
+  background:#F1F1EE;
+  border-style:solid !important;
+  opacity:0.9;
+}
+
+.noeud.correct{background:#DFF5E1 !important;border-color:#1D9E75 !important;border-style:solid !important;}
+.noeud.correct .quiz-select:disabled{border-color:#1D9E75;color:#0F6E56;background:#EAFBEE;}
+
+.noeud.incorrect{background:#FBE4E4 !important;border-color:#C0392B !important;border-style:solid !important;}
+.noeud.incorrect .quiz-select:disabled{border-color:#C0392B;color:#8E2A1D;background:#FDEEEC;}
+
+.note-correction{
+  font-size:9.5px;
+  margin-top:2px;
+  font-style:italic;
+  color:#712B13;
+  line-height:1.2;
+}
+
+/* Barre d'action sous la carte */
+.barre-actions{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin-top:28px;
+}
+
+.btn{
+  font-size:14px;
+  font-weight:bold;
+  padding:10px 22px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.btn-validate{background:#1D9E75;color:#fff;}
+.btn-validate:hover:not(:disabled){background:#17805F;}
+.btn-validate:disabled{background:#C8C6BE;color:#6d6c68;cursor:not-allowed;}
+
+.btn-correction{background:#fff;color:#534AB7;border:1.5px solid #534AB7;}
+.btn-correction:hover:not(:disabled){background:#EEEDFE;}
+.btn-correction:disabled{background:#F1EFE8;color:#9a9890;border:1.5px solid #d8d6cd;cursor:not-allowed;}
+
+.score{
+  font-size:13px;
+  font-weight:bold;
+  color:#3C3489;
+  margin-top:14px;
+  text-align:center;
+}
+
+/* Bulle de confirmation */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(40,38,60,0.55);
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal-bulle{
+  background:#fff;
+  border-radius:16px;
+  padding:28px 32px;
+  max-width:380px;
+  width:90%;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.25);
+}
+
+.modal-icone{font-size:34px;margin-bottom:8px;}
+.modal-titre{font-size:17px;font-weight:bold;color:#712B13;margin-bottom:10px;}
+.modal-texte{font-size:13.5px;color:#444441;line-height:1.5;margin-bottom:22px;}
+.modal-actions{display:flex;justify-content:center;gap:12px;}
+
+.btn-annuler{background:#F1EFE8;color:#444441;border:1px solid #ccc;}
+.btn-annuler:hover{background:#e6e4dc;}
+.btn-confirmer{background:#1D9E75;color:#fff;}
+.btn-confirmer:hover{background:#17805F;}
+</style></head><body>
+<div class="titre">Scénario RENAULT &mdash; Mission 6 : Le traitement des objections liées au produit et au prix &mdash; Carte mentale de synthèse</div>
+<div class="consigne">Complète les 6 cases en pointillés en choisissant la bonne réponse dans le menu déroulant, puis envoie ton travail.</div>
+<div style="position:relative;width:1450px;height:560px;margin:0 auto;">
+<svg style="position:absolute;top:0;left:0;width:1450px;height:560px;pointer-events:none;">
+<!-- Centre -> branches -->
+<line x1="630" y1="310" x2="630" y2="246" stroke="#7F77DD" stroke-width="2"/>
+<line x1="770" y1="350" x2="900" y2="350" stroke="#7F77DD" stroke-width="2"/>
+<line x1="490" y1="350" x2="430" y2="350" stroke="#7F77DD" stroke-width="2"/>
+
+<!-- Branche TOP : Les types d'objections -->
+<line x1="630" y1="190" x2="505" y2="150" stroke="#185FA5" stroke-width="1.2"/>
+<line x1="630" y1="190" x2="745" y2="150" stroke="#185FA5" stroke-width="1.2"/>
+
+<!-- Branche RIGHT : Le traitement des objections -->
+<line x1="1130" y1="350" x2="1200" y2="108" stroke="#854F0B" stroke-width="1.2"/>
+<line x1="1130" y1="350" x2="1200" y2="198" stroke="#854F0B" stroke-width="1.2"/>
+<line x1="1130" y1="350" x2="1200" y2="288" stroke="#854F0B" stroke-width="1.2"/>
+<line x1="1130" y1="350" x2="1200" y2="378" stroke="#854F0B" stroke-width="1.2"/>
+<line x1="1130" y1="350" x2="1200" y2="468" stroke="#854F0B" stroke-width="1.2"/>
+
+<!-- Branche LEFT : L'annonce du prix -->
+<line x1="200" y1="350" x2="260" y2="280" stroke="#0E7C86" stroke-width="1.2"/>
+<line x1="200" y1="350" x2="260" y2="460" stroke="#0E7C86" stroke-width="1.2"/>
+</svg>
+
+<!-- CENTRE -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 14px;text-align:center;background:#EEEDFE;border:2px solid #534AB7;left:490px;top:310px;width:280px;height:80px;border-radius:12px;">
+  <span style="font-size:14px;font-weight:bold;color:#3C3489;">MISSION 6</span>
+  <span style="font-size:11px;color:#7F77DD;margin-top:3px;line-height:1.3;">Le traitement des objections liées au produit et au prix</span>
+</div>
+
+<!-- ===================== BRANCHE TOP : LES TYPES D'OBJECTIONS ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px solid #185FA5;left:510px;top:190px;width:240px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#0C447C;line-height:1.3;">Les types d'objections</span>
+  <span style="font-size:10px;color:#378ADD;margin-top:2px;line-height:1.3;">Deux origines possibles au doute du client</span>
+</div>
+
+<!-- BLANK : Objection sincère -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px dashed #185FA5;left:410px;top:90px;width:190px;height:60px;border-radius:7px;">
+  <span style="font-size:10px;color:#378ADD;margin-bottom:3px;line-height:1.3;">Crainte réelle fondée sur une expérience négative, le client a besoin d'être rassuré</span>
+  <select class="quiz-select" data-answer="Objection sincère">
+    <option value="">— à compléter —</option>
+    <option>Affaiblissement</option>
+    <option>Anticipation</option>
+    <option>Compensation</option>
+    <option>Objection prétexte</option>
+    <option>Objection sincère</option>
+    <option>Technique de l'addition</option>
+  </select>
+</div>
+
+<!-- BLANK : Objection prétexte -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E6F1FB;border:1.5px dashed #185FA5;left:650px;top:90px;width:190px;height:60px;border-radius:7px;">
+  <span style="font-size:10px;color:#378ADD;margin-bottom:3px;line-height:1.3;">Le client cherche à fuir le commercial pour éviter l'entretien</span>
+  <select class="quiz-select" data-answer="Objection prétexte">
+    <option value="">— à compléter —</option>
+    <option>Affaiblissement</option>
+    <option>Anticipation</option>
+    <option>Compensation</option>
+    <option>Objection prétexte</option>
+    <option>Objection sincère</option>
+    <option>Technique de l'addition</option>
+  </select>
+</div>
+
+<!-- ===================== BRANCHE RIGHT : LE TRAITEMENT DES OBJECTIONS ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px solid #854F0B;left:900px;top:322px;width:230px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Le traitement des objections</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Techniques pour lever les freins du client</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1200px;top:80px;width:190px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Oui... mais</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Donner raison au client puis avancer un argument</span>
+</div>
+
+<!-- BLANK : Affaiblissement -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1200px;top:170px;width:190px;height:56px;border-radius:7px;">
+  <span style="font-size:10px;color:#BA7517;margin-bottom:3px;line-height:1.3;">Montrer qu'un point perçu comme faible est en fait un point fort</span>
+  <select class="quiz-select" data-answer="Affaiblissement">
+    <option value="">— à compléter —</option>
+    <option>Affaiblissement</option>
+    <option>Anticipation</option>
+    <option>Compensation</option>
+    <option>Objection prétexte</option>
+    <option>Objection sincère</option>
+    <option>Technique de l'addition</option>
+  </select>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1px solid #854F0B;left:1200px;top:260px;width:190px;height:56px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#633806;line-height:1.3;">Témoignage</span>
+  <span style="font-size:10px;color:#BA7517;margin-top:2px;line-height:1.3;">Utiliser l'expérience d'un autre client pour argumenter</span>
+</div>
+
+<!-- BLANK : Compensation -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1200px;top:350px;width:190px;height:56px;border-radius:7px;">
+  <span style="font-size:10px;color:#BA7517;margin-bottom:3px;line-height:1.3;">Montrer que les points forts sont plus nombreux que les points faibles</span>
+  <select class="quiz-select" data-answer="Compensation">
+    <option value="">— à compléter —</option>
+    <option>Affaiblissement</option>
+    <option>Anticipation</option>
+    <option>Compensation</option>
+    <option>Objection prétexte</option>
+    <option>Objection sincère</option>
+    <option>Technique de l'addition</option>
+  </select>
+</div>
+
+<!-- BLANK : Anticipation -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#FAEEDA;border:1.5px dashed #854F0B;left:1200px;top:440px;width:190px;height:56px;border-radius:7px;">
+  <span style="font-size:10px;color:#BA7517;margin-bottom:3px;line-height:1.3;">Devancer l'objection du client en avançant un argument avant qu'il ne la formule</span>
+  <select class="quiz-select" data-answer="Anticipation">
+    <option value="">— à compléter —</option>
+    <option>Affaiblissement</option>
+    <option>Anticipation</option>
+    <option>Compensation</option>
+    <option>Objection prétexte</option>
+    <option>Objection sincère</option>
+    <option>Technique de l'addition</option>
+  </select>
+</div>
+
+<!-- ===================== BRANCHE LEFT : L'ANNONCE DU PRIX ===================== -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E0F5F7;border:1.5px solid #0E7C86;left:200px;top:322px;width:230px;height:56px;border-radius:8px;">
+  <span style="font-size:12px;font-weight:bold;color:#0A5A61;line-height:1.3;">L'annonce du prix</span>
+  <span style="font-size:10px;color:#149AA6;margin-top:2px;line-height:1.3;">Annoncer le prix avec méthode pour ne pas faire fuir le client</span>
+</div>
+
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E0F5F7;border:1px solid #0E7C86;left:40px;top:250px;width:220px;height:60px;border-radius:7px;">
+  <span style="font-size:12px;font-weight:bold;color:#0A5A61;line-height:1.3;">Empathie</span>
+  <span style="font-size:10px;color:#149AA6;margin-top:2px;line-height:1.3;">Montrer au client qu'on comprend son inquiétude, avant d'annoncer le prix</span>
+</div>
+
+<!-- BLANK : Technique de l'addition -->
+<div class="noeud" style="position:absolute;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:#E0F5F7;border:1.5px dashed #0E7C86;left:40px;top:430px;width:220px;height:60px;border-radius:7px;">
+  <span style="font-size:10px;color:#149AA6;margin-bottom:3px;line-height:1.3;">Énumérer quelques avantages forts du produit juste avant d'annoncer le prix</span>
+  <select class="quiz-select" data-answer="Technique de l'addition">
+    <option value="">— à compléter —</option>
+    <option>Affaiblissement</option>
+    <option>Anticipation</option>
+    <option>Compensation</option>
+    <option>Objection prétexte</option>
+    <option>Objection sincère</option>
+    <option>Technique de l'addition</option>
+  </select>
+</div>
+
+</div><!-- fin carte -->
+
+<div class="barre-actions">
+  <button class="btn btn-validate" id="btn-validate" onclick="openConfirmModal()">📤 Envoyer à l'enseignant</button>
+  <button class="btn btn-correction" id="btn-correction" onclick="showCorrection()" disabled>
+    <span id="lock-icon">🔒</span> Voir la correction
+  </button>
+</div>
+<div class="score" id="score"></div>
+
+<!-- BULLE DE CONFIRMATION -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-bulle">
+    <div class="modal-icone">⚠️</div>
+    <div class="modal-titre">Es-tu sûr(e) ?</div>
+    <div class="modal-texte">
+      Une fois ton travail envoyé, tu ne pourras <strong>plus modifier aucune réponse</strong>.
+      Cette action est <strong>définitive</strong>.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-annuler" onclick="closeConfirmModal()">Annuler</button>
+      <button class="btn btn-confirmer" onclick="confirmSend()">Oui, envoyer mon travail</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let validated = false;
+  let correctionShown = false;
+
+  function openConfirmModal() {
+    if (validated) return;
+    document.getElementById('modal-overlay').style.display = 'flex';
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+
+  function confirmSend() {
+    if (validated) return;
+    validated = true;
+
+    closeConfirmModal();
+
+    document.querySelectorAll('.quiz-select').forEach(sel => {
+      sel.disabled = true;
+    });
+
+    const btnValidate = document.getElementById('btn-validate');
+    btnValidate.disabled = true;
+    btnValidate.textContent = '✓ Travail envoyé';
+
+    const btnCorrection = document.getElementById('btn-correction');
+    btnCorrection.disabled = false;
+    document.getElementById('lock-icon').style.display = 'none';
+  }
+
+  function showCorrection() {
+    if (!validated || correctionShown) return;
+    correctionShown = true;
+
+    const selects = document.querySelectorAll('.quiz-select');
+    let correctCount = 0;
+
+    selects.forEach(sel => {
+      const parent = sel.closest('.noeud');
+      const correct = sel.dataset.answer;
+      if (sel.value === correct) {
+        parent.classList.add('correct');
+        correctCount++;
+      } else {
+        parent.classList.add('incorrect');
+        const note = document.createElement('div');
+        note.className = 'note-correction';
+        note.textContent = '→ ' + correct;
+        parent.appendChild(note);
+      }
+    });
+
+    document.getElementById('score').textContent = `Score : ${correctCount} / ${selects.length}`;
+  }
+</script>
+
+
+<style id="pont-css">.barre-actions{display:none !important;}</style>
+<script id="pont-postmessage">
+(function(){
+  function calculerScore(){
+    var sels = document.querySelectorAll('.quiz-select');
+    var bons = 0;
+    sels.forEach(function(s){ if(s.value === s.dataset.answer) bons++; });
+    return { bons: bons, total: sels.length };
+  }
+  function lireReponses(){
+    var r = {}; var i = 0;
+    document.querySelectorAll('.quiz-select').forEach(function(s){ r['b'+i] = s.value; i++; });
+    return r;
+  }
+  function envoyerScore(){
+    var s = calculerScore();
+    parent.postMessage({ type:'synthese_score', bons:s.bons, total:s.total }, '*');
+    parent.postMessage({ type:'synthese_reponses', reponses: lireReponses() }, '*');
+  }
+  // Enrober confirmSend pour envoyer le score DES l'envoi.
+  if (typeof window.confirmSend === 'function'){
+    var _cs = window.confirmSend;
+    window.confirmSend = function(){ _cs.apply(this, arguments); try{ envoyerScore(); }catch(e){} };
+  }
+  // Ecoute des commandes venues de l'app.
+  window.addEventListener('message', function(ev){
+    var d = ev.data || {};
+    if (d.type === 'cmd_confirmer' && typeof window.confirmSend === 'function') window.confirmSend();
+    if (d.type === 'cmd_corriger' && typeof window.showCorrection === 'function') window.showCorrection();
+    if (d.type === 'appliquer_reponses' && d.reponses){
+      var sels = document.querySelectorAll('.quiz-select'); var i = 0;
+      sels.forEach(function(s){
+        var v = d.reponses['b'+i];
+        if (v !== undefined) s.value = v;
+        i++;
+      });
+      if (typeof window.confirmSend === 'function' && !window.__figic){ window.__figic = true; window.confirmSend(); }
+    }
+  });
+  // Signale au parent que l'iframe est prete.
+  parent.postMessage({ type:'synthese_prete' }, '*');
+})();
+</script>
+
+</body></html>
