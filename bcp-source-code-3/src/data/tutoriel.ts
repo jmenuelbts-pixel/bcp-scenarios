@@ -68,8 +68,10 @@ export const TUTO_PROF: ThemeTuto[] = [
         ou: 'Tableau de bord > Classes et groupes',
         etapes: [
           'Ouvrez la tuile « Classes et groupes ».',
-          'Créez une classe, renommez-la ou supprimez-la.',
-          'Constituez des groupes d\'élèves si besoin.',
+          'En haut, créez une classe (par exemple votre classe entière), renommez-la ou supprimez-la avec les icônes à côté de son nom.',
+          'Sélectionnez une classe, puis dans « Groupes de cette classe » tapez un nom (par exemple « Demi-groupe A ») et cliquez « Créer le groupe ». Recommencez pour chaque groupe.',
+          'Dans la liste des élèves en bas, cochez le ou les groupes de chaque élève. Un élève peut appartenir à la classe entière et à un demi-groupe en même temps.',
+          'Les groupes servent ensuite à filtrer l\'appel, les notes et le déverrouillage : partout où il y a une liste d\'élèves, choisissez la classe puis le groupe.',
         ],
       },
       {
@@ -146,6 +148,16 @@ export const TUTO_PROF: ThemeTuto[] = [
           'Pour un bilan sur une période : choisissez les dates puis exportez le bilan en PDF.',
         ],
       },
+      {
+        titre: 'Appel automatique (présence depuis les connexions)',
+        ou: 'Liste des élèves > onglet Appel',
+        etapes: [
+          'À partir du 10 septembre, la présence se remplit toute seule : un élève connecté au moins 10 minutes sur un créneau horaire est marqué présent.',
+          'Les connexions sont enregistrées en continu pendant le cours, même si vous n\'ouvrez pas la page ; l\'appel est calculé quand vous ouvrez l\'onglet Appel.',
+          'Vous pouvez toujours corriger un statut à la main : une correction manuelle n\'est jamais remplacée par le calcul automatique.',
+          'Les séances antérieures au 10 se font à la main.',
+        ],
+      },
     ],
   },
   {
@@ -175,6 +187,17 @@ export const TUTO_PROF: ThemeTuto[] = [
         etapes: [
           'À l\'envoi d\'un quiz ou d\'un glisser-déposer, une note et une appréciation sont générées automatiquement.',
           'Vous les voyez immédiatement, en rouge, dans le suivi de l\'élève.',
+        ],
+      },
+      {
+        titre: 'Reporter les notes de quiz / glisser-déposer dans le relevé',
+        ou: 'Liste des élèves > onglet Notes',
+        etapes: [
+          'Ouvrez « Liste des élèves » puis l\'onglet Notes.',
+          'Dès qu\'un élève a passé un quiz ou un glisser-déposer, une colonne est créée automatiquement (par exemple « Renault - M1 - Quiz ») et la note y est reportée.',
+          'Réglez le barème de la colonne (sur 10 ou sur 20) ; la note se convertit automatiquement.',
+          'Vous pouvez modifier une note à la main : elle est alors protégée et ne sera plus écrasée par le report automatique.',
+          'Filtrez par classe pour ne voir que les colonnes des scénarios travaillés par cette classe.',
         ],
       },
       {

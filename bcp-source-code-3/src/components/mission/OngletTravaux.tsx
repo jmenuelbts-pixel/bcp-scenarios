@@ -101,11 +101,12 @@ interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  onEnvoye?: () => void
 }
 
 type Saisies = Record<string, string>
 
-export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props) {
+export function OngletTravaux({ contenu, couleur, etudiantId, missionId, onEnvoye }: Props) {
   // Marque affichee dans l'habillage pageWeb, derivee du prefixe de missionId.
   const MARQUES: Record<string, { nom: string; url: string }> = {
     renault: { nom: 'Renault', url: 'www.renault.fr' },
@@ -215,6 +216,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       brouillon.current.annuler()
       void effacerBrouillon(etudiantId, missionId, 'travaux')
       setVerrouille(true)
+      onEnvoye?.()
     }
     setEnCours(false)
   }
