@@ -238,12 +238,31 @@ export async function avancerEnchainement(
   const idx = CHAINE.indexOf(ongletEnvoye)
   if (idx === -1) return etat
   let nouvel = etat
-  // Ferme l'onglet envoye (pour cet eleve).
-  nouvel = await definirOngletEleve(scenarioId, missionId, ongletEnvoye, etudiantId, false, nouvel)
-  // Ouvre le suivant s'il existe.
+  // On n'ouvre que le suivant. L'onglet envoye reste consultable (correction)
+  // jusqu'a ce que l'eleve change d'onglet : c'est fermerPrecedent qui le
+  // verrouille alors, pour empecher tout retour en arriere (anti-triche).
   const suivant = CHAINE[idx + 1]
   if (suivant) {
     nouvel = await definirOngletEleve(scenarioId, missionId, suivant, etudiantId, true, nouvel)
   }
   return nouvel
+}
+
+// Ferme definitivement un onglet deja envoye quand l'eleve le quitte pour un
+// onglet plus avance de la chaine. Empeche de revenir consulter ses reponses
+// (anti-triche vis-a-vis du quiz / glisser). Ne ferme jamais un onglet non
+// encore envoye ni un onglet situe apres celui qu'on quitte.
+export async function fermerPrecedent(
+  scenarioId: string,
+  missionId: string,
+  ongletQuitte: OngletId,
+  ongletDestination: OngletId,
+  etudiantId: string,
+  etat: EtatDeverrouillage
+): Promise<EtatDeverrouillage> {
+  const iQuitte = CHAINE.indexOf(ongletQuitte)
+  const iDest = CHAINE.indexOf(ongletDestination)
+  // On ne ferme que si on avance dans la chaine (destination plus loin).
+  if (iQuitte === -1 || iDest === -1 || iDest <= iQuitte) return etat
+  return definirOngletEleve(scenarioId, missionId, ongletQuitte, etudiantId, false, etat)
 }

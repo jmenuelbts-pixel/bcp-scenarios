@@ -32,6 +32,17 @@ function formaterDelai(secondes: number): string {
   return `il y a ${Math.round(min / 60)} h`
 }
 
+// Date et heure exactes de la derniere connexion (ex : "15/09 à 23h47").
+function formaterDerniereConnexion(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const jj = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mi = String(d.getMinutes()).padStart(2, '0')
+  return `${jj}/${mm} à ${hh}h${mi}`
+}
+
 export function PresenceTempsReel() {
   const navigate = useNavigate()
   const { session } = useAuth()
@@ -186,6 +197,9 @@ export function PresenceTempsReel() {
                     <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: couleur }}>{LIBELLE_STATUT[statut]}</div>
                       {p && enLigne && <div style={{ fontSize: 11, color: '#9AA5B1' }}>{formaterDelai(p.secondesDepuis)}</div>}
+                      {p && !enLigne && p.updated_at && (
+                        <div style={{ fontSize: 11, color: '#9AA5B1' }}>Vu le {formaterDerniereConnexion(p.updated_at)}</div>
+                      )}
                     </div>
                   </div>
 

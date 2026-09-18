@@ -47,8 +47,10 @@ export function OngletAutoEval({ contenu, couleur, etudiantId, missionId, onEnvo
         if (s.reponses && typeof s.reponses === 'object') {
           setChoix(s.reponses as Record<string, NiveauCompetence>)
         }
-        setVerrouille(true)
-        void effacerBrouillon(etudiantId, missionId, 'autoeval')
+        if (s.submitted_at) {
+          setVerrouille(true)
+          void effacerBrouillon(etudiantId, missionId, 'autoeval')
+        }
         return
       }
       const b = await chargerBrouillon<Record<string, NiveauCompetence>>(etudiantId, missionId, 'autoeval')

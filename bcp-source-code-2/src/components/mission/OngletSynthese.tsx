@@ -38,8 +38,10 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId, onEnvo
         if (s.reponses && typeof s.reponses === 'object') {
           setReponses(s.reponses as Record<string, string>)
         }
-        setVerrouille(true)
-        void effacerBrouillon(etudiantId, missionId, 'synthese')
+        if (s.submitted_at) {
+          setVerrouille(true)
+          void effacerBrouillon(etudiantId, missionId, 'synthese')
+        }
         return
       }
       const b = await chargerBrouillon<Record<string, string>>(etudiantId, missionId, 'synthese')

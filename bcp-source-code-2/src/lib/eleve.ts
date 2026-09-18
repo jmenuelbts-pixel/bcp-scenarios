@@ -57,6 +57,23 @@ export async function chargerTravail(
   return (data as { contenu: string | null } | null)?.contenu ?? null
 }
 
+// Indique si le travail (onglet Travaux) a ete envoye (submitted_at non nul).
+// Sert a distinguer "envoye/verrouille" de "rouvert par le prof" (submitted_at
+// remis a null) : dans ce dernier cas l'eleve garde ses reponses mais peut
+// de nouveau modifier.
+export async function travailEstEnvoye(
+  etudiantId: string,
+  missionId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('travaux')
+    .select('submitted_at')
+    .eq('etudiant_id', etudiantId)
+    .eq('mission_id', missionId)
+    .maybeSingle()
+  return !!(data as { submitted_at: string | null } | null)?.submitted_at
+}
+
 // Retour du professeur sur le travail rendu : commentaire et competences.
 export interface RetourTravail {
   commentaire: string | null
@@ -234,8 +251,9 @@ export async function nombreTravauxCorriges(etudiantId: string): Promise<number>
   return n
 }
 
-// Rouvre un travail envoye : supprime l'enregistrement pour lever le verrou
-// cote eleve (il pourra de nouveau modifier et renvoyer). `partie` vaut
+// Rouvre un travail envoye SANS effacer ce que l'eleve a saisi : on vide
+// seulement `submitted_at` (marque "plus envoye"), l'eleve retrouve ses
+// reponses, peut les completer/corriger puis renvoyer. `partie` vaut
 // 'travaux' | 'synthese' | 'autoeval' | 'quiz' | 'glisser'.
 export async function rouvrirTravail(
   etudiantId: string,
@@ -245,14 +263,14 @@ export async function rouvrirTravail(
   if (partie === 'travaux') {
     const { error } = await supabase
       .from('travaux')
-      .delete()
+      .update({ submitted_at: null })
       .eq('etudiant_id', etudiantId)
       .eq('mission_id', missionId)
     return { erreur: error ? error.message : null }
   }
   const { error } = await supabase
     .from('reponses_quiz')
-    .delete()
+    .update({ submitted_at: null })
     .eq('etudiant_id', etudiantId)
     .eq('mission_id', missionId)
     .eq('activite_id', partie)
