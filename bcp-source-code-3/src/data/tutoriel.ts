@@ -105,8 +105,8 @@ export const TUTO_PROF: ThemeTuto[] = [
         ou: 'Tableau de bord > Déverrouillage, ou Suivi des élèves',
         etapes: [
           'Pour ouvrir/fermer des onglets d\'une mission : utilisez la tuile « Déverrouillage ».',
-          'Pour rouvrir un travail déjà envoyé par un élève : ouvrez « Suivi des élèves », cliquez sur l\'élève, filtrez par scénario et mission, puis cliquez « Rouvrir » à côté du travail concerné.',
-          'Attention : rouvrir un travail permet à l\'élève de le modifier ; le contenu déjà envoyé sera remplacé lorsqu\'il renverra.',
+          'Pour rouvrir un travail déjà envoyé (y compris une synthèse), deux endroits au choix : « Suivi des élèves » (cliquez sur l\'élève, filtrez par scénario et mission, bouton « Rouvrir »), ou « Déverrouillage » (choisissez l\'élève, puis « Rouvrir » sous la mission concernée).',
+          'Tout ce que l\'élève a déjà saisi est conservé : il peut compléter ou corriger, puis renvoyer. Utile quand un élève a cliqué « Envoyer » sans avoir rien rempli.',
         ],
       },
     ],
@@ -136,6 +136,7 @@ export const TUTO_PROF: ThemeTuto[] = [
         ou: 'Tableau de bord > Présence en temps réel',
         etapes: [
           'Ouvrez la tuile « Présence en temps réel ».',
+          'Quand un élève est hors ligne, la date et l\'heure de sa dernière connexion s\'affichent (« Vu le ... ») : utile pour repérer une connexion en dehors des heures de cours.',
           'Filtrez par classe ou par groupe pour voir qui est connecté.',
         ],
       },
@@ -369,6 +370,7 @@ export const TUTO_ELEVE: ThemeTuto[] = [
         etapes: [
           'Notez ce qui n\'a pas été réussi et ce qui a été le moins bien réussi.',
           'Le journal reste accessible à tout moment.',
+          'Le bouton « Valider et passer à la mission suivante » enregistre le journal et ouvre automatiquement la mission suivante du scénario.',
         ],
       },
     ],
