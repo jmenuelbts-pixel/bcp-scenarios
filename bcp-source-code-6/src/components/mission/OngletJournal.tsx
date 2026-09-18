@@ -7,13 +7,15 @@ import { useEffect, useRef, useState } from 'react'
 import { enregistrerJournal, chargerJournal } from '../../lib/eleve'
 import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon, useFlushBrouillon } from '../../lib/brouillon'
 
+import { BoutonExportOnglet } from './BoutonExportOnglet'
 interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  onMissionSuivante?: () => void
 }
 
-export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
+export function OngletJournal({ couleur, etudiantId, missionId, onMissionSuivante }: Props) {
   const [nonReussi, setNonReussi] = useState('')
   const [moinsBien, setMoinsBien] = useState('')
   const [enregistre, setEnregistre] = useState(false)
@@ -66,6 +68,25 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
     setEnCours(false)
   }
 
+  async function validerEtSuivante() {
+    if (!etudiantId) {
+      setErreur('Vous devez etre connecte.')
+      return
+    }
+    setEnCours(true)
+    setErreur(null)
+    const { erreur } = await enregistrerJournal(etudiantId, missionId, nonReussi, moinsBien)
+    setEnCours(false)
+    if (erreur) {
+      setErreur('L enregistrement a echoue. Veuillez reessayer.')
+      return
+    }
+    brouillon.current.annuler()
+    void effacerBrouillon(etudiantId, missionId, 'journal')
+    setEnregistre(true)
+    onMissionSuivante?.()
+  }
+
   const champ: React.CSSProperties = {
     fontFamily: 'Arial, sans-serif',
     width: '100%',
@@ -80,6 +101,7 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif' }}>
+      <BoutonExportOnglet missionId={missionId} partie="journal" etudiantId={etudiantId} pret={true} />
       <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 16px 0' }}>
         Le journal de bord reste accessible à tout moment, même si la mission est verrouillée.
       </p>
@@ -131,6 +153,26 @@ export function OngletJournal({ couleur, etudiantId, missionId }: Props) {
         >
           {enCours ? 'Enregistrement...' : 'Enregistrer'}
         </button>
+        {onMissionSuivante && (
+          <button
+            type="button"
+            disabled={enCours}
+            onClick={validerEtSuivante}
+            style={{
+              fontFamily: 'Arial, sans-serif',
+              background: '#FFFFFF',
+              color: couleur,
+              border: `1.5px solid ${couleur}`,
+              borderRadius: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: enCours ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Valider et passer à la mission suivante
+          </button>
+        )}
         {enregistre && (
           <span style={{ fontSize: 13, color: '#1B6B3A', fontWeight: 600 }}>Journal enregistré.</span>
         )}

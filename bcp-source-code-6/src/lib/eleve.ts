@@ -7,6 +7,14 @@
 
 import { supabase } from './supabase'
 
+// Taille maximale d'un contenu envoye (caracteres). Large pour du travail
+// d'eleve, mais evite qu'un collage accidentel enorme ne fasse echouer l'envoi
+// ou ne gonfle la base. Au-dela, on tronque proprement.
+const TAILLE_MAX = 200000
+function borner(contenu: string): string {
+  return contenu.length > TAILLE_MAX ? contenu.slice(0, TAILLE_MAX) : contenu
+}
+
 // Marque un onglet de mission comme visite par l'eleve.
 // On insere une trace ; les doublons ne sont pas genants pour le calcul de
 // progression (on compte les missions distinctes).
@@ -29,7 +37,7 @@ export async function enregistrerTravail(
   contenu: string
 ): Promise<{ erreur: string | null }> {
   const { error } = await supabase.from('travaux').upsert(
-    { etudiant_id: etudiantId, mission_id: missionId, contenu },
+    { etudiant_id: etudiantId, mission_id: missionId, contenu: borner(contenu) },
     { onConflict: 'etudiant_id,mission_id' }
   )
   return { erreur: error ? error.message : null }
@@ -47,6 +55,23 @@ export async function chargerTravail(
     .eq('mission_id', missionId)
     .maybeSingle()
   return (data as { contenu: string | null } | null)?.contenu ?? null
+}
+
+// Indique si le travail (onglet Travaux) a ete envoye (submitted_at non nul).
+// Sert a distinguer "envoye/verrouille" de "rouvert par le prof" (submitted_at
+// remis a null) : dans ce dernier cas l'eleve garde ses reponses mais peut
+// de nouveau modifier.
+export async function travailEstEnvoye(
+  etudiantId: string,
+  missionId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('travaux')
+    .select('submitted_at')
+    .eq('etudiant_id', etudiantId)
+    .eq('mission_id', missionId)
+    .maybeSingle()
+  return !!(data as { submitted_at: string | null } | null)?.submitted_at
 }
 
 // Retour du professeur sur le travail rendu : commentaire et competences.
@@ -79,8 +104,8 @@ export async function enregistrerJournal(
     {
       etudiant_id: etudiantId,
       mission_id: missionId,
-      non_reussi: nonReussi,
-      moins_bien_reussi: moinsBienReussi,
+      non_reussi: borner(nonReussi),
+      moins_bien_reussi: borner(moinsBienReussi),
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'etudiant_id,mission_id' }
@@ -112,17 +137,22 @@ export async function enregistrerQuiz(
   missionId: string,
   activiteId: string,
   reponses: unknown,
-  score: number
+  score: number,
+  appreciation: string | null = null,
+  bareme: number | null = null
 ): Promise<{ erreur: string | null }> {
+  const ligne: Record<string, unknown> = {
+    etudiant_id: etudiantId,
+    mission_id: missionId,
+    activite_id: activiteId,
+    reponses,
+    score,
+    appreciation,
+    submitted_at: new Date().toISOString(),
+  }
+  if (bareme !== null) ligne.bareme = bareme
   const { error } = await supabase.from('reponses_quiz').upsert(
-    {
-      etudiant_id: etudiantId,
-      mission_id: missionId,
-      activite_id: activiteId,
-      reponses,
-      score,
-      submitted_at: new Date().toISOString(),
-    },
+    ligne,
     { onConflict: 'etudiant_id,mission_id,activite_id' }
   )
   return { erreur: error ? error.message : null }
@@ -132,6 +162,7 @@ export interface SoumissionQuiz {
   reponses: unknown
   score: number | null
   submitted_at: string
+  appreciation?: string | null
 }
 
 export async function chargerQuiz(
@@ -141,7 +172,7 @@ export async function chargerQuiz(
 ): Promise<SoumissionQuiz | null> {
   const { data } = await supabase
     .from('reponses_quiz')
-    .select('reponses, score, submitted_at')
+    .select('reponses, score, submitted_at, appreciation')
     .eq('etudiant_id', etudiantId)
     .eq('mission_id', missionId)
     .eq('activite_id', activiteId)
@@ -204,4 +235,44 @@ export const COMPOSANTS_MISSION = ['travaux', 'synthese', 'autoeval', 'flashcard
 export function progressionMission(faits: Set<string>): number {
   const n = COMPOSANTS_MISSION.filter((c) => faits.has(c)).length
   return Math.round((n / COMPOSANTS_MISSION.length) * 100)
+}
+
+// Nombre de travaux de l'eleve qui ont recu une correction (commentaire non
+// vide) du professeur. Sert au badge de notification cote eleve.
+export async function nombreTravauxCorriges(etudiantId: string): Promise<number> {
+  const { data } = await supabase
+    .from('travaux')
+    .select('commentaire')
+    .eq('etudiant_id', etudiantId)
+  let n = 0
+  for (const t of (data as { commentaire: string | null }[]) ?? []) {
+    if (t.commentaire && t.commentaire.trim().length > 0) n += 1
+  }
+  return n
+}
+
+// Rouvre un travail envoye SANS effacer ce que l'eleve a saisi : on vide
+// seulement `submitted_at` (marque "plus envoye"), l'eleve retrouve ses
+// reponses, peut les completer/corriger puis renvoyer. `partie` vaut
+// 'travaux' | 'synthese' | 'autoeval' | 'quiz' | 'glisser'.
+export async function rouvrirTravail(
+  etudiantId: string,
+  missionId: string,
+  partie: 'travaux' | 'synthese' | 'autoeval' | 'quiz' | 'glisser'
+): Promise<{ erreur: string | null }> {
+  if (partie === 'travaux') {
+    const { error } = await supabase
+      .from('travaux')
+      .update({ submitted_at: null })
+      .eq('etudiant_id', etudiantId)
+      .eq('mission_id', missionId)
+    return { erreur: error ? error.message : null }
+  }
+  const { error } = await supabase
+    .from('reponses_quiz')
+    .update({ submitted_at: null })
+    .eq('etudiant_id', etudiantId)
+    .eq('mission_id', missionId)
+    .eq('activite_id', partie)
+  return { erreur: error ? error.message : null }
 }

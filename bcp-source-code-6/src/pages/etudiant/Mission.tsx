@@ -3,13 +3,31 @@
 // Activités, Journal de bord). Les onglets verrouilles affichent un cadenas noir,
 // un texte grise et un curseur not-allowed. Le journal est toujours accessible.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
 import { getScenario, getMission, ONGLETS, couleurEntete, couleurTexteSur, type OngletId } from '../../data/schema'
 import { getContenuMission } from '../../data/contenus'
-import { ongletOuvert, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
+import { ongletOuvert, evaluationsOuvertes, avancerEnchainement, fermerPrecedent, definirOngletEleve, ONGLET_EVALUATION, chargerDeverrouillages, DEVERROUILLAGE_DEFAUT, type EtatDeverrouillage } from '../../lib/deverrouillage'
 import { OngletTravaux } from '../../components/mission/OngletTravaux'
 import { OngletSynthese } from '../../components/mission/OngletSynthese'
+import { OngletSyntheseHtml } from '../../components/mission/OngletSyntheseHtml'
+
+// Missions disposant d'une synthese HTML autonome (fichier dans public/syntheses/).
+const SYNTHESES_HTML = new Set([
+  'renault-m1', 'renault-m2', 'renault-m3', 'renault-m4',
+  'renault-m5', 'renault-m6', 'renault-m7', 'renault-m8',
+  'chausson-m1', 'chausson-m2', 'chausson-m3', 'chausson-m4',
+  'chausson-m5', 'chausson-m6', 'chausson-m7', 'chausson-m8',
+  'free-m1', 'free-m2', 'free-m3', 'free-m4', 'free-m5',
+  'amparis-m1', 'amparis-m2', 'amparis-m3', 'amparis-m4',
+  'citroen-m1', 'citroen-m2', 'citroen-m3',
+  'peugeot-m1', 'peugeot-m2', 'peugeot-m3', 'peugeot-m4', 'peugeot-m5',
+  'peugeot-m6', 'peugeot-m7', 'peugeot-m8', 'peugeot-m9', 'peugeot-m10',
+  'peugeot-m11', 'peugeot-m12', 'peugeot-m13',
+])
+function syntheseHtmlDispo(missionId: string): boolean {
+  return SYNTHESES_HTML.has(missionId)
+}
 import { OngletAutoEval } from '../../components/mission/OngletAutoEval'
 import { OngletActivites } from '../../components/mission/OngletActivites'
 import { OngletJournal } from '../../components/mission/OngletJournal'
@@ -25,22 +43,18 @@ export function Mission() {
   const mission = scenarioId && missionId ? getMission(scenarioId, missionId) : undefined
   const contenu = missionId ? getContenuMission(missionId) : undefined
 
-  const { session } = useAuth()
+  const { session, profil } = useAuth()
   const userId = session?.user?.id
 
-  const [actif, setActif] = useState<OngletId>('journal')
+  const [actif, setActif] = useState<OngletId>('travaux')
   const [etatDeverr, setEtatDeverr] = useState<EtatDeverrouillage>(DEVERROUILLAGE_DEFAUT)
 
   useEffect(() => {
     chargerDeverrouillages().then((e) => {
       setEtatDeverr(e)
-      // Ouvre par defaut le premier onglet accessible pour cet eleve.
-      if (mission) {
-        const premier = [...ONGLETS]
-          .sort((a, b) => a.ordre - b.ordre)
-          .find((o) => ongletOuvert(mission.id, o.id, e, userId))
-        if (premier) setActif(premier.id)
-      }
+      // La mission s'ouvre toujours sur « Travaux à rendre » par defaut, meme
+      // si l'onglet est verrouille (l'eleve voit alors le cadenas).
+      setActif('travaux')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missionId, userId])
@@ -73,8 +87,68 @@ export function Mission() {
   // Couleur d'accent lisible sur fond blanc (onglets, boutons) et couleur
   // de fond d'en-tete. Pour les teintes claires comme le jaune, on utilise
   // une version assombrie afin de garder le texte lisible.
+  // Ouvre la mission suivante du scenario pour cet eleve (onglet Travaux) et y
+  // navigue. Depuis le Journal de bord.
+  async function passerMissionSuivante() {
+    if (!scenario || !mission || !userId) return
+    const idx = scenario.missions.findIndex((m) => m.id === mission.id)
+    const suivante = idx >= 0 ? scenario.missions[idx + 1] : undefined
+    if (!suivante) {
+      // Derniere mission : rien a ouvrir.
+      navigate(`/scenario/${scenario.id}`)
+      return
+    }
+    try {
+      await definirOngletEleve(scenario.id, suivante.id, 'travaux', userId, true, etatDeverr)
+    } catch {
+      // silencieux
+    }
+    navigate(`/scenario/${scenario.id}/mission/${suivante.id}`)
+  }
+
   const accent = couleurEntete(scenario.couleur)
   const texteEntete = couleurTexteSur(scenario.couleur)
+
+  // A l'envoi d'un onglet de la chaine : ouvre le suivant (par eleve) sans
+  // basculer l'ecran, pour laisser l'eleve consulter sa correction.
+  async function gererEnvoi(ongletEnvoye: OngletId) {
+    if (!scenarioId || !mission || !userId) return
+    try {
+      const nouvel = await avancerEnchainement(scenarioId, mission.id, ongletEnvoye, userId, etatDeverr)
+      setEtatDeverr(nouvel)
+      // On ne bascule PAS l'ecran : l'eleve reste sur l'onglet envoye pour
+      // consulter sa correction, et passe au suivant quand il le souhaite.
+    } catch {
+      // silencieux
+    }
+  }
+
+  // Changement d'onglet par l'eleve : si l'onglet quitte est un onglet de la
+  // chaine deja envoye et qu'on avance vers un onglet plus loin, on le ferme
+  // definitivement (anti-triche : plus de retour en arriere).
+  async function changerOnglet(destination: OngletId) {
+    const source = actif
+    setActif(destination)
+    if (!scenarioId || !mission || !userId) return
+    try {
+      const nouvel = await fermerPrecedent(scenarioId, mission.id, source, destination, userId, etatDeverr)
+      if (nouvel !== etatDeverr) setEtatDeverr(nouvel)
+    } catch {
+      // silencieux
+    }
+  }
+
+  // Ouvre les evaluations (quiz + glisser) pour cet eleve, une fois glossaire
+  // et flashcards marques comme lus.
+  async function ouvrirEvaluations() {
+    if (!scenarioId || !mission || !userId) return
+    try {
+      const nouvel = await definirOngletEleve(scenarioId, mission.id, ONGLET_EVALUATION, userId, true, etatDeverr)
+      setEtatDeverr(nouvel)
+    } catch {
+      // silencieux
+    }
+  }
 
   return (
     <div
@@ -122,14 +196,14 @@ export function Mission() {
           {[...ONGLETS]
             .sort((a, b) => a.ordre - b.ordre)
             .map((o) => {
-              const ouvert = ongletOuvert(mission.id, o.id, etatDeverr, userId)
+              const ouvert = o.id === 'activites' ? true : ongletOuvert(mission.id, o.id, etatDeverr, userId)
               const estActif = actif === o.id
               return (
                 <button
                   key={o.id}
                   type="button"
                   disabled={!ouvert}
-                  onClick={() => ouvert && setActif(o.id)}
+                  onClick={() => ouvert && changerOnglet(o.id)}
                   style={{
                     fontFamily: 'Arial, sans-serif',
                     background: 'none',
@@ -160,19 +234,50 @@ export function Mission() {
 
       {/* Contenu de l'onglet actif */}
       <main style={{ maxWidth: 880, margin: '0 auto', padding: 24 }}>
-        {!contenu && actif !== 'journal' ? (
-          <p style={{ fontSize: 14, color: '#6B7280' }}>
-            Le contenu de cette mission n'est pas encore disponible.
-          </p>
-        ) : (
-          <>
-            {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'synthese' && contenu && <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} />}
-            {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
-          </>
-        )}
+        {(() => {
+          // L'onglet Activites et le Journal sont toujours accessibles ;
+          // les autres n'affichent leur contenu que si le professeur a
+          // deverrouille l'onglet. Sinon : ecran verrouille, aucun contenu.
+          const ongletAccessible =
+            actif === 'activites' || actif === 'journal'
+              ? true
+              : ongletOuvert(mission.id, actif, etatDeverr, userId)
+
+          if (!ongletAccessible) {
+            return (
+              <div style={{ textAlign: 'center', padding: '80px 24px', color: '#6B7280' }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style={{ marginBottom: 12 }}>
+                  <rect x="5" y="11" width="14" height="9" rx="2" fill="#9AA5B1" />
+                  <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#9AA5B1" strokeWidth="2" />
+                </svg>
+                <p style={{ fontSize: 15, margin: 0 }}>Cet onglet est verrouillé.</p>
+                <p style={{ fontSize: 13, margin: '6px 0 0', color: '#9AA5B1' }}>Il sera accessible lorsque votre professeur l'aura ouvert.</p>
+              </div>
+            )
+          }
+
+          if (!contenu && actif !== 'journal') {
+            return (
+              <p style={{ fontSize: 14, color: '#6B7280' }}>
+                Le contenu de cette mission n'est pas encore disponible.
+              </p>
+            )
+          }
+
+          return (
+            <>
+              {actif === 'travaux' && contenu && <OngletTravaux contenu={contenu.travaux} couleur={accent} etudiantId={userId} missionId={mission.id} onEnvoye={() => gererEnvoi('travaux')} />}
+              {actif === 'synthese' && contenu && (
+                syntheseHtmlDispo(mission.id)
+                  ? <OngletSyntheseHtml fichier={mission.id} couleur={accent} etudiantId={userId} missionId={mission.id} onEnvoye={() => gererEnvoi('synthese')} />
+                  : <OngletSynthese contenu={contenu.synthese} couleur={accent} etudiantId={userId} missionId={mission.id} onEnvoye={() => gererEnvoi('synthese')} />
+              )}
+              {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} onEnvoye={() => gererEnvoi('autoeval')} />}
+              {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} evaluationsOuvertes={evaluationsOuvertes(mission.id, etatDeverr, userId)} onLectureTerminee={ouvrirEvaluations} />}
+              {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} onMissionSuivante={passerMissionSuivante} />}
+            </>
+          )
+        })()}
       </main>
     </div>
   )
@@ -187,4 +292,33 @@ const btnRetour: React.CSSProperties = {
   padding: '8px 16px',
   cursor: 'pointer',
   marginTop: 12,
+}
+
+function btnExport(couleurTexte: string): React.CSSProperties {
+  return {
+    fontFamily: 'Arial, sans-serif',
+    background: 'rgba(255,255,255,0.22)',
+    border: '1px solid rgba(255,255,255,0.6)',
+    color: couleurTexte,
+    borderRadius: 8,
+    padding: '8px 16px',
+    fontSize: 13,
+    fontWeight: 700,
+    cursor: 'pointer',
+  }
+}
+
+const optExport: React.CSSProperties = {
+  fontFamily: 'Arial, sans-serif',
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  background: '#FFFFFF',
+  border: 'none',
+  borderBottom: '1px solid #EEF2F6',
+  color: '#1F2933',
+  padding: '11px 14px',
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: 'pointer',
 }

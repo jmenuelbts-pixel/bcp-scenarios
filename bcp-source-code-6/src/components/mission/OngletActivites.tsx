@@ -3,9 +3,12 @@
 // trous, appariement) et glisser-deposer. Le quiz capture les reponses de
 // l'eleve, calcule un score a l'envoi et l'enregistre dans Supabase.
 
+import { BoutonExportOnglet } from './BoutonExportOnglet'
 import { useState, useEffect, useRef } from 'react'
 import type { ContenuActivites, Flashcard, QuestionQuiz } from '../../data/contenus'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
+import { appreciationAuto, ROUGE_CORRECTION } from '../../lib/appreciations'
+import { lireDelaiCorrection, correctionVisible } from '../../lib/reglages'
 import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon, useFlushBrouillon } from '../../lib/brouillon'
 import { definirSousOngletCourant } from '../../lib/useBattementPresence'
 
@@ -14,19 +17,77 @@ interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  // Quiz et glisser-deposer ne sont accessibles que si les evaluations sont
+  // ouvertes par le professeur. Glossaire et flashcards restent toujours
+  // accessibles (revision). Defaut : evaluations fermees.
+  evaluationsOuvertes?: boolean
+  // Appele quand l'eleve a marque le glossaire ET les flashcards comme lus :
+  // declenche l'ouverture des evaluations (quiz + glisser) pour cet eleve.
+  onLectureTerminee?: () => void
 }
 
 type SousOnglet = 'glossaire' | 'flashcards' | 'quiz' | 'glisser'
 
-export function OngletActivites({ contenu, couleur, etudiantId, missionId }: Props) {
+export function OngletActivites({ contenu, couleur, etudiantId, missionId, evaluationsOuvertes = false, onLectureTerminee }: Props) {
   const [vue, setVue] = useState<SousOnglet>('glossaire')
+  const [glossaireLu, setGlossaireLu] = useState(false)
+  const [flashcardsLu, setFlashcardsLu] = useState(false)
+  const lectureSignalee = useRef(false)
 
-  const onglets: { id: SousOnglet; libelle: string; visible: boolean }[] = [
-    { id: 'glossaire', libelle: 'Glossaire', visible: contenu.glossaire.length > 0 },
-    { id: 'flashcards', libelle: 'Flashcards', visible: contenu.flashcards.length > 0 },
-    { id: 'quiz', libelle: 'Quiz', visible: contenu.quiz.length > 0 },
-    { id: 'glisser', libelle: 'Glisser-déposer', visible: !!contenu.glisserDeposer },
+  // Charge l'etat "lu" (persistant) du glossaire et des flashcards.
+  useEffect(() => {
+    if (!etudiantId) return
+    let actif = true
+    Promise.all([
+      chargerQuiz(etudiantId, missionId, 'glossaire_lu'),
+      chargerQuiz(etudiantId, missionId, 'flashcards_lu'),
+    ]).then(([g, f]) => {
+      if (!actif) return
+      if (g) setGlossaireLu(true)
+      if (f) setFlashcardsLu(true)
+    })
+    return () => { actif = false }
+  }, [etudiantId, missionId])
+
+  // Quand les deux sont lus, ouvrir les evaluations (une seule fois).
+  useEffect(() => {
+    if (glossaireLu && flashcardsLu && !lectureSignalee.current) {
+      lectureSignalee.current = true
+      onLectureTerminee?.()
+    }
+  }, [glossaireLu, flashcardsLu, onLectureTerminee])
+
+  async function marquerLu(type: 'glossaire' | 'flashcards') {
+    if (!etudiantId) return
+    await enregistrerQuiz(etudiantId, missionId, type === 'glossaire' ? 'glossaire_lu' : 'flashcards_lu', {}, 0)
+    if (type === 'glossaire') setGlossaireLu(true)
+    else setFlashcardsLu(true)
+  }
+
+  const onglets: { id: SousOnglet; libelle: string; visible: boolean; evaluation: boolean }[] = [
+    { id: 'glossaire', libelle: 'Glossaire', visible: contenu.glossaire.length > 0, evaluation: false },
+    { id: 'flashcards', libelle: 'Flashcards', visible: contenu.flashcards.length > 0, evaluation: false },
+    { id: 'quiz', libelle: 'Quiz', visible: contenu.quiz.length > 0, evaluation: true },
+    { id: 'glisser', libelle: 'Glisser-déposer', visible: !!contenu.glisserDeposer, evaluation: true },
   ]
+
+  // Verrouillage croise anti-triche :
+  //   - evaluations FERMEES : glossaire + flashcards accessibles, quiz + glisser verrouilles ;
+  //   - evaluations OUVERTES : quiz + glisser accessibles, glossaire + flashcards verrouilles.
+  // Un sous-onglet 'evaluation' est verrouille si les evaluations sont fermees ;
+  // un sous-onglet de revision (glossaire/flashcards) est verrouille si elles sont ouvertes.
+  function estVerrouille(o: { evaluation: boolean }): boolean {
+    return o.evaluation ? !evaluationsOuvertes : evaluationsOuvertes
+  }
+
+  // Ramene l'eleve sur un sous-onglet accessible si celui ouvert vient d'etre verrouille.
+  useEffect(() => {
+    const courant = onglets.find((o) => o.id === vue)
+    if (courant && estVerrouille(courant)) {
+      const premierAccessible = onglets.find((o) => o.visible && !estVerrouille(o))
+      if (premierAccessible) setVue(premierAccessible.id)
+    }
+  }, [evaluationsOuvertes, vue])
 
   // Remonte le sous-onglet courant pour l'affichage de presence cote prof.
   useEffect(() => {
@@ -40,11 +101,14 @@ export function OngletActivites({ contenu, couleur, etudiantId, missionId }: Pro
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
         {onglets.filter((o) => o.visible).map((o) => {
           const actif = vue === o.id
+          const verrouille = estVerrouille(o)
           return (
             <button
               key={o.id}
               type="button"
-              onClick={() => setVue(o.id)}
+              onClick={() => { if (!verrouille) setVue(o.id) }}
+              disabled={verrouille}
+              title={verrouille ? 'Accessible une fois ouvert par le professeur' : undefined}
               style={{
                 fontFamily: 'Arial, sans-serif',
                 fontSize: 13,
@@ -53,22 +117,50 @@ export function OngletActivites({ contenu, couleur, etudiantId, missionId }: Pro
                 borderRadius: 99,
                 border: actif ? 'none' : '1px solid #C9D6E3',
                 background: actif ? couleur : '#FFFFFF',
-                color: actif ? '#FFFFFF' : '#374151',
-                cursor: 'pointer',
+                color: verrouille ? '#9AA5B1' : actif ? '#FFFFFF' : '#374151',
+                cursor: verrouille ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
               }}
             >
+              {verrouille && (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9AA5B1" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11 V7 a4 4 0 0 1 8 0 v4" />
+                </svg>
+              )}
               {o.libelle}
             </button>
           )
         })}
       </div>
 
-      {vue === 'glossaire' && <VueGlossaire contenu={contenu} />}
-      {vue === 'flashcards' && <VueFlashcards contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />}
-      {vue === 'quiz' && (
+      {vue === 'glossaire' && !evaluationsOuvertes && (
+        <>
+          <VueGlossaire contenu={contenu} />
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+            <button type="button" onClick={() => marquerLu('glossaire')} disabled={glossaireLu}
+              style={{ fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 700, padding: '10px 20px', borderRadius: 8, border: 'none', background: glossaireLu ? '#C8C6BE' : couleur, color: '#FFFFFF', cursor: glossaireLu ? 'default' : 'pointer' }}>
+              {glossaireLu ? 'Glossaire terminé' : "J'ai terminé le glossaire"}
+            </button>
+          </div>
+        </>
+      )}
+      {vue === 'flashcards' && !evaluationsOuvertes && (
+        <>
+          <VueFlashcards contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+            <button type="button" onClick={() => marquerLu('flashcards')} disabled={flashcardsLu}
+              style={{ fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 700, padding: '10px 20px', borderRadius: 8, border: 'none', background: flashcardsLu ? '#C8C6BE' : couleur, color: '#FFFFFF', cursor: flashcardsLu ? 'default' : 'pointer' }}>
+              {flashcardsLu ? 'Flashcards terminées' : "J'ai terminé les flashcards"}
+            </button>
+          </div>
+        </>
+      )}
+      {vue === 'quiz' && evaluationsOuvertes && (
         <VueQuiz contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />
       )}
-      {vue === 'glisser' && <VueGlisser contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />}
+      {vue === 'glisser' && evaluationsOuvertes && <VueGlisser contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />}
     </div>
   )
 }
@@ -154,7 +246,7 @@ function VueFlashcards({
           <button
             type="button"
             disabled={!toutesVues || enCours}
-            onClick={envoyer}
+            onClick={() => { if (window.confirm("Êtes-vous sûr de vouloir envoyer vos réponses ?")) envoyer() }}
             style={{
               fontFamily: 'Arial, sans-serif',
               background: !toutesVues || enCours ? '#C9CDD2' : couleur,
@@ -218,6 +310,9 @@ function VueQuiz({
   const [envoye, setEnvoye] = useState(false)
   const [verrouille, setVerrouille] = useState(false)
   const [score, setScore] = useState<number | null>(null)
+  const [appreciation, setAppreciation] = useState<string | null>(null)
+  const [submittedAt, setSubmittedAt] = useState<string | null>(null)
+  const [delaiMinutes, setDelaiMinutes] = useState<number>(60)
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
 
@@ -232,6 +327,7 @@ function VueQuiz({
   useEffect(() => {
     let actif = true
     if (!etudiantId) return
+    lireDelaiCorrection().then((d) => { if (actif) setDelaiMinutes(d) })
     chargerQuiz(etudiantId, missionId, 'quiz').then(async (soumission) => {
       if (!actif) return
       if (soumission) {
@@ -239,6 +335,8 @@ function VueQuiz({
           setReponses(soumission.reponses as ReponsesEleve)
         }
         setScore(soumission.score)
+        setAppreciation(soumission.appreciation ?? null)
+        setSubmittedAt(soumission.submitted_at ?? null)
         setEnvoye(true)
         setVerrouille(true)
         void effacerBrouillon(etudiantId, missionId, 'activites')
@@ -290,10 +388,14 @@ function VueQuiz({
     const s = calculerScore()
     setScore(s)
     setEnvoye(true)
+    const note10 = noteSur > 0 ? (s / noteSur) * 10 : 0
+    const appr = appreciationAuto(note10)
+    setAppreciation(appr)
+    setSubmittedAt(new Date().toISOString())
     if (etudiantId) {
       setEnCours(true)
       setErreur(null)
-      const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'quiz', reponses, s)
+      const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'quiz', reponses, s, appr)
       if (erreur) setErreur('L enregistrement du resultat a echoue.')
       else {
         brouillon.current.annuler()
@@ -327,7 +429,7 @@ function VueQuiz({
       {!verrouille && (
         <button
           type="button"
-          onClick={envoyer}
+          onClick={() => { if (window.confirm("Êtes-vous sûr de vouloir envoyer vos réponses ?")) envoyer() }}
           disabled={enCours}
           style={{
             fontFamily: 'Arial, sans-serif',
@@ -345,11 +447,32 @@ function VueQuiz({
           {enCours ? 'Envoi...' : 'Envoyer'}
         </button>
       )}
-      {envoye && score !== null && (
-        <p style={{ fontSize: 14, color: '#1B6B3A', fontWeight: 700, marginTop: 12 }}>
-          Score : {score} / {noteSur}. Vos réponses ont été enregistrées.
-        </p>
-      )}
+      {envoye && score !== null && (() => {
+        const etat = submittedAt ? correctionVisible(submittedAt, delaiMinutes) : { visible: true, minutesRestantes: 0 }
+        if (!etat.visible) {
+          return (
+            <div style={{ marginTop: 12 }}>
+              <p style={{ fontSize: 14, color: '#1B6B3A', fontWeight: 600, marginBottom: 10 }}>
+                Votre travail a été envoyé. Votre correction sera disponible prochainement.
+              </p>
+              <BoutonExportOnglet missionId={missionId} partie="quiz" etudiantId={etudiantId} pret={false} />
+            </div>
+          )
+        }
+        return (
+          <div style={{ marginTop: 12 }}>
+            <BoutonExportOnglet missionId={missionId} partie="quiz" etudiantId={etudiantId} pret={true} />
+            <p style={{ fontSize: 14, color: ROUGE_CORRECTION, fontWeight: 700, margin: 0 }}>
+              Score : {score} / {noteSur}. Vos réponses ont été enregistrées.
+            </p>
+            {appreciation && (
+              <p style={{ fontSize: 14, color: ROUGE_CORRECTION, fontWeight: 600, margin: '6px 0 0', fontStyle: 'italic' }}>
+                Appréciation : {appreciation}
+              </p>
+            )}
+          </div>
+        )
+      })()}
       {erreur && <p style={{ fontSize: 13, color: '#9B2C2C', marginTop: 10 }}>{erreur}</p>}
     </div>
   )
@@ -478,15 +601,23 @@ function VueGlisser({
   const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
+  const [score, setScore] = useState<number | null>(null)
+  const [appreciation, setAppreciation] = useState<string | null>(null)
+  const [submittedAt, setSubmittedAt] = useState<string | null>(null)
+  const [delaiMinutes, setDelaiMinutes] = useState<number>(60)
 
   useEffect(() => {
     let actif = true
     if (!etudiantId) return
+    lireDelaiCorrection().then((d) => { if (actif) setDelaiMinutes(d) })
     chargerQuiz(etudiantId, missionId, 'glisser').then((s) => {
       if (!actif || !s) return
       if (s.reponses && typeof s.reponses === 'object') {
         setChoix(s.reponses as Record<number, number>)
       }
+      setScore(s.score)
+      setAppreciation(s.appreciation ?? null)
+      setSubmittedAt(s.submitted_at ?? null)
       setVerrouille(true)
     })
     return () => {
@@ -498,14 +629,23 @@ function VueGlisser({
   const toutRempli = gd.zones.every((_, i) => choix[i] !== undefined)
 
   async function envoyer() {
-    if (verrouille || !toutRempli) return
+    if (verrouille || !toutRempli || !gd) return
     if (!etudiantId) {
       setErreur('Vous devez etre connecte pour envoyer.')
       return
     }
+    // Score = nombre de zones correctement associees.
+    let bonnes = 0
+    gd.zones.forEach((z, i) => { if (choix[i] === z.etiquetteIndex) bonnes += 1 })
+    const total = gd.zones.length
+    const note10 = total > 0 ? (bonnes / total) * 10 : 0
+    const appr = appreciationAuto(note10)
+    setScore(bonnes)
+    setAppreciation(appr)
+    setSubmittedAt(new Date().toISOString())
     setEnCours(true)
     setErreur(null)
-    const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'glisser', choix, 0)
+    const { erreur } = await enregistrerQuiz(etudiantId, missionId, 'glisser', choix, bonnes, appr)
     if (erreur) setErreur('L envoi a echoue. Veuillez reessayer.')
     else setVerrouille(true)
     setEnCours(false)
@@ -560,7 +700,7 @@ function VueGlisser({
           <button
             type="button"
             disabled={!toutRempli || enCours}
-            onClick={envoyer}
+            onClick={() => { if (window.confirm("Êtes-vous sûr de vouloir envoyer vos réponses ?")) envoyer() }}
             style={{
               fontFamily: 'Arial, sans-serif',
               background: !toutRempli || enCours ? '#C9CDD2' : couleur,
@@ -579,6 +719,32 @@ function VueGlisser({
           {erreur && <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>}
         </div>
       )}
+      {verrouille && score !== null && (() => {
+        const etat = submittedAt ? correctionVisible(submittedAt, delaiMinutes) : { visible: true, minutesRestantes: 0 }
+        if (!etat.visible) {
+          return (
+            <div style={{ marginTop: 12 }}>
+              <p style={{ fontSize: 14, color: '#1B6B3A', fontWeight: 600, marginBottom: 10 }}>
+                Votre travail a été envoyé. Votre correction sera disponible prochainement.
+              </p>
+              <BoutonExportOnglet missionId={missionId} partie="glisser" etudiantId={etudiantId} pret={false} />
+            </div>
+          )
+        }
+        return (
+          <div style={{ marginTop: 12 }}>
+            <BoutonExportOnglet missionId={missionId} partie="glisser" etudiantId={etudiantId} pret={true} />
+            <p style={{ fontSize: 14, color: ROUGE_CORRECTION, fontWeight: 700, margin: 0 }}>
+              Score : {score} / {gd.zones.length}.
+            </p>
+            {appreciation && (
+              <p style={{ fontSize: 14, color: ROUGE_CORRECTION, fontWeight: 600, margin: '6px 0 0', fontStyle: 'italic' }}>
+                Appréciation : {appreciation}
+              </p>
+            )}
+          </div>
+        )
+      })()}
     </div>
   )
 }

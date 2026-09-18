@@ -53,7 +53,7 @@ export function Travaux() {
   const tries = useMemo(() => trier(travaux, tri), [travaux, tri])
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <EnteteProf actif="/enseignant" />
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: 24 }}>
@@ -71,7 +71,7 @@ export function Travaux() {
             {tries.map((t) => {
               const estOuvert = ouvert === t.id
               return (
-                <div key={t.id} style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, overflow: 'hidden' }}>
+                <div key={t.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', overflow: 'hidden' }}>
                   <button
                     type="button"
                     onClick={() => setOuvert(estOuvert ? null : t.id)}

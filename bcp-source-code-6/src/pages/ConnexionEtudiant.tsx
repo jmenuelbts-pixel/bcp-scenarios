@@ -6,6 +6,8 @@
 import { useState } from 'react'
 import { useAuth } from '../lib/auth'
 import { supabase } from '../lib/supabase'
+import { ChampMotDePasse, motDePasseValide } from '../components/ui/ChampMotDePasse'
+import { faceIdDisponible, faceIdActiveSurCetAppareil, connexionFaceId, estMobileOuTablette } from '../lib/faceId'
 
 type Vue = 'connexion' | 'inscription' | 'oubli'
 
@@ -14,6 +16,20 @@ interface Props {
 }
 
 const ACCENT = '#C2660C' // orange etudiant
+
+// Met un nom de famille tout en majuscules.
+function formaterNom(v: string): string {
+  return v.toUpperCase()
+}
+
+// Met un prenom avec une majuscule initiale a chaque partie (separee par
+// espace ou tiret), le reste en minuscules. Ex : « jean-pierre » -> « Jean-Pierre »,
+// « ANNE marie » -> « Anne Marie ».
+function formaterPrenom(v: string): string {
+  return v
+    .toLowerCase()
+    .replace(/(^|[\s\-])([a-zà-ÿ])/g, (_m, sep, lettre) => sep + lettre.toUpperCase())
+}
 
 export function ConnexionEtudiant({ onRetour }: Props) {
   const { connecter, inscrireEleve } = useAuth()
@@ -29,6 +45,32 @@ export function ConnexionEtudiant({ onRetour }: Props) {
   const [erreur, setErreur] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [enCours, setEnCours] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
+  const montrerFaceId = estMobileOuTablette() && faceIdDisponible()
+  const faceIdActif = montrerFaceId && faceIdActiveSurCetAppareil()
+  // Quand Face ID est actif, on masque les champs identifiant/mot de passe par
+  // defaut : l'eleve voit le grand ecran Face ID et ne revele les champs qu'en
+  // cliquant sur « Utiliser mon identifiant et mot de passe ».
+  const [montrerChamps, setMontrerChamps] = useState(false)
+
+  function afficherToast(msg: string) {
+    setToast(msg)
+    window.setTimeout(() => setToast(null), 3500)
+  }
+
+  async function seConnecterFaceId() {
+    if (!faceIdActif) {
+      afficherToast("Connecte-toi d'abord avec tes identifiants pour activer Face ID.")
+      return
+    }
+    setErreur(null); setEnCours(true)
+    try {
+      const { erreur } = await connexionFaceId()
+      if (erreur) setErreur(erreur)
+    } finally {
+      setEnCours(false)
+    }
+  }
 
   // Charte RGPD : modale, scroll jusqu'en bas, acceptation obligatoire.
   const [charteOuverte, setCharteOuverte] = useState(false)
@@ -52,8 +94,8 @@ export function ConnexionEtudiant({ onRetour }: Props) {
           setErreur('Le nom et le prénom sont obligatoires.')
           return
         }
-        if (motDePasse.length < 6) {
-          setErreur('Le mot de passe doit comporter au moins 6 caractères.')
+        if (!motDePasseValide(motDePasse)) {
+          setErreur('Le mot de passe ne respecte pas les règles indiquées sous le champ.')
           return
         }
         if (motDePasse !== confirmation) {
@@ -183,16 +225,62 @@ export function ConnexionEtudiant({ onRetour }: Props) {
             : 'Votre professeur devra valider votre inscription.'}
         </p>
 
+        {(() => {
+          const ecranFaceId = vue === 'connexion' && faceIdActif && !montrerChamps
+          if (!ecranFaceId) return null
+          return (
+            <>
+              {toast && (
+                <div style={{ marginTop: 16, background: '#16456E', color: '#FFFFFF', borderRadius: 10, padding: '10px 12px', fontSize: 13, lineHeight: 1.4 }}>{toast}</div>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, margin: '26px 0 4px' }}>
+                <button
+                  type="button"
+                  onClick={seConnecterFaceId}
+                  disabled={enCours}
+                  aria-label="Déverrouiller avec la reconnaissance faciale"
+                  style={{ width: 96, height: 96, borderRadius: '50%', border: 'none', background: '#FFFFFF', boxShadow: '0 6px 20px rgba(0,0,0,0.10)', cursor: enCours ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#1F2933" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 8 V6 a2 2 0 0 1 2 -2 h2" /><path d="M16 4 h2 a2 2 0 0 1 2 2 v2" /><path d="M20 16 v2 a2 2 0 0 1 -2 2 h-2" /><path d="M8 20 H6 a2 2 0 0 1 -2 -2 v-2" />
+                    <path d="M9 10 v1.5" /><path d="M15 10 v1.5" /><path d="M12 9.5 v4" /><path d="M9 15.5 s1 1.3 3 1.3 3 -1.3 3 -1.3" />
+                  </svg>
+                </button>
+                <div style={{ fontSize: 16, color: '#1F2933', textAlign: 'center' }}>Déverrouiller avec la reconnaissance faciale</div>
+              </div>
+
+              {erreur && (
+                <p style={{ fontSize: 13, color: '#9B2C2C', background: '#FDECEC', borderRadius: 8, padding: '8px 10px', margin: '16px 0 0 0' }}>{erreur}</p>
+              )}
+
+              <div style={{ height: 1, background: '#E2E8F0', margin: '24px 0' }} />
+
+              <button
+                type="button"
+                onClick={() => { setErreur(null); setMontrerChamps(true) }}
+                style={{ fontFamily: 'Arial, sans-serif', width: '100%', padding: '13px 10px', fontSize: 16, fontWeight: 700, border: 'none', borderRadius: 99, background: '#FBE7D6', color: '#8A4B12', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, whiteSpace: 'nowrap' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A4B12" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11 V7 a4 4 0 0 1 8 0 v4" />
+                </svg>
+                Utiliser mon mot de passe
+              </button>
+            </>
+          )
+        })()}
+
+        {vue === 'connexion' && faceIdActif && !montrerChamps ? null : (
+        <>
         {vue === 'inscription' && (
           <>
             <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ flex: 1 }}>
                 <label style={etiquette}>Nom</label>
-                <input style={champ} value={nom} onChange={(e) => setNom(e.target.value)} placeholder="DUPONT" />
+                <input style={champ} value={nom} onChange={(e) => setNom(formaterNom(e.target.value))} placeholder="DUPONT" />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={etiquette}>Prénom</label>
-                <input style={champ} value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Marie" />
+                <input style={champ} value={prenom} onChange={(e) => setPrenom(formaterPrenom(e.target.value))} placeholder="Marie" />
               </div>
             </div>
 
@@ -214,13 +302,12 @@ export function ConnexionEtudiant({ onRetour }: Props) {
         {vue !== 'oubli' && (
           <>
             <label style={etiquette}>Mot de passe</label>
-            <input
-              style={champ}
-              type="password"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder={vue === 'inscription' ? '6 caractères minimum' : ''}
+            <ChampMotDePasse
+              valeur={motDePasse}
+              onChange={setMotDePasse}
+              placeholder={vue === 'inscription' ? 'Choisissez un mot de passe' : ''}
               autoComplete={vue === 'connexion' ? 'current-password' : 'new-password'}
+              afficherRegles={vue === 'inscription'}
             />
           </>
         )}
@@ -251,11 +338,9 @@ export function ConnexionEtudiant({ onRetour }: Props) {
         {vue === 'inscription' && (
           <>
             <label style={etiquette}>Confirmer le mot de passe</label>
-            <input
-              style={champ}
-              type="password"
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
+            <ChampMotDePasse
+              valeur={confirmation}
+              onChange={setConfirmation}
               placeholder="Répétez le mot de passe"
               autoComplete="new-password"
             />
@@ -347,6 +432,33 @@ export function ConnexionEtudiant({ onRetour }: Props) {
           )
         })()}
 
+        {vue === 'connexion' && montrerFaceId && !faceIdActif && (
+          <>
+            {toast && (
+              <div style={{ marginTop: 14, background: '#16456E', color: '#FFFFFF', borderRadius: 10, padding: '10px 12px', fontSize: 13, lineHeight: 1.4 }}>{toast}</div>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '16px 0 2px' }}>
+              <span style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
+              <span style={{ fontSize: 12, color: '#9AA5B1' }}>ou</span>
+              <span style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginTop: 12 }}>
+              <button
+                type="button"
+                onClick={seConnecterFaceId}
+                aria-label="Se connecter avec Face ID"
+                style={{ width: 52, height: 52, borderRadius: '50%', border: `1.5px solid ${ACCENT}`, background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 8 V6 a2 2 0 0 1 2 -2 h2" /><path d="M16 4 h2 a2 2 0 0 1 2 2 v2" /><path d="M20 16 v2 a2 2 0 0 1 -2 2 h-2" /><path d="M8 20 H6 a2 2 0 0 1 -2 -2 v-2" />
+                  <path d="M9 10 v1.5" /><path d="M15 10 v1.5" /><path d="M12 9.5 v4" /><path d="M9 15.5 s1 1.3 3 1.3 3 -1.3 3 -1.3" />
+                </svg>
+              </button>
+              <span style={{ fontSize: 11, color: '#6B7280' }}>Face ID</span>
+            </div>
+          </>
+        )}
+
         {vue === 'oubli' && (
           <button
             type="button"
@@ -404,6 +516,8 @@ export function ConnexionEtudiant({ onRetour }: Props) {
               Votre professeur devra valider votre inscription.
             </p>
           </>
+        )}
+        </>
         )}
       </div>
 

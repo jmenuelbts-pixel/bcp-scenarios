@@ -204,3 +204,65 @@ export async function reinitialiserOngletEleve(
   nouvelEtat.delete(cle(missionId, ongletId, etudiantId))
   return nouvelEtat
 }
+
+// Verrouille TOUT, partout : supprime toutes les lignes de deverrouillage
+// (globales ET individuelles par eleve, tous onglets, evaluations comprises,
+// tous scenarios). Retour a l'etat par defaut = tout ferme. C'est le vrai
+// "tout verrouiller".
+export async function toutVerrouillerPartout(): Promise<EtatDeverrouillage> {
+  const { error } = await supabase
+    .from('deverrouillages_onglets')
+    .delete()
+    .not('mission_id', 'is', null)
+  if (error) throw new Error(error.message)
+  return new Map()
+}
+
+// --- Enchainement automatique (par eleve) -----------------------------------
+
+// Ordre des onglets de la chaine sequentielle. Le journal est hors chaine.
+// 'activites' contient glossaire/flashcards puis quiz/glisser, geres a part.
+const CHAINE: OngletId[] = ['travaux', 'synthese', 'autoeval', 'activites']
+
+// A l'envoi d'un onglet par un eleve : ferme cet onglet et ouvre le suivant de
+// la chaine, au niveau INDIVIDUEL de l'eleve. N'ecrit rien pour le journal.
+// Renvoie le nouvel etat. Le professeur garde la main (ses reglages manuels
+// ne sont pas touches ici : on ne fait qu'ajouter des entrees individuelles).
+export async function avancerEnchainement(
+  scenarioId: string,
+  missionId: string,
+  ongletEnvoye: OngletId,
+  etudiantId: string,
+  etat: EtatDeverrouillage
+): Promise<EtatDeverrouillage> {
+  const idx = CHAINE.indexOf(ongletEnvoye)
+  if (idx === -1) return etat
+  let nouvel = etat
+  // On n'ouvre que le suivant. L'onglet envoye reste consultable (correction)
+  // jusqu'a ce que l'eleve change d'onglet : c'est fermerPrecedent qui le
+  // verrouille alors, pour empecher tout retour en arriere (anti-triche).
+  const suivant = CHAINE[idx + 1]
+  if (suivant) {
+    nouvel = await definirOngletEleve(scenarioId, missionId, suivant, etudiantId, true, nouvel)
+  }
+  return nouvel
+}
+
+// Ferme definitivement un onglet deja envoye quand l'eleve le quitte pour un
+// onglet plus avance de la chaine. Empeche de revenir consulter ses reponses
+// (anti-triche vis-a-vis du quiz / glisser). Ne ferme jamais un onglet non
+// encore envoye ni un onglet situe apres celui qu'on quitte.
+export async function fermerPrecedent(
+  scenarioId: string,
+  missionId: string,
+  ongletQuitte: OngletId,
+  ongletDestination: OngletId,
+  etudiantId: string,
+  etat: EtatDeverrouillage
+): Promise<EtatDeverrouillage> {
+  const iQuitte = CHAINE.indexOf(ongletQuitte)
+  const iDest = CHAINE.indexOf(ongletDestination)
+  // On ne ferme que si on avance dans la chaine (destination plus loin).
+  if (iQuitte === -1 || iDest === -1 || iDest <= iQuitte) return etat
+  return definirOngletEleve(scenarioId, missionId, ongletQuitte, etudiantId, false, etat)
+}

@@ -7,15 +7,17 @@ import type { ContenuSynthese, NoeudSynthese } from '../../data/contenus'
 import { enregistrerQuiz, chargerQuiz } from '../../lib/eleve'
 import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon, useFlushBrouillon } from '../../lib/brouillon'
 import { eclaircir } from '../../data/schema'
+import { BoutonExportOnglet } from './BoutonExportOnglet'
 
 interface Props {
   contenu: ContenuSynthese
   couleur: string
   etudiantId?: string
   missionId: string
+  onEnvoye?: () => void
 }
 
-export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Props) {
+export function OngletSynthese({ contenu, couleur, etudiantId, missionId, onEnvoye }: Props) {
   const [reponses, setReponses] = useState<Record<string, string>>({})
   const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
@@ -36,8 +38,10 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
         if (s.reponses && typeof s.reponses === 'object') {
           setReponses(s.reponses as Record<string, string>)
         }
-        setVerrouille(true)
-        void effacerBrouillon(etudiantId, missionId, 'synthese')
+        if (s.submitted_at) {
+          setVerrouille(true)
+          void effacerBrouillon(etudiantId, missionId, 'synthese')
+        }
         return
       }
       const b = await chargerBrouillon<Record<string, string>>(etudiantId, missionId, 'synthese')
@@ -59,7 +63,7 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
   const toutRempli = cases.every((id) => (reponses[id] ?? '').trim().length > 0)
 
   async function envoyer() {
-    if (verrouille || !toutRempli) return
+    if (verrouille) return
     if (!etudiantId) {
       setErreur('Vous devez etre connecte pour envoyer.')
       return
@@ -72,6 +76,7 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
       brouillon.current.annuler()
       void effacerBrouillon(etudiantId, missionId, 'synthese')
       setVerrouille(true)
+      onEnvoye?.()
     }
     setEnCours(false)
   }
@@ -236,38 +241,39 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
       </div>
 
       {verrouille ? (
-        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
-            <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
-          </svg>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>
-            Synthèse envoyée. Elle n'est plus modifiable.
-          </span>
+        <div style={{ marginTop: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#EAF2EC', border: '1px solid #BFE0CC', borderRadius: 8, padding: '10px 14px', marginBottom: 12 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+              <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" fill="none" stroke="#1B6B3A" strokeWidth="2" />
+            </svg>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6B3A' }}>
+              Synthèse envoyée. Elle n'est plus modifiable.
+            </span>
+          </div>
+          <BoutonExportOnglet missionId={missionId} partie="synthese" etudiantId={etudiantId} pret={true} />
         </div>
       ) : (
-        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
           <button
             type="button"
-            disabled={!toutRempli || enCours}
-            onClick={envoyer}
+            disabled={enCours}
+            onClick={() => { if (window.confirm('Êtes-vous sûr de vouloir envoyer votre travail ?')) envoyer() }}
             style={{
               fontFamily: 'Arial, sans-serif',
-              background: !toutRempli || enCours ? '#C9CDD2' : couleur,
+              background: enCours ? '#C9CDD2' : couleur,
               color: '#FFFFFF',
               border: 'none',
               borderRadius: 8,
               padding: '10px 20px',
               fontSize: 14,
               fontWeight: 600,
-              cursor: !toutRempli || enCours ? 'not-allowed' : 'pointer',
+              cursor: enCours ? 'not-allowed' : 'pointer',
             }}
           >
             {enCours ? 'Envoi...' : 'Envoyer au professeur'}
           </button>
-          {!toutRempli && (
-            <span style={{ fontSize: 12, color: '#6B7280' }}>Complétez toutes les cases avant d'envoyer.</span>
-          )}
+          <BoutonExportOnglet missionId={missionId} partie="synthese" etudiantId={etudiantId} pret={false} />
           {erreur && <span style={{ fontSize: 13, color: '#9B2C2C', fontWeight: 600 }}>{erreur}</span>}
         </div>
       )}

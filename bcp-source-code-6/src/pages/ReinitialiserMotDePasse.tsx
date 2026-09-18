@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { ChampMotDePasse, motDePasseValide } from '../components/ui/ChampMotDePasse'
 
 export function ReinitialiserMotDePasse() {
   const [pret, setPret] = useState(false)
@@ -39,8 +40,8 @@ export function ReinitialiserMotDePasse() {
   async function soumettre() {
     setErreur(null)
     setInfo(null)
-    if (motDePasse.length < 6) {
-      setErreur('Le mot de passe doit comporter au moins 6 caractères.')
+    if (!motDePasseValide(motDePasse)) {
+      setErreur('Le mot de passe ne respecte pas les règles indiquées sous le champ.')
       return
     }
     if (motDePasse !== confirmation) {
@@ -138,21 +139,18 @@ export function ReinitialiserMotDePasse() {
             </p>
 
             <label style={etiquette}>Nouveau mot de passe</label>
-            <input
-              style={champ}
-              type="password"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder="6 caractères minimum"
+            <ChampMotDePasse
+              valeur={motDePasse}
+              onChange={setMotDePasse}
+              placeholder="Choisissez un mot de passe"
               autoComplete="new-password"
+              afficherRegles
             />
 
             <label style={etiquette}>Confirmer le mot de passe</label>
-            <input
-              style={champ}
-              type="password"
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
+            <ChampMotDePasse
+              valeur={confirmation}
+              onChange={setConfirmation}
               placeholder="Répétez le mot de passe"
               autoComplete="new-password"
             />

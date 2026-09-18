@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { COULEUR_PROF, ONGLETS_PAR_ID, type OngletId } from '../../data/schema'
 import { listerElevesAcceptes } from '../../lib/enseignant'
+import { listerClasses, listerGroupes, listerLiaisonsGroupes, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
 import { sonderPresences, diagnostiquer, type PresenceEleve, type StatutPresence } from '../../lib/presence'
 import { useAuth } from '../../lib/auth'
 import type { Profil } from '../../lib/auth'
@@ -31,6 +32,17 @@ function formaterDelai(secondes: number): string {
   return `il y a ${Math.round(min / 60)} h`
 }
 
+// Date et heure exactes de la derniere connexion (ex : "15/09 à 23h47").
+function formaterDerniereConnexion(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const jj = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mi = String(d.getMinutes()).padStart(2, '0')
+  return `${jj}/${mm} à ${hh}h${mi}`
+}
+
 export function PresenceTempsReel() {
   const navigate = useNavigate()
   const { session } = useAuth()
@@ -38,6 +50,11 @@ export function PresenceTempsReel() {
   const [presences, setPresences] = useState<Record<string, PresenceEleve>>({})
   const [chargement, setChargement] = useState(true)
   const [diag, setDiag] = useState<string | null>(null)
+  const [classes, setClasses] = useState<Classe[]>([])
+  const [groupes, setGroupes] = useState<Groupe[]>([])
+  const [liaisons, setLiaisons] = useState<LiaisonGroupe[]>([])
+  const [filtreClasse, setFiltreClasse] = useState<string>('')
+  const [filtreGroupe, setFiltreGroupe] = useState<string>('')
 
   async function lancerDiagnostic() {
     setDiag('Test en cours...')
@@ -53,6 +70,10 @@ export function PresenceTempsReel() {
     let actif = true
     listerElevesAcceptes().then((liste) => {
       if (actif) setEleves(liste)
+    })
+    Promise.all([listerClasses(), listerGroupes(), listerLiaisonsGroupes()]).then(([cs, gs, ls]) => {
+      if (!actif) return
+      setClasses(cs); setGroupes(gs); setLiaisons(ls)
     })
     const arreter = sonderPresences((liste) => {
       if (!actif) return
@@ -70,22 +91,32 @@ export function PresenceTempsReel() {
   const collator = useMemo(() => new Intl.Collator('fr', { sensitivity: 'base' }), [])
   const ordreStatut: Record<StatutPresence, number> = { connecte: 0, inactif: 1, hors_ligne: 2 }
 
+  const elevesFiltres = useMemo(() => {
+    return eleves.filter((e) => {
+      if (filtreClasse && e.classe_id !== filtreClasse) return false
+      if (filtreGroupe && !liaisons.some((l) => l.eleve_id === e.id && l.groupe_id === filtreGroupe)) return false
+      return true
+    })
+  }, [eleves, filtreClasse, filtreGroupe, liaisons])
+
+  const groupesDuFiltre = groupes.filter((g) => g.classe_id === filtreClasse)
+
   const elevesTries = useMemo(() => {
-    return [...eleves].sort((a, b) => {
+    return [...elevesFiltres].sort((a, b) => {
       const sa = presences[a.id]?.statut ?? 'hors_ligne'
       const sb = presences[b.id]?.statut ?? 'hors_ligne'
       if (ordreStatut[sa] !== ordreStatut[sb]) return ordreStatut[sa] - ordreStatut[sb]
       return collator.compare(a.nom ?? '', b.nom ?? '')
     })
-  }, [eleves, presences, collator])
+  }, [elevesFiltres, presences, collator])
 
   const nbEnLigne = useMemo(
-    () => eleves.filter((e) => presences[e.id]?.statut === 'connecte').length,
-    [eleves, presences]
+    () => elevesFiltres.filter((e) => presences[e.id]?.statut === 'connecte').length,
+    [elevesFiltres, presences]
   )
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F4F7FA' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#F1F6F3' }}>
       <style>{'@keyframes pulsePresence{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}'}</style>
       <header style={{ background: COULEUR_PROF, color: '#FFFFFF', padding: '16px 24px' }}>
         <div style={{ maxWidth: 980, margin: '0 auto' }}>
@@ -97,12 +128,22 @@ export function PresenceTempsReel() {
           </button>
           <h1 style={{ margin: 0, fontSize: 21, fontWeight: 700 }}>Présence en temps réel</h1>
           <p style={{ margin: '6px 0 0 0', fontSize: 13, opacity: 0.9 }}>
-            {nbEnLigne} en ligne sur {eleves.length}. Mise à jour automatique.
+            {nbEnLigne} en ligne sur {elevesFiltres.length}. Mise à jour automatique.
           </p>
         </div>
       </header>
 
       <main style={{ maxWidth: 980, margin: '0 auto', padding: 24 }}>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 16 }}>
+          <select value={filtreClasse} onChange={(e) => { setFiltreClasse(e.target.value); setFiltreGroupe('') }} style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '8px 10px', fontSize: 14 }}>
+            <option value="">Toutes les classes</option>
+            {classes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+          </select>
+          <select value={filtreGroupe} onChange={(e) => setFiltreGroupe(e.target.value)} disabled={!filtreClasse || groupesDuFiltre.length === 0} style={{ fontFamily: 'Arial, sans-serif', border: '1px solid #C9D6E3', borderRadius: 8, padding: '8px 10px', fontSize: 14, background: !filtreClasse ? '#F0F2F5' : '#FFFFFF' }}>
+            <option value="">{filtreClasse ? 'Toute la classe' : "Choisir une classe d'abord"}</option>
+            {groupesDuFiltre.map((g) => <option key={g.id} value={g.id}>{g.nom}</option>)}
+          </select>
+        </div>
         <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', alignItems: 'center', marginBottom: 18, fontSize: 12, color: '#4B5563' }}>
           <Legende couleur={COULEUR_STATUT.connecte} texte="En ligne" />
           <Legende couleur={COULEUR_STATUT.inactif} texte="Inactif" />
@@ -123,8 +164,8 @@ export function PresenceTempsReel() {
 
         {chargement ? (
           <p style={{ fontSize: 14, color: '#6B7280' }}>Chargement en cours...</p>
-        ) : eleves.length === 0 ? (
-          <p style={{ fontSize: 14, color: '#6B7280' }}>Aucun élève accepté pour le moment.</p>
+        ) : elevesFiltres.length === 0 ? (
+          <p style={{ fontSize: 14, color: '#6B7280' }}>Aucun élève dans ce périmètre.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {elevesTries.map((e) => {
@@ -143,7 +184,7 @@ export function PresenceTempsReel() {
               const progression = enMission ? Math.max(0, Math.min(100, p?.progression ?? 0)) : 0
 
               return (
-                <div key={e.id} style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: '14px 16px' }}>
+                <div key={e.id} style={{ background: '#FFFFFF', border: '1px solid #EAF0F5', borderRadius: 14, boxShadow: '0 2px 10px rgba(14, 165, 233, 0.08)', padding: '14px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     <span
                       aria-hidden="true"
@@ -156,6 +197,9 @@ export function PresenceTempsReel() {
                     <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: couleur }}>{LIBELLE_STATUT[statut]}</div>
                       {p && enLigne && <div style={{ fontSize: 11, color: '#9AA5B1' }}>{formaterDelai(p.secondesDepuis)}</div>}
+                      {p && !enLigne && p.updated_at && (
+                        <div style={{ fontSize: 11, color: '#9AA5B1' }}>Vu le {formaterDerniereConnexion(p.updated_at)}</div>
+                      )}
                     </div>
                   </div>
 

@@ -14,3 +14,23 @@ html, body, #root {
   .bcp-doc-liste { width: 100% !important; border-right: none !important; border-bottom: 1px solid #E6ECF2; display: flex; flex-wrap: wrap; }
   .bcp-doc-liste > button { width: auto !important; flex: 1 1 auto; }
 }
+
+/* --- Export PDF : capture des vues (mode impression) --- */
+/* Masque les elements interactifs sans valeur documentaire pendant la capture. */
+body.impression-pdf .no-print,
+body.impression-pdf button[data-interactif="1"] {
+  display: none !important;
+}
+/* Mode vierge : vide les champs de saisie et neutralise les surbrillances de
+   bonne reponse afin qu'aucune correction n'apparaisse sur la version a remplir. */
+body.impression-vierge input:not([type="checkbox"]):not([type="radio"]),
+body.impression-vierge textarea {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-image: none !important;
+}
+body.impression-vierge [data-bonne-reponse="1"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
