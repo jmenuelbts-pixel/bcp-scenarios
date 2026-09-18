@@ -165,7 +165,7 @@ function BlocRouvrir({ eleveId, missionId, qs, tsCount }: { eleveId: string; mis
   if (dispo.length === 0) return null
 
   async function rouvrir(id: 'travaux' | 'synthese' | 'autoeval' | 'quiz' | 'glisser') {
-    if (!window.confirm("Rouvrir ce travail ? L'élève pourra de nouveau le modifier. Le contenu déjà envoyé sera remplacé lorsqu'il renverra.")) return
+    if (!window.confirm("Rouvrir ce travail ? L'élève pourra de nouveau le modifier. Tout ce qu'il a déjà saisi est conservé.")) return
     setEnCours(id)
     const { erreur } = await rouvrirTravail(eleveId, missionId, id)
     setEnCours(null)
@@ -226,7 +226,9 @@ function BlocMission({ data, eleveId }: { data: MissionData; eleveId: string }) 
 }
 
 function LigneActivite({ quiz, eleveId }: { quiz: ReponseQuiz; eleveId: string }) {
-  const total = totalQuestions(quiz.mission_id, quiz.activite_id ?? undefined)
+  const total = quiz.activite_id === 'synthese'
+    ? (quiz.bareme ?? 0)
+    : totalQuestions(quiz.mission_id, quiz.activite_id ?? undefined)
   const [bareme, setBareme] = useState<number | null>(quiz.bareme)
   const [enregistre, setEnregistre] = useState(false)
 
@@ -249,7 +251,7 @@ function LigneActivite({ quiz, eleveId }: { quiz: ReponseQuiz; eleveId: string }
   return (
     <div style={{ ...ligne, flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-        <span>{titreMission(quiz.mission_id)} — {quiz.activite_id === 'glisser' ? 'Glisser-déposer' : 'Quiz'}</span>
+        <span>{titreMission(quiz.mission_id)} — {quiz.activite_id === 'glisser' ? 'Glisser-déposer' : quiz.activite_id === 'synthese' ? 'Synthèse' : 'Quiz'}</span>
         <span style={{ color: ROUGE_CORRECTION, fontWeight: 700 }}>
           {quiz.score !== null ? (
             noteConvertie !== null ? `${noteConvertie} / ${bareme}` : `${quiz.score} / ${total || '?'}`

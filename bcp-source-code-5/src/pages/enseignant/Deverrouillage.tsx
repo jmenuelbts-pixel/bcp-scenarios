@@ -22,6 +22,7 @@ import {
   type EtatDeverrouillage,
 } from '../../lib/deverrouillage'
 import { listerElevesAcceptes } from '../../lib/enseignant'
+import { rouvrirTravail } from '../../lib/eleve'
 import { listerClasses, listerGroupes, listerLiaisonsGroupes, type Classe, type Groupe, type LiaisonGroupe } from '../../lib/classes'
 import type { Profil } from '../../lib/auth'
 
@@ -109,6 +110,18 @@ export function Deverrouillage() {
     const nouvel = await reinitialiserOngletEleve(missionId, ongletId, eleveId, etat)
     setEtat(nouvel)
     setEnCours(null)
+  }
+
+  async function rouvrirDepuisDeverrouillage(
+    missionId: string,
+    partie: 'travaux' | 'synthese' | 'autoeval' | 'quiz' | 'glisser',
+    libelle: string
+  ) {
+    if (!eleveId) return
+    if (!window.confirm(`Rouvrir « ${libelle} » pour cet élève ? Tout ce qu'il a déjà saisi est conservé.`)) return
+    const { erreur } = await rouvrirTravail(eleveId, missionId, partie)
+    if (erreur) window.alert('Échec : ' + erreur)
+    else window.alert("Travail rouvert. L'élève peut de nouveau le modifier.")
   }
 
   // Verrouille TOUT (tous les scenarios, toutes les missions) en global.
@@ -317,6 +330,31 @@ export function Deverrouillage() {
                     )
                   })()}
                 </div>
+
+                {eleveId && (
+                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #EEF2F6' }}>
+                    <div style={{ fontSize: 13, color: '#4A5568', fontWeight: 600, marginBottom: 8 }}>Rouvrir un travail envoyé (le contenu de l'élève est conservé)</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {([
+                        { id: 'travaux', libelle: 'Devoir à rendre' },
+                        { id: 'synthese', libelle: 'Synthèse' },
+                        { id: 'autoeval', libelle: 'Auto-évaluation' },
+                        { id: 'quiz', libelle: 'Quiz' },
+                        { id: 'glisser', libelle: 'Glisser-déposer' },
+                      ] as const).map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          disabled={enCours !== null}
+                          onClick={() => rouvrirDepuisDeverrouillage(m.id, p.id, p.libelle)}
+                          style={{ fontFamily: 'Arial, sans-serif', background: '#FFFFFF', border: '1.5px solid #B0413E', color: '#B0413E', borderRadius: 8, padding: '7px 14px', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Rouvrir : {p.libelle}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

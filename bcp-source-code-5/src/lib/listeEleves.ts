@@ -271,7 +271,7 @@ export async function creerColonnesActivitesManquantes(
   const couples = new Set<string>()
   for (const l of lignes) {
     if (l.score === null || l.score === undefined) continue
-    if (l.activite_id !== 'quiz' && l.activite_id !== 'glisser') continue
+    if (l.activite_id !== 'quiz' && l.activite_id !== 'glisser' && l.activite_id !== 'synthese') continue
     couples.add(`${l.mission_id}::${l.activite_id}`)
   }
   const dejaLiees = new Set(
@@ -286,7 +286,7 @@ export async function creerColonnesActivitesManquantes(
     const found = trouverMission(missionId)
     const scenarioNom = found?.scenarioNom ?? ''
     const numero = found?.numero ?? 0
-    const libelleAct = activiteId === 'quiz' ? 'Quiz' : 'Glisser-déposer'
+    const libelleAct = activiteId === 'quiz' ? 'Quiz' : activiteId === 'glisser' ? 'Glisser-déposer' : 'Synthèse'
     const intitule = scenarioNom
       ? `${scenarioNom} - M${numero} - ${libelleAct}`
       : `${missionId} - ${libelleAct}`

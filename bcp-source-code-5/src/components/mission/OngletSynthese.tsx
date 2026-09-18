@@ -14,9 +14,10 @@ interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  onEnvoye?: () => void
 }
 
-export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Props) {
+export function OngletSynthese({ contenu, couleur, etudiantId, missionId, onEnvoye }: Props) {
   const [reponses, setReponses] = useState<Record<string, string>>({})
   const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
@@ -37,8 +38,10 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
         if (s.reponses && typeof s.reponses === 'object') {
           setReponses(s.reponses as Record<string, string>)
         }
-        setVerrouille(true)
-        void effacerBrouillon(etudiantId, missionId, 'synthese')
+        if (s.submitted_at) {
+          setVerrouille(true)
+          void effacerBrouillon(etudiantId, missionId, 'synthese')
+        }
         return
       }
       const b = await chargerBrouillon<Record<string, string>>(etudiantId, missionId, 'synthese')
@@ -73,6 +76,7 @@ export function OngletSynthese({ contenu, couleur, etudiantId, missionId }: Prop
       brouillon.current.annuler()
       void effacerBrouillon(etudiantId, missionId, 'synthese')
       setVerrouille(true)
+      onEnvoye?.()
     }
     setEnCours(false)
   }
