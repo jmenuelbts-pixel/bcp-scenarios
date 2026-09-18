@@ -16,9 +16,10 @@ interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  onEnvoye?: () => void
 }
 
-export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId }: Props) {
+export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId, onEnvoye }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [verrouille, setVerrouille] = useState(false)
   const [enCours, setEnCours] = useState(false)
@@ -34,11 +35,13 @@ export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId }: 
     chargerQuiz(etudiantId, missionId, 'synthese').then((s) => {
       if (!actif) return
       if (s) {
-        setVerrouille(true)
         if (s.reponses && typeof s.reponses === 'object') {
           reponsesSauvees.current = s.reponses as Record<string, string>
         }
-        appliquerFige()
+        if (s.submitted_at) {
+          setVerrouille(true)
+          appliquerFige()
+        }
       }
     })
     return () => { actif = false }
@@ -67,6 +70,10 @@ export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId }: 
         return
       }
       if (d.type === 'synthese_score' && !verrouille && etudiantId) {
+        // Les reponses arrivent jointes au score (ou deja stockees).
+        if (d.reponses && typeof d.reponses === 'object') {
+          reponsesSauvees.current = d.reponses as Record<string, string>
+        }
         const total = typeof d.total === 'number' && d.total > 0 ? d.total : 1
         const note10 = (d.bons / total) * 10
         const appr = appreciationAuto(note10)
@@ -79,6 +86,7 @@ export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId }: 
         if (!erreur) {
           setVerrouille(true)
           setMessage('Travail envoyé au professeur.')
+          onEnvoye?.()
         } else {
           setMessage("L'envoi a échoué. Veuillez réessayer.")
         }
@@ -98,15 +106,34 @@ export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId }: 
     iframeRef.current?.contentWindow?.postMessage({ type: 'cmd_corriger' }, '*')
   }
 
+  // Largeur native des cartes HTML (~1000px + marges). On met a l'echelle
+  // pour occuper toute la largeur disponible sans defilement horizontal.
+  const LARGEUR_CARTE = 1060
+  const conteneurRef = useRef<HTMLDivElement>(null)
+  const [echelle, setEchelle] = useState(1)
+  useEffect(() => {
+    function ajuster() {
+      const dispo = conteneurRef.current?.clientWidth ?? LARGEUR_CARTE
+      // Sur grand ecran on ne depasse pas 1 (pas d'agrandissement excessif) ;
+      // sur ecran etroit on reduit pour tout afficher sans scroll horizontal.
+      setEchelle(Math.min(1, dispo / LARGEUR_CARTE))
+    }
+    ajuster()
+    window.addEventListener('resize', ajuster)
+    return () => window.removeEventListener('resize', ajuster)
+  }, [])
+
   return (
     <div>
-      <div style={{ position: 'relative', width: '100%', overflow: 'auto', border: '1px solid #E2E8F0', borderRadius: 12, background: '#FAFAF8' }}>
-        <iframe
-          ref={iframeRef}
-          src={`/syntheses/${fichier}.html`}
-          title="Synthèse"
-          style={{ width: 1060, height: 780, border: 'none', display: 'block', margin: '0 auto', maxWidth: 'none' }}
-        />
+      <div ref={conteneurRef} style={{ width: '100%', overflow: 'hidden', border: '1px solid #E2E8F0', borderRadius: 12, background: '#FAFAF8' }}>
+        <div style={{ width: LARGEUR_CARTE, height: 820, transform: `scale(${echelle})`, transformOrigin: 'top left', marginBottom: echelle < 1 ? -(820 * (1 - echelle)) : 0 }}>
+          <iframe
+            ref={iframeRef}
+            src={`/syntheses/${fichier}.html`}
+            title="Synthèse"
+            style={{ width: LARGEUR_CARTE, height: 820, border: 'none', display: 'block' }}
+          />
+        </div>
       </div>
 
       {message && (

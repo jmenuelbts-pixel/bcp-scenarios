@@ -93,7 +93,7 @@ import type {
   VehiculeCatalogue,
   BlocDocumentTexte,
 } from '../../data/contenus'
-import { enregistrerTravail, chargerTravail, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
+import { enregistrerTravail, chargerTravail, travailEstEnvoye, chargerRetourTravail, type RetourTravail } from '../../lib/eleve'
 import { chargerBrouillon, creerEnregistreurBrouillon, effacerBrouillon, useFlushBrouillon } from '../../lib/brouillon'
 
 interface Props {
@@ -101,11 +101,12 @@ interface Props {
   couleur: string
   etudiantId?: string
   missionId: string
+  onEnvoye?: () => void
 }
 
 type Saisies = Record<string, string>
 
-export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props) {
+export function OngletTravaux({ contenu, couleur, etudiantId, missionId, onEnvoye }: Props) {
   // Marque affichee dans l'habillage pageWeb, derivee du prefixe de missionId.
   const MARQUES: Record<string, { nom: string; url: string }> = {
     renault: { nom: 'Renault', url: 'www.renault.fr' },
@@ -141,17 +142,20 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
     let actif = true
     chargerTravail(etudiantId, missionId).then(async (c) => {
       if (!actif) return
+      const envoye = await travailEstEnvoye(etudiantId, missionId)
       if (c && c.trim().length > 0) {
-        // Travail deja envoye : il prime, on l'affiche verrouille et on nettoie tout brouillon.
         try {
           const obj = JSON.parse(c)
           if (obj && typeof obj === 'object') setSaisies(obj as Saisies)
         } catch {
-          // ancien format texte libre : on le place dans une cle de compatibilite
           setSaisies({ _texte: c })
         }
-        setVerrouille(true)
-        void effacerBrouillon(etudiantId, missionId, 'travaux')
+        if (envoye) {
+          // Travail envoye : verrouille, on nettoie le brouillon.
+          setVerrouille(true)
+          void effacerBrouillon(etudiantId, missionId, 'travaux')
+        }
+        // Si rouvert par le prof (non envoye) : reponses affichees, modifiable.
         return
       }
       // Pas de travail envoye : on restaure le brouillon en cours s'il existe.
@@ -215,6 +219,7 @@ export function OngletTravaux({ contenu, couleur, etudiantId, missionId }: Props
       brouillon.current.annuler()
       void effacerBrouillon(etudiantId, missionId, 'travaux')
       setVerrouille(true)
+      onEnvoye?.()
     }
     setEnCours(false)
   }

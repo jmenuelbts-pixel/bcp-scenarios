@@ -21,12 +21,48 @@ interface Props {
   // ouvertes par le professeur. Glossaire et flashcards restent toujours
   // accessibles (revision). Defaut : evaluations fermees.
   evaluationsOuvertes?: boolean
+  // Appele quand l'eleve a marque le glossaire ET les flashcards comme lus :
+  // declenche l'ouverture des evaluations (quiz + glisser) pour cet eleve.
+  onLectureTerminee?: () => void
 }
 
 type SousOnglet = 'glossaire' | 'flashcards' | 'quiz' | 'glisser'
 
-export function OngletActivites({ contenu, couleur, etudiantId, missionId, evaluationsOuvertes = false }: Props) {
+export function OngletActivites({ contenu, couleur, etudiantId, missionId, evaluationsOuvertes = false, onLectureTerminee }: Props) {
   const [vue, setVue] = useState<SousOnglet>('glossaire')
+  const [glossaireLu, setGlossaireLu] = useState(false)
+  const [flashcardsLu, setFlashcardsLu] = useState(false)
+  const lectureSignalee = useRef(false)
+
+  // Charge l'etat "lu" (persistant) du glossaire et des flashcards.
+  useEffect(() => {
+    if (!etudiantId) return
+    let actif = true
+    Promise.all([
+      chargerQuiz(etudiantId, missionId, 'glossaire_lu'),
+      chargerQuiz(etudiantId, missionId, 'flashcards_lu'),
+    ]).then(([g, f]) => {
+      if (!actif) return
+      if (g) setGlossaireLu(true)
+      if (f) setFlashcardsLu(true)
+    })
+    return () => { actif = false }
+  }, [etudiantId, missionId])
+
+  // Quand les deux sont lus, ouvrir les evaluations (une seule fois).
+  useEffect(() => {
+    if (glossaireLu && flashcardsLu && !lectureSignalee.current) {
+      lectureSignalee.current = true
+      onLectureTerminee?.()
+    }
+  }, [glossaireLu, flashcardsLu, onLectureTerminee])
+
+  async function marquerLu(type: 'glossaire' | 'flashcards') {
+    if (!etudiantId) return
+    await enregistrerQuiz(etudiantId, missionId, type === 'glossaire' ? 'glossaire_lu' : 'flashcards_lu', {}, 0)
+    if (type === 'glossaire') setGlossaireLu(true)
+    else setFlashcardsLu(true)
+  }
 
   const onglets: { id: SousOnglet; libelle: string; visible: boolean; evaluation: boolean }[] = [
     { id: 'glossaire', libelle: 'Glossaire', visible: contenu.glossaire.length > 0, evaluation: false },
@@ -99,8 +135,28 @@ export function OngletActivites({ contenu, couleur, etudiantId, missionId, evalu
         })}
       </div>
 
-      {vue === 'glossaire' && !evaluationsOuvertes && <VueGlossaire contenu={contenu} />}
-      {vue === 'flashcards' && !evaluationsOuvertes && <VueFlashcards contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />}
+      {vue === 'glossaire' && !evaluationsOuvertes && (
+        <>
+          <VueGlossaire contenu={contenu} />
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+            <button type="button" onClick={() => marquerLu('glossaire')} disabled={glossaireLu}
+              style={{ fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 700, padding: '10px 20px', borderRadius: 8, border: 'none', background: glossaireLu ? '#C8C6BE' : couleur, color: '#FFFFFF', cursor: glossaireLu ? 'default' : 'pointer' }}>
+              {glossaireLu ? 'Glossaire terminé' : "J'ai terminé le glossaire"}
+            </button>
+          </div>
+        </>
+      )}
+      {vue === 'flashcards' && !evaluationsOuvertes && (
+        <>
+          <VueFlashcards contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+            <button type="button" onClick={() => marquerLu('flashcards')} disabled={flashcardsLu}
+              style={{ fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 700, padding: '10px 20px', borderRadius: 8, border: 'none', background: flashcardsLu ? '#C8C6BE' : couleur, color: '#FFFFFF', cursor: flashcardsLu ? 'default' : 'pointer' }}>
+              {flashcardsLu ? 'Flashcards terminées' : "J'ai terminé les flashcards"}
+            </button>
+          </div>
+        </>
+      )}
       {vue === 'quiz' && evaluationsOuvertes && (
         <VueQuiz contenu={contenu} couleur={couleur} etudiantId={etudiantId} missionId={missionId} />
       )}
