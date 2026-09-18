@@ -35,11 +35,13 @@ export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId, on
     chargerQuiz(etudiantId, missionId, 'synthese').then((s) => {
       if (!actif) return
       if (s) {
-        setVerrouille(true)
         if (s.reponses && typeof s.reponses === 'object') {
           reponsesSauvees.current = s.reponses as Record<string, string>
         }
-        appliquerFige()
+        if (s.submitted_at) {
+          setVerrouille(true)
+          appliquerFige()
+        }
       }
     })
     return () => { actif = false }
@@ -68,6 +70,10 @@ export function OngletSyntheseHtml({ fichier, couleur, etudiantId, missionId, on
         return
       }
       if (d.type === 'synthese_score' && !verrouille && etudiantId) {
+        // Les reponses arrivent jointes au score (ou deja stockees).
+        if (d.reponses && typeof d.reponses === 'object') {
+          reponsesSauvees.current = d.reponses as Record<string, string>
+        }
         const total = typeof d.total === 'number' && d.total > 0 ? d.total : 1
         const note10 = (d.bons / total) * 10
         const appr = appreciationAuto(note10)

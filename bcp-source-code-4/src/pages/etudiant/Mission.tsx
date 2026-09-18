@@ -18,6 +18,9 @@ const SYNTHESES_HTML = new Set([
   'renault-m5', 'renault-m6', 'renault-m7', 'renault-m8',
   'chausson-m1', 'chausson-m2', 'chausson-m3', 'chausson-m4',
   'chausson-m5', 'chausson-m6', 'chausson-m7', 'chausson-m8',
+  'free-m1', 'free-m2', 'free-m3', 'free-m4', 'free-m5',
+  'amparis-m1', 'amparis-m2', 'amparis-m3', 'amparis-m4',
+  'citroen-m1', 'citroen-m2', 'citroen-m3',
 ])
 function syntheseHtmlDispo(missionId: string): boolean {
   return SYNTHESES_HTML.has(missionId)
@@ -81,6 +84,25 @@ export function Mission() {
   // Couleur d'accent lisible sur fond blanc (onglets, boutons) et couleur
   // de fond d'en-tete. Pour les teintes claires comme le jaune, on utilise
   // une version assombrie afin de garder le texte lisible.
+  // Ouvre la mission suivante du scenario pour cet eleve (onglet Travaux) et y
+  // navigue. Depuis le Journal de bord.
+  async function passerMissionSuivante() {
+    if (!scenario || !mission || !userId) return
+    const idx = scenario.missions.findIndex((m) => m.id === mission.id)
+    const suivante = idx >= 0 ? scenario.missions[idx + 1] : undefined
+    if (!suivante) {
+      // Derniere mission : rien a ouvrir.
+      navigate(`/scenario/${scenario.id}`)
+      return
+    }
+    try {
+      await definirOngletEleve(scenario.id, suivante.id, 'travaux', userId, true, etatDeverr)
+    } catch {
+      // silencieux
+    }
+    navigate(`/scenario/${scenario.id}/mission/${suivante.id}`)
+  }
+
   const accent = couleurEntete(scenario.couleur)
   const texteEntete = couleurTexteSur(scenario.couleur)
 
@@ -249,7 +271,7 @@ export function Mission() {
               )}
               {actif === 'autoeval' && contenu && <OngletAutoEval contenu={contenu.autoEval} couleur={accent} etudiantId={userId} missionId={mission.id} onEnvoye={() => gererEnvoi('autoeval')} />}
               {actif === 'activites' && contenu && <OngletActivites contenu={contenu.activites} couleur={accent} etudiantId={userId} missionId={mission.id} evaluationsOuvertes={evaluationsOuvertes(mission.id, etatDeverr, userId)} onLectureTerminee={ouvrirEvaluations} />}
-              {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} />}
+              {actif === 'journal' && <OngletJournal couleur={accent} etudiantId={userId} missionId={mission.id} onMissionSuivante={passerMissionSuivante} />}
             </>
           )
         })()}

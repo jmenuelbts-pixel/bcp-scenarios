@@ -165,7 +165,7 @@ function BlocRouvrir({ eleveId, missionId, qs, tsCount }: { eleveId: string; mis
   if (dispo.length === 0) return null
 
   async function rouvrir(id: 'travaux' | 'synthese' | 'autoeval' | 'quiz' | 'glisser') {
-    if (!window.confirm("Rouvrir ce travail ? L'élève pourra de nouveau le modifier. Le contenu déjà envoyé sera remplacé lorsqu'il renverra.")) return
+    if (!window.confirm("Rouvrir ce travail ? L'élève pourra de nouveau le modifier. Tout ce qu'il a déjà saisi est conservé.")) return
     setEnCours(id)
     const { erreur } = await rouvrirTravail(eleveId, missionId, id)
     setEnCours(null)
